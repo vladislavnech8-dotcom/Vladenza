@@ -1,11 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createServer } from 'vite';
-import React from 'react';
-import { renderToString } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { render, getStaticBlogSlugs } from '../dist-ssr/entry-server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -50,41 +47,44 @@ function injectMeta(html, meta) {
   return html;
 }
 
-async function getDynamicSlugs(vite) {
+async function getDynamicData() {
   const url = process.env.VITE_SUPABASE_URL;
   const key = process.env.VITE_SUPABASE_ANON_KEY;
 
-  let dbBlogSlugs = [];
-  let dbCaseSlugs = [];
+  let dbPosts = [];
+  let dbCases = [];
 
   if (url && key) {
-    const supabase = createClient(url, key);
-    const [{ data: posts }, { data: cases }] = await Promise.all([
-      supabase.from('blog_posts').select('slug').eq('published', true),
-      supabase.from('case_studies').select('slug').eq('published', true),
-    ]);
-    dbBlogSlugs = (posts ?? []).map((p) => p.slug);
-    dbCaseSlugs = (cases ?? []).map((c) => c.slug);
+    try {
+      const supabase = createClient(url, key);
+      const [{ data: posts, error: postsErr }, { data: cases, error: casesErr }] = await Promise.all([
+        supabase.from('blog_posts').select('*').eq('published', true),
+        supabase.from('case_studies').select('*').eq('published', true),
+      ]);
+      if (postsErr) console.warn('⚠ blog_posts fetch error:', postsErr.message);
+      if (casesErr) console.warn('⚠ case_studies fetch error:', casesErr.message);
+      dbPosts = posts ?? [];
+      dbCases = cases ?? [];
+    } catch (err) {
+      console.warn('⚠ Supabase недоступен во время сборки, продолжаю только со статикой:', err.message);
+    }
   } else {
     console.warn('⚠ Supabase env vars отсутствуют — блог/кейсы из базы не попадут в пререндер.');
   }
 
-  const { blogPosts } = await vite.ssrLoadModule('/src/data/blogPosts.ts');
-  const staticBlogSlugs = blogPosts.map((p) => p.slug);
+  const staticBlogSlugs = getStaticBlogSlugs();
+  const dbPostsBySlug = new Map(dbPosts.map((p) => [p.slug, p]));
+  const dbCasesBySlug = new Map(dbCases.map((c) => [c.slug, c]));
 
-  return {
-    blogSlugs: Array.from(new Set([...dbBlogSlugs, ...staticBlogSlugs])),
-    caseSlugs: Array.from(new Set(dbCaseSlugs)),
-  };
+  const blogSlugs = Array.from(new Set([...dbPostsBySlug.keys(), ...staticBlogSlugs]));
+  const caseSlugs = Array.from(dbCasesBySlug.keys());
+
+  return { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug };
 }
 
 async function main() {
   const template = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
-  const vite = await createServer({ root, server: { middlewareMode: true }, appType: 'custom' });
-
-  const { default: App } = await vite.ssrLoadModule('/src/App.tsx');
-  const seoModule = await vite.ssrLoadModule('/src/hooks/useSEO.ts');
-  const { blogSlugs, caseSlugs } = await getDynamicSlugs(vite);
+  const { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug } = await getDynamicData();
 
   const ROUTES = [
     ...STATIC_ROUTES,
@@ -93,12 +93,21 @@ async function main() {
     ...blogSlugs.map((s) => `/blog/${s}`),
   ];
 
+  let successCount = 0;
+
   for (const route of ROUTES) {
     try {
-      const appHtml = renderToString(
-        React.createElement(StaticRouter, { location: route }, React.createElement(App))
-      );
-      const meta = seoModule.lastRenderedSEO || (route === '/' ? HOME_META : null);
+      let preload;
+      const caseMatch = route.match(/^\/case-studies\/(.+)$/);
+      const blogMatch = route.match(/^\/blog\/(.+)$/);
+      if (caseMatch && dbCasesBySlug.has(caseMatch[1])) {
+        preload = { caseData: dbCasesBySlug.get(caseMatch[1]) };
+      } else if (blogMatch && dbPostsBySlug.has(blogMatch[1])) {
+        preload = { postData: dbPostsBySlug.get(blogMatch[1]) };
+      }
+
+      const { html: appHtml, seo } = await render(route, preload);
+      const meta = seo || (route === '/' ? HOME_META : null);
       let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
       if (meta) html = injectMeta(html, meta);
 
@@ -107,6 +116,7 @@ async function main() {
         : path.join(distDir, route.replace(/^\//, ''), 'index.html');
       fs.mkdirSync(path.dirname(outPath), { recursive: true });
       fs.writeFileSync(outPath, html);
+      successCount++;
       console.log(`✓ prerendered ${route}`);
     } catch (err) {
       console.warn(`✗ failed to prerender ${route}:`, err.message);
@@ -116,9 +126,16 @@ async function main() {
   const sitemapUrls = ROUTES.map((r) => `  <url><loc>https://vladenza.com${r}</loc></url>`).join('\n');
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls}\n</urlset>\n`;
   fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
+
+  console.log(`\n✓ Готово: ${successCount}/${ROUTES.length} страниц пререндерено.`);
   console.log(`✓ sitemap.xml сгенерирован, ${ROUTES.length} URL`);
 
-  await vite.close();
+  if (successCount < ROUTES.length) {
+    console.warn(`⚠ ${ROUTES.length - successCount} страниц не удалось пререндерить — см. ошибки выше.`);
+  }
 }
 
-main();
+main().catch((err) => {
+  console.error('Prerender script failed:', err);
+  process.exit(1);
+});

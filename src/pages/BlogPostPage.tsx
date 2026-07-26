@@ -146,8 +146,13 @@ function RenderSection({ section, sectionIndex }: { section: Section; sectionInd
 }
 
 function usePost(slug: string | undefined) {
-  const [post, setPost] = useState<DbPost | ReturnType<typeof blogPosts.find> | null | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
+  const preloaded = typeof window === 'undefined'
+    ? (globalThis as Record<string, unknown>).__SSR_PRELOADED_POST__ as DbPost | undefined
+    : undefined;
+  const [post, setPost] = useState<DbPost | ReturnType<typeof blogPosts.find> | null | undefined>(
+    () => preloaded ?? blogPosts.find((p) => p.slug === slug)
+  );
+  const [loading, setLoading] = useState(!preloaded && !blogPosts.find((p) => p.slug === slug));
 
   useEffect(() => {
     if (!slug) { setPost(null); setLoading(false); return; }

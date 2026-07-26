@@ -113,9 +113,12 @@ function dbToCase(d: Record<string, unknown>): CaseStudy {
 
 export default function CaseStudyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [c, setC] = useState<CaseStudy | undefined>(undefined);
+  const preloaded = typeof window === 'undefined'
+    ? (globalThis as Record<string, unknown>).__SSR_PRELOADED_CASE__ as Record<string, unknown> | undefined
+    : undefined;
+  const [c, setC] = useState<CaseStudy | undefined>(preloaded ? dbToCase(preloaded) : undefined);
   const [otherCases, setOtherCases] = useState<{ slug: string; niche: string; title: string; metric: string; metric_sub: string; period: string; color: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!preloaded);
 
   useEffect(() => {
     setLoading(true);
