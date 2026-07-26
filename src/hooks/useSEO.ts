@@ -1,15 +1,16 @@
 import { useLayoutEffect } from 'react';
-
 const SITE_URL = 'https://vladenza.com';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.svg`;
 
-interface SEOProps {
+export interface SEOProps {
   title: string;
   description: string;
   canonical?: string;
   ogImage?: string;
   schema?: object;
 }
+
+export let lastRenderedSEO: SEOProps | null = null;
 
 function clampDescription(text: string, max = 158): string {
   if (text.length <= max) return text;
@@ -18,8 +19,6 @@ function clampDescription(text: string, max = 158): string {
   return (lastSpace > 60 ? slice.slice(0, lastSpace) : slice).replace(/[\s,;:.\u2013\u2014-]+$/, '');
 }
 
-// Build a clean absolute canonical URL from the current location,
-// stripping any query string (?utm_*, ?fbclid, ?sort=...) and hash.
 function buildCanonicalFromLocation(): string {
   if (typeof window === 'undefined') return SITE_URL;
   const { pathname } = window.location;
@@ -30,13 +29,15 @@ function buildCanonicalFromLocation(): string {
 }
 
 export function useSEO({ title, description, canonical, ogImage, schema }: SEOProps) {
+  if (typeof window === 'undefined') {
+    lastRenderedSEO = { title, description, canonical, ogImage, schema };
+  }
+
   useLayoutEffect(() => {
     document.title = title;
-
     const desc = clampDescription(description);
     const image = ogImage || DEFAULT_OG_IMAGE;
     const pageUrl = canonical || buildCanonicalFromLocation();
-
     setMeta('name', 'description', desc);
     setMeta('property', 'og:title', title);
     setMeta('property', 'og:description', desc);
@@ -48,15 +49,12 @@ export function useSEO({ title, description, canonical, ogImage, schema }: SEOPr
     setMeta('name', 'twitter:description', desc);
     setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:image', image);
-
-    // Ensure exactly one canonical tag, pointing at the clean URL.
     const existing = document.querySelectorAll('link[rel="canonical"]');
     existing.forEach((el) => el.remove());
     const canonicalEl = document.createElement('link');
     canonicalEl.rel = 'canonical';
     canonicalEl.href = pageUrl;
     document.head.appendChild(canonicalEl);
-
     const schemaId = 'ld-json-schema';
     let schemaEl = document.getElementById(schemaId);
     if (schema) {
