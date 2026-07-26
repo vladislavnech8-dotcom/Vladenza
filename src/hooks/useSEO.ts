@@ -28,16 +28,25 @@ function buildCanonicalFromLocation(): string {
   return `${SITE_URL}${normalized || ''}`;
 }
 
+// The host serves nested pages as directory/index.html and redirects the
+// no-trailing-slash form with a 301. Always normalize to the trailing-slash
+// form so canonical never points at a URL that itself redirects.
+function normalizeTrailingSlash(url: string): string {
+  return url.endsWith('/') ? url : `${url}/`;
+}
+
 export function useSEO({ title, description, canonical, ogImage, schema }: SEOProps) {
+  const resolvedCanonical = normalizeTrailingSlash(canonical || buildCanonicalFromLocation());
+
   if (typeof window === 'undefined') {
-    lastRenderedSEO = { title, description, canonical, ogImage, schema };
+    lastRenderedSEO = { title, description, canonical: resolvedCanonical, ogImage, schema };
   }
 
   useLayoutEffect(() => {
     document.title = title;
     const desc = clampDescription(description);
     const image = ogImage || DEFAULT_OG_IMAGE;
-    const pageUrl = canonical || buildCanonicalFromLocation();
+    const pageUrl = resolvedCanonical;
     setMeta('name', 'description', desc);
     setMeta('property', 'og:title', title);
     setMeta('property', 'og:description', desc);
