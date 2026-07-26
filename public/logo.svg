@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&amp;display=swap');
+    </style>
+  </defs>
+  <text x="0" y="40" font-family="Inter, Arial, sans-serif" font-weight="900" font-size="44" letter-spacing="-2" fill="#F97316">Vladen</text>
+</svg>

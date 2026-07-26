@@ -1,0 +1,26 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="80" y1="80" x2="176" y2="176" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB923C"/>
+      <stop offset="1" stop-color="#EA580C"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="80" y1="0" x2="760" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB923C"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="80" y="80" width="96" height="96" rx="24" fill="url(#badge)"/>
+  <path d="M 104 106 L 128 148 L 152 106" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="152" cy="103" r="7.5" fill="#FFFFFF"/>
+  <text x="196" y="148" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="52" fill="#FFFFFF">Vladenza</text>
+  <text x="80" y="300" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="72" fill="url(#accent)">SEO Link Building</text>
+  <text x="80" y="384" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="72" fill="#FFFFFF">&amp; AI Visibility</text>
+  <text x="80" y="466" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="34" fill="#94A3B8">High-authority backlinks. Guest posts. Niche edits.</text>
+  <text x="80" y="512" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="34" fill="#94A3B8">Get cited by ChatGPT, Gemini &amp; Perplexity.</text>
+  <rect x="80" y="556" width="220" height="6" rx="3" fill="url(#accent)"/>
+</svg>
