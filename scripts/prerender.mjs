@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createClient } from '@supabase/supabase-js';
-import { render, getStaticBlogSlugs } from '../dist-ssr/entry-server.js';
+import { render, getStaticBlogSlugs, supabase } from '../dist-ssr/entry-server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -48,28 +47,19 @@ function injectMeta(html, meta) {
 }
 
 async function getDynamicData() {
-  const url = process.env.VITE_SUPABASE_URL;
-  const key = process.env.VITE_SUPABASE_ANON_KEY;
-
   let dbPosts = [];
   let dbCases = [];
-
-  if (url && key) {
-    try {
-      const supabase = createClient(url, key);
-      const [{ data: posts, error: postsErr }, { data: cases, error: casesErr }] = await Promise.all([
-        supabase.from('blog_posts').select('*').eq('published', true),
-        supabase.from('case_studies').select('*').eq('published', true),
-      ]);
-      if (postsErr) console.warn('⚠ blog_posts fetch error:', postsErr.message);
-      if (casesErr) console.warn('⚠ case_studies fetch error:', casesErr.message);
-      dbPosts = posts ?? [];
-      dbCases = cases ?? [];
-    } catch (err) {
-      console.warn('⚠ Supabase недоступен во время сборки, продолжаю только со статикой:', err.message);
-    }
-  } else {
-    console.warn('⚠ Supabase env vars отсутствуют — блог/кейсы из базы не попадут в пререндер.');
+  try {
+    const [{ data: posts, error: postsErr }, { data: cases, error: casesErr }] = await Promise.all([
+      supabase.from('blog_posts').select('*').eq('published', true),
+      supabase.from('case_studies').select('*').eq('published', true),
+    ]);
+    if (postsErr) console.warn('⚠ blog_posts fetch error:', postsErr.message);
+    if (casesErr) console.warn('⚠ case_studies fetch error:', casesErr.message);
+    dbPosts = posts ?? [];
+    dbCases = cases ?? [];
+  } catch (err) {
+    console.warn('⚠ Не удалось получить данные из базы во время сборки:', err.message);
   }
 
   const staticBlogSlugs = getStaticBlogSlugs();

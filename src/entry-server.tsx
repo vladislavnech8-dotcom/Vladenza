@@ -5,6 +5,7 @@ import { StaticRouter } from 'react-router-dom';
 import App from './App';
 import { lastRenderedSEO, type SEOProps } from './hooks/useSEO';
 import { blogPosts } from './data/blogPosts';
+import { supabase } from './lib/supabase';
 
 export function render(
   url: string,
@@ -40,3 +41,5 @@ export function render(
 export function getStaticBlogSlugs(): string[] {
   return blogPosts.map((p) => p.slug);
 }
+
+export { supabase };
