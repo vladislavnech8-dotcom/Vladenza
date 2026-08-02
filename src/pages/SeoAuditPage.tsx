@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search, AlertTriangle, TrendingUp, CheckCircle, FileText, Zap,
   Globe, BarChart2, ArrowRight, Clock, Eye, Layers, Target,
@@ -119,10 +119,32 @@ function FAQ() {
 export default function SeoAuditPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   useSEO({
-    title: 'SEO Audit Service — Full-Site Analysis & Growth Plan | Vladenza',
-    description: 'Comprehensive SEO audit covering UX review, technical findings, site architecture, keyword strategy, competitor analysis, and a 6-month link building roadmap. From $300.',
+    title: 'SEO Audit Service — Full-Site Analysis | Vladenza',
+    description: 'Full-site SEO audit covering UX, technical SEO, architecture, keywords, and competitors — plus a 6-month link building roadmap. From $300.',
     canonical: 'https://vladenza.com/services/seo-audit',
   });
+
+  useEffect(() => {
+    const id = 'service-schema';
+    let el = document.getElementById(id) as HTMLScriptElement | null;
+    if (!el) {
+      el = document.createElement('script');
+      el.id = id;
+      el.type = 'application/ld+json';
+      document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      serviceType: 'SEO Audit',
+      provider: { '@type': 'Organization', name: 'Vladenza', url: 'https://vladenza.com' },
+      areaServed: 'Worldwide',
+      offers: { '@type': 'Offer', priceCurrency: 'USD', price: '300', url: 'https://vladenza.com/services/seo-audit/' },
+    });
+    return () => {
+      document.getElementById(id)?.remove();
+    };
+  }, []);
 
   return (
     <ServicePageLayout>
