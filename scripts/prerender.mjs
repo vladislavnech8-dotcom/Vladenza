@@ -46,6 +46,21 @@ function injectMeta(html, meta) {
   return html;
 }
 
+function injectFaqSchema(html, faqs) {
+  if (!faqs || faqs.length === 0) return html;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+  const scriptTag = `<script id="faq-schema" type="application/ld+json">${JSON.stringify(schema)}</script>`;
+  return html.replace('</head>', `  ${scriptTag}\n</head>`);
+}
+
 async function getDynamicData() {
   let dbPosts = [];
   let dbCases = [];
@@ -96,10 +111,11 @@ async function main() {
         preload = { postData: dbPostsBySlug.get(blogMatch[1]) };
       }
 
-      const { html: appHtml, seo } = await render(route, preload);
+      const { html: appHtml, seo, faqSchema } = await render(route, preload);
       const meta = seo || (route === '/' ? HOME_META : null);
       let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
       if (meta) html = injectMeta(html, meta);
+      if (faqSchema) html = injectFaqSchema(html, faqSchema);
 
       const outPath = route === '/'
         ? path.join(distDir, 'index.html')

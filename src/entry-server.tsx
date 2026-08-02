@@ -4,13 +4,15 @@ import { PassThrough } from 'node:stream';
 import { StaticRouter } from 'react-router-dom';
 import App from './App';
 import { lastRenderedSEO, type SEOProps } from './hooks/useSEO';
+import { lastRenderedFaqSchema, resetFaqSchemaCapture, type Faq } from './components/ServiceSeoBlock';
 import { blogPosts } from './data/blogPosts';
 import { supabase } from './lib/supabase';
 
 export function render(
   url: string,
   preload?: { caseData?: Record<string, unknown>; postData?: Record<string, unknown> }
-): Promise<{ html: string; seo: SEOProps | null }> {
+): Promise<{ html: string; seo: SEOProps | null; faqSchema: Faq[] | null }> {
+  resetFaqSchemaCapture();
   const g = globalThis as Record<string, unknown>;
   if (preload?.caseData) g.__SSR_PRELOADED_CASE__ = preload.caseData;
   else delete g.__SSR_PRELOADED_CASE__;
@@ -25,7 +27,11 @@ export function render(
           const passthrough = new PassThrough();
           passthrough.on('data', (chunk) => chunks.push(chunk));
           passthrough.on('end', () => {
-            resolve({ html: Buffer.concat(chunks).toString('utf-8'), seo: lastRenderedSEO });
+            resolve({
+              html: Buffer.concat(chunks).toString('utf-8'),
+              seo: lastRenderedSEO,
+              faqSchema: lastRenderedFaqSchema,
+            });
           });
           passthrough.on('error', reject);
           pipe(passthrough);

@@ -7,6 +7,12 @@ export interface Faq {
   a: string;
 }
 
+export let lastRenderedFaqSchema: Faq[] | null = null;
+
+export function resetFaqSchemaCapture() {
+  lastRenderedFaqSchema = null;
+}
+
 interface Props {
   heading: string;
   intro: string;
@@ -35,6 +41,10 @@ function renderInline(text: string): React.ReactNode {
 
 export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
   const [open, setOpen] = useState<number | null>(0);
+
+  if (typeof window === 'undefined') {
+    lastRenderedFaqSchema = faqs;
+  }
 
   useEffect(() => {
     const id = 'faq-schema';
