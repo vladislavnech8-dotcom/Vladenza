@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileText, Globe, TrendingUp, CheckCircle, Star, ArrowRight, Clock, Shield, Search } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
@@ -54,10 +54,33 @@ const process = [
 export default function GuestPostingPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   useSEO({
-    title: 'Guest Posting Service — High-Authority Link Building | Vladenza',
-    description: 'Manual guest post placements on DR 30–90+ real traffic sites. Niche-matched, permanent links with native content writing. No PBNs, no farms — transparent reporting.',
+    title: 'Guest Posting Services — Editorial Backlinks | Vladenza',
+    description: 'Manual guest post placements on DR 30–90+ real-traffic sites. Niche-matched, permanent links with native content. No PBNs — transparent reporting.',
     canonical: 'https://vladenza.com/services/guest-posting',
   });
+
+  useEffect(() => {
+    const id = 'service-schema';
+    let el = document.getElementById(id) as HTMLScriptElement | null;
+    if (!el) {
+      el = document.createElement('script');
+      el.id = id;
+      el.type = 'application/ld+json';
+      document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      serviceType: 'Guest Posting / Link Building',
+      provider: { '@type': 'Organization', name: 'Vladenza', url: 'https://vladenza.com' },
+      areaServed: 'Worldwide',
+      offers: { '@type': 'Offer', priceCurrency: 'USD', price: '80', url: 'https://vladenza.com/services/guest-posting/' },
+    });
+    return () => {
+      document.getElementById(id)?.remove();
+    };
+  }, []);
+
   return (
     <ServicePageLayout>
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
@@ -133,7 +156,7 @@ export default function GuestPostingPage() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
               Packages
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Choose your authority level</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Guest Posting Packages & Pricing</h2>
             <p className="text-gray-400 max-w-xl mx-auto text-sm leading-relaxed">Mix tiers across your campaign for a natural, varied link profile.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -190,9 +213,11 @@ export default function GuestPostingPage() {
         body={[
           "Unlike marketplaces that resell the same recycled domains, we source placements through private relationships and direct outreach. Every site passes a manual quality check for traffic trends, spam score, and link profile health before we propose it. That means your links are placed inside genuinely useful content that both Google and AI search engines can trust.",
           "Guest posts work best as part of a diversified profile. Many clients combine them with [niche edits](/services/niche-edits) for faster authority transfer into aged pages, and [crowd links](/services/crowd-links) for a natural, varied link footprint. If you operate in a specific vertical, our [niche link packages](/services/link-packages/saas) bundle guest posts with supporting placements tuned to your industry.",
-          "Want proof? Browse our [case studies](/case-studies) to see how guest posting campaigns moved rankings and organic traffic across iGaming, SaaS, health, and fintech — or read the [2026 link building playbook](/blog/link-building-2026) to understand how editorial links now feed AI visibility too.",
+          "See how guest posting helped [a SaaS client build non-brand organic traffic](/case-studies/saas-non-brand-traffic) — one of many campaigns in our [case studies](/case-studies) archive. Read the [2026 link building playbook](/blog/link-building-2026) to understand how editorial links now feed AI visibility too — see our [AI & LLM visibility service](/services/ai-llm) for how this fits into a broader strategy.",
+          "We run guest posting campaigns across every major vertical — [SaaS](/services/link-packages/saas), [iGaming](/services/link-packages/igaming), [health](/services/link-packages/health), [automotive](/services/link-packages/auto), [proxy/VPN](/services/link-packages/proxy), and [home renovation](/services/link-packages/renovations) — with placements sourced from niche-specific publisher networks rather than generic directories.",
         ]}
         faqs={[
+          { q: 'Is guest posting still effective in 2026?', a: 'Yes, but only high-tier editorial guest posting — placements on real sites with genuine audiences and expert-authored content. Marketplace "write for us" links on sites that exist purely to sell placements can now do more harm than good. That distinction is exactly why we manually vet every domain before outreach.' },
           { q: 'What makes a guest post high quality?', a: 'A high-quality guest post lives on a niche-relevant site with real organic traffic, is written as genuinely useful editorial content, and embeds your link naturally with a sensible anchor. We avoid PBNs, link farms, and generic "write for us" directories entirely.' },
           { q: 'Are the links permanent?', a: 'Yes. Every placement is a permanent, indexed link. You receive the live URL, DR/DA, traffic estimate, and the anchor used in a full transparency report.' },
           { q: 'How do you choose the anchor text?', a: 'We map anchors against your existing backlink profile to maintain a natural ratio of branded, partial-match, and exact-match anchors — protecting you from over-optimisation penalties.' },
