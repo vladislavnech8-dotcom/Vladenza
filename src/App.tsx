@@ -63,7 +63,7 @@ function HomePage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <Navigation />
+      <Navigation onOpenModal={openModal} />
       <Hero onGetQuote={openModal} />
       <LogosBar />
       <Services />
@@ -73,7 +73,7 @@ function HomePage() {
       <HowItWorks />
       <FAQ />
       <CTA onOpenModal={openModal} />
-      <Footer />
+      <Footer onOpenModal={openModal} />
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
     </div>
   );

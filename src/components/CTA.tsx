@@ -77,13 +77,7 @@ export default function CTA({ onOpenModal }: CTAProps) {
                 onClick={onOpenModal}
                 className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-7 py-3 rounded-lg text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-900/40 flex items-center gap-2"
               >
-                Get Proposal <ArrowUpRight size={14} />
-              </button>
-              <button
-                onClick={onOpenModal}
-                className="border border-white/20 hover:border-white/30 text-gray-300 hover:text-white px-7 py-3 rounded-lg text-sm transition-all duration-200 hover:bg-white/5"
-              >
-                Book a Call
+                Get a Custom Quote <ArrowUpRight size={14} />
               </button>
             </div>
           </div>

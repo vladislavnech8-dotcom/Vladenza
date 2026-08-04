@@ -76,7 +76,11 @@ const ratings = [
   { name: 'Google', score: '4.9', Icon: GoogleIcon, starColor: '#FBBC05' },
 ];
 
-export default function Footer() {
+interface FooterProps {
+  onOpenModal?: () => void;
+}
+
+export default function Footer({ onOpenModal }: FooterProps) {
   return (
     <footer className="bg-gray-950 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -170,14 +174,15 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/#contact" className="text-gray-400 text-sm hover:text-white transition-colors">
-                  Book a Call
-                </a>
-              </li>
-              <li>
-                <a href="/#contact" className="text-gray-400 text-sm hover:text-white transition-colors">
-                  Get a Proposal
-                </a>
+                {onOpenModal ? (
+                  <button onClick={onOpenModal} className="text-gray-400 text-sm hover:text-white transition-colors text-left">
+                    Get a Custom Quote
+                  </button>
+                ) : (
+                  <a href="/#contact" className="text-gray-400 text-sm hover:text-white transition-colors">
+                    Get a Custom Quote
+                  </a>
+                )}
               </li>
             </ul>
 

@@ -138,9 +138,10 @@ const ratings = [
 
 interface ServicesMegaProps {
   onNavigate: (href: string) => void;
+  onOpenModal?: () => void;
 }
 
-function ServicesMega({ onNavigate }: ServicesMegaProps) {
+function ServicesMega({ onNavigate, onOpenModal }: ServicesMegaProps) {
   return (
     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[540px] bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/80 z-50 overflow-hidden"
       style={{ animation: 'dropIn 0.18s cubic-bezier(0.16,1,0.3,1)' }}>
@@ -194,7 +195,7 @@ function ServicesMega({ onNavigate }: ServicesMegaProps) {
           {/* Bottom CTA */}
           <div className="mt-3 pt-3 border-t border-gray-100">
             <button
-              onClick={() => onNavigate('/#contact')}
+              onClick={() => (onOpenModal ? onOpenModal() : onNavigate('/#contact'))}
               className="w-full flex items-center justify-center gap-2 bg-gray-950 hover:bg-gray-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200"
             >
               <Zap size={12} className="text-[#F97316]" />
@@ -240,9 +241,10 @@ interface MobileDrawerProps {
   open: boolean;
   onNavigate: (href: string) => void;
   onClose: () => void;
+  onOpenModal?: () => void;
 }
 
-function MobileDrawer({ open, onNavigate, onClose }: MobileDrawerProps) {
+function MobileDrawer({ open, onNavigate, onClose, onOpenModal }: MobileDrawerProps) {
   const [svcOpen, setSvcOpen] = useState(true);
   const [pkgOpen, setPkgOpen] = useState(false);
 
@@ -336,13 +338,15 @@ function MobileDrawer({ open, onNavigate, onClose }: MobileDrawerProps) {
             >
               <Sparkles size={14} className="text-[#F97316]" /> Client Login
             </button>
-            <a
-              href="/#contact"
+            <button
+              onClick={() => {
+                onClose();
+                onOpenModal ? onOpenModal() : onNavigate('/#contact');
+              }}
               className="text-sm text-center text-white font-semibold px-4 py-3 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-colors flex items-center justify-center gap-2"
-              onClick={onClose}
             >
-              Get Proposal <ArrowRight size={13} />
-            </a>
+              Get a Custom Quote <ArrowRight size={13} />
+            </button>
           </div>
         </div>
       </div>
@@ -352,7 +356,11 @@ function MobileDrawer({ open, onNavigate, onClose }: MobileDrawerProps) {
 
 /* ─── Main component ──────────────────────────────────────────── */
 
-export default function Navigation() {
+interface NavigationProps {
+  onOpenModal?: () => void;
+}
+
+export default function Navigation({ onOpenModal }: NavigationProps) {
   const routerNavigate = useNavigate();
   const { pathname: path } = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -451,7 +459,7 @@ export default function Navigation() {
                     className={`transition-transform duration-200 ${megaOpen ? 'rotate-180 text-[#F97316]' : 'text-gray-400'}`}
                   />
                 </button>
-                {megaOpen && <ServicesMega onNavigate={navigate} />}
+                {megaOpen && <ServicesMega onNavigate={navigate} onOpenModal={onOpenModal} />}
               </div>
 
               {/* Separator */}
@@ -484,13 +492,13 @@ export default function Navigation() {
                 <Sparkles size={13} className="text-[#F97316]" />
                 Client Login
               </button>
-              <a
-                href="/#contact"
+              <button
+                onClick={() => (onOpenModal ? onOpenModal() : routerNavigate('/#contact'))}
                 className="text-sm text-white font-semibold px-4 py-2 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shadow-sm hover:shadow-md hover:shadow-orange-200"
               >
-                Get Proposal
+                Get a Custom Quote
                 <ArrowRight size={13} />
-              </a>
+              </button>
             </div>
 
             {/* Mobile hamburger */}
@@ -510,6 +518,7 @@ export default function Navigation() {
         open={mobileOpen}
         onNavigate={navigate}
         onClose={() => setMobileOpen(false)}
+        onOpenModal={onOpenModal}
       />
     </>
   );

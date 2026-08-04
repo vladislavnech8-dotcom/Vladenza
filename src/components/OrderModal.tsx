@@ -15,17 +15,25 @@ interface OrderModalProps {
   onClose: () => void;
 }
 
+const BUDGET_OPTIONS = [
+  { value: '$500–1,000', label: '$500 – $1,000' },
+  { value: '$1,000–3,000', label: '$1,000 – $3,000' },
+  { value: '$3,000+', label: '$3,000+' },
+  { value: 'Not sure', label: 'Not sure yet' },
+];
+
 export default function OrderModal({ pkg, onClose }: OrderModalProps) {
   const [email, setEmail] = useState('');
   const [messenger, setMessenger] = useState('');
   const [website, setWebsite] = useState('');
+  const [budget, setBudget] = useState('');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (pkg) {
-      setEmail(''); setMessenger(''); setWebsite('');
+      setEmail(''); setMessenger(''); setWebsite(''); setBudget('');
       setDone(false); setError('');
     }
   }, [pkg]);
@@ -54,6 +62,7 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
         service: serviceLabel,
         package: pkg.name,
         package_details: `${pkg.links} · ${pkg.price}`,
+        budget: budget || 'Not specified',
         source: 'vladenza.com',
       });
 
@@ -146,6 +155,20 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
                 placeholder="https://yoursite.com"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316] transition-colors"
               />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                Monthly Budget <span className="normal-case font-normal text-gray-300">(optional)</span>
+              </label>
+              <select
+                value={budget} onChange={(e) => setBudget(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 focus:outline-none focus:border-[#F97316] transition-colors bg-white"
+              >
+                <option value="">Select budget range…</option>
+                {BUDGET_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
             </div>
 
             {error && (

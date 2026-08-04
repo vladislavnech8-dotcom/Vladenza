@@ -126,9 +126,13 @@ export default function PricingPage() {
     setSelectedPkg({ name: service, price, links: 'See service page', service });
   }
 
+  function openGenericModal() {
+    setSelectedPkg({ name: 'Custom Package', price: 'Custom', links: 'Get a quote', service: 'General Inquiry' });
+  }
+
   return (
     <>
-      <Navigation />
+      <Navigation onOpenModal={openGenericModal} />
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
 
       {/* Hero */}
@@ -235,7 +239,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <Footer />
+      <Footer onOpenModal={openGenericModal} />
     </>
   );
 }
