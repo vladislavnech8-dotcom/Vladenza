@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Menu, X, Star, ChevronDown, Link2, FileText, Users, Cpu,
   Search, BarChart2, ArrowUpRight, Gamepad2, Laptop,
-  Car, Heart, ArrowRight, Zap, BookOpen, TrendingUp, MapPin, Lock, Home, Linkedin, Building2, Sparkles,
+  Car, Heart, ArrowRight, Zap, BookOpen, TrendingUp, MapPin, Lock, Home, Linkedin, Building2,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -333,12 +333,6 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal }: MobileDrawerPr
           {/* CTAs */}
           <div className="flex flex-col gap-2.5 pt-3 mt-1 border-t border-gray-100">
             <button
-              onClick={() => onNavigate('/app')}
-              className="text-sm text-center text-gray-800 font-semibold px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-            >
-              <Sparkles size={14} className="text-[#F97316]" /> Client Login
-            </button>
-            <button
               onClick={() => {
                 onClose();
                 onOpenModal ? onOpenModal() : onNavigate('/#contact');
@@ -485,13 +479,6 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
 
             {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
-              <button
-                onClick={() => navigate('/app')}
-                className="text-sm text-gray-700 font-medium px-4 py-2 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 whitespace-nowrap flex items-center gap-1.5"
-              >
-                <Sparkles size={13} className="text-[#F97316]" />
-                Client Login
-              </button>
               <button
                 onClick={() => (onOpenModal ? onOpenModal() : routerNavigate('/#contact'))}
                 className="text-sm text-white font-semibold px-4 py-2 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shadow-sm hover:shadow-md hover:shadow-orange-200"

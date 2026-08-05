@@ -1,9 +1,13 @@
-import { Newspaper, Scissors, Users as Users2, ScanSearch, Bot, Gamepad2, Cpu, Car, Heart, ArrowUpRight, MapPin, Lock, Home, Linkedin } from 'lucide-react';
+import { Newspaper, Scissors, Users as Users2, ScanSearch, Bot, Gamepad2, Cpu, Car, Heart, ArrowUpRight, MapPin, Lock, Home, Linkedin, Zap } from 'lucide-react';
+import type { Package } from './OrderModal';
 
 const LINK_BUILDING = [
-  { icon: Newspaper, title: 'Guest Posts',      desc: 'Editorial placements on real sites with organic traffic.', href: '/services/guest-posting' },
-  { icon: Scissors,  title: 'Link Insertions',  desc: 'Contextual backlinks in already-published articles.',       href: '/services/niche-edits' },
-  { icon: Users2,    title: 'Crowd Marketing',  desc: 'Brand mentions placed in relevant forum discussions.',      href: '/services/crowd-links' },
+  { icon: Newspaper, title: 'Guest Posts',      desc: 'Editorial placements on real sites with organic traffic.', href: '/services/guest-posting',
+    pkg: { name: 'Starter', price: 'From $80', links: 'DR 30–50', service: 'Guest Posting' } as Package },
+  { icon: Scissors,  title: 'Link Insertions',  desc: 'Contextual backlinks in already-published articles.',       href: '/services/niche-edits',
+    pkg: { name: 'Essential', price: 'From $80', links: 'DR 20–40+', service: 'Niche Edits' } as Package },
+  { icon: Users2,    title: 'Crowd Marketing',  desc: 'Brand mentions placed in relevant forum discussions.',      href: '/services/crowd-links',
+    pkg: { name: 'Basic', price: '$290', links: '30 Links', service: 'Crowd Links' } as Package },
 ];
 
 const SEO_AI = [
@@ -57,7 +61,38 @@ function Card({ icon: Icon, title, desc, href }: { icon: React.ElementType; titl
   );
 }
 
-export default function Services() {
+function BasicServiceCard({
+  icon: Icon, title, desc, href, pkg, onOrder,
+}: { icon: React.ElementType; title: string; desc: string; href: string; pkg: Package; onOrder: (pkg: Package) => void }) {
+  return (
+    <div className="group flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5" style={cardStyle}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(249,115,22,0.45)'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+    >
+      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: 'rgba(249,115,22,0.13)' }}>
+        <Icon size={14} style={{ color: '#F97316' }} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline justify-between gap-2">
+          <a href={href} className="text-white font-semibold text-[13px] leading-tight hover:text-[#F97316] transition-colors">{title}</a>
+          <span className="text-[#F97316] text-[12px] font-bold whitespace-nowrap">{pkg.price}</span>
+        </div>
+        <div className="text-[11px] leading-snug line-clamp-2 mb-2" style={{ color: 'rgba(255,255,255,0.38)' }}>{desc}</div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onOrder(pkg)}
+            className="flex items-center gap-1 text-[11px] font-semibold text-white bg-[#F97316] hover:bg-[#EA580C] px-2.5 py-1 rounded-md transition-colors"
+          >
+            <Zap size={10} /> Get Started
+          </button>
+          <a href={href} className="text-[11px] text-gray-500 hover:text-gray-300 transition-colors">Learn more</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Services({ onOrder }: { onOrder: (pkg: Package) => void }) {
   return (
     <section className="py-14" style={{ background: '#0f1117' }}>
       <div className="max-w-6xl mx-auto px-6">
@@ -86,7 +121,7 @@ export default function Services() {
             <div>
               <CatLabel>Link Building Services</CatLabel>
               <div className="flex flex-col gap-2">
-                {LINK_BUILDING.map(s => <Card key={s.title} {...s} />)}
+                {LINK_BUILDING.map(s => <BasicServiceCard key={s.title} {...s} onOrder={onOrder} />)}
               </div>
             </div>
 

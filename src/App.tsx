@@ -13,7 +13,7 @@ import Footer from './components/Footer';
 import OrderModal, { Package } from './components/OrderModal';
 import ReviewsBar from './components/ReviewsBar';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { useCanonical } from './hooks/useCanonical';
+import { useSEO } from './hooks/useSEO';
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
@@ -43,11 +43,6 @@ const PageLoader = () => (
   </div>
 );
 
-function CanonicalManager() {
-  useCanonical();
-  return null;
-}
-
 function AdminRoute() {
   const { session, loading } = useAuth();
   if (loading) return <PageLoader />;
@@ -56,6 +51,12 @@ function AdminRoute() {
 
 function HomePage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
+
+  useSEO({
+    title: 'Vladenza — SEO Link Building Agency & AI Visibility',
+    description: 'Results-driven SEO agency for high-authority link building, guest posting, niche edits, and AI/LLM visibility. Grow organic traffic — no lock-ins.',
+    canonical: 'https://vladenza.com/',
+  });
 
   function openModal() {
     setSelectedPkg({ name: 'Custom Package', price: 'Custom', links: 'Get a quote', service: 'General Inquiry' });
@@ -66,7 +67,7 @@ function HomePage() {
       <Navigation onOpenModal={openModal} />
       <Hero onGetQuote={openModal} />
       <LogosBar />
-      <Services />
+      <Services onOrder={setSelectedPkg} />
       <WhyUs />
       <CaseStudies />
       <ReviewsBar />
@@ -82,7 +83,6 @@ function HomePage() {
 export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <CanonicalManager />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />

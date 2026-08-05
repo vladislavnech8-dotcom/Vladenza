@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface HeroProps {
   onGetQuote: () => void;
@@ -61,13 +60,6 @@ export default function Hero({ onGetQuote }: HeroProps) {
             Get a Custom Quote
             <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
           </button>
-          <Link
-            to="/app"
-            className="flex items-center justify-center gap-2 bg-white border-2 border-gray-900/85 hover:border-[#F97316] hover:text-[#F97316] text-gray-900 font-semibold px-9 py-4 rounded-full text-base transition-all duration-200"
-          >
-            <Sparkles size={18} className="text-[#F97316]" />
-            Client Login
-          </Link>
         </div>
 
       </div>
