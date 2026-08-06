@@ -1,4 +1,6 @@
 import { Mail, Star, Circle } from 'lucide-react';
+import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
+import PlatformIcon from './PlatformIcon';
 
 const year = new Date().getFullYear();
 
@@ -35,46 +37,7 @@ const companyLinks = [
   { label: 'Sitemap', href: '/sitemap' },
 ];
 
-function TrustpilotIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <path d="M12 0L14.78 8.56H24L16.61 13.86L19.39 22.42L12 17.12L4.61 22.42L7.39 13.86L0 8.56H9.22L12 0Z" fill="#00B67A"/>
-    </svg>
-  );
-}
-function FiverrIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <rect width="24" height="24" rx="4" fill="#1DBF73"/>
-      <path d="M17.5 7.5C17.5 8.33 16.83 9 16 9s-1.5-.67-1.5-1.5S15.17 6 16 6s1.5.67 1.5 1.5zM8.5 10H7v8h2v-6h4v-2H9c0-.83.67-1.5 1.5-1.5H14V6.5h-3.5C8.57 6.5 7 8.07 7 10h1.5zM14 12h-2v6h2v-6z" fill="white"/>
-    </svg>
-  );
-}
-function ClutchIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="12" fill="#FF3D2E"/>
-      <path d="M12 6C8.69 6 6 8.69 6 12s2.69 6 6 6c2.39 0 4.45-1.37 5.5-3.38l-2.57-1.37A3 3 0 0112 15c-1.66 0-3-1.34-3-3s1.34-3 3-3c1.26 0 2.36.72 2.93 1.75l2.57-1.37A6 6 0 0012 6z" fill="white"/>
-    </svg>
-  );
-}
-function GoogleIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 01-2.2 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-      <path d="M12 23c2.97 0 5.46-1 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.87 0-5.29-1.93-6.16-4.53H2.15v2.84A11.99 11.99 0 0012 23z" fill="#34A853"/>
-      <path d="M5.84 14.1A7.19 7.19 0 015.49 12c0-.73.13-1.44.35-2.1V7.06H2.15A12 12 0 001 12c0 1.8.42 3.5 1.15 4.95l3.69-2.85z" fill="#FBBC05"/>
-      <path d="M12 5.37c1.62 0 3.06.56 4.21 1.7l3.15-3.15A11.97 11.97 0 0012 1C7.69 1 3.96 3.47 2.15 7.05l3.69 2.84C6.71 7.3 9.13 5.37 12 5.37z" fill="#EA4335"/>
-    </svg>
-  );
-}
-
-const ratings = [
-  { name: 'Trustpilot', score: '4.4', Icon: TrustpilotIcon, starColor: '#00B67A' },
-  { name: 'Clutch', score: '4.9', Icon: ClutchIcon, starColor: '#FF3D2E' },
-  { name: 'Fiverr', score: '4.9', Icon: FiverrIcon, starColor: '#1DBF73' },
-  { name: 'Google', score: '4.9', Icon: GoogleIcon, starColor: '#FBBC05' },
-];
+/* Platform icons/ratings now come from ../data/reviewPlatforms + PlatformIcon */
 
 interface FooterProps {
   onOpenModal?: () => void;
@@ -106,13 +69,13 @@ export default function Footer({ onOpenModal }: FooterProps) {
 
             {/* Ratings */}
             <div className="grid grid-cols-2 gap-2">
-              {ratings.map((r) => (
+              {REVIEW_PLATFORMS.map((r) => (
                 <div key={r.name} className="flex items-center gap-1.5 border border-white/10 rounded-lg px-2 py-1.5 bg-white/5">
-                  <r.Icon />
+                  <PlatformIcon domain={r.domain} name={r.name} size={12} />
                   <span className="text-gray-300 text-[11px] font-semibold">{r.name}</span>
                   <div className="flex gap-px ml-auto">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={7} style={{ fill: r.starColor, color: r.starColor }} />
+                      <Star key={i} size={7} style={{ fill: r.accent, color: r.accent }} />
                     ))}
                   </div>
                   <span className="text-gray-400 text-[10px]">{r.score}</span>
