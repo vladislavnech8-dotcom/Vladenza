@@ -29,9 +29,10 @@ const stats = [
 ];
 
 function useCountUp(target: number, duration = 1400, start = false) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(target);
   useEffect(() => {
     if (!start) return;
+    setCount(0);
     let startTime: number | null = null;
     const step = (ts: number) => {
       if (!startTime) startTime = ts;

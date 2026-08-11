@@ -1,4 +1,4 @@
-import { Mail, Star, Circle } from 'lucide-react';
+import { Mail, Star } from 'lucide-react';
 import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
 import PlatformIcon from './PlatformIcon';
 
@@ -170,7 +170,6 @@ export default function Footer({ onOpenModal }: FooterProps) {
           <div className="flex items-center gap-5 order-1 sm:order-2">
             <a href="#" className="text-gray-600 text-xs hover:text-gray-300 transition-colors">Privacy Policy</a>
             <a href="#" className="text-gray-600 text-xs hover:text-gray-300 transition-colors">Terms of Use</a>
-            <a href="/admin" className="text-gray-700 text-xs hover:text-gray-500 transition-colors">Admin</a>
           </div>
         </div>
       </div>
