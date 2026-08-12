@@ -14,6 +14,7 @@ const STATIC_ROUTES = [
   '/case-studies', '/blog', '/sitemap', '/reviews', '/seo-audit-sample', '/pricing',
 ];
 const NICHE_SLUGS = ['igaming', 'saas', 'auto', 'health', 'proxy', 'renovations'];
+const CROWD_LINKS_LANGUAGES = ['english', 'spanish', 'german', 'french', 'portuguese', 'korean'];
 
 const HOME_META = {
   title: 'Vladenza — SEO Link Building Agency & AI Visibility',
@@ -94,6 +95,7 @@ async function main() {
   const ROUTES = [
     ...STATIC_ROUTES,
     ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
+    ...CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`),
     ...caseSlugs.map((s) => `/case-studies/${s}`),
     ...blogSlugs.map((s) => `/blog/${s}`),
   ];

@@ -21,6 +21,7 @@ const SeoAuditPage = lazy(() => import('./pages/SeoAuditPage'));
 const GuestPostingPage = lazy(() => import('./pages/GuestPostingPage'));
 const NicheEditsPage = lazy(() => import('./pages/NicheEditsPage'));
 const CrowdLinksPage = lazy(() => import('./pages/CrowdLinksPage'));
+const CrowdLinksLanguagePage = lazy(() => import('./pages/CrowdLinksLanguagePage'));
 const AiLlmPage = lazy(() => import('./pages/AiLlmPage'));
 const LinkPackagesPage = lazy(() => import('./pages/LinkPackagesPage'));
 const LocalSeoLinksPage = lazy(() => import('./pages/LocalSeoLinksPage'));
@@ -91,6 +92,7 @@ export default function App() {
         <Route path="/services/guest-posting" element={<GuestPostingPage />} />
         <Route path="/services/niche-edits" element={<NicheEditsPage />} />
         <Route path="/services/crowd-links" element={<CrowdLinksPage />} />
+        <Route path="/services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
         <Route path="/services/ai-llm" element={<AiLlmPage />} />
         <Route path="/services/link-packages/:niche" element={<LinkPackagesPage />} />
         <Route path="/services/local-seo-links" element={<LocalSeoLinksPage />} />

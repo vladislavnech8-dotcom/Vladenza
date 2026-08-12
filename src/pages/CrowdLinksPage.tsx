@@ -245,6 +245,34 @@ export default function CrowdLinksPage() {
         </div>
       </section>
 
+      {/* Language-specific packages */}
+      <section className="py-16 bg-gray-50 border-y border-gray-100">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Crowd links by language market</h2>
+            <p className="text-gray-500 text-sm max-w-lg mx-auto">Each market has its own platforms, moderation norms, and conversational tone — pick the one that matches your audience.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { code: 'english', label: 'English' },
+              { code: 'spanish', label: 'Spanish' },
+              { code: 'german', label: 'German' },
+              { code: 'french', label: 'French' },
+              { code: 'portuguese', label: 'Portuguese (Brazil)' },
+              { code: 'korean', label: 'Korean' },
+            ].map((l) => (
+              <a
+                key={l.code}
+                href={`/services/crowd-links/${l.code}`}
+                className="bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm font-semibold text-gray-700 hover:border-[#F97316] hover:text-[#F97316] transition-colors"
+              >
+                {l.label} →
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <ServiceSeoBlock
         heading="Crowd links: natural signals from forums and communities"
         intro="Crowd marketing places your brand inside real conversations on forums, Q&A sites, and communities like Reddit and Quora. These links diversify your profile with the kind of organic, user-generated signals that look natural to Google — and increasingly help AI search engines understand how real people discuss your brand."
