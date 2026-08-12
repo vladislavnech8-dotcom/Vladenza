@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import { Users, MessageSquare, Globe, TrendingUp, CheckCircle, ArrowRight, Shield, Zap } from 'lucide-react';
+import { Users, MessageSquare, Globe, Globe2, TrendingUp, CheckCircle, ArrowRight, Shield, Zap } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
-import OrderModal from '../components/OrderModal';
 import { useSEO } from '../hooks/useSEO';
 
 const features = [
@@ -23,39 +21,6 @@ const useCases = [
   { niche: 'E-commerce', desc: 'Topics on product reviews, buying guides, deal roundups, and brand comparisons — to push category and product pages higher.' },
 ];
 
-const packages = [
-  {
-    name: 'Basic',
-    links: '30 Links',
-    domains: '30 unique domains',
-    price: '$290',
-    priceNote: '$9.67 per link',
-    desc: 'Entry-level link diversity and brand signals across niche communities.',
-    highlight: false,
-    popular: false,
-  },
-  {
-    name: 'Standard',
-    links: '60 Links',
-    domains: '60 unique domains',
-    price: '$520',
-    priceNote: '$8.67 per link',
-    desc: 'Consistent presence across primary niche communities — our most popular volume.',
-    highlight: true,
-    popular: true,
-  },
-  {
-    name: 'Powerful',
-    links: '120 Links',
-    domains: '120 unique domains',
-    price: '$940',
-    priceNote: '$7.83 per link',
-    desc: 'High-volume coverage for competitive verticals needing strong profile diversification.',
-    highlight: false,
-    popular: false,
-  },
-];
-
 const included = [
   'Indexator processing (~60% avg index rate)',
   'Manual review of every single link before delivery',
@@ -67,10 +32,7 @@ const included = [
   'Tier-2 links as an additional layer of link equity',
 ];
 
-type Pkg = typeof packages[number];
-
 export default function CrowdLinksPage() {
-  const [selectedPkg, setSelectedPkg] = useState<Pkg | null>(null);
 
   useSEO({
     title: 'Crowd Links — Forum & Community Link Building | Vladenza',
@@ -108,12 +70,12 @@ export default function CrowdLinksPage() {
               Crowd marketing links from forums, Q&A platforms, and niche communities — posted naturally by real account operators to build referral trust and domain diversity.
             </p>
             <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedPkg(packages[1])}
+              <a
+                href="#languages"
                 className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
               >
-                Launch Campaign <ArrowRight size={14} />
-              </button>
+                Choose Your Market <ArrowRight size={14} />
+              </a>
               <div className="flex items-center gap-2 border border-gray-200 px-5 py-3 rounded-lg text-sm text-gray-600">
                 From $290 · Delivered in 5–10 days
               </div>
@@ -146,64 +108,49 @@ export default function CrowdLinksPage() {
         </div>
       </section>
 
-      {/* Packages */}
-      <section className="py-20 bg-gray-950">
-        <div className="max-w-5xl mx-auto px-6">
+      {/* Packages — by language market */}
+      <section id="languages" className="py-20 bg-gray-950">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
               Packages
             </div>
-            <h2 className="text-3xl font-bold text-white mb-3">Crowd link packages</h2>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto">Every package includes the same full-quality delivery — choose by volume.</p>
+            <h2 className="text-3xl font-bold text-white mb-3">Choose your language market</h2>
+            <p className="text-gray-400 text-sm max-w-lg mx-auto">Each market has its own platforms, moderation norms, and conversational tone. Pick yours to see packages, pricing, and details.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 items-start">
-            {packages.map((pkg) => (
-              <div
-                key={pkg.name}
-                className={`relative rounded-2xl border overflow-hidden flex flex-col ${pkg.highlight ? 'bg-[#F97316] border-[#F97316] shadow-2xl shadow-orange-500/20 scale-[1.02]' : 'bg-[#161616] border-white/10'}`}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              { code: 'english', label: 'English', note: 'US, UK & global — deepest inventory' },
+              { code: 'spanish', label: 'Spanish', note: 'Spain & Latin America' },
+              { code: 'german', label: 'German', note: 'DACH region — quality-first' },
+              { code: 'french', label: 'French', note: 'France, Belgium & Quebec' },
+              { code: 'portuguese', label: 'Portuguese (Brazil)', note: 'Fast-growing, high engagement' },
+              { code: 'korean', label: 'Korean', note: 'Naver Cafe & Korean communities' },
+            ].map((l) => (
+              <a
+                key={l.code}
+                href={`/services/crowd-links/${l.code}`}
+                className="group bg-[#161616] border border-white/10 hover:border-[#F97316]/50 rounded-2xl p-6 flex flex-col transition-all duration-200"
               >
-                {pkg.popular && (
-                  <div className="bg-white/15 text-white text-[10px] font-black uppercase tracking-widest text-center py-2.5 border-b border-white/20">
-                    ★ Most Popular
-                  </div>
-                )}
-                <div className="p-7 flex flex-col flex-1">
-                  {/* Name + domains */}
-                  <div className="mb-5">
-                    <h3 className="text-xl font-black text-white mb-1">{pkg.name}</h3>
-                    <div className="flex items-baseline gap-2">
-                      <span className={`text-sm font-semibold ${pkg.highlight ? 'text-white/90' : 'text-[#F97316]'}`}>{pkg.domains}</span>
-                    </div>
-                  </div>
-
-                  {/* Price */}
-                  <div className="mb-1">
-                    <span className="text-4xl font-black text-white">{pkg.price}</span>
-                  </div>
-                  <div className={`text-xs mb-6 ${pkg.highlight ? 'text-orange-100' : 'text-gray-500'}`}>{pkg.priceNote} · one-time payment</div>
-
-                  {/* Divider */}
-                  <div className={`h-px mb-5 ${pkg.highlight ? 'bg-white/25' : 'bg-white/8'}`} />
-
-                  {/* Desc */}
-                  <p className={`text-sm leading-relaxed mb-6 flex-1 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.desc}</p>
-
-                  {/* CTA */}
-                  <button
-                    onClick={() => setSelectedPkg(pkg)}
-                    className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${pkg.highlight ? 'bg-white text-[#F97316] hover:bg-gray-50' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
-                  >
-                    Order Now <ArrowRight size={13} />
-                  </button>
+                <div className="flex items-center gap-2 mb-3">
+                  <Globe2 size={16} className="text-[#F97316]" />
+                  <h3 className="text-lg font-bold text-white">{l.label}</h3>
                 </div>
-              </div>
+                <p className="text-gray-400 text-xs leading-relaxed mb-5 flex-1">{l.note}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-white font-bold text-sm">From $290</span>
+                  <span className="text-[#F97316] text-xs font-semibold flex items-center gap-1 group-hover:gap-1.5 transition-all">
+                    View Packages <ArrowRight size={12} />
+                  </span>
+                </div>
+              </a>
             ))}
           </div>
 
           {/* What's included checklist */}
           <div className="mt-10 bg-white/5 border border-white/10 rounded-2xl p-7">
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">What's included in every package</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">What's included in every market's packages</p>
             <div className="grid sm:grid-cols-2 gap-x-10 gap-y-3">
               {included.map((item) => (
                 <div key={item} className="flex items-start gap-3">
@@ -245,34 +192,6 @@ export default function CrowdLinksPage() {
         </div>
       </section>
 
-      {/* Language-specific packages */}
-      <section className="py-16 bg-gray-50 border-y border-gray-100">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Crowd links by language market</h2>
-            <p className="text-gray-500 text-sm max-w-lg mx-auto">Each market has its own platforms, moderation norms, and conversational tone — pick the one that matches your audience.</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              { code: 'english', label: 'English' },
-              { code: 'spanish', label: 'Spanish' },
-              { code: 'german', label: 'German' },
-              { code: 'french', label: 'French' },
-              { code: 'portuguese', label: 'Portuguese (Brazil)' },
-              { code: 'korean', label: 'Korean' },
-            ].map((l) => (
-              <a
-                key={l.code}
-                href={`/services/crowd-links/${l.code}`}
-                className="bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm font-semibold text-gray-700 hover:border-[#F97316] hover:text-[#F97316] transition-colors"
-              >
-                {l.label} →
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <ServiceSeoBlock
         heading="Crowd links: natural signals from forums and communities"
         intro="Crowd marketing places your brand inside real conversations on forums, Q&A sites, and communities like Reddit and Quora. These links diversify your profile with the kind of organic, user-generated signals that look natural to Google — and increasingly help AI search engines understand how real people discuss your brand."
@@ -288,11 +207,6 @@ export default function CrowdLinksPage() {
           { q: 'How many platforms do you cover?', a: 'We work across 50+ relevant platforms per niche, choosing communities where your audience is genuinely active.' },
         ]}
       />
-
-      {/* Order Modal */}
-      {selectedPkg && (
-        <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
-      )}
     </ServicePageLayout>
   );
 }
