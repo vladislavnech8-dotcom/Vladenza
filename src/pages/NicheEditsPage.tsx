@@ -52,8 +52,8 @@ const vsGuest = [
 export default function NicheEditsPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   useSEO({
-    title: 'Niche Edits — Contextual Link Insertions in Aged Content | Vladenza',
-    description: 'Get links inserted into aged, indexed content for instant authority transfer. Niche-relevant placements with precise anchor text control — all niches covered.',
+    title: 'Buy Niche Edits — Link Insertion Service | Vladenza',
+    description: 'Buy niche edits — links inserted into aged, indexed content for instant authority transfer. Niche-relevant placements, precise anchor control.',
     canonical: 'https://vladenza.com/services/niche-edits',
   });
   return (

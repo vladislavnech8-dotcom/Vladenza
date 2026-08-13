@@ -89,8 +89,8 @@ const stats = [
 export default function LocalSeoLinksPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   useSEO({
-    title: 'Local SEO Links — Geo-Targeted Link Building | Vladenza',
-    description: 'City and region-targeted link placements for local businesses. Citations, NAP consistency, local editorial links, and Google Maps Pack ranking signals.',
+    title: 'Local SEO Link Building Service | Vladenza',
+    description: 'Local SEO link building service for local businesses. Citations, NAP consistency, editorial links, and Google Maps Pack ranking signals.',
     canonical: 'https://vladenza.com/services/local-seo-links',
   });
   return (

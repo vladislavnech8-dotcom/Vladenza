@@ -67,8 +67,8 @@ const AI_PKG: Package = { name: 'AI & LLM Visibility', price: 'Custom', links: '
 export default function AiLlmPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   useSEO({
-    title: 'AI & LLM Visibility — Get Cited by ChatGPT & Perplexity | Vladenza',
-    description: 'Optimise your brand for AI search engines. GEO strategy, entity building, and AI-cited content placement so ChatGPT, Gemini, and Perplexity recommend your brand.',
+    title: 'AI SEO Service — Get Cited by ChatGPT | Vladenza',
+    description: 'AI SEO service for AI search engines. GEO strategy, entity building, and content placement so ChatGPT, Gemini, and Perplexity recommend you.',
     canonical: 'https://vladenza.com/services/ai-llm',
   });
   return (

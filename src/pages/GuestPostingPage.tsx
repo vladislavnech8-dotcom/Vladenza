@@ -54,8 +54,8 @@ const process = [
 export default function GuestPostingPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   useSEO({
-    title: 'Guest Posting Services — Editorial Backlinks | Vladenza',
-    description: 'Manual guest post placements on DR 30–90+ real-traffic sites. Niche-matched, permanent links with native content. No PBNs — transparent reporting.',
+    title: 'Buy Guest Posts — Guest Posting Service | Vladenza',
+    description: 'Buy guest posts on DR 30–90+ real-traffic sites. Niche-matched, permanent links with native content. No PBNs — transparent reporting.',
     canonical: 'https://vladenza.com/services/guest-posting',
   });
 

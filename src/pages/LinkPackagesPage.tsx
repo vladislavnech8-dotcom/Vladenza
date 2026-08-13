@@ -177,8 +177,8 @@ export default function LinkPackagesPage() {
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
 
   useSEO({
-    title: `${data.label} Link Building Packages — Vladenza`,
-    description: `Niche-specific link building packages for ${data.label}. ${data.desc.slice(0, 120)}...`,
+    title: `Buy ${data.label} Backlinks | Vladenza`,
+    description: `Buy ${data.label} backlinks — niche-specific link building packages. ${data.desc.slice(0, 60)}...`,
     canonical: `https://vladenza.com/services/link-packages/${niche}`,
   });
 

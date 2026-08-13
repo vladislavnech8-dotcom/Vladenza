@@ -1,4 +1,4 @@
-import { Users, MessageSquare, Globe, Globe2, TrendingUp, CheckCircle, ArrowRight, Shield, Zap } from 'lucide-react';
+import { Users, MessageSquare, Globe, Globe as Globe2, TrendingUp, CheckCircle, ArrowRight, Shield, Zap } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import { useSEO } from '../hooks/useSEO';
@@ -35,8 +35,8 @@ const included = [
 export default function CrowdLinksPage() {
 
   useSEO({
-    title: 'Crowd Links — Forum & Community Link Building | Vladenza',
-    description: 'Scale your link profile with natural forum, Reddit, and Quora placements from aged accounts. Spam-safe crowd marketing across 50+ platforms per niche.',
+    title: 'Buy Crowd Links — Forum Marketing Service | Vladenza',
+    description: 'Buy crowd links — natural forum, Reddit, and Quora placements from aged accounts. Spam-safe crowd marketing service across 50+ platforms.',
     canonical: 'https://vladenza.com/services/crowd-links',
   });
 

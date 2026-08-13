@@ -330,8 +330,8 @@ export default function WhiteLabelPage() {
   };
 
   useSEO({
-    title: 'White Label Link Building for Agencies — Silent Fulfilment & NDA',
-    description: 'Fully white-label link building for SEO agencies. Guest posts, niche edits, crowd links — branded reports, NDA protected, 12-month guarantee. Scale without hiring.',
+    title: 'White Label Link Building Service | Vladenza',
+    description: 'White label link building service for SEO agencies. Guest posts, niche edits, crowd links — branded reports, NDA protected.',
     canonical: 'https://vladenza.com/services/white-label',
   });
 
