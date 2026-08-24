@@ -15,7 +15,7 @@ const advantages = [
 ];
 
 const packages = [
-  { label: 'DR10+', dr: '0–1,000 monthly traffic', price: '$50', highlight: false },
+  { label: 'DR10+', dr: '0–1,000 monthly traffic', price: '$1', highlight: false },
   { label: 'DR20+', dr: '0–5,000 monthly traffic', price: '$90', highlight: false },
   { label: 'DR30+', dr: '100–10,000 monthly traffic', price: '$110', highlight: false },
   { label: 'DR40+', dr: '500–20,000 monthly traffic', price: '$200', highlight: true },
@@ -68,13 +68,13 @@ export default function NicheEditsPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => setSelectedPkg({ name: 'Niche Edits', price: '$50', links: 'DR 10+', service: 'Niche Edits' })}
+                onClick={() => setSelectedPkg({ name: 'Niche Edits', price: '$1', links: 'DR 10+', service: 'Niche Edits' })}
                 className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
               >
                 Order Niche Edits <ArrowRight size={14} />
               </button>
               <div className="flex items-center gap-2 border border-gray-200 px-5 py-3 rounded-lg text-sm text-gray-600">
-                From $50 per placement · 3–7 day delivery
+                From $1 per placement · 3–7 day delivery
               </div>
             </div>
           </div>
