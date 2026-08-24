@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link2, Zap, Shield, TrendingUp, CheckCircle, ArrowRight, Star, Search } from 'lucide-react';
+import { Link2, Zap, Shield, TrendingUp, ArrowRight, Star, Search } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import OrderModal, { type Package } from '../components/OrderModal';
@@ -15,30 +15,12 @@ const advantages = [
 ];
 
 const packages = [
-  {
-    label: 'Essential',
-    dr: 'DR 20–40+',
-    price: 'From $80',
-    desc: 'Solid foundation links from aged content in your niche.',
-    features: ['Contextual placement', 'Manual QC', 'Custom anchor', 'Permanent link', 'Report with URL'],
-    highlight: false,
-  },
-  {
-    label: 'Growth',
-    dr: 'DR 30–50+',
-    price: 'From $120',
-    desc: 'Mid-authority placements for competitive keyword campaigns.',
-    features: ['All in Essential', 'High-relevance articles', 'Traffic-verified domains', 'Strategic anchor mapping', 'Priority queue', 'Full placement report'],
-    highlight: true,
-  },
-  {
-    label: 'Power',
-    dr: 'DR 50–80+',
-    price: 'From $220',
-    desc: 'Premium aged content on high-authority industry publications.',
-    features: ['All in Growth', 'Premium publisher network', 'Editor-level placements (paragraph insertion)', 'Anchor strategy session', 'Dedicated account manager', 'Custom reporting'],
-    highlight: false,
-  },
+  { label: 'DR10+', dr: '0–1,000 monthly traffic', price: '$50', highlight: false },
+  { label: 'DR20+', dr: '0–5,000 monthly traffic', price: '$111', highlight: false },
+  { label: 'DR30+', dr: '100–10,000 monthly traffic', price: '$139', highlight: false },
+  { label: 'DR40+', dr: '500–20,000 monthly traffic', price: '$250', highlight: true },
+  { label: 'DR50+', dr: '1,000–30,000 monthly traffic', price: '$389', highlight: false },
+  { label: 'DR60+', dr: '1,000–60,000 monthly traffic', price: '$528', highlight: false },
 ];
 
 const vsGuest = [
@@ -86,13 +68,13 @@ export default function NicheEditsPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => setSelectedPkg({ name: 'Niche Edits', price: 'From $80', links: 'DR 20–80+', service: 'Niche Edits' })}
+                onClick={() => setSelectedPkg({ name: 'Niche Edits', price: '$50', links: 'DR 10+', service: 'Niche Edits' })}
                 className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
               >
                 Order Niche Edits <ArrowRight size={14} />
               </button>
               <div className="flex items-center gap-2 border border-gray-200 px-5 py-3 rounded-lg text-sm text-gray-600">
-                From $80 per link · 3–7 day delivery
+                From $50 per placement · 3–7 day delivery
               </div>
             </div>
           </div>
@@ -124,29 +106,20 @@ export default function NicheEditsPage() {
       <section className="py-20 bg-gray-950">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-white mb-3">Packages by authority level</h2>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto">Mix tiers to build a natural, diverse link profile that accelerates rankings without patterns.</p>
+            <h2 className="text-3xl font-bold text-white mb-3">Simple pricing</h2>
+            <p className="text-gray-400 text-sm max-w-lg mx-auto">Choose your Domain Rating level. Every placement is contextual, permanent, and manually checked.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {packages.map((pkg) => (
               <div key={pkg.label} className={`rounded-2xl p-7 border ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10'}`}>
-                <div className={`text-xs font-bold uppercase tracking-widest mb-1 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.dr}</div>
-                <h3 className="text-2xl font-bold text-white mb-1">{pkg.label}</h3>
-                <p className={`text-sm mb-4 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.desc}</p>
-                <div className="text-2xl font-black text-white mb-6">{pkg.price}</div>
-                <div className="flex flex-col gap-2.5 mb-8">
-                  {pkg.features.map((f) => (
-                    <div key={f} className="flex items-center gap-2.5">
-                      <CheckCircle size={13} className={pkg.highlight ? 'text-white' : 'text-[#F97316]'} />
-                      <span className={`text-sm ${pkg.highlight ? 'text-white/90' : 'text-gray-300'}`}>{f}</span>
-                    </div>
-                  ))}
-                </div>
+                <div className={`text-2xl font-bold mb-2 ${pkg.highlight ? 'text-white' : 'text-white'}`}>{pkg.label}</div>
+                <div className={`text-sm mb-8 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.dr}</div>
+                <div className="text-4xl font-black text-white mb-7">{pkg.price}<span className={`text-sm font-medium ml-2 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>/ placement</span></div>
                 <button
                   onClick={() => setSelectedPkg({ name: pkg.label, price: pkg.price, links: pkg.dr, service: 'Niche Edits' })}
                   className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${pkg.highlight ? 'bg-white text-[#F97316] hover:bg-gray-100' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
                 >
-                  Get Started <ArrowRight size={13} />
+                  Order Now <ArrowRight size={13} />
                 </button>
               </div>
             ))}
