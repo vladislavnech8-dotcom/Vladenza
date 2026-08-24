@@ -5,6 +5,7 @@ const WFP_WIDGET_SRC = 'https://secure.wayforpay.com/server/pay-widget.js';
 interface WfpCheckoutData {
   merchantAccount: string;
   merchantDomainName: string;
+  merchantTransactionSecureType: string;
   authorizationType: string;
   merchantSignature: string;
   orderReference: string;
