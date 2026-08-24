@@ -8,7 +8,6 @@ import WhyUs from './components/WhyUs';
 import CaseStudies from './components/CaseStudies';
 import HowItWorks from './components/HowItWorks';
 import FAQ from './components/FAQ';
-import CTA from './components/CTA';
 import Footer from './components/Footer';
 import OrderModal, { Package } from './components/OrderModal';
 import ReviewsBar from './components/ReviewsBar';
@@ -74,7 +73,6 @@ function HomePage() {
       <ReviewsBar />
       <HowItWorks />
       <FAQ />
-      <CTA onOpenModal={openModal} />
       <Footer onOpenModal={openModal} />
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
     </div>

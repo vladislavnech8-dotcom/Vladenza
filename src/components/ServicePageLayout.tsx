@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
-import CTA from './CTA';
 import OrderModal, { Package } from './OrderModal';
 
 interface Props {
@@ -28,7 +27,6 @@ export default function ServicePageLayout({ children, defaultService }: Props) {
         {children}
       </div>
 
-      <CTA onOpenModal={openModal} />
       <Footer onOpenModal={openModal} />
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
     </div>
