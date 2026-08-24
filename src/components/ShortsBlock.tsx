@@ -26,7 +26,7 @@ function shortUrl(id: string) {
 }
 
 function embedUrl(id: string) {
-  return `https://www.youtube-nocookie.com/embed/${id}?rel=0`;
+  return `https://www.youtube.com/embed/${id}?rel=0&playsinline=1`;
 }
 
 export default function ShortsBlock({ shorts = defaultShorts, title = 'Shorts', subtitle = 'Quick takes on link building and SEO from our YouTube channel.' }: Props) {
@@ -119,6 +119,7 @@ export default function ShortsBlock({ shorts = defaultShorts, title = 'Shorts', 
                 title={active.title}
                 className="absolute inset-0 w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
             </div>
