@@ -2,7 +2,6 @@ import { ReactNode, useState } from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import OrderModal, { Package } from './OrderModal';
-import ShortsBlock from './ShortsBlock';
 
 interface Props {
   children: ReactNode;
@@ -28,7 +27,6 @@ export default function ServicePageLayout({ children, defaultService }: Props) {
         {children}
       </div>
 
-      <ShortsBlock />
       <Footer onOpenModal={openModal} />
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
     </div>
