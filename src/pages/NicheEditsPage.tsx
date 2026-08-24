@@ -16,11 +16,11 @@ const advantages = [
 
 const packages = [
   { label: 'DR10+', dr: '0–1,000 monthly traffic', price: '$50', highlight: false },
-  { label: 'DR20+', dr: '0–5,000 monthly traffic', price: '$111', highlight: false },
-  { label: 'DR30+', dr: '100–10,000 monthly traffic', price: '$139', highlight: false },
-  { label: 'DR40+', dr: '500–20,000 monthly traffic', price: '$250', highlight: true },
-  { label: 'DR50+', dr: '1,000–30,000 monthly traffic', price: '$389', highlight: false },
-  { label: 'DR60+', dr: '1,000–60,000 monthly traffic', price: '$528', highlight: false },
+  { label: 'DR20+', dr: '0–5,000 monthly traffic', price: '$90', highlight: false },
+  { label: 'DR30+', dr: '100–10,000 monthly traffic', price: '$110', highlight: false },
+  { label: 'DR40+', dr: '500–20,000 monthly traffic', price: '$200', highlight: true },
+  { label: 'DR50+', dr: '1,000–30,000 monthly traffic', price: '$280', highlight: false },
+  { label: 'DR60+', dr: '1,000–60,000 monthly traffic', price: '$400', highlight: false },
 ];
 
 const vsGuest = [
