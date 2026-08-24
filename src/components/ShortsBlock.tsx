@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { Youtube, Play, X } from 'lucide-react';
+import { Youtube, Play, ExternalLink } from 'lucide-react';
 
 interface Short {
   id: string;
@@ -20,24 +19,11 @@ function thumbUrl(id: string) {
   return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 }
 
-function embedUrl(id: string) {
-  return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+function shortUrl(id: string) {
+  return `https://www.youtube.com/shorts/${id}`;
 }
 
 export default function ShortsBlock({ shorts = defaultShorts, title = 'Watch our Shorts', subtitle = 'Quick insights on link building and SEO — straight from our YouTube channel.' }: Props) {
-  const [active, setActive] = useState<Short | null>(null);
-
-  useEffect(() => {
-    if (!active) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setActive(null); };
-    window.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [active]);
-
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
@@ -51,15 +37,18 @@ export default function ShortsBlock({ shorts = defaultShorts, title = 'Watch our
         </div>
 
         <div className="flex flex-wrap justify-center gap-5">
-          {shorts.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setActive(s)}
+          {shorts.map((short) => (
+            <a
+              key={short.id}
+              href={shortUrl(short.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Watch ${short.title} on YouTube`}
               className="group relative w-[200px] h-[356px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-200 shadow-sm hover:shadow-lg hover:border-[#F97316]/40 transition-all duration-300 flex-shrink-0"
             >
               <img
-                src={thumbUrl(s.id)}
-                alt={s.title}
+                src={thumbUrl(short.id)}
+                alt={short.title}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-90 group-hover:scale-105 transition-all duration-300"
               />
@@ -69,39 +58,14 @@ export default function ShortsBlock({ shorts = defaultShorts, title = 'Watch our
                   <Play size={22} className="text-red-600 ml-1" fill="currentColor" />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <p className="text-white text-sm font-semibold leading-snug line-clamp-2">{s.title}</p>
+              <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between gap-3">
+                <p className="text-white text-sm font-semibold leading-snug line-clamp-2">{short.title}</p>
+                <ExternalLink size={15} className="text-white/80 flex-shrink-0" />
               </div>
-            </button>
+            </a>
           ))}
         </div>
       </div>
-
-      {active && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-          onClick={() => setActive(null)}
-        >
-          <div className="relative w-full max-w-[420px]" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setActive(null)}
-              className="absolute -top-12 right-0 text-white/80 hover:text-white transition-colors"
-              aria-label="Close"
-            >
-              <X size={28} />
-            </button>
-            <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-2xl">
-              <iframe
-                src={embedUrl(active.id)}
-                title={active.title}
-                className="absolute inset-0 w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
