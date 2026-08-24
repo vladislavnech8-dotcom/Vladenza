@@ -33,6 +33,7 @@ function parsePrice(price: string): number | null {
 export default function OrderModal({ pkg, onClose }: OrderModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [messenger, setMessenger] = useState('');
   const [website, setWebsite] = useState('');
   const [budget, setBudget] = useState('');
@@ -48,7 +49,7 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
 
   useEffect(() => {
     if (pkg) {
-      setName(''); setEmail(''); setMessenger(''); setWebsite(''); setBudget('');
+      setName(''); setEmail(''); setPhone(''); setMessenger(''); setWebsite(''); setBudget('');
       setDone(false); setError(''); setPayOutcome(null);
       setMode(parsePrice(pkg.price) !== null ? 'pay' : 'quote');
     }
@@ -137,6 +138,7 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
         amount: priceValue,
         name,
         email,
+        phone,
         website,
       });
       setPayOutcome(outcome);
@@ -247,16 +249,26 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
               </div>
 
               {mode === 'pay' ? (
-                <div>
-                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
-                    Website <span className="normal-case font-normal text-gray-300">(where links will point)</span>
-                  </label>
+                <>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Phone *</label>
+                    <input
+                      type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+1 234 567 8900"
+                      className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316] transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                      Website <span className="normal-case font-normal text-gray-300">(where links will point)</span>
+                    </label>
                   <input
                     type="url" required value={website} onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://yoursite.com"
                     className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316] transition-colors"
                   />
-                </div>
+                  </div>
+                </>
               ) : (
                 <>
                   <div>

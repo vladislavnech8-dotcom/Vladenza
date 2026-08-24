@@ -36,6 +36,12 @@ Deno.serve(async (req: Request) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      if (!phone || typeof phone !== "string" || phone.trim().length < 7) {
+        return new Response(JSON.stringify({ error: "Valid phone number is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const supabase = createClient(
@@ -76,12 +82,14 @@ Deno.serve(async (req: Request) => {
 
     const cur = currency || "USD";
     const productPrice = parseFloat(amount).toFixed(2);
+    const secureType = "AUTO";
 
     // Signature string per WayForPay docs:
-    // merchantAccount;merchantDomainName;orderReference;orderDate;amount;currency;productName;productCount;productPrice
+    // merchantAccount;merchantDomainName;merchantTransactionSecureType;orderReference;orderDate;amount;currency;productName;productCount;productPrice
     const signString = [
       merchantLogin,
       "vladenza.com",
+      secureType,
       orderRef,
       orderDate.toString(),
       productPrice,
@@ -100,6 +108,7 @@ Deno.serve(async (req: Request) => {
     const checkoutData = {
       merchantAccount: merchantLogin,
       merchantDomainName: "vladenza.com",
+      merchantTransactionSecureType: secureType,
       authorizationType: "SimpleSignature",
       merchantSignature: signature,
       orderReference: orderRef,
