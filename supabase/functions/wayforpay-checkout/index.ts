@@ -81,24 +81,28 @@ Deno.serve(async (req: Request) => {
     }
 
     const cur = currency || "USD";
-    const productPrice = parseFloat(amount).toFixed(2);
-    const secureType = "AUTO";
+    const amountValue = Number(amount);
+    if (!Number.isFinite(amountValue) || amountValue <= 0) {
+      throw new Error("Invalid payment amount");
+    }
 
-    // Signature string per WayForPay docs:
-    // merchantAccount;merchantDomainName;merchantTransactionSecureType;orderReference;orderDate;amount;currency;productName;productCount;productPrice
+    const secureType = "AUTO";
+    const productNames = [packageName];
+    const productCounts = [1];
+    const productPrices = [amountValue];
     const signString = [
       merchantLogin,
       "vladenza.com",
-      secureType,
       orderRef,
       orderDate.toString(),
-      productPrice,
+      amountValue.toString(),
       cur,
-      packageName,
-      "1",
-      productPrice,
+      ...productNames,
+      ...productCounts.map(String),
+      ...productPrices.map(String),
     ].join(";");
 
+    console.log("WayForPay merchantSignature input:", signString);
     const signature = hmacMd5(merchantSecret, signString);
 
     const nameParts = (name as string).trim().split(/\s+/);
@@ -113,11 +117,11 @@ Deno.serve(async (req: Request) => {
       merchantSignature: signature,
       orderReference: orderRef,
       orderDate: orderDate,
-      amount: parseFloat(productPrice),
+      amount: amountValue,
       currency: cur,
-      productName: [packageName],
-      productCount: [1],
-      productPrice: [parseFloat(productPrice)],
+      productName: productNames,
+      productCount: productCounts,
+      productPrice: productPrices,
       clientFirstName: firstName,
       clientLastName: lastName,
       clientEmail: email,
