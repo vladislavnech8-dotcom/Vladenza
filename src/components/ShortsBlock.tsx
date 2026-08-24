@@ -1,4 +1,5 @@
-import { Play, ArrowUpRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, ArrowUpRight, X } from 'lucide-react';
 
 interface Short {
   id: string;
@@ -24,7 +25,24 @@ function shortUrl(id: string) {
   return `https://www.youtube.com/shorts/${id}`;
 }
 
+function embedUrl(id: string) {
+  return `https://www.youtube-nocookie.com/embed/${id}?rel=0`;
+}
+
 export default function ShortsBlock({ shorts = defaultShorts, title = 'Shorts', subtitle = 'Quick takes on link building and SEO from our YouTube channel.' }: Props) {
+  const [active, setActive] = useState<Short | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setActive(null); };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [active]);
+
   return (
     <section className="py-20 md:py-24 bg-gray-950">
       <div className="max-w-7xl mx-auto px-6">
@@ -53,13 +71,11 @@ export default function ShortsBlock({ shorts = defaultShorts, title = 'Shorts', 
 
         <div className="flex flex-wrap gap-5">
           {shorts.map((s) => (
-            <a
+            <button
               key={s.id}
-              href={shortUrl(s.id)}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Watch ${s.title} on YouTube`}
-              className="group relative w-[210px] h-[374px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-[#F97316]/40 hover:-translate-y-1 transition-all duration-300 flex-shrink-0"
+              onClick={() => setActive(s)}
+              aria-label={`Watch ${s.title}`}
+              className="group relative w-[210px] h-[374px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-[#F97316]/40 hover:-translate-y-1 transition-all duration-300 flex-shrink-0 cursor-pointer text-left"
             >
               <img
                 src={thumbUrl(s.id)}
@@ -76,13 +92,47 @@ export default function ShortsBlock({ shorts = defaultShorts, title = 'Shorts', 
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <p className="text-white text-sm font-semibold leading-snug line-clamp-2">{s.title}</p>
                 <p className="text-gray-400 text-[11px] mt-1.5 flex items-center gap-1">
-                  Watch on YouTube <ArrowUpRight size={11} />
+                  Click to play
                 </p>
               </div>
-            </a>
+            </button>
           ))}
         </div>
       </div>
+
+      {active && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          onClick={() => setActive(null)}
+        >
+          <div className="relative w-full max-w-[400px]" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setActive(null)}
+              className="absolute -top-11 right-0 text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 text-sm"
+              aria-label="Close"
+            >
+              Close <X size={18} />
+            </button>
+            <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-2xl ring-1 ring-gray-800">
+              <iframe
+                src={embedUrl(active.id)}
+                title={active.title}
+                className="absolute inset-0 w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+            <a
+              href={shortUrl(active.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              Open on YouTube <ArrowUpRight size={13} />
+            </a>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
