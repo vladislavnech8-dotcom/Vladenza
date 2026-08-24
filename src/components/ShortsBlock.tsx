@@ -1,4 +1,4 @@
-import { Youtube, Play, ExternalLink } from 'lucide-react';
+import { Play, ArrowUpRight } from 'lucide-react';
 
 interface Short {
   id: string;
@@ -24,44 +24,60 @@ function shortUrl(id: string) {
   return `https://www.youtube.com/shorts/${id}`;
 }
 
-export default function ShortsBlock({ shorts = defaultShorts, title = 'Watch our Shorts', subtitle = 'Quick insights on link building and SEO — straight from our YouTube channel.' }: Props) {
+export default function ShortsBlock({ shorts = defaultShorts, title = 'Shorts', subtitle = 'Quick takes on link building and SEO from our YouTube channel.' }: Props) {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 md:py-24 bg-gray-950">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-200 bg-red-50 text-red-600 text-xs font-semibold mb-5 tracking-wide uppercase">
-            <Youtube size={14} />
-            YouTube Shorts
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-5 h-0.5 rounded-full bg-[#F97316]" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F97316]">YouTube</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white leading-[1.1] tracking-tight">
+              {title}
+            </h2>
+            <p className="text-gray-500 mt-4 text-[15px] max-w-md leading-relaxed">
+              {subtitle}
+            </p>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">{title}</h2>
-          <p className="text-gray-500 text-sm max-w-lg mx-auto">{subtitle}</p>
+          <a
+            href="https://www.youtube.com/@serpnet"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-300 border border-gray-700 px-5 py-2.5 rounded-lg hover:border-gray-500 hover:text-white transition-all duration-200 shrink-0"
+          >
+            Visit channel <ArrowUpRight size={13} />
+          </a>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-5">
-          {shorts.map((short) => (
+        <div className="flex flex-wrap gap-5">
+          {shorts.map((s) => (
             <a
-              key={short.id}
-              href={shortUrl(short.id)}
+              key={s.id}
+              href={shortUrl(s.id)}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Watch ${short.title} on YouTube`}
-              className="group relative w-[200px] h-[356px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-200 shadow-sm hover:shadow-lg hover:border-[#F97316]/40 transition-all duration-300 flex-shrink-0"
+              aria-label={`Watch ${s.title} on YouTube`}
+              className="group relative w-[210px] h-[374px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-[#F97316]/40 hover:-translate-y-1 transition-all duration-300 flex-shrink-0"
             >
               <img
-                src={thumbUrl(short.id)}
-                alt={short.title}
+                src={thumbUrl(s.id)}
+                alt={s.title}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-90 group-hover:scale-105 transition-all duration-300"
+                className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 group-hover:scale-105 transition-all duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-14 h-14 rounded-full bg-white/90 group-hover:bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                  <Play size={22} className="text-red-600 ml-1" fill="currentColor" />
+                <div className="w-12 h-12 rounded-full bg-[#F97316]/90 group-hover:bg-[#F97316] flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                  <Play size={18} className="text-white ml-0.5" fill="currentColor" />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between gap-3">
-                <p className="text-white text-sm font-semibold leading-snug line-clamp-2">{short.title}</p>
-                <ExternalLink size={15} className="text-white/80 flex-shrink-0" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <p className="text-white text-sm font-semibold leading-snug line-clamp-2">{s.title}</p>
+                <p className="text-gray-400 text-[11px] mt-1.5 flex items-center gap-1">
+                  Watch on YouTube <ArrowUpRight size={11} />
+                </p>
               </div>
             </a>
           ))}
