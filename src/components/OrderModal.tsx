@@ -118,6 +118,15 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
   async function handlePaySubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!pkg || priceValue === null) return;
+
+    try {
+      const parsedWebsite = new URL(website);
+      if (!['http:', 'https:'].includes(parsedWebsite.protocol)) throw new Error();
+    } catch {
+      setError('Please enter a valid website URL, for example https://yoursite.com.');
+      return;
+    }
+
     setError('');
     setLoading(true);
     setPayOutcome(null);
@@ -243,7 +252,7 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
                     Website <span className="normal-case font-normal text-gray-300">(where links will point)</span>
                   </label>
                   <input
-                    type="text" value={website} onChange={(e) => setWebsite(e.target.value)}
+                    type="url" required value={website} onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://yoursite.com"
                     className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316] transition-colors"
                   />

@@ -20,6 +20,24 @@ Deno.serve(async (req: Request) => {
   try {
     const { packageName, amount, currency, name, email, phone, website, message, type } = await req.json();
 
+    if (type !== "consultation") {
+      if (!website || typeof website !== "string") {
+        return new Response(JSON.stringify({ error: "Website URL is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      try {
+        const parsed = new URL(website);
+        if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
+      } catch {
+        return new Response(JSON.stringify({ error: "Invalid website URL" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
