@@ -13,6 +13,7 @@ interface Props {
 
 const defaultShorts: Short[] = [
   { id: 'SjF40VJ_IXg', title: 'Link building tips' },
+  { id: '_aTkizTHYyM', title: 'SEO insights' },
 ];
 
 function thumbUrl(id: string) {
