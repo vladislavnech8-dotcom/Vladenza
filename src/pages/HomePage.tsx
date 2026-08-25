@@ -121,10 +121,10 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-[1fr_340px] gap-10 items-center">
             <div>
               <h1 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
-                Link Building Built Around<br />Your Site, Competition & Budget
+                Link Building Services Built Around<br />Your Site, Competition & Budget
               </h1>
               <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
-                Guest posts, niche edits and community links — available as individual placements or combined into a link-building plan based on your backlink profile.
+                Guest posts, niche edits and community links — order individual placements or let us build a custom link-building plan based on your backlink profile, competitors and budget.
               </p>
               <p className="text-gray-500 text-sm leading-relaxed mb-6">
                 8+ years in link building · 3,000+ completed orders
