@@ -12,6 +12,7 @@ const STATIC_ROUTES = [
   '/services/crowd-links', '/services/ai-llm', '/services/local-seo-links',
   '/services/linkedin-personal', '/services/linkedin-company', '/services/white-label',
   '/case-studies', '/blog', '/sitemap', '/reviews', '/seo-audit-sample', '/pricing',
+  '/checkout/cart', '/checkout/requirements-form', '/checkout/review',
 ];
 const NICHE_SLUGS = ['igaming', 'saas', 'auto', 'health', 'proxy', 'renovations'];
 const CROWD_LINKS_LANGUAGES = ['english', 'spanish', 'german', 'french', 'portuguese', 'korean'];

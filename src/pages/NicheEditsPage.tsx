@@ -1,119 +1,118 @@
 import { useState, useEffect } from 'react';
-import { FileText, Link2, BarChart3, Target, Eye, Globe, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { Minus, Plus, Check, ArrowRight, ArrowDown, FileText, Target, BarChart3, Zap } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
-import OrderModal, { type Package } from '../components/OrderModal';
-import { supabase } from '../lib/supabase';
+import PlacementExplorer from '../components/PlacementExplorer';
+import CaseStudyCards, { type RelatedCase } from '../components/CaseStudyCards';
+import NicheEditsVsGuestPosts from '../components/NicheEditsVsGuestPosts';
+import { useCart } from '../context/CartContext';
 import { useSEO } from '../hooks/useSEO';
+import { supabase } from '../lib/supabase';
+import { trackEvent } from '../lib/analytics';
+import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
 
-const advantages = [
-  { icon: FileText, title: 'Existing Content', desc: 'Your backlink is added to an article that is already published rather than waiting for a new article to be created.' },
-  { icon: Link2, title: 'Contextual Placement', desc: 'The link is placed within content related to the destination page and topic.' },
-  { icon: BarChart3, title: 'DR & Traffic Options', desc: 'Choose from different authority and organic traffic levels depending on your campaign and budget.' },
-  { icon: Target, title: 'Anchor Control', desc: 'Provide your preferred anchor or let us suggest an anchor based on the existing backlink profile.' },
-  { icon: Eye, title: 'Manual Review', desc: 'We review the website and page before confirming the placement.' },
-  { icon: Globe, title: 'Multiple Industries', desc: 'We source opportunities across SaaS, eCommerce, finance, technology, healthcare, iGaming, and other markets.' },
+const benefits = [
+  { icon: FileText, title: 'Existing Content', desc: 'The article is already published.' },
+  { icon: Target, title: 'Contextual Placement', desc: 'The backlink is added within content relevant to the target page.' },
+  { icon: BarChart3, title: 'Different DR & Traffic Levels', desc: 'Clients can choose based on campaign needs and budget.' },
+  { icon: Zap, title: 'Faster Fulfilment', desc: 'No new article needs to be created, so typical delivery is 3–7 days.' },
 ];
 
-const packages = [
-  { label: 'DR10+', dr: '500–1,000 monthly traffic', price: '$70', highlight: false },
-  { label: 'DR20+', dr: '1,000–5,000 monthly traffic', price: '$90', highlight: false },
-  { label: 'DR30+', dr: '1,000–10,000 monthly traffic', price: '$110', highlight: false },
-  { label: 'DR40+', dr: '1,000–20,000 monthly traffic', price: '$200', highlight: true },
-  { label: 'DR50+', dr: '1,000–30,000 monthly traffic', price: '$280', highlight: false },
-  { label: 'DR60+', dr: '1,000–60,000 monthly traffic', price: '$400', highlight: false },
+const howSteps = [
+  { num: '1', title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
+  { num: '2', title: 'Requirements', desc: 'Add target URLs, anchors and campaign notes — or send them later.' },
+  { num: '3', title: 'Review', desc: 'We review the requirements and placement opportunities.' },
+  { num: '4', title: 'Placement', desc: 'The approved link is added and delivered in the order report.' },
 ];
 
-const vsGuest = [
-  { label: 'Placement', niche: 'Existing article', guest: 'New article' },
-  { label: 'Typical delivery', niche: '3–7 days', guest: '10–21 days' },
-  { label: 'Content', niche: 'Existing content is updated', guest: 'New article is created' },
-  { label: 'Topic control', niche: 'Based on existing article', guest: 'More control over the full article' },
-  { label: 'Typical cost', niche: 'Usually lower', guest: 'Usually higher' },
-  { label: 'Best use', niche: 'Adding links within relevant existing content', guest: 'Creating new content around a specific topic' },
-];
-
-const samples = [
-  { url: 'https://droven.io/why-predictability-matters-in-networking/', domain: 'droven.io', dr: 37, traffic: '260,464', keywords: 35, label: 'Tech / Networking', img: '/samples/niche-edit-droven.jpg' },
-  { url: 'https://www.agicent.com/blog/instagram-growth-hacks-to-get-followers/', domain: 'agicent.com', dr: 54, traffic: '21,972', keywords: 464, label: 'Marketing / SaaS', img: '/samples/niche-edit-agicent.jpg' },
-  { url: 'https://thefoxmagazine.com/technology/apps/6-techniques-for-gaining-followers-on-instagram-in-2025/', domain: 'thefoxmagazine.com', dr: 52, traffic: '1,258', keywords: 405, label: 'Tech / Lifestyle', img: '/samples/niche-edit-thefoxmagazine.jpg' },
-  { url: 'https://www.intelligentliving.co/digital-marketing-actionable-insight/', domain: 'intelligentliving.co', dr: 64, traffic: '524', keywords: 444, label: 'Digital Marketing', img: '/samples/niche-edit-intelligentliving.jpg' },
-  { url: 'https://ccr-mag.com/unlocking-your-best-smile-dental-innovations-for-a-confident-you/', domain: 'ccr-mag.com', dr: 64, traffic: '1,076', keywords: 571, label: 'Health / Dental', img: '/samples/niche-edit-ccrmag.jpg' },
-  { url: 'https://theglobalhues.com/a-beginners-guide-to-choosing-the-right-hosting-plan-for-your-website/', domain: 'theglobalhues.com', dr: 52, traffic: '7,028', keywords: 766, label: 'Tech / Hosting', img: '/samples/niche-edit-theglobalhues.jpg' },
-];
-
-interface RelatedCase {
-  slug: string;
-  title: string;
-  niche: string;
-  service: string;
-  period: string;
-  metric: string;
-  metric_sub: string;
-  color: string;
-  challenge: string;
+function scrollToId(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function SampleCard({ s }: { s: typeof samples[number] }) {
-  const [imgError, setImgError] = useState(false);
+function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
+  const { addItem, items } = useCart();
+  const [qty, setQty] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
+  const inCart = items.find((i) => i.productId === `niche-edit-${pkg.id}`);
+
+  const handleAdd = () => {
+    addItem(
+      {
+        productId: `niche-edit-${pkg.id}`,
+        service: 'Niche Edits',
+        name: `Niche Edit — ${pkg.label}`,
+        description: pkg.traffic,
+        unitPrice: pkg.price,
+      },
+      qty
+    );
+    setJustAdded(true);
+    trackEvent('add_to_cart', { product_id: pkg.id, quantity: qty, price: pkg.price });
+    setTimeout(() => setJustAdded(false), 1800);
+    setQty(1);
+  };
+
   return (
-    <a
-      href={s.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#F97316]/40 hover:shadow-md transition-all duration-300 flex flex-col"
-    >
-      <div className="aspect-[16/10] w-full overflow-hidden bg-gray-50">
-        {imgError ? (
-          <div className="w-full h-full bg-gradient-to-br from-orange-50 via-orange-50/40 to-gray-100 flex items-center justify-center">
-            <span className="text-gray-300 text-sm font-medium">{s.domain}</span>
-          </div>
+    <div className={`rounded-2xl p-6 border flex flex-col ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10'}`}>
+      <div className="text-xl font-bold text-white mb-1">{pkg.label}</div>
+      <div className={`text-xs mb-5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.traffic}</div>
+      <div className="text-3xl font-black text-white mb-5">
+        ${pkg.price}
+        <span className={`text-sm font-medium ml-1.5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>/ placement</span>
+      </div>
+
+      {inCart && (
+        <div className={`text-xs font-semibold mb-3 ${pkg.highlight ? 'text-white/90' : 'text-[#F97316]'}`}>
+          {inCart.quantity} in cart
+        </div>
+      )}
+
+      <div className="flex items-center gap-3 mb-4 mt-auto">
+        <button
+          onClick={() => setQty(Math.max(1, qty - 1))}
+          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${pkg.highlight ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+        >
+          <Minus size={14} />
+        </button>
+        <span className="text-lg font-bold text-white w-8 text-center">{qty}</span>
+        <button
+          onClick={() => setQty(qty + 1)}
+          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${pkg.highlight ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+        >
+          <Plus size={14} />
+        </button>
+      </div>
+
+      <button
+        onClick={handleAdd}
+        disabled={justAdded}
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+          justAdded
+            ? 'bg-green-500 text-white'
+            : pkg.highlight
+              ? 'bg-white text-[#F97316] hover:bg-gray-100'
+              : 'bg-[#F97316] hover:bg-[#EA580C] text-white'
+        }`}
+      >
+        {justAdded ? (
+          <><Check size={15} /> Added</>
         ) : (
-          <img
-            src={s.img}
-            alt={`Niche edit placement on ${s.domain}`}
-            className="w-full h-full object-cover"
-            onError={() => setImgError(true)}
-            loading="lazy"
-          />
+          <>Add {qty} to Cart</>
         )}
-      </div>
-      <div className="p-6 flex flex-col gap-4 flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-xs font-semibold text-[#F97316] uppercase tracking-wide mb-1">{s.label}</div>
-            <div className="text-sm font-semibold text-gray-800 group-hover:text-[#F97316] transition-colors leading-snug break-all">{s.domain}</div>
-          </div>
-          <ArrowUpRight size={14} className="text-gray-300 group-hover:text-[#F97316] transition-colors mt-1 flex-shrink-0" />
-        </div>
-        <div className="grid grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1 font-medium">DR</div>
-            <div className={`text-lg font-black ${s.dr >= 60 ? 'text-emerald-500' : s.dr >= 50 ? 'text-[#F97316]' : 'text-blue-500'}`}>{s.dr}</div>
-          </div>
-          <div className="text-center border-x border-gray-100">
-            <div className="text-xs text-gray-400 mb-1 font-medium">Traffic</div>
-            <div className="text-sm font-bold text-gray-800">{s.traffic}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1 font-medium">Keywords</div>
-            <div className="text-sm font-bold text-gray-800">{s.keywords}</div>
-          </div>
-        </div>
-      </div>
-    </a>
+      </button>
+    </div>
   );
 }
 
 export default function NicheEditsPage() {
-  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
-  const [relatedCases, setRelatedCases] = useState<RelatedCase[]>([]);
-
   useSEO({
     title: 'Buy Niche Edits & Link Insertions | Vladenza',
     description: 'Niche edits and link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3–7 day delivery.',
     canonical: 'https://vladenza.com/services/niche-edits',
   });
+
+  const [relatedCases, setRelatedCases] = useState<RelatedCase[]>([]);
 
   useEffect(() => {
     const preloaded = typeof window === 'undefined'
@@ -136,209 +135,204 @@ export default function NicheEditsPage() {
 
   return (
     <ServicePageLayout>
-      <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
-
-      {/* Hero */}
-      <section className="relative overflow-hidden py-20 lg:py-28" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <circle cx="1200" cy="80" r="380" fill="none" stroke="#F97316" strokeWidth="1.5" opacity="0.1"/>
-          <circle cx="1200" cy="80" r="260" fill="none" stroke="#F97316" strokeWidth="2" opacity="0.12"/>
-          <circle cx="1200" cy="80" r="140" fill="none" stroke="#F97316" strokeWidth="2.5" opacity="0.15"/>
-          {Array.from({ length: 6 }).map((_, row) =>
-            Array.from({ length: 5 }).map((_, col) => (
-              <circle key={`ne-${row}-${col}`} cx={col * 44 + 20} cy={row * 44 + 220} r="2.5" fill="#F97316" opacity={0.07 + col * 0.012} />
-            ))
-          )}
-        </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
-              <Link2 size={12} />
-              Service — Niche Edits
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-6">
-              Niche Edit Link Building
-            </h1>
-            <p className="text-gray-500 text-lg leading-relaxed mb-3 max-w-xl">
-              <span className="font-semibold text-gray-700">Backlinks inside existing, relevant content.</span>
-            </p>
-            <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-xl">
-              Niche edits place your link inside an existing article on a relevant website. Choose the DR and traffic level that fits your campaign, or let us recommend a mix based on your website and budget.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedPkg({ name: 'Niche Edits', price: '$70', links: 'DR 10+', service: 'Niche Edits' })}
-                className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
-              >
-                Order Niche Edits <ArrowRight size={14} />
-              </button>
-              <div className="flex items-center gap-2 border border-gray-200 px-5 py-3 rounded-lg text-sm text-gray-600">
-                From $70 per placement · 3–7 day delivery
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Use Niche Edits */}
-      <section className="py-20 bg-gray-50">
+      {/* Hero — compact */}
+      <section className="relative overflow-hidden pt-16 pb-12 lg:pt-20 lg:pb-14" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Use Niche Edits?</h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">
-              Niche edits let you add links to already-published pages. They're useful on their own and can complement guest posts and other link types in a broader campaign.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {advantages.map((a) => (
-              <div key={a.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm transition-all duration-300 group">
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-4 group-hover:bg-orange-100 transition-colors">
-                  <a.icon size={18} className="text-[#F97316]" />
-                </div>
-                <h3 className="text-gray-900 font-semibold text-sm mb-2">{a.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{a.desc}</p>
+          <div className="grid lg:grid-cols-[1fr_320px] gap-10 items-center">
+            <div>
+              <h1 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
+                Niche Edit Link Building
+              </h1>
+              <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
+                Backlinks inside existing, relevant content.
+              </p>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-lg">
+                Niche edits place your backlink inside an existing article on a relevant website. Choose the DR and organic traffic level that fits your campaign, or let us recommend a mix based on your site and budget.
+              </p>
+              <div className="flex flex-wrap items-center gap-4 mb-6">
+                <span className="text-sm font-bold text-gray-900">From ${NICHE_EDIT_STARTING_PRICE}</span>
+                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                <span className="text-sm text-gray-500">3–7 day delivery</span>
+                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                <span className="text-sm text-gray-500">Manual review</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-white mb-3">Choose Your Niche Edit</h2>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto">
-              Choose a DR and traffic level based on your campaign and budget. We'll source a relevant opportunity within the selected range and manually review the placement before it goes live.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {packages.map((pkg) => (
-              <div key={pkg.label} className={`rounded-2xl p-7 border ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10'}`}>
-                <div className="text-2xl font-bold text-white mb-2">{pkg.label}</div>
-                <div className={`text-sm mb-8 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.dr}</div>
-                <div className="text-4xl font-black text-white mb-7">{pkg.price}<span className={`text-sm font-medium ml-2 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>/ placement</span></div>
+              <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => setSelectedPkg({ name: pkg.label, price: pkg.price, links: pkg.dr, service: 'Niche Edits' })}
-                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${pkg.highlight ? 'bg-white text-[#F97316] hover:bg-gray-100' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
+                  onClick={() => { scrollToId('packages'); trackEvent('view_packages'); }}
+                  className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
                 >
-                  Order Now <ArrowRight size={13} />
+                  View Packages <ArrowDown size={14} />
+                </button>
+                <button
+                  onClick={() => scrollToId('placements')}
+                  className="border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200 hover:bg-gray-50"
+                >
+                  See Real Placements
                 </button>
               </div>
+            </div>
+
+            {/* Product visual — desktop only */}
+            <div className="hidden lg:block">
+              <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+                <div className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Sample Package</div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">DR40+</div>
+                    <div className="text-xs text-gray-400">1,000–20,000 traffic</div>
+                  </div>
+                  <div className="text-2xl font-black text-[#F97316]">$200</div>
+                </div>
+                <div className="space-y-2 pt-3 border-t border-gray-100">
+                  {['DR 40+ domain', 'Contextual placement', '3–7 day delivery', 'Manual review'].map((f) => (
+                    <div key={f} className="flex items-center gap-2 text-xs text-gray-500">
+                      <Check size={12} className="text-[#F97316] flex-shrink-0" />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust strip */}
+      <section className="bg-gray-950 py-6">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black text-white">4.9</span>
+              <span className="text-xs text-gray-400">rating across<br />Trustpilot, Clutch, Google</span>
+            </div>
+            <div className="w-px h-8 bg-white/10 hidden sm:block" />
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black text-white">8+</span>
+              <span className="text-xs text-gray-400">years in<br />link building</span>
+            </div>
+            <div className="w-px h-8 bg-white/10 hidden sm:block" />
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black text-white">840+</span>
+              <span className="text-xs text-gray-400">campaigns<br />delivered</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Use Niche Edits — 4 cards */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Why Use Niche Edits?</h2>
+          <p className="text-gray-500 text-sm mb-10 max-w-xl">
+            Niche edits let you add links to already-published pages. They're useful on their own and can complement guest posts and other link types in a broader campaign.
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {benefits.map((b) => (
+              <div key={b.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm transition-all duration-300">
+                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-4">
+                  <b.icon size={18} className="text-[#F97316]" />
+                </div>
+                <h3 className="text-gray-900 font-semibold text-sm mb-2">{b.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{b.desc}</p>
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* Not sure what to choose? */}
-          <div className="mt-10 max-w-2xl mx-auto text-center">
-            <h3 className="text-lg font-semibold text-white mb-3">Not sure what to choose?</h3>
-            <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              Not every backlink needs to be DR60+, and a strong backlink profile usually includes different types and levels of referring domains. Send us your website and budget. We'll review your backlink profile and competitors and recommend how we'd distribute the budget across placements.
-            </p>
-            <a href="/#contact" className="inline-flex items-center gap-2 text-sm font-semibold text-[#F97316] hover:text-[#FB923C] transition-colors">
-              Get a Link Plan <ArrowRight size={13} />
-            </a>
+      {/* Packages */}
+      <section id="packages" className="py-16 bg-gray-950 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Choose Your Niche Edit</h2>
+          <p className="text-gray-400 text-sm max-w-lg mb-10">
+            Choose a DR and traffic level based on your campaign and budget. We'll source a relevant opportunity within the selected range and manually review the placement before it goes live.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {nicheEditPackages.map((pkg) => (
+              <PackageCard key={pkg.id} pkg={pkg} />
+            ))}
           </div>
+        </div>
+      </section>
+
+      {/* Not sure what to choose? */}
+      <section className="py-12 bg-white">
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">Not sure what to choose?</h2>
+          <p className="text-gray-500 text-sm leading-relaxed mb-5">
+            Send us your website and budget. We'll look at your current backlink profile and competitors and suggest how we'd split the budget.
+          </p>
+          <a
+            href="/#contact"
+            onClick={() => trackEvent('get_link_plan')}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#F97316] hover:text-[#FB923C] transition-colors"
+          >
+            Get a Link Plan <ArrowRight size={13} />
+          </a>
         </div>
       </section>
 
       {/* Different Links for Different Campaigns */}
-      <section className="py-16 bg-white">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-5">Different Links for Different Campaigns</h2>
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Different Links for Different Campaigns</h2>
+          <p className="text-gray-500 text-sm leading-relaxed mb-3">
+            Not every campaign needs the same backlink mix. Some sites need more referring domains. Others need stronger placements pointing to important commercial pages. Competitive niches may need a larger share of higher-DR, higher-traffic websites.
+          </p>
           <p className="text-gray-500 text-sm leading-relaxed">
-            Not every campaign needs the same type of backlink. A newer website may need more referring domain diversity. An established site may need stronger links to specific commercial pages. Competitive niches may require a larger share of higher-authority placements. That's why we offer niche edits across different DR and traffic levels instead of forcing every client into one package. You can choose individual placements yourself, or we can build a mix around your backlink profile, competitors, targets, and budget.
+            That's why we offer several DR and traffic levels instead of one fixed package. Choose placements yourself or let us build the mix around your site and budget.
           </p>
         </div>
       </section>
 
-      {/* Sample Placements */}
-      <section className="py-20 bg-gray-50">
+      {/* Real Placement Explorer */}
+      <section id="placements" className="py-16 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Sample Placements</h2>
-            <p className="text-gray-500 text-sm max-w-lg mx-auto">Examples of real niche edit placements we've delivered, with current Ahrefs metrics.</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {samples.map((s) => (
-              <SampleCard key={s.url} s={s} />
-            ))}
-          </div>
-          <p className="text-center text-xs text-gray-400 mt-6">Metrics sourced from Ahrefs. DR = Domain Rating. Traffic = estimated monthly organic visits. Metrics may change over time.</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Niche Edit Placements</h2>
+          <p className="text-gray-500 text-sm mb-8 max-w-lg">
+            Examples from completed orders, with Ahrefs DR and organic traffic metrics.
+          </p>
+          <PlacementExplorer />
         </div>
       </section>
 
-      {/* Related Case Studies */}
+      {/* How Ordering Works */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10 text-center">How Ordering Works</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {howSteps.map((step) => (
+              <div key={step.num} className="text-center">
+                <div className="w-11 h-11 rounded-full bg-white border-2 border-orange-100 flex items-center justify-center mx-auto mb-4 text-[#F97316] font-black text-sm">
+                  {step.num}
+                </div>
+                <h4 className="text-gray-900 font-semibold text-sm mb-2">{step.title}</h4>
+                <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Real Campaign Cases */}
       {relatedCases.length > 0 && (
-        <section className="py-20 bg-white">
+        <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Niche Edits in Real Campaigns</h2>
-              <p className="text-gray-500 text-sm max-w-lg mx-auto">See how niche edits have been used as part of broader link-building campaigns.</p>
-            </div>
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-              {relatedCases.map((c) => (
-                <a
-                  key={c.slug}
-                  href={`/case-studies/${c.slug}`}
-                  className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-xl hover:shadow-gray-100 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-                >
-                  <div className="h-1 w-full" style={{ backgroundColor: c.color }} />
-                  <div className="p-6 flex flex-col flex-1 gap-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-1 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.color }} />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.14em] truncate" style={{ color: c.color }}>{c.niche}</span>
-                        <span className="text-[10px] text-gray-400 uppercase tracking-[0.14em] truncate">· {c.service}</span>
-                      </div>
-                      <ArrowUpRight size={16} className="flex-shrink-0 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 mt-0.5" />
-                    </div>
-                    <h3 className="text-[16px] font-bold text-gray-900 leading-snug group-hover:text-gray-700 transition-colors">{c.title}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">{c.challenge}</p>
-                    <div className="pt-4 mt-auto border-t border-gray-100 flex items-end justify-between gap-4">
-                      <div>
-                        <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Key result</div>
-                        <div className="text-2xl font-black leading-none" style={{ color: c.color }}>{c.metric}</div>
-                        <div className="text-xs text-gray-500 mt-1">{c.metric_sub}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Timeline</div>
-                        <div className="text-sm font-semibold text-gray-700">{c.period}</div>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Niche Edits in Real Campaigns</h2>
+            <p className="text-gray-500 text-sm mb-8 max-w-lg">
+              See how niche edits have been used as part of broader link-building campaigns.
+            </p>
+            <CaseStudyCards cases={relatedCases} />
           </div>
         </section>
       )}
 
       {/* Niche Edits vs Guest Posts */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Niche Edits vs. Guest Posts</h2>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-3 bg-gray-100 border-b border-gray-200">
-              <div className="p-4 text-xs font-bold uppercase text-gray-500 tracking-widest">Factor</div>
-              <div className="p-4 text-xs font-bold uppercase text-[#F97316] tracking-widest border-l border-gray-200">Niche Edits</div>
-              <div className="p-4 text-xs font-bold uppercase text-gray-500 tracking-widest border-l border-gray-200">Guest Posts</div>
-            </div>
-            {vsGuest.map((row, i) => (
-              <div key={row.label} className={`grid grid-cols-3 ${i < vsGuest.length - 1 ? 'border-b border-gray-200' : ''}`}>
-                <div className="p-4 text-sm text-gray-700 font-medium">{row.label}</div>
-                <div className="p-4 text-sm text-gray-900 border-l border-gray-200 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#F97316] flex-shrink-0"/>
-                  {row.niche}
-                </div>
-                <div className="p-4 text-sm text-gray-400 border-l border-gray-200">{row.guest}</div>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Both can be part of the same campaign. The right mix depends on your backlink profile, target pages, competitors, and budget.
-          </p>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 text-center">Niche Edits vs. Guest Posts</h2>
+          <div className="mb-10" />
+          <NicheEditsVsGuestPosts onScrollToPackages={() => scrollToId('packages')} />
         </div>
       </section>
 
@@ -360,6 +354,31 @@ export default function NicheEditsPage() {
           { q: 'Are niche edits permanent?', a: "Placements are intended to remain live, but third-party websites are outside our permanent control. If a placement is removed within the coverage period, contact us and we'll replace it." },
         ]}
       />
+
+      {/* Final CTA */}
+      <section className="py-16 bg-gray-950">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Ready to Add Niche Edits?</h2>
+          <p className="text-gray-400 text-sm mb-6">
+            Choose your DR and traffic level and add the placements you need.
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <button
+              onClick={() => { scrollToId('packages'); trackEvent('view_packages'); }}
+              className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-400/20 flex items-center gap-2"
+            >
+              View Packages <ArrowRight size={14} />
+            </button>
+            <a
+              href="/#contact"
+              onClick={() => trackEvent('get_link_plan')}
+              className="border border-white/20 hover:border-white/30 text-gray-300 hover:text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200"
+            >
+              Get a Link Plan
+            </a>
+          </div>
+        </div>
+      </section>
     </ServicePageLayout>
   );
 }

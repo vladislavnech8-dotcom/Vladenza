@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Menu, X, Star, ChevronDown, Link2, FileText, Users, Cpu,
   Search, BarChart2, ArrowUpRight, Gamepad2, Laptop,
-  Car, Heart, ArrowRight, Zap, BookOpen, TrendingUp, MapPin, Lock, Home, Linkedin, Building2,
+  Car, Heart, ArrowRight, Zap, BookOpen, TrendingUp, MapPin, Lock, Home, Linkedin, Building2, ShoppingCart,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
 import PlatformIcon from './PlatformIcon';
+import { useCart } from '../context/CartContext';
 
 /* ─── Data ────────────────────────────────────────────────────── */
 
@@ -310,6 +311,24 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal }: MobileDrawerPr
 
 /* ─── Main component ──────────────────────────────────────────── */
 
+function CartButton() {
+  const { itemCount, openCart } = useCart();
+  return (
+    <button
+      onClick={openCart}
+      className="relative w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#F97316] transition-colors"
+      aria-label="Open cart"
+    >
+      <ShoppingCart size={17} />
+      {itemCount > 0 && (
+        <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#F97316] text-white text-[10px] font-bold flex items-center justify-center">
+          {itemCount}
+        </span>
+      )}
+    </button>
+  );
+}
+
 interface NavigationProps {
   onOpenModal?: () => void;
 }
@@ -439,6 +458,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
 
             {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+              <CartButton />
               <button
                 onClick={() => (onOpenModal ? onOpenModal() : routerNavigate('/#contact'))}
                 className="text-sm text-white font-semibold px-4 py-2 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shadow-sm hover:shadow-md hover:shadow-orange-200"
@@ -448,14 +468,17 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
               </button>
             </div>
 
-            {/* Mobile hamburger */}
-            <button
-              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
+            {/* Mobile: cart + hamburger */}
+            <div className="lg:hidden flex items-center gap-2">
+              <CartButton />
+              <button
+                className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Toggle menu"
+              >
+                {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+              </button>
+            </div>
           </div>
         </div>
       </header>

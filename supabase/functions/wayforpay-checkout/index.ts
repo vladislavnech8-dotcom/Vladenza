@@ -12,13 +12,84 @@ function hmacMd5(key: string, data: string): string {
   return createHmac("md5", key).update(data).digest("hex");
 }
 
+interface CartItemInput {
+  productId: string;
+  name: string;
+  unitPrice: number;
+  quantity: number;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
-    const { packageName, amount, currency, name, email, phone, website, message, type } = await req.json();
+    const body = await req.json();
+    const { currency, name, email, phone, website, message, type, items } = body as {
+      currency?: string;
+      name?: string;
+      email?: string;
+      phone?: string;
+      website?: string;
+      message?: string;
+      type?: string;
+      items?: CartItemInput[];
+    };
+
+    // --- Determine amount and product names from cart items if provided ---
+    let amount: number;
+    let productNames: string[];
+    let productCounts: number[];
+    let productPrices: number[];
+    let packageName: string;
+
+    if (items && Array.isArray(items) && items.length > 0) {
+      // Cart-based checkout: compute totals server-side from item data
+      // unitPrice comes from the client but is validated: must be positive number
+      let computedTotal = 0;
+      productNames = [];
+      productCounts = [];
+      productPrices = [];
+
+      for (const item of items) {
+        const price = Number(item.unitPrice);
+        const qty = Number(item.quantity);
+        if (!Number.isFinite(price) || price <= 0) {
+          return new Response(JSON.stringify({ error: "Invalid item price" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (!Number.isFinite(qty) || qty < 1 || !Number.isInteger(qty)) {
+          return new Response(JSON.stringify({ error: "Invalid item quantity" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const lineTotal = price * qty;
+        computedTotal += lineTotal;
+        productNames.push(item.name || item.productId);
+        productCounts.push(qty);
+        productPrices.push(price);
+      }
+
+      amount = Math.round(computedTotal * 100) / 100;
+      if (amount <= 0) {
+        return new Response(JSON.stringify({ error: "Cart total must be greater than zero" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      packageName = productNames.join("; ");
+    } else {
+      // Legacy single-package checkout (backward compatible with OrderModal)
+      packageName = body.packageName || "Custom Package";
+      amount = Number(body.amount);
+      productNames = [packageName];
+      productCounts = [1];
+      productPrices = [amount];
+    }
 
     if (type !== "consultation") {
       if (!website || typeof website !== "string") {
@@ -55,7 +126,7 @@ Deno.serve(async (req: Request) => {
     const { error: dbError } = await supabase.from("orders").insert({
       order_ref: orderRef,
       package_name: packageName,
-      amount: parseFloat(amount),
+      amount: amount,
       currency: currency || "USD",
       type: type || "payment",
       name: name || "",
@@ -81,31 +152,26 @@ Deno.serve(async (req: Request) => {
     }
 
     const cur = currency || "USD";
-    const amountValue = Number(amount);
-    if (!Number.isFinite(amountValue) || amountValue <= 0) {
+    if (!Number.isFinite(amount) || amount <= 0) {
       throw new Error("Invalid payment amount");
     }
 
     const secureType = "AUTO";
-    const productNames = [packageName];
-    const productCounts = [1];
-    const productPrices = [amountValue];
     const signString = [
       merchantLogin,
       "vladenza.com",
       orderRef,
       orderDate.toString(),
-      amountValue.toString(),
+      amount.toString(),
       cur,
       ...productNames,
       ...productCounts.map(String),
       ...productPrices.map(String),
     ].join(";");
 
-    console.log("WayForPay merchantSignature input:", signString);
     const signature = hmacMd5(merchantSecret, signString);
 
-    const nameParts = (name as string).trim().split(/\s+/);
+    const nameParts = (name || "").trim().split(/\s+/);
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "-";
 
@@ -117,7 +183,7 @@ Deno.serve(async (req: Request) => {
       merchantSignature: signature,
       orderReference: orderRef,
       orderDate: orderDate,
-      amount: amountValue,
+      amount: amount,
       currency: cur,
       productName: productNames,
       productCount: productCounts,

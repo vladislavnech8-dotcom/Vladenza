@@ -11,6 +11,9 @@ import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 import OrderModal, { Package } from './components/OrderModal';
 import ReviewsBar from './components/ReviewsBar';
+import CartDrawer from './components/CartDrawer';
+import { CartProvider } from './context/CartContext';
+import { CheckoutProvider } from './context/CheckoutContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useSEO } from './hooks/useSEO';
 
@@ -36,6 +39,9 @@ const SeoAuditSamplePage = lazy(() => import('./pages/SeoAuditSamplePage'));
 const WhiteLabelPage = lazy(() => import('./pages/WhiteLabelPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const ClientAppPage = lazy(() => import('./pages/ClientAppPage'));
+const CheckoutRequirementsPage = lazy(() => import('./pages/CheckoutRequirementsPage'));
+const CheckoutRequirementsFormPage = lazy(() => import('./pages/CheckoutRequirementsFormPage'));
+const CheckoutReviewPage = lazy(() => import('./pages/CheckoutReviewPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -81,31 +87,39 @@ function HomePage() {
 
 export default function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
-        <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
-        <Route path="/services/seo-audit" element={<SeoAuditPage />} />
-        <Route path="/services/guest-posting" element={<GuestPostingPage />} />
-        <Route path="/services/niche-edits" element={<NicheEditsPage />} />
-        <Route path="/services/crowd-links" element={<CrowdLinksPage />} />
-        <Route path="/services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
-        <Route path="/services/ai-llm" element={<AiLlmPage />} />
-        <Route path="/services/link-packages/:niche" element={<LinkPackagesPage />} />
-        <Route path="/services/local-seo-links" element={<LocalSeoLinksPage />} />
-        <Route path="/case-studies" element={<CaseStudiesPage />} />
-        <Route path="/case-studies/:slug" element={<CaseStudyDetailPage />} />
-        <Route path="/blog" element={<BlogPage />} />
-        <Route path="/blog/:slug" element={<BlogPostPage />} />
-        <Route path="/sitemap" element={<SitemapPage />} />
-        <Route path="/reviews" element={<ReviewsPage />} />
-        <Route path="/services/linkedin-personal" element={<LinkedInPersonalPage />} />
-        <Route path="/services/linkedin-company" element={<LinkedInCompanyPage />} />
-        <Route path="/seo-audit-sample" element={<SeoAuditSamplePage />} />
-        <Route path="/services/white-label" element={<WhiteLabelPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
-      </Routes>
-    </Suspense>
+    <CartProvider>
+      <CheckoutProvider>
+        <CartDrawer />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
+            <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
+            <Route path="/services/seo-audit" element={<SeoAuditPage />} />
+            <Route path="/services/guest-posting" element={<GuestPostingPage />} />
+            <Route path="/services/niche-edits" element={<NicheEditsPage />} />
+            <Route path="/services/crowd-links" element={<CrowdLinksPage />} />
+            <Route path="/services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
+            <Route path="/services/ai-llm" element={<AiLlmPage />} />
+            <Route path="/services/link-packages/:niche" element={<LinkPackagesPage />} />
+            <Route path="/services/local-seo-links" element={<LocalSeoLinksPage />} />
+            <Route path="/case-studies" element={<CaseStudiesPage />} />
+            <Route path="/case-studies/:slug" element={<CaseStudyDetailPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
+            <Route path="/services/linkedin-personal" element={<LinkedInPersonalPage />} />
+            <Route path="/services/linkedin-company" element={<LinkedInCompanyPage />} />
+            <Route path="/seo-audit-sample" element={<SeoAuditSamplePage />} />
+            <Route path="/services/white-label" element={<WhiteLabelPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/checkout/cart" element={<CheckoutRequirementsPage />} />
+            <Route path="/checkout/requirements-form" element={<CheckoutRequirementsFormPage />} />
+            <Route path="/checkout/review" element={<CheckoutReviewPage />} />
+          </Routes>
+        </Suspense>
+      </CheckoutProvider>
+    </CartProvider>
   );
 }

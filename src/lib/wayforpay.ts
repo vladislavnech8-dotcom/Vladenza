@@ -59,9 +59,17 @@ function loadWidgetScript(): Promise<void> {
 
 export type WfpOutcome = 'approved' | 'declined' | 'pending';
 
+export interface CartItemInput {
+  productId: string;
+  name: string;
+  unitPrice: number;
+  quantity: number;
+}
+
 export async function payWithWayForPay(params: {
-  packageName: string;
-  amount: number;
+  items?: CartItemInput[];
+  packageName?: string;
+  amount?: number;
   currency?: string;
   name: string;
   email: string;
@@ -70,6 +78,7 @@ export async function payWithWayForPay(params: {
 }): Promise<WfpOutcome> {
   const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
     body: {
+      items: params.items,
       packageName: params.packageName,
       amount: params.amount,
       currency: params.currency || 'USD',
