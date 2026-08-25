@@ -69,6 +69,7 @@ export default function CheckoutPage() {
   const [paidOrderNumber, setPaidOrderNumber] = useState('');
   const [bulkText, setBulkText] = useState('');
   const [showBulk, setShowBulk] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // Generate placement requirements from cart items
   const placementReqs = useMemo<PlacementRequirement[]>(() => {
@@ -146,6 +147,10 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (!data.customerName.trim() || !data.customerEmail.trim()) {
       setError('Name and email are required.');
+      return;
+    }
+    if (!agreedToTerms) {
+      setError('Please agree to the Terms & Conditions, Privacy Policy and Refund Policy to continue.');
       return;
     }
     setError('');
@@ -472,16 +477,17 @@ export default function CheckoutPage() {
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment</h1>
 
-                  {/* Pre-payment reassurance */}
+                  {/* What happens next */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">What happens after payment?</h3>
-                    <ul className="flex flex-col gap-2">
-                      {["We review your website and requirements", "We source placements within the selected metrics", "Placements are manually checked before delivery", "You'll receive the completed links in your order report"].map((t) => (
-                        <li key={t} className="flex items-center gap-2 text-sm text-gray-600">
-                          <Check size={14} className="text-green-500 flex-shrink-0" /> {t}
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">What happens next?</h3>
+                    <ol className="flex flex-col gap-2">
+                      {["Complete payment", "We review your requirements", "Website selection / approval where applicable", "Placements go live", "Receive your final report"].map((t, i) => (
+                        <li key={t} className="flex items-center gap-2.5 text-sm text-gray-600">
+                          <span className="w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                          {t}
                         </li>
                       ))}
-                    </ul>
+                    </ol>
                   </div>
 
                   <form onSubmit={handlePay} className="flex flex-col gap-4">
@@ -504,7 +510,23 @@ export default function CheckoutPage() {
 
                     {error && <p className="text-red-500 text-xs bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>}
 
-                    <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200">
+                    {/* Consent checkbox */}
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#F97316] flex-shrink-0"
+                      />
+                      <span className="text-xs text-gray-500 leading-relaxed">
+                        I agree to the{' '}
+                        <Link to="/terms" className="text-[#F97316] hover:underline font-semibold">Terms &amp; Conditions</Link>,{' '}
+                        <Link to="/privacy-policy" className="text-[#F97316] hover:underline font-semibold">Privacy Policy</Link>, and{' '}
+                        <Link to="/refund-policy" className="text-[#F97316] hover:underline font-semibold">Refund Policy</Link>.
+                      </span>
+                    </label>
+
+                    <button type="submit" disabled={loading || !agreedToTerms} className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200">
                       {loading ? <><Loader2 size={15} className="animate-spin" /> Processing...</> : <><CreditCard size={15} /> Pay ${total.toLocaleString()} Securely</>}
                     </button>
                     <p className="text-center text-xs text-gray-400">Secure checkout via WayForPay</p>

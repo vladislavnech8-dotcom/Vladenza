@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, ArrowDown, ExternalLink, Star, Check } from 'lucide-react';
+import { ArrowRight, ArrowDown, ExternalLink, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import LinkPlanModal from '../components/LinkPlanModal';
-import ReviewsSection from '../components/ReviewsSection';
 import FAQ from '../components/FAQ';
 import { useSEO } from '../hooks/useSEO';
 import { trackEvent } from '../lib/analytics';
@@ -58,13 +57,6 @@ const clientLogos = [
   { name: 'Calday', domain: 'calday.com' },
   { name: 'Botnation', domain: 'botnation.ai' },
   { name: 'Foot Africa', domain: 'foot-africa.com' },
-];
-
-const whyVladenza = [
-  { emoji: '🔍', title: 'Manual review on every placement', desc: 'No PBNs, no automated networks. Each site is checked for relevance and real traffic.' },
-  { emoji: '📊', title: 'Full transparency in reporting', desc: 'Every live URL, anchor and metric is documented in the delivery report.' },
-  { emoji: '⚖️', title: 'Mix based on your profile', desc: 'We look at your referring domains, competitors and target pages before recommending links.' },
-  { emoji: '🔄', title: 'Replacement coverage', desc: 'If a placement is removed within the coverage period, we replace it.' },
 ];
 
 const guestPostExamples = [
@@ -477,9 +469,9 @@ export default function HomePage() {
       {/* 9. FINAL CTA */}
       <section className="py-16 bg-gray-950">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Not Sure Where to Start?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Not Sure Which Links You Need?</h2>
           <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
-            Send us your website and budget. We'll review the backlink profile and recommend where we'd start.
+            Send us your website and budget. We'll review your backlink profile and recommend a practical link-building mix.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <button
@@ -498,7 +490,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Footer onOpenModal={openLinkPlan} />
+      <Footer />
       <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
     </div>
   );

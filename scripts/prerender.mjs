@@ -13,6 +13,7 @@ const STATIC_ROUTES = [
   '/services/linkedin-personal', '/services/linkedin-company', '/services/white-label',
   '/case-studies', '/blog', '/sitemap', '/reviews', '/seo-audit-sample', '/pricing',
   '/checkout',
+  '/privacy-policy', '/terms', '/refund-policy', '/cookie-policy',
 ];
 const NICHE_SLUGS = ['igaming', 'saas', 'auto', 'health', 'proxy', 'renovations'];
 const CROWD_LINKS_LANGUAGES = ['english', 'spanish', 'german', 'french', 'portuguese', 'korean'];
