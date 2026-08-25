@@ -10,7 +10,11 @@ import { supabase } from './lib/supabase';
 
 export function render(
   url: string,
-  preload?: { caseData?: Record<string, unknown>; postData?: Record<string, unknown> }
+  preload?: {
+    caseData?: Record<string, unknown>;
+    postData?: Record<string, unknown>;
+    relatedCases?: Record<string, unknown>[];
+  }
 ): Promise<{ html: string; seo: SEOProps | null; faqSchema: Faq[] | null }> {
   resetFaqSchemaCapture();
   const g = globalThis as Record<string, unknown>;
@@ -18,6 +22,8 @@ export function render(
   else delete g.__SSR_PRELOADED_CASE__;
   if (preload?.postData) g.__SSR_PRELOADED_POST__ = preload.postData;
   else delete g.__SSR_PRELOADED_POST__;
+  if (preload?.relatedCases) g.__SSR_RELATED_CASES__ = preload.relatedCases;
+  else delete g.__SSR_RELATED_CASES__;
   return new Promise((resolve, reject) => {
     const { pipe } = renderToPipeableStream(
       React.createElement(StaticRouter, { location: url }, React.createElement(App)),

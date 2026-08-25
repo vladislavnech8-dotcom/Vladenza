@@ -85,12 +85,27 @@ async function getDynamicData() {
   const blogSlugs = Array.from(new Set([...dbPostsBySlug.keys(), ...staticBlogSlugs]));
   const caseSlugs = Array.from(dbCasesBySlug.keys());
 
-  return { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug };
+  const nicheEditsCases = dbCases
+    .filter((c) => c.service && c.service.toLowerCase().includes('niche edit'))
+    .slice(0, 3)
+    .map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      niche: c.niche,
+      service: c.service,
+      period: c.period,
+      metric: c.metric,
+      metric_sub: c.metric_sub,
+      color: c.color,
+      challenge: c.challenge,
+    }));
+
+  return { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases };
 }
 
 async function main() {
   const template = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
-  const { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug } = await getDynamicData();
+  const { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
 
   const ROUTES = [
     ...STATIC_ROUTES,
@@ -111,6 +126,8 @@ async function main() {
         preload = { caseData: dbCasesBySlug.get(caseMatch[1]) };
       } else if (blogMatch && dbPostsBySlug.has(blogMatch[1])) {
         preload = { postData: dbPostsBySlug.get(blogMatch[1]) };
+      } else if (route === '/services/niche-edits') {
+        preload = { relatedCases: nicheEditsCases };
       }
 
       const { html: appHtml, seo, faqSchema } = await render(route, preload);
