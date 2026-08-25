@@ -103,10 +103,10 @@ export default function PlacementExplorer() {
 
   return (
     <div>
-      {/* Filters */}
-      <div className="flex flex-col gap-4 mb-8">
+      {/* Filters \u2014 compact toolbar */}
+      <div className="flex flex-col gap-3 mb-8">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-1">Niche</span>
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Niche</span>
           {niches.map((n) => (
             <button
               key={n}
@@ -123,13 +123,13 @@ export default function PlacementExplorer() {
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-1">DR</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">DR</span>
             {DR_FILTERS.map((d) => (
               <button
                 key={d}
                 onClick={() => { setActiveDr(d); setVisible(INITIAL_COUNT); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
                   activeDr === d
                     ? 'bg-gray-900 border-gray-900 text-white'
                     : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
@@ -140,13 +140,13 @@ export default function PlacementExplorer() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-1">Traffic</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Traffic</span>
             {TRAFFIC_FILTERS.map((t) => (
               <button
                 key={t.label}
                 onClick={() => { setActiveTraffic(t.min); setVisible(INITIAL_COUNT); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
                   activeTraffic === t.min
                     ? 'bg-gray-900 border-gray-900 text-white'
                     : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
@@ -157,7 +157,7 @@ export default function PlacementExplorer() {
             ))}
           </div>
 
-          <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <div className="relative flex-1 min-w-[160px] max-w-xs ml-auto">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
             <input
               type="text"

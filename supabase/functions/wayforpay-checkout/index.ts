@@ -91,29 +91,10 @@ Deno.serve(async (req: Request) => {
       productPrices = [amount];
     }
 
-    if (type !== "consultation") {
-      if (!website || typeof website !== "string") {
-        return new Response(JSON.stringify({ error: "Website URL is required" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      try {
-        const parsed = new URL(website);
-        if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
-      } catch {
-        return new Response(JSON.stringify({ error: "Invalid website URL" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (!phone || typeof phone !== "string" || phone.trim().length < 7) {
-        return new Response(JSON.stringify({ error: "Valid phone number is required" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    }
+    // Website and phone are optional for cart-based checkout.
+    // WayForPay widget accepts a placeholder phone if none is provided.
+    const safeWebsite = website || "";
+    const safePhone = (phone && phone.trim().length >= 7) ? phone : "000000000000";
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -131,7 +112,7 @@ Deno.serve(async (req: Request) => {
       type: type || "payment",
       name: name || "",
       email: email || "",
-      website: website || "",
+      website: safeWebsite,
       message: message || "",
       status: type === "consultation" ? "consultation" : "pending",
     });
@@ -191,7 +172,7 @@ Deno.serve(async (req: Request) => {
       clientFirstName: firstName,
       clientLastName: lastName,
       clientEmail: email,
-      clientPhone: phone || "000000000000",
+      clientPhone: safePhone,
       language: "EN",
       serviceUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/wayforpay-webhook`,
     };

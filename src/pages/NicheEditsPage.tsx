@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Minus, Plus, Check, ArrowRight, ArrowDown, FileText, Target, BarChart3, Zap } from 'lucide-react';
+import { Minus, Plus, Check, ArrowRight, ArrowDown } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import PlacementExplorer from '../components/PlacementExplorer';
 import CaseStudyCards, { type RelatedCase } from '../components/CaseStudyCards';
 import NicheEditsVsGuestPosts from '../components/NicheEditsVsGuestPosts';
+import LinkPlanModal from '../components/LinkPlanModal';
 import { useCart } from '../context/CartContext';
 import { useSEO } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
@@ -12,18 +13,20 @@ import { trackEvent } from '../lib/analytics';
 import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
 
 const benefits = [
-  { icon: FileText, title: 'Existing Content', desc: 'The article is already published.' },
-  { icon: Target, title: 'Contextual Placement', desc: 'The backlink is added within content relevant to the target page.' },
-  { icon: BarChart3, title: 'Different DR & Traffic Levels', desc: 'Clients can choose based on campaign needs and budget.' },
-  { icon: Zap, title: 'Faster Fulfilment', desc: 'No new article needs to be created, so typical delivery is 3–7 days.' },
+  { emoji: '🔗', title: 'Existing Content', desc: 'Your backlink is added to an article that\u2019s already published.' },
+  { emoji: '🎯', title: 'Contextual Placement', desc: 'The link sits inside content relevant to the target page.' },
+  { emoji: '📈', title: 'DR & Traffic Options', desc: 'Choose the level that matches the campaign and budget.' },
+  { emoji: '⚡', title: 'Faster Fulfilment', desc: 'No new article needs to be written. Typical delivery is 3\u20137 days.' },
 ];
 
 const howSteps = [
-  { num: '1', title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
-  { num: '2', title: 'Requirements', desc: 'Add target URLs, anchors and campaign notes — or send them later.' },
-  { num: '3', title: 'Review', desc: 'We review the requirements and placement opportunities.' },
-  { num: '4', title: 'Placement', desc: 'The approved link is added and delivered in the order report.' },
+  { emoji: '🛒', title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
+  { emoji: '🔗', title: 'Requirements', desc: 'Add URLs, anchors and notes \u2014 or send them later.' },
+  { emoji: '✅', title: 'Review', desc: 'We review the requirements and available placements.' },
+  { emoji: '🚀', title: 'Placement', desc: 'The approved link is delivered in your report.' },
 ];
+
+const linkPlanFeatures = ['🔎 Profile review', '⚖️ Budget split', '🔗 Suggested link mix'];
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -41,7 +44,7 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
       {
         productId: `niche-edit-${pkg.id}`,
         service: 'Niche Edits',
-        name: `Niche Edit — ${pkg.label}`,
+        name: `Niche Edit \u2014 ${pkg.label}`,
         description: pkg.traffic,
         unitPrice: pkg.price,
       },
@@ -49,12 +52,12 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
     );
     setJustAdded(true);
     trackEvent('add_to_cart', { product_id: pkg.id, quantity: qty, price: pkg.price });
-    setTimeout(() => setJustAdded(false), 1800);
+    setTimeout(() => setJustAdded(false), 1500);
     setQty(1);
   };
 
   return (
-    <div className={`rounded-2xl p-6 border flex flex-col ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10'}`}>
+    <div className={`rounded-2xl p-6 border flex flex-col transition-all duration-200 ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>
       <div className="text-xl font-bold text-white mb-1">{pkg.label}</div>
       <div className={`text-xs mb-5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.traffic}</div>
       <div className="text-3xl font-black text-white mb-5">
@@ -64,7 +67,7 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
 
       {inCart && (
         <div className={`text-xs font-semibold mb-3 ${pkg.highlight ? 'text-white/90' : 'text-[#F97316]'}`}>
-          {inCart.quantity} in cart
+          {inCart.quantity} already in cart
         </div>
       )}
 
@@ -97,6 +100,8 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
       >
         {justAdded ? (
           <><Check size={15} /> Added</>
+        ) : inCart ? (
+          <>Add {qty} More</>
         ) : (
           <>Add {qty} to Cart</>
         )}
@@ -108,11 +113,12 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
 export default function NicheEditsPage() {
   useSEO({
     title: 'Buy Niche Edits & Link Insertions | Vladenza',
-    description: 'Niche edits and link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3–7 day delivery.',
+    description: 'Niche edits and link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3\u20137 day delivery.',
     canonical: 'https://vladenza.com/services/niche-edits',
   });
 
   const [relatedCases, setRelatedCases] = useState<RelatedCase[]>([]);
+  const [linkPlanOpen, setLinkPlanOpen] = useState(false);
 
   useEffect(() => {
     const preloaded = typeof window === 'undefined'
@@ -133,9 +139,14 @@ export default function NicheEditsPage() {
       });
   }, []);
 
+  const openLinkPlan = () => {
+    trackEvent('get_link_plan');
+    setLinkPlanOpen(true);
+  };
+
   return (
     <ServicePageLayout>
-      {/* Hero — compact */}
+      {/* Hero \u2014 compact */}
       <section className="relative overflow-hidden pt-16 pb-12 lg:pt-20 lg:pb-14" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-[1fr_320px] gap-10 items-center">
@@ -152,7 +163,7 @@ export default function NicheEditsPage() {
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span className="text-sm font-bold text-gray-900">From ${NICHE_EDIT_STARTING_PRICE}</span>
                 <span className="w-1 h-1 rounded-full bg-gray-300" />
-                <span className="text-sm text-gray-500">3–7 day delivery</span>
+                <span className="text-sm text-gray-500">3\u20137 day delivery</span>
                 <span className="w-1 h-1 rounded-full bg-gray-300" />
                 <span className="text-sm text-gray-500">Manual review</span>
               </div>
@@ -172,26 +183,29 @@ export default function NicheEditsPage() {
               </div>
             </div>
 
-            {/* Product visual — desktop only */}
+            {/* Product visual \u2014 desktop only */}
             <div className="hidden lg:block">
-              <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-                <div className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Sample Package</div>
+              <button
+                onClick={() => scrollToId('packages')}
+                className="block w-full text-left bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:border-[#F97316]/30 hover:shadow-md transition-all duration-200"
+              >
+                <div className="text-xs font-semibold text-gray-400 mb-3">Example Package</div>
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="text-lg font-bold text-gray-900">DR40+</div>
-                    <div className="text-xs text-gray-400">1,000–20,000 traffic</div>
+                    <div className="text-xs text-gray-400">1,000\u201320,000 traffic</div>
                   </div>
                   <div className="text-2xl font-black text-[#F97316]">$200</div>
                 </div>
                 <div className="space-y-2 pt-3 border-t border-gray-100">
-                  {['DR 40+ domain', 'Contextual placement', '3–7 day delivery', 'Manual review'].map((f) => (
+                  {['DR 40+ domain', 'Contextual placement', '3\u20137 day delivery', 'Manual review'].map((f) => (
                     <div key={f} className="flex items-center gap-2 text-xs text-gray-500">
                       <Check size={12} className="text-[#F97316] flex-shrink-0" />
                       {f}
                     </div>
                   ))}
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -202,24 +216,21 @@ export default function NicheEditsPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
             <div className="flex items-center gap-2">
+              <span className="text-base">\u2b50</span>
               <span className="text-2xl font-black text-white">4.9</span>
               <span className="text-xs text-gray-400">rating across<br />Trustpilot, Clutch, Google</span>
             </div>
             <div className="w-px h-8 bg-white/10 hidden sm:block" />
             <div className="flex items-center gap-2">
+              <span className="text-base">\ud83c\udfc6</span>
               <span className="text-2xl font-black text-white">8+</span>
               <span className="text-xs text-gray-400">years in<br />link building</span>
-            </div>
-            <div className="w-px h-8 bg-white/10 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-black text-white">840+</span>
-              <span className="text-xs text-gray-400">campaigns<br />delivered</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Use Niche Edits — 4 cards */}
+      {/* Why Use Niche Edits \u2014 4 cards */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Why Use Niche Edits?</h2>
@@ -228,10 +239,8 @@ export default function NicheEditsPage() {
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {benefits.map((b) => (
-              <div key={b.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm transition-all duration-300">
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-4">
-                  <b.icon size={18} className="text-[#F97316]" />
-                </div>
+              <div key={b.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300">
+                <div className="text-2xl mb-3">{b.emoji}</div>
                 <h3 className="text-gray-900 font-semibold text-sm mb-2">{b.title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">{b.desc}</p>
               </div>
@@ -255,20 +264,28 @@ export default function NicheEditsPage() {
         </div>
       </section>
 
-      {/* Not sure what to choose? */}
-      <section className="py-12 bg-white">
-        <div className="max-w-2xl mx-auto px-6 text-center">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Not sure what to choose?</h2>
-          <p className="text-gray-500 text-sm leading-relaxed mb-5">
-            Send us your website and budget. We'll look at your current backlink profile and competitors and suggest how we'd split the budget.
-          </p>
-          <a
-            href="/#contact"
-            onClick={() => trackEvent('get_link_plan')}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#F97316] hover:text-[#FB923C] transition-colors"
-          >
-            Get a Link Plan <ArrowRight size={13} />
-          </a>
+      {/* Not sure what to choose? \u2014 compact recommendation card */}
+      <section className="py-10 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center gap-6 bg-orange-50/50 border border-orange-100 rounded-2xl p-6">
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-lg font-bold text-gray-900 mb-2">Not sure which links you need?</h2>
+              <p className="text-gray-500 text-sm leading-relaxed mb-3">
+                Send us your site and budget. We'll compare your backlink profile with competitors and suggest how we'd split the budget.
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                {linkPlanFeatures.map((f) => (
+                  <span key={f} className="text-xs text-gray-500 bg-white border border-gray-200 rounded-lg px-2.5 py-1">{f}</span>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={openLinkPlan}
+              className="flex-shrink-0 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200 hover:shadow-md flex items-center gap-2 whitespace-nowrap"
+            >
+              Get a Link Plan <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -301,10 +318,11 @@ export default function NicheEditsPage() {
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10 text-center">How Ordering Works</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {howSteps.map((step) => (
-              <div key={step.num} className="text-center">
-                <div className="w-11 h-11 rounded-full bg-white border-2 border-orange-100 flex items-center justify-center mx-auto mb-4 text-[#F97316] font-black text-sm">
-                  {step.num}
+            {howSteps.map((step, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl mb-2">{step.emoji}</div>
+                <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center mx-auto mb-3 text-gray-400 font-bold text-xs">
+                  {i + 1}
                 </div>
                 <h4 className="text-gray-900 font-semibold text-sm mb-2">{step.title}</h4>
                 <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
@@ -317,13 +335,11 @@ export default function NicheEditsPage() {
       {/* Real Campaign Cases */}
       {relatedCases.length > 0 && (
         <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Niche Edits in Real Campaigns</h2>
-            <p className="text-gray-500 text-sm mb-8 max-w-lg">
-              See how niche edits have been used as part of broader link-building campaigns.
-            </p>
-            <CaseStudyCards cases={relatedCases} />
-          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Niche Edits in Real Campaigns</h2>
+          <p className="text-gray-500 text-sm mb-8 max-w-lg">
+            See how niche edits have been used as part of broader link-building campaigns.
+          </p>
+          <CaseStudyCards cases={relatedCases} />
         </section>
       )}
 
@@ -340,16 +356,16 @@ export default function NicheEditsPage() {
         heading="Niche Edits as Part of Your Link Building Strategy"
         intro="Niche edits, also called link insertions, add backlinks to articles that are already published. They are commonly used alongside guest posts, forum links, and other placements to build referring domain diversity and support important pages."
         body={[
-          'Selection should consider both measurable criteria and relevance. We look at DR, organic traffic, the actual article, topic, target page, anchor, and the existing backlink profile — not just a DR threshold.',
+          'Selection should consider both measurable criteria and relevance. We look at DR, organic traffic, the actual article, topic, target page, anchor, and the existing backlink profile \u2014 not just a DR threshold.',
           'Clients can order individual placements by DR and traffic level, but larger campaigns may use a mix of price levels. Not every backlink needs to be a premium placement. A DR10+ link serves a different purpose than a DR50+ link, and both can have a place in the same profile depending on the campaign.',
           'For clients running ongoing link-building campaigns, we can analyze competitors and the existing backlink profile before recommending the mix of [niche edits](/blog/niche-edits-vs-guest-posts), [guest posts](/services/guest-posting), and [community links](/services/crowd-links). See real outcomes in our [case studies](/case-studies), or explore niche-specific bundles in our [link building packages](/services/link-packages/saas).',
         ]}
         faqs={[
           { q: 'What is a niche edit?', a: 'A niche edit, also called a link insertion, is a backlink added to an existing article. The link is placed inside relevant content rather than publishing a completely new guest post.' },
           { q: 'Are niche edits safe?', a: 'No link-building method is completely risk-free. We manually review potential placements and focus on relevant websites and articles rather than approving sites only because they meet a DR threshold.' },
-          { q: 'Are niche edits faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3–7 days, although publisher response times can vary." },
+          { q: 'Are niche edits faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3\u20137 days, although publisher response times can vary." },
           { q: 'Can I control the anchor text?', a: 'Yes. Clients can provide preferred anchors. For ongoing campaigns, we can also recommend anchors based on the current backlink profile and target pages.' },
-          { q: 'Which DR package should I choose?', a: 'It depends on the current backlink profile, competitors, target pages, and budget. Not every link needs to be DR50–60+. Clients can order a specific level or ask us to recommend a mix.' },
+          { q: 'Which DR package should I choose?', a: 'It depends on the current backlink profile, competitors, target pages, and budget. Not every link needs to be DR50\u201360+. Clients can order a specific level or ask us to recommend a mix.' },
           { q: 'Do you guarantee indexing?', a: 'No. We can check whether a page is accessible and indexed when evaluating it, but indexing is controlled by search engines and can change over time.' },
           { q: 'Are niche edits permanent?', a: "Placements are intended to remain live, but third-party websites are outside our permanent control. If a placement is removed within the coverage period, contact us and we'll replace it." },
         ]}
@@ -369,16 +385,17 @@ export default function NicheEditsPage() {
             >
               View Packages <ArrowRight size={14} />
             </button>
-            <a
-              href="/#contact"
-              onClick={() => trackEvent('get_link_plan')}
+            <button
+              onClick={openLinkPlan}
               className="border border-white/20 hover:border-white/30 text-gray-300 hover:text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200"
             >
               Get a Link Plan
-            </a>
+            </button>
           </div>
         </div>
       </section>
+
+      <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
     </ServicePageLayout>
   );
 }

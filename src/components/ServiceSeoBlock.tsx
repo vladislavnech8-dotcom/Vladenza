@@ -70,12 +70,9 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
   }, [faqs]);
 
   return (
-    <section className="py-20 bg-white border-t border-gray-100">
+    <section className="py-16 bg-white border-t border-gray-100">
       <div className="max-w-3xl mx-auto px-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
-          Overview
-        </div>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-5">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight tracking-tight mb-5">
           {heading}
         </h2>
         <p className="text-gray-600 text-[17px] leading-[1.8] mb-6">{renderInline(intro)}</p>

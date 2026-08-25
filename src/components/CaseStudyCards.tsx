@@ -1,4 +1,4 @@
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export interface RelatedCase {
   slug: string;
@@ -21,7 +21,7 @@ export default function CaseStudyCards({ cases }: { cases: RelatedCase[] }) {
         <a
           key={c.slug}
           href={`/case-studies/${c.slug}`}
-          className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col"
+          className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-xl hover:shadow-gray-100 hover:-translate-y-1 transition-all duration-300 flex flex-col"
         >
           <div className="h-1 w-full" style={{ backgroundColor: c.color }} />
           <div className="p-6 flex flex-col flex-1 gap-4">
@@ -40,7 +40,7 @@ export default function CaseStudyCards({ cases }: { cases: RelatedCase[] }) {
 
             <div className="flex items-end justify-between gap-4 pt-4 mt-auto border-t border-gray-100">
               <div>
-                <div className="text-2xl font-black leading-none" style={{ color: c.color }}>{c.metric}</div>
+                <div className="text-3xl font-black leading-none transition-colors group-hover:scale-105 origin-left duration-300" style={{ color: c.color }}>{c.metric}</div>
                 <div className="text-xs text-gray-400 mt-1">{c.metric_sub}</div>
               </div>
               <div className="text-right">
@@ -50,8 +50,8 @@ export default function CaseStudyCards({ cases }: { cases: RelatedCase[] }) {
             </div>
 
             <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 group-hover:text-[#F97316] transition-colors">
-              View Campaign
-              <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              See the full campaign
+              <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </a>
