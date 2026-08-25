@@ -1,21 +1,10 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Navigation from './components/Navigation';
-import Hero from './components/Hero';
-import LogosBar from './components/LogosBar';
-import Services from './components/Services';
-import WhyUs from './components/WhyUs';
-import CaseStudies from './components/CaseStudies';
-import HowItWorks from './components/HowItWorks';
-import FAQ from './components/FAQ';
-import Footer from './components/Footer';
-import OrderModal, { Package } from './components/OrderModal';
-import ReviewsBar from './components/ReviewsBar';
 import CartDrawer from './components/CartDrawer';
 import { CartProvider } from './context/CartContext';
 import { CheckoutProvider } from './context/CheckoutContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { useSEO } from './hooks/useSEO';
+import HomePage from './pages/HomePage';
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
@@ -51,36 +40,6 @@ function AdminRoute() {
   const { session, loading } = useAuth();
   if (loading) return <PageLoader />;
   return session ? <AdminPage /> : <LoginPage />;
-}
-
-function HomePage() {
-  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
-
-  useSEO({
-    title: 'Vladenza — SEO Link Building Agency & AI Visibility',
-    description: 'Results-driven SEO agency for high-authority link building, guest posting, niche edits, and AI/LLM visibility. Grow organic traffic — no lock-ins.',
-    canonical: 'https://vladenza.com/',
-  });
-
-  function openModal() {
-    setSelectedPkg({ name: 'Custom Package', price: 'Custom', links: 'Get a quote', service: 'General Inquiry' });
-  }
-
-  return (
-    <div className="bg-white min-h-screen">
-      <Navigation onOpenModal={openModal} />
-      <Hero onGetQuote={openModal} />
-      <LogosBar />
-      <Services onOrder={setSelectedPkg} />
-      <WhyUs />
-      <CaseStudies />
-      <ReviewsBar />
-      <HowItWorks />
-      <FAQ />
-      <Footer onOpenModal={openModal} />
-      <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
-    </div>
-  );
 }
 
 export default function App() {

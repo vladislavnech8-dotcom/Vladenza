@@ -72,9 +72,21 @@ function FAQItem({ faq, index, openId, onToggle }: { faq: { q: string; a: string
   );
 }
 
-export default function FAQ() {
+export default function FAQ({ faqs, compact }: { faqs?: { q: string; a: string }[]; compact?: boolean }) {
   const [open, setOpen] = useState<string | null>(null);
   const toggle = (id: string) => setOpen(open === id ? null : id);
+
+  const list = faqs && faqs.length > 0 ? faqs : [...faqsLeft, ...faqsRight];
+
+  if (compact) {
+    return (
+      <div className="flex flex-col gap-2">
+        {list.map((faq, i) => (
+          <FAQItem key={i} faq={faq} index={`f${i}`} openId={open} onToggle={toggle} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <section id="faq" className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #fef6ee 0%, #ffffff 100%)' }}>
@@ -124,12 +136,12 @@ export default function FAQ() {
 
         <div className="grid md:grid-cols-2 gap-3">
           <div className="flex flex-col gap-2">
-            {faqsLeft.map((faq, i) => (
+            {list.slice(0, Math.ceil(list.length / 2)).map((faq, i) => (
               <FAQItem key={i} faq={faq} index={`l${i}`} openId={open} onToggle={toggle} />
             ))}
           </div>
           <div className="flex flex-col gap-2">
-            {faqsRight.map((faq, i) => (
+            {list.slice(Math.ceil(list.length / 2)).map((faq, i) => (
               <FAQItem key={i} faq={faq} index={`r${i}`} openId={open} onToggle={toggle} />
             ))}
           </div>
