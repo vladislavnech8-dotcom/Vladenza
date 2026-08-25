@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Minus, Plus, Check, ArrowRight, ArrowDown } from 'lucide-react';
+import { Minus, Plus, Check, ArrowRight, ArrowDown, ExternalLink } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import PlacementExplorer from '../components/PlacementExplorer';
@@ -11,7 +11,7 @@ import { useCart } from '../context/CartContext';
 import { useSEO } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
 import { trackEvent } from '../lib/analytics';
-import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
+import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE, packageExamples, sampleReportUrl } from '../data/nicheEditPackages';
 
 const benefits = [
   { emoji: '🔗', title: 'Existing Content', desc: 'Your backlink is added to an article that’s already published.' },
@@ -39,6 +39,7 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
   const inCart = items.find((i) => i.productId === `niche-edit-${pkg.id}`);
+  const example = packageExamples[pkg.id];
 
   const handleAdd = () => {
     addItem(
@@ -61,10 +62,22 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
     <div className={`rounded-2xl p-6 border flex flex-col transition-all duration-200 ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>
       <div className="text-xl font-bold text-white mb-1">{pkg.label}</div>
       <div className={`text-xs mb-5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.traffic}</div>
-      <div className="text-3xl font-black text-white mb-5">
+      <div className="text-3xl font-black text-white mb-4">
         ${pkg.price}
         <span className={`text-sm font-medium ml-1.5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>/ placement</span>
       </div>
+
+      {example && example.url && (
+        <a
+          href={example.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`flex items-center gap-1.5 text-xs mb-4 transition-colors ${pkg.highlight ? 'text-white/70 hover:text-white' : 'text-gray-500 hover:text-[#F97316]'}`}
+        >
+          <ExternalLink size={11} className="flex-shrink-0" />
+          Example: {example.domain} · DR{example.dr} · {example.traffic}
+        </a>
+      )}
 
       {inCart && (
         <div className={`text-xs font-semibold mb-3 ${pkg.highlight ? 'text-white/90' : 'text-[#F97316]'}`}>
@@ -206,6 +219,11 @@ export default function NicheEditsPage() {
                     </div>
                   ))}
                 </div>
+                {sampleReportUrl && (
+                  <a href={sampleReportUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors mt-3 pt-3 border-t border-gray-100">
+                    See Sample Report <ArrowRight size={12} />
+                  </a>
+                )}
               </button>
             </div>
           </div>
@@ -314,6 +332,13 @@ export default function NicheEditsPage() {
             Examples from completed orders, with Ahrefs DR and organic traffic metrics.
           </p>
           <PlacementExplorer />
+          {sampleReportUrl && (
+            <div className="mt-6">
+              <a href={sampleReportUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+                See Sample Report <ArrowRight size={14} />
+              </a>
+            </div>
+          )}
         </div>
       </section>
 

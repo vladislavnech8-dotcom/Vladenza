@@ -17,3 +17,22 @@ export const nicheEditPackages: NicheEditPackage[] = [
 ];
 
 export const NICHE_EDIT_STARTING_PRICE = nicheEditPackages[0].price;
+
+export interface PackageExample {
+  domain: string;
+  dr: number | null;
+  traffic: string;
+  url: string;
+}
+
+export const packageExamples: Record<string, PackageExample | null> = {
+  dr10: null,
+  dr20: null,
+  dr30: null,
+  dr40: null,
+  dr50: null,
+  dr60: null,
+};
+
+export const sampleReportUrl = '';
+
