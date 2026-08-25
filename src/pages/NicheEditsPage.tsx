@@ -5,6 +5,7 @@ import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import PlacementExplorer from '../components/PlacementExplorer';
 import CaseStudyCards, { type RelatedCase } from '../components/CaseStudyCards';
 import NicheEditsVsGuestPosts from '../components/NicheEditsVsGuestPosts';
+import ReviewsSection from '../components/ReviewsSection';
 import LinkPlanModal from '../components/LinkPlanModal';
 import { useCart } from '../context/CartContext';
 import { useSEO } from '../hooks/useSEO';
@@ -13,15 +14,15 @@ import { trackEvent } from '../lib/analytics';
 import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
 
 const benefits = [
-  { emoji: '🔗', title: 'Existing Content', desc: 'Your backlink is added to an article that\u2019s already published.' },
+  { emoji: '🔗', title: 'Existing Content', desc: 'Your backlink is added to an article that’s already published.' },
   { emoji: '🎯', title: 'Contextual Placement', desc: 'The link sits inside content relevant to the target page.' },
   { emoji: '📈', title: 'DR & Traffic Options', desc: 'Choose the level that matches the campaign and budget.' },
-  { emoji: '⚡', title: 'Faster Fulfilment', desc: 'No new article needs to be written. Typical delivery is 3\u20137 days.' },
+  { emoji: '⚡', title: 'Faster Fulfilment', desc: 'No new article needs to be written. Typical delivery is 3–7 days.' },
 ];
 
 const howSteps = [
   { emoji: '🛒', title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
-  { emoji: '🔗', title: 'Requirements', desc: 'Add URLs, anchors and notes \u2014 or send them later.' },
+  { emoji: '🔗', title: 'Requirements', desc: 'Add URLs, anchors and notes — or send them later.' },
   { emoji: '✅', title: 'Review', desc: 'We review the requirements and available placements.' },
   { emoji: '🚀', title: 'Placement', desc: 'The approved link is delivered in your report.' },
 ];
@@ -44,7 +45,7 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
       {
         productId: `niche-edit-${pkg.id}`,
         service: 'Niche Edits',
-        name: `Niche Edit \u2014 ${pkg.label}`,
+        name: `Niche Edit — ${pkg.label}`,
         description: pkg.traffic,
         unitPrice: pkg.price,
       },
@@ -113,7 +114,7 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
 export default function NicheEditsPage() {
   useSEO({
     title: 'Buy Niche Edits & Link Insertions | Vladenza',
-    description: 'Niche edits and link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3\u20137 day delivery.',
+    description: 'Niche edits and link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3–7 day delivery.',
     canonical: 'https://vladenza.com/services/niche-edits',
   });
 
@@ -146,7 +147,7 @@ export default function NicheEditsPage() {
 
   return (
     <ServicePageLayout>
-      {/* Hero \u2014 compact */}
+      {/* Hero — compact */}
       <section className="relative overflow-hidden pt-16 pb-12 lg:pt-20 lg:pb-14" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-[1fr_320px] gap-10 items-center">
@@ -163,7 +164,7 @@ export default function NicheEditsPage() {
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span className="text-sm font-bold text-gray-900">From ${NICHE_EDIT_STARTING_PRICE}</span>
                 <span className="w-1 h-1 rounded-full bg-gray-300" />
-                <span className="text-sm text-gray-500">3\u20137 day delivery</span>
+                <span className="text-sm text-gray-500">3–7 day delivery</span>
                 <span className="w-1 h-1 rounded-full bg-gray-300" />
                 <span className="text-sm text-gray-500">Manual review</span>
               </div>
@@ -183,7 +184,7 @@ export default function NicheEditsPage() {
               </div>
             </div>
 
-            {/* Product visual \u2014 desktop only */}
+            {/* Product visual — desktop only */}
             <div className="hidden lg:block">
               <button
                 onClick={() => scrollToId('packages')}
@@ -193,12 +194,12 @@ export default function NicheEditsPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="text-lg font-bold text-gray-900">DR40+</div>
-                    <div className="text-xs text-gray-400">1,000\u201320,000 traffic</div>
+                    <div className="text-xs text-gray-400">1,000–20,000 traffic</div>
                   </div>
                   <div className="text-2xl font-black text-[#F97316]">$200</div>
                 </div>
                 <div className="space-y-2 pt-3 border-t border-gray-100">
-                  {['DR 40+ domain', 'Contextual placement', '3\u20137 day delivery', 'Manual review'].map((f) => (
+                  {['DR 40+ domain', 'Contextual placement', '3–7 day delivery', 'Manual review'].map((f) => (
                     <div key={f} className="flex items-center gap-2 text-xs text-gray-500">
                       <Check size={12} className="text-[#F97316] flex-shrink-0" />
                       {f}
@@ -211,26 +212,29 @@ export default function NicheEditsPage() {
         </div>
       </section>
 
-      {/* Trust strip */}
-      <section className="bg-gray-950 py-6">
+      {/* Trust strip — compact */}
+      <section className="bg-gray-950 py-5">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-center">
             <div className="flex items-center gap-2">
-              <span className="text-base">\u2b50</span>
-              <span className="text-2xl font-black text-white">4.9</span>
-              <span className="text-xs text-gray-400">rating across<br />Trustpilot, Clutch, Google</span>
+              <span className="text-base">⭐</span>
+              <span className="text-xl font-black text-white">4.9</span>
+              <span className="text-xs text-gray-400">rating across Trustpilot, Clutch, Google</span>
             </div>
-            <div className="w-px h-8 bg-white/10 hidden sm:block" />
+            <div className="w-px h-6 bg-white/10 hidden sm:block" />
             <div className="flex items-center gap-2">
-              <span className="text-base">\ud83c\udfc6</span>
-              <span className="text-2xl font-black text-white">8+</span>
-              <span className="text-xs text-gray-400">years in<br />link building</span>
+              <span className="text-base">🏆</span>
+              <span className="text-xl font-black text-white">8+</span>
+              <span className="text-xs text-gray-400">years in link building</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Use Niche Edits \u2014 4 cards */}
+      {/* Reviews / Social proof */}
+      <ReviewsSection />
+
+      {/* Why Use Niche Edits — 4 cards */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Why Use Niche Edits?</h2>
@@ -264,7 +268,7 @@ export default function NicheEditsPage() {
         </div>
       </section>
 
-      {/* Not sure what to choose? \u2014 compact recommendation card */}
+      {/* Not sure what to choose? — compact recommendation card */}
       <section className="py-10 bg-white">
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-6 bg-orange-50/50 border border-orange-100 rounded-2xl p-6">
@@ -363,16 +367,16 @@ export default function NicheEditsPage() {
         heading="Niche Edits as Part of Your Link Building Strategy"
         intro="Niche edits, also called link insertions, add backlinks to articles that are already published. They are commonly used alongside guest posts, forum links, and other placements to build referring domain diversity and support important pages."
         body={[
-          'Selection should consider both measurable criteria and relevance. We look at DR, organic traffic, the actual article, topic, target page, anchor, and the existing backlink profile \u2014 not just a DR threshold.',
+          'Selection should consider both measurable criteria and relevance. We look at DR, organic traffic, the actual article, topic, target page, anchor, and the existing backlink profile — not just a DR threshold.',
           'Clients can order individual placements by DR and traffic level, but larger campaigns may use a mix of price levels. Not every backlink needs to be a premium placement. A DR10+ link serves a different purpose than a DR50+ link, and both can have a place in the same profile depending on the campaign.',
           'For clients running ongoing link-building campaigns, we can analyze competitors and the existing backlink profile before recommending the mix of [niche edits](/blog/niche-edits-vs-guest-posts), [guest posts](/services/guest-posting), and [community links](/services/crowd-links). See real outcomes in our [case studies](/case-studies), or explore niche-specific bundles in our [link building packages](/services/link-packages/saas).',
         ]}
         faqs={[
           { q: 'What is a niche edit?', a: 'A niche edit, also called a link insertion, is a backlink added to an existing article. The link is placed inside relevant content rather than publishing a completely new guest post.' },
           { q: 'Are niche edits safe?', a: 'No link-building method is completely risk-free. We manually review potential placements and focus on relevant websites and articles rather than approving sites only because they meet a DR threshold.' },
-          { q: 'Are niche edits faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3\u20137 days, although publisher response times can vary." },
+          { q: 'Are niche edits faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3–7 days, although publisher response times can vary." },
           { q: 'Can I control the anchor text?', a: 'Yes. Clients can provide preferred anchors. For ongoing campaigns, we can also recommend anchors based on the current backlink profile and target pages.' },
-          { q: 'Which DR package should I choose?', a: 'It depends on the current backlink profile, competitors, target pages, and budget. Not every link needs to be DR50\u201360+. Clients can order a specific level or ask us to recommend a mix.' },
+          { q: 'Which DR package should I choose?', a: 'It depends on the current backlink profile, competitors, target pages, and budget. Not every link needs to be DR50–60+. Clients can order a specific level or ask us to recommend a mix.' },
           { q: 'Do you guarantee indexing?', a: 'No. We can check whether a page is accessible and indexed when evaluating it, but indexing is controlled by search engines and can change over time.' },
           { q: 'Are niche edits permanent?', a: "Placements are intended to remain live, but third-party websites are outside our permanent control. If a placement is removed within the coverage period, contact us and we'll replace it." },
         ]}

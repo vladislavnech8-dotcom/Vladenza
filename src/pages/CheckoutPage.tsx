@@ -66,6 +66,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [outcome, setOutcome] = useState<'approved' | 'declined' | 'pending' | null>(null);
   const [paidOrderRef, setPaidOrderRef] = useState('');
+  const [paidOrderNumber, setPaidOrderNumber] = useState('');
   const [bulkText, setBulkText] = useState('');
   const [showBulk, setShowBulk] = useState(false);
 
@@ -152,7 +153,7 @@ export default function CheckoutPage() {
     setOutcome(null);
 
     const cartItems = items.map((i) => ({ productId: i.productId, name: i.name, unitPrice: i.unitPrice, quantity: i.quantity }));
-    trackEvent('payment_started', { total, itemCount });
+    trackEvent('add_payment_info', { total, itemCount });
 
     try {
       const result = await payWithWayForPay({
@@ -160,13 +161,15 @@ export default function CheckoutPage() {
         name: data.customerName,
         email: data.customerEmail,
         website: data.customerWebsite,
+        company: data.customerCompany,
         requirements: data.requirementsChoice === 'later' ? null : placementReqs,
         requirementsStatus: data.requirementsChoice === 'later' ? 'pending' : 'provided',
       });
       setOutcome(result.outcome);
       setPaidOrderRef(result.orderRef);
+      setPaidOrderNumber(result.orderNumber);
       if (result.outcome === 'approved') {
-        trackEvent('purchase', { total, itemCount, items: items.length, orderRef: result.orderRef });
+        trackEvent('purchase', { value: total, currency: 'USD', transaction_id: result.orderNumber, items: items.length });
         clear();
       }
     } catch (err) {
@@ -186,7 +189,7 @@ export default function CheckoutPage() {
             <CheckCircle size={32} className="text-green-500" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Confirmed</h1>
-          <p className="text-gray-400 text-sm mb-1">Order #{paidOrderRef}</p>
+          <p className="text-gray-400 text-sm mb-1">Order #{paidOrderNumber || paidOrderRef}</p>
           <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
             We've received your order. {data.requirementsChoice === 'later'
               ? "We still need your link requirements — add them below or we'll reach out by email."

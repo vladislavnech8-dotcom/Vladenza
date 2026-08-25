@@ -141,8 +141,8 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
         phone,
         website,
       });
-      setPayOutcome(outcome);
-      if (outcome === 'approved') {
+      setPayOutcome(outcome.outcome);
+      if (outcome.outcome === 'approved') {
         trackConversion();
       }
     } catch (err) {

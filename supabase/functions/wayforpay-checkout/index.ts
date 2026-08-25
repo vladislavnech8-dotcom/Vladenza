@@ -36,12 +36,13 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { currency, name, email, phone, website, message, type, items, requirements, requirementsStatus } = body as {
+    const { currency, name, email, phone, website, company, message, type, items, requirements, requirementsStatus } = body as {
       currency?: string;
       name?: string;
       email?: string;
       phone?: string;
       website?: string;
+      company?: string;
       message?: string;
       type?: string;
       items?: CartItemInput[];
@@ -104,8 +105,23 @@ Deno.serve(async (req: Request) => {
     const orderRef = `vladenza-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const orderDate = Math.floor(Date.now() / 1000);
 
+    // Generate human-readable order number
+    const { data: numData } = await supabase.rpc("generate_order_number");
+    const orderNumber = numData as string || `NE-${Date.now()}`;
+
+    // Store order items with server-verified prices
+    const storedItems = items && Array.isArray(items) ? items.map((item) => ({
+      productId: item.productId,
+      name: item.name || item.productId,
+      unitPrice: VALID_PRICES[item.productId] || item.unitPrice,
+      quantity: item.quantity,
+    })) : [];
+
+    const reqStatus = requirementsStatus === "provided" ? "received" : "pending";
+
     const { error: dbError } = await supabase.from("orders").insert({
       order_ref: orderRef,
+      order_number: orderNumber,
       package_name: packageName,
       amount: amount,
       currency: currency || "USD",
@@ -113,8 +129,13 @@ Deno.serve(async (req: Request) => {
       name: name || "",
       email: email || "",
       website: safeWebsite,
+      company: company || "",
       message: message || "",
       status: type === "consultation" ? "consultation" : "pending_payment",
+      order_status: type === "consultation" ? "pending_payment" : "pending_payment",
+      order_items: storedItems,
+      requirements: requirements || [],
+      requirements_status: reqStatus,
     });
 
     if (dbError) throw new Error(dbError.message);
@@ -175,7 +196,7 @@ Deno.serve(async (req: Request) => {
       serviceUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/wayforpay-webhook`,
     };
 
-    return new Response(JSON.stringify({ success: true, orderRef, checkoutData }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ success: true, orderRef, orderNumber, checkoutData }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
     return new Response(JSON.stringify({ error: (err as Error).message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }

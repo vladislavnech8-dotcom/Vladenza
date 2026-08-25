@@ -103,7 +103,7 @@ export default function PlacementExplorer() {
 
   return (
     <div>
-      {/* Filters \u2014 compact toolbar */}
+      {/* Filters — compact toolbar */}
       <div className="flex flex-col gap-3 mb-8">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Niche</span>

@@ -1,19 +1,19 @@
 import { ArrowRight, ArrowDown } from 'lucide-react';
 
 const nicheEditPoints = [
-  { emoji: '\u26a1', label: '3\u20137 day delivery' },
-  { emoji: '\ud83d\udcdd', label: 'Existing content updated' },
-  { emoji: '\ud83c\udfaf', label: 'Context limited by existing article' },
-  { emoji: '\ud83d\udcb0', label: 'Usually lower cost' },
-  { emoji: '\ud83d\udccd', label: 'Good for adding links to already relevant pages' },
+  { emoji: '⚡', label: '3–7 day delivery' },
+  { emoji: '📝', label: 'Existing content updated' },
+  { emoji: '🎯', label: 'Context limited by existing article' },
+  { emoji: '💰', label: 'Usually lower cost' },
+  { emoji: '📍', label: 'Good for adding links to already relevant pages' },
 ];
 
 const guestPostPoints = [
-  { emoji: '\ud83d\udd52', label: '10\u201321 day delivery' },
-  { emoji: '\ud83d\udcc4', label: 'New article created' },
-  { emoji: '\ud83c\udfaf', label: 'More control over topic and context' },
-  { emoji: '\ud83d\udcb0', label: 'Usually higher cost' },
-  { emoji: '\ud83d\udcf0', label: 'Good for dedicated content around the link' },
+  { emoji: '🕒', label: '10–21 day delivery' },
+  { emoji: '📄', label: 'New article created' },
+  { emoji: '🎯', label: 'More control over topic and context' },
+  { emoji: '💰', label: 'Usually higher cost' },
+  { emoji: '📰', label: 'Good for dedicated content around the link' },
 ];
 
 export default function NicheEditsVsGuestPosts({
@@ -28,7 +28,7 @@ export default function NicheEditsVsGuestPosts({
         <div className="bg-white border-2 border-[#F97316]/20 rounded-2xl p-7 flex flex-col hover:border-[#F97316]/40 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-xl">
-              {'\ud83d\udd17'}
+              🔗
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900">Niche Edits</h3>
@@ -59,7 +59,7 @@ export default function NicheEditsVsGuestPosts({
         <div className="bg-white border-2 border-blue-200 rounded-2xl p-7 flex flex-col hover:border-blue-400 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-xl">
-              {'\u270d\ufe0f'}
+              ✍️
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900">Guest Posts</h3>
