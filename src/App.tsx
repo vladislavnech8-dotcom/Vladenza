@@ -39,9 +39,7 @@ const SeoAuditSamplePage = lazy(() => import('./pages/SeoAuditSamplePage'));
 const WhiteLabelPage = lazy(() => import('./pages/WhiteLabelPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const ClientAppPage = lazy(() => import('./pages/ClientAppPage'));
-const CheckoutRequirementsPage = lazy(() => import('./pages/CheckoutRequirementsPage'));
-const CheckoutRequirementsFormPage = lazy(() => import('./pages/CheckoutRequirementsFormPage'));
-const CheckoutReviewPage = lazy(() => import('./pages/CheckoutReviewPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -114,9 +112,8 @@ export default function App() {
             <Route path="/seo-audit-sample" element={<SeoAuditSamplePage />} />
             <Route path="/services/white-label" element={<WhiteLabelPage />} />
             <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/checkout/cart" element={<CheckoutRequirementsPage />} />
-            <Route path="/checkout/requirements-form" element={<CheckoutRequirementsFormPage />} />
-            <Route path="/checkout/review" element={<CheckoutReviewPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/checkout/requirements-form" element={<CheckoutPage />} />
           </Routes>
         </Suspense>
       </CheckoutProvider>

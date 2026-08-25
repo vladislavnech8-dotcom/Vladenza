@@ -94,7 +94,7 @@ export default function CartDrawer() {
               <button
                 onClick={() => {
                   closeCart();
-                  navigate('/checkout/requirements');
+                  navigate('/checkout');
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
               >

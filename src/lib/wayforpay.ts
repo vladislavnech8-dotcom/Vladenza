@@ -38,10 +38,7 @@ declare global {
 
 function loadWidgetScript(): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (window.Wayforpay) {
-      resolve();
-      return;
-    }
+    if (window.Wayforpay) { resolve(); return; }
     const existing = document.getElementById('wfp-widget-script') as HTMLScriptElement | null;
     if (existing) {
       existing.addEventListener('load', () => resolve());
@@ -59,6 +56,11 @@ function loadWidgetScript(): Promise<void> {
 
 export type WfpOutcome = 'approved' | 'declined' | 'pending';
 
+export interface PayResult {
+  outcome: WfpOutcome;
+  orderRef: string;
+}
+
 export interface CartItemInput {
   productId: string;
   name: string;
@@ -75,7 +77,9 @@ export async function payWithWayForPay(params: {
   email: string;
   phone?: string;
   website?: string;
-}): Promise<WfpOutcome> {
+  requirements?: unknown;
+  requirementsStatus?: string;
+}): Promise<PayResult> {
   const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
     body: {
       items: params.items,
@@ -87,6 +91,8 @@ export async function payWithWayForPay(params: {
       phone: params.phone || '',
       website: params.website || '',
       type: 'payment',
+      requirements: params.requirements,
+      requirementsStatus: params.requirementsStatus,
     },
   });
 
@@ -94,15 +100,17 @@ export async function payWithWayForPay(params: {
     throw new Error(error?.message || data?.error || 'Could not start checkout');
   }
 
+  const orderRef = data.orderRef as string;
+
   await loadWidgetScript();
 
   return new Promise((resolve) => {
     const wfp = new window.Wayforpay!();
     wfp.run(
       data.checkoutData,
-      () => resolve('approved'),
-      () => resolve('declined'),
-      () => resolve('pending')
+      () => resolve({ outcome: 'approved', orderRef }),
+      () => resolve({ outcome: 'declined', orderRef }),
+      () => resolve({ outcome: 'pending', orderRef })
     );
   });
 }

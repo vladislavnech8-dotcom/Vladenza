@@ -1,33 +1,40 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export interface TargetRequirement {
-  url: string;
+export interface PlacementRequirement {
+  cartItemId: string;
+  packageLabel: string;
+  targetUrl: string;
   anchor: string;
-  niche: string;
-  country: string;
+  letVladenzaRecommend: boolean;
   notes: string;
-  quantity: number;
 }
 
 export interface CheckoutData {
-  provideLater: boolean;
-  targets: TargetRequirement[];
+  requirementsChoice: 'now' | 'later' | null;
+  placementRequirements: PlacementRequirement[];
+  campaignNotes: string;
   customerName: string;
   customerEmail: string;
+  customerCompany: string;
+  customerWebsite: string;
+  orderRef: string;
 }
 
 const DEFAULT_CHECKOUT: CheckoutData = {
-  provideLater: false,
-  targets: [{ url: '', anchor: '', niche: '', country: '', notes: '', quantity: 0 }],
+  requirementsChoice: null,
+  placementRequirements: [],
+  campaignNotes: '',
   customerName: '',
   customerEmail: '',
+  customerCompany: '',
+  customerWebsite: '',
+  orderRef: '',
 };
 
 const STORAGE_KEY = 'vladenza_checkout';
 
 interface CheckoutContextValue {
   data: CheckoutData;
-  setData: (data: CheckoutData) => void;
   update: (patch: Partial<CheckoutData>) => void;
   reset: () => void;
 }
@@ -39,8 +46,7 @@ function loadCheckout(): CheckoutData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_CHECKOUT;
-    const parsed = JSON.parse(raw);
-    return { ...DEFAULT_CHECKOUT, ...parsed };
+    return { ...DEFAULT_CHECKOUT, ...JSON.parse(raw) };
   } catch {
     return DEFAULT_CHECKOUT;
   }
@@ -57,17 +63,14 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch { /* ignore */ }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch { /* ignore */ }
   }, [data, hydrated]);
 
-  const setData = (d: CheckoutData) => setDataState(d);
   const update = (patch: Partial<CheckoutData>) => setDataState((prev) => ({ ...prev, ...patch }));
   const reset = () => setDataState(DEFAULT_CHECKOUT);
 
   return (
-    <CheckoutContext.Provider value={{ data, setData, update, reset }}>
+    <CheckoutContext.Provider value={{ data, update, reset }}>
       {children}
     </CheckoutContext.Provider>
   );

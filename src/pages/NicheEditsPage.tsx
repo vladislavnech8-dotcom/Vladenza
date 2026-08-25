@@ -335,11 +335,18 @@ export default function NicheEditsPage() {
       {/* Real Campaign Cases */}
       {relatedCases.length > 0 && (
         <section className="py-16 bg-white">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Niche Edits in Real Campaigns</h2>
-          <p className="text-gray-500 text-sm mb-8 max-w-lg">
-            See how niche edits have been used as part of broader link-building campaigns.
-          </p>
-          <CaseStudyCards cases={relatedCases} />
+          <div className="max-w-7xl mx-auto px-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Campaigns. Real Outcomes.</h2>
+            <p className="text-gray-500 text-sm mb-8 max-w-lg">
+              See how niche edits fit into broader link-building campaigns across competitive markets.
+            </p>
+            <CaseStudyCards cases={relatedCases} />
+            <div className="mt-8">
+              <a href="/case-studies" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+                Explore All Case Studies <ArrowRight size={14} />
+              </a>
+            </div>
+          </div>
         </section>
       )}
 
