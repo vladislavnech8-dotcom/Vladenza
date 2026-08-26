@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, ChevronUp, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import PlacementCard from './PlacementCard';
+import Pagination from './Pagination';
 import { fetchPlacements, type Placement, type PlacementServiceType, getPlacementNiches } from '../data/placements';
 
 const DR_FILTERS = ['Any', 'DR20+', 'DR30+', 'DR40+', 'DR50+', 'DR60+'] as const;
@@ -12,8 +13,7 @@ const TRAFFIC_FILTERS = [
   { label: '50K+', min: 50000 },
 ];
 
-const INITIAL_COUNT = 6;
-const LOAD_BATCH = 6;
+const PAGE_SIZE = 9;
 
 export default function PlacementExplorer({ serviceType }: { serviceType?: PlacementServiceType }) {
   const [placements, setPlacements] = useState<Placement[]>([]);
@@ -23,7 +23,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
   const [activeDr, setActiveDr] = useState<string>('Any');
   const [activeTraffic, setActiveTraffic] = useState(0);
   const [search, setSearch] = useState('');
-  const [visible, setVisible] = useState(INITIAL_COUNT);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const filters: Parameters<typeof fetchPlacements>[0] = { status: 'active' };
@@ -52,7 +52,9 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
     });
   }, [placements, activeNiche, activeDr, activeTraffic, search]);
 
-  const shown = filtered.slice(0, visible);
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const shown = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const goToPage = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   return (
     <div>
@@ -63,7 +65,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
           {niches.map((n) => (
             <button
               key={n}
-              onClick={() => { setActiveNiche(n); setVisible(INITIAL_COUNT); }}
+              onClick={() => { setActiveNiche(n); setPage(1); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
                 activeNiche === n
                   ? 'bg-[#F97316] border-[#F97316] text-white'
@@ -81,7 +83,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
             {DR_FILTERS.map((d) => (
               <button
                 key={d}
-                onClick={() => { setActiveDr(d); setVisible(INITIAL_COUNT); }}
+                onClick={() => { setActiveDr(d); setPage(1); }}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
                   activeDr === d
                     ? 'bg-gray-900 border-gray-900 text-white'
@@ -98,7 +100,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
             {TRAFFIC_FILTERS.map((t) => (
               <button
                 key={t.label}
-                onClick={() => { setActiveTraffic(t.min); setVisible(INITIAL_COUNT); }}
+                onClick={() => { setActiveTraffic(t.min); setPage(1); }}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
                   activeTraffic === t.min
                     ? 'bg-gray-900 border-gray-900 text-white'
@@ -115,7 +117,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
             <input
               type="text"
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setVisible(INITIAL_COUNT); }}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search domain or niche"
               className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all"
             />
@@ -140,27 +142,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
         </div>
       )}
 
-      {/* Show More / Show Less */}
-      <div className="text-center mt-8 flex items-center justify-center gap-3">
-        {visible < filtered.length && (
-          <button
-            onClick={() => setVisible((v) => v + LOAD_BATCH)}
-            className="inline-flex items-center gap-2 border border-gray-200 hover:border-[#F97316]/40 text-gray-600 hover:text-[#F97316] font-semibold px-6 py-3 rounded-xl text-sm transition-all duration-200"
-          >
-            <ChevronDown size={16} />
-            Show More ({filtered.length - visible} remaining)
-          </button>
-        )}
-        {visible > INITIAL_COUNT && (
-          <button
-            onClick={() => { setVisible(INITIAL_COUNT); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="inline-flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-700 font-semibold px-6 py-3 rounded-xl text-sm transition-all duration-200"
-          >
-            <ChevronUp size={16} />
-            Show Less
-          </button>
-        )}
-      </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
 
       <p className="text-center text-xs text-gray-400 mt-6">
         Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.
