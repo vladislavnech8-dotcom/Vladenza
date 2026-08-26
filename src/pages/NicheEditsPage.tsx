@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Minus, Plus, Check, ArrowRight, ArrowDown, ExternalLink } from 'lucide-react';
+import { Minus, Plus, Check, ArrowRight, ArrowDown, ExternalLink, Link2, Target, TrendingUp, Zap, ShoppingCart, Trophy, Package, Sparkles } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import PlacementExplorer from '../components/PlacementExplorer';
@@ -14,20 +14,20 @@ import { trackEvent } from '../lib/analytics';
 import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE, packageExamples, sampleReportUrl } from '../data/nicheEditPackages';
 
 const benefits = [
-  { emoji: '🔗', title: 'Existing Content', desc: 'Your backlink is added to an article that’s already published.' },
-  { emoji: '🎯', title: 'Contextual Placement', desc: 'The link sits inside content relevant to the target page.' },
-  { emoji: '📈', title: 'DR & Traffic Options', desc: 'Choose the level that matches the campaign and budget.' },
-  { emoji: '⚡', title: 'Faster Fulfilment', desc: 'No new article needs to be written. Typical delivery is 3–7 days.' },
+  { icon: Link2, title: 'Existing Content', desc: 'Your backlink is added to an article that’s already published.' },
+  { icon: Target, title: 'Contextual Placement', desc: 'The link sits inside content relevant to the target page.' },
+  { icon: TrendingUp, title: 'DR & Traffic Options', desc: 'Choose the level that matches the campaign and budget.' },
+  { icon: Zap, title: 'Faster Fulfilment', desc: 'No new article needs to be written. Typical delivery is 3–7 days.' },
 ];
 
 const howSteps = [
-  { emoji: '🛒', title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
-  { emoji: '🔗', title: 'Requirements', desc: 'Add URLs, anchors and notes — or send them later.' },
-  { emoji: '✅', title: 'Review', desc: 'We review the requirements and available placements.' },
-  { emoji: '🚀', title: 'Placement', desc: 'The approved link is delivered in your report.' },
+  { icon: ShoppingCart, title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
+  { icon: Link2, title: 'Requirements', desc: 'Add URLs, anchors and notes — or send them later.' },
+  { icon: Check, title: 'Review', desc: 'We review the requirements and available placements.' },
+  { icon: Zap, title: 'Placement', desc: 'The approved link is delivered in your report.' },
 ];
 
-const linkPlanFeatures = ['🔎 Profile review', '⚖️ Budget split', '🔗 Suggested link mix'];
+const linkPlanFeatures = ['Profile review', 'Budget split', 'Suggested link mix'];
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -161,11 +161,13 @@ export default function NicheEditsPage() {
   return (
     <ServicePageLayout>
       {/* Hero — compact */}
-      <section className="relative overflow-hidden pt-16 pb-12 lg:pt-20 lg:pb-14" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-[1fr_320px] gap-10 items-center">
+      <section className="relative overflow-hidden pt-10 pb-10 lg:pt-12 lg:pb-12">
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
+        <div className="relative max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-[1fr_320px] gap-10 lg:gap-12 items-start">
             <div>
-              <h1 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">Link Building Service</p>
+              <h1 className="text-[28px] md:text-4xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
                 Niche Edit Link Building
               </h1>
               <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
@@ -201,15 +203,17 @@ export default function NicheEditsPage() {
             <div className="hidden lg:block">
               <button
                 onClick={() => scrollToId('packages')}
-                className="block w-full text-left bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:border-[#F97316]/30 hover:shadow-md transition-all duration-200"
+                className="block w-full text-left bg-white border border-gray-200 rounded-2xl p-5 shadow-sm shadow-gray-200/60 hover:border-[#F97316]/30 hover:shadow-md transition-all duration-200"
               >
-                <div className="text-xs font-semibold text-gray-400 mb-3">Example Package</div>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="text-lg font-bold text-gray-900">DR40+</div>
-                    <div className="text-xs text-gray-400">1,000–20,000 traffic</div>
+                <div className="rounded-xl p-3 bg-orange-50/60 border border-orange-100/60 mb-4">
+                  <div className="text-xs font-semibold text-gray-400 mb-2">Example Package</div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">DR40+</div>
+                      <div className="text-xs text-gray-400">1,000–20,000 traffic</div>
+                    </div>
+                    <div className="text-2xl font-black text-[#F97316]">$200</div>
                   </div>
-                  <div className="text-2xl font-black text-[#F97316]">$200</div>
                 </div>
                 <div className="space-y-2 pt-3 border-t border-gray-100">
                   {['DR 40+ domain', 'Contextual placement', '3–7 day delivery', 'Manual review'].map((f) => (
@@ -231,19 +235,29 @@ export default function NicheEditsPage() {
       </section>
 
       {/* Trust strip — compact */}
-      <section className="bg-gray-950 py-5">
+      <section className="bg-gray-950 py-6">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-center">
-            <div className="flex items-center gap-2">
-              <span className="text-base">⭐</span>
-              <span className="text-xl font-black text-white">4.9</span>
-              <span className="text-xs text-gray-400">rating across Trustpilot, Clutch, Google</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
+            <div className="flex items-center justify-center gap-3">
+              <Trophy size={20} className="text-[#F97316]" />
+              <div>
+                <div className="text-xl font-black text-white leading-none">8+</div>
+                <div className="text-[11px] text-gray-400 mt-1">Years in Link Building</div>
+              </div>
             </div>
-            <div className="w-px h-6 bg-white/10 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="text-base">🏆</span>
-              <span className="text-xl font-black text-white">8+</span>
-              <span className="text-xs text-gray-400">years in link building</span>
+            <div className="flex items-center justify-center gap-3 sm:border-x sm:border-white/10 sm:px-6">
+              <Package size={20} className="text-[#F97316]" />
+              <div>
+                <div className="text-xl font-black text-white leading-none">3,000+</div>
+                <div className="text-[11px] text-gray-400 mt-1">Completed Orders</div>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <Sparkles size={20} className="text-[#F97316]" />
+              <div>
+                <div className="text-xl font-black text-white leading-none">Manual</div>
+                <div className="text-[11px] text-gray-400 mt-1">Link Building</div>
+              </div>
             </div>
           </div>
         </div>
@@ -262,7 +276,9 @@ export default function NicheEditsPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {benefits.map((b) => (
               <div key={b.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300">
-                <div className="text-2xl mb-3">{b.emoji}</div>
+                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-3">
+                  <b.icon size={18} className="text-[#F97316]" />
+                </div>
                 <h3 className="text-gray-900 font-semibold text-sm mb-2">{b.title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">{b.desc}</p>
               </div>
@@ -349,7 +365,9 @@ export default function NicheEditsPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {howSteps.map((step, i) => (
               <div key={i} className="text-center">
-                <div className="text-2xl mb-2">{step.emoji}</div>
+                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mx-auto mb-3">
+                  <step.icon size={18} className="text-[#F97316]" />
+                </div>
                 <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center mx-auto mb-3 text-gray-400 font-bold text-xs">
                   {i + 1}
                 </div>

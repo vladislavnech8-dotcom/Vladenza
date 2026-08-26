@@ -43,32 +43,27 @@ export default function CrowdLinksPage() {
   return (
     <ServicePageLayout>
       {/* Hero */}
-      <section className="relative overflow-hidden py-20 lg:py-28" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <circle cx="1200" cy="80" r="380" fill="none" stroke="#F97316" strokeWidth="1.5" opacity="0.1"/>
-          <circle cx="1200" cy="80" r="260" fill="none" stroke="#F97316" strokeWidth="2" opacity="0.12"/>
-          <circle cx="1200" cy="80" r="140" fill="none" stroke="#F97316" strokeWidth="2.5" opacity="0.15"/>
-          {Array.from({ length: 6 }).map((_, row) =>
-            Array.from({ length: 5 }).map((_, col) => (
-              <circle key={`cl-${row}-${col}`} cx={col * 44 + 20} cy={row * 44 + 220} r="2.5" fill="#F97316" opacity={0.07 + col * 0.012} />
-            ))
-          )}
-          <line x1="30" y1="30" x2="30" y2="90" stroke="#F97316" strokeWidth="3" opacity="0.18" strokeLinecap="round"/>
-          <line x1="0" y1="60" x2="60" y2="60" stroke="#F97316" strokeWidth="3" opacity="0.18" strokeLinecap="round"/>
-        </svg>
+      <section className="relative overflow-hidden pt-10 pb-10 lg:pt-12 lg:pb-12">
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
-              <Users size={12} />
-              Service — Crowd Links
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-6">
-              Forum & Community Links<br />
-              <span className="text-[#F97316]">Built at Scale, Done Right</span>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">Link Building Service</p>
+            <h1 className="text-[28px] md:text-4xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
+              Crowd Link Building
             </h1>
-            <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-xl">
+            <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
+              Forum & community links built at scale, done right.
+            </p>
+            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-lg">
               Crowd marketing links from forums, Q&A platforms, and niche communities — posted naturally by real account operators to build referral trust and domain diversity.
             </p>
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+              <span className="text-sm font-bold text-gray-900">From $290</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300" />
+              <span className="text-sm text-gray-500">5–10 day delivery</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300" />
+              <span className="text-sm text-gray-500">50+ platforms</span>
+            </div>
             <div className="flex flex-wrap gap-3">
               <a
                 href="#languages"

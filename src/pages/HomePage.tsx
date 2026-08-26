@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, ArrowDown, ExternalLink, Check } from 'lucide-react';
+import { ArrowRight, ArrowDown, ExternalLink, Check, Link2, FileText, MessagesSquare, Trophy, Package, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -18,7 +18,7 @@ function scrollToId(id: string) {
 
 const linkProducts = [
   {
-    emoji: '🔗',
+    icon: Link2,
     name: 'Niche Edits',
     desc: 'Links added inside existing, relevant articles.',
     price: `From $${NICHE_EDIT_STARTING_PRICE}`,
@@ -27,7 +27,7 @@ const linkProducts = [
     placementsLink: '/services/niche-edits#placements',
   },
   {
-    emoji: '📝',
+    icon: FileText,
     name: 'Guest Posts',
     desc: 'New articles published with your backlink included naturally in the content.',
     price: 'From $80',
@@ -35,13 +35,19 @@ const linkProducts = [
     href: '/services/guest-posting',
   },
   {
-    emoji: '💬',
+    icon: MessagesSquare,
     name: 'Crowd Links',
     desc: 'Contextual mentions in forums and relevant online discussions.',
     price: 'From $290',
     best: 'backlink diversity & natural link profiles',
     href: '/services/crowd-links',
   },
+];
+
+const campaignServices = [
+  { icon: Link2, name: 'Niche Edits', price: `From $${NICHE_EDIT_STARTING_PRICE}`, href: '/services/niche-edits' },
+  { icon: FileText, name: 'Guest Posts', price: 'From $80', href: '/services/guest-posting' },
+  { icon: MessagesSquare, name: 'Crowd Links', price: 'From $290', href: '/services/crowd-links' },
 ];
 
 const clientLogos = [
@@ -73,16 +79,16 @@ const crowdLinkExamples = [
 
 type TabKey = 'niche-edits' | 'guest-posts' | 'crowd-links';
 
-const tabs: { key: TabKey; label: string; emoji: string }[] = [
-  { key: 'niche-edits', label: 'Niche Edits', emoji: '🔗' },
-  { key: 'guest-posts', label: 'Guest Posts', emoji: '📝' },
-  { key: 'crowd-links', label: 'Crowd Links', emoji: '💬' },
+const tabs: { key: TabKey; label: string; icon: typeof Link2 }[] = [
+  { key: 'niche-edits', label: 'Niche Edits', icon: Link2 },
+  { key: 'guest-posts', label: 'Guest Posts', icon: FileText },
+  { key: 'crowd-links', label: 'Crowd Links', icon: MessagesSquare },
 ];
 
 const secondaryServices = [
-  { emoji: '📍', label: 'Local SEO & Link Building', desc: 'Build geographically relevant authority and strengthen local organic visibility.', href: '/services/local-seo-links' },
-  { emoji: '🔎', label: 'SEO Audit & Strategy', desc: 'Technical, content, competitor and backlink analysis with an actionable roadmap.', href: '/services/seo-audit' },
-  { emoji: '🤖', label: 'AI & LLM Visibility', desc: 'Improve how your brand is discovered and referenced across AI-driven search experiences.', href: '/services/ai-llm' },
+  { icon: '📍', label: 'Local SEO & Link Building', desc: 'Build geographically relevant authority and strengthen local organic visibility.', href: '/services/local-seo-links' },
+  { icon: '🔎', label: 'SEO Audit & Strategy', desc: 'Technical, content, competitor and backlink analysis with an actionable roadmap.', href: '/services/seo-audit' },
+  { icon: '🤖', label: 'AI & LLM Visibility', desc: 'Improve how your brand is discovered and referenced across AI-driven search experiences.', href: '/services/ai-llm' },
 ];
 
 const homeFaqs = [
@@ -128,30 +134,46 @@ export default function HomePage() {
       ? 'View All Guest Post Examples'
       : 'View All Crowd Link Examples';
 
+  const ActiveTabIcon = tabs.find((t) => t.key === activeTab)!.icon;
+
   return (
     <div className="bg-white min-h-screen">
       <Navigation onOpenModal={openLinkPlan} />
 
       {/* 1. HERO */}
-      <section className="relative overflow-hidden pt-[100px] pb-12 lg:pt-[110px] lg:pb-14" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-[1fr_340px] gap-10 items-center">
+      <section className="relative overflow-hidden pt-[88px] pb-10 lg:pb-12">
+        {/* Subtle warm background */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
+        {/* Orange radial glow behind card */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            right: '-5%', top: '15%', width: '500px', height: '500px',
+            background: 'radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 65%)',
+          }}
+        />
+        <div className="relative max-w-7xl mx-auto px-6 pt-10 lg:pt-12">
+          <div className="grid lg:grid-cols-[1fr_360px] gap-10 lg:gap-12 items-start">
+
+            {/* LEFT: content */}
             <div>
-              <h1 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
-                Link Building Services Built Around<br />Your Site, Competition & Budget
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">Link Building Agency</p>
+              <h1 className="text-[28px] md:text-4xl lg:text-[44px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-5">
+                Link Building Services &mdash;<br className="hidden sm:block" />
+                <span className="sm:ml-1">From Individual Links to Full Campaigns</span>
               </h1>
-              <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
-                Guest posts, niche edits and community links — order individual placements or let us build a custom link-building plan based on your backlink profile, competitors and budget.
+              <p className="text-gray-600 text-[15px] md:text-base leading-relaxed mb-2 max-w-xl">
+                Order niche edits, guest posts and community links individually &mdash; or let us build a custom link-building campaign around your website, competitors and budget.
               </p>
-              <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                8+ years in link building · 3,000+ completed orders
+              <p className="text-gray-500 text-sm leading-relaxed mb-7">
+                8+ years in link building &middot; 3,000+ completed orders
               </p>
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => { scrollToId('products'); trackEvent('view_packages'); }}
                   className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
                 >
-                  View Link Options <ArrowDown size={14} />
+                  Explore Link Building Services <ArrowDown size={14} />
                 </button>
                 <button
                   onClick={openLinkPlan}
@@ -160,38 +182,37 @@ export default function HomePage() {
                   Get a Link Plan <ArrowRight size={14} />
                 </button>
               </div>
-              <p className="text-gray-400 text-xs mt-3">Not sure what to choose? We'll review your site and competitors.</p>
             </div>
 
-            {/* Right: Build Your Link Mix visual */}
+            {/* RIGHT: campaign card */}
             <div className="hidden lg:block">
-              <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-                <div className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Your Campaign</div>
-                <div className="flex flex-col gap-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-lg">🔗</span>
-                      <span className="text-sm font-semibold text-gray-900">Niche Edits</span>
-                    </div>
-                    <span className="text-xs font-bold text-[#F97316]">From ${NICHE_EDIT_STARTING_PRICE}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-lg">📝</span>
-                      <span className="text-sm font-semibold text-gray-900">Guest Posts</span>
-                    </div>
-                    <span className="text-xs font-bold text-[#F97316]">From $80</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-lg">💬</span>
-                      <span className="text-sm font-semibold text-gray-900">Crowd Links</span>
-                    </div>
-                    <span className="text-xs font-bold text-[#F97316]">From $290</span>
-                  </div>
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm shadow-gray-200/60">
+                <h3 className="text-base font-bold text-gray-900 mb-1.5">Build Your Link Campaign</h3>
+                <p className="text-xs text-gray-400 leading-relaxed mb-5">Choose individual placements or combine them into a campaign.</p>
+
+                <div className="flex flex-col gap-2.5 mb-5">
+                  {campaignServices.map((s) => (
+                    <Link
+                      key={s.name}
+                      to={s.href}
+                      className="group flex items-center justify-between border border-gray-100 rounded-xl px-3.5 py-3 hover:border-[#F97316]/30 hover:bg-orange-50/40 transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center">
+                          <s.icon size={16} className="text-[#F97316]" />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900">{s.name}</span>
+                      </div>
+                      <span className="text-xs font-bold text-[#F97316]">{s.price}</span>
+                    </Link>
+                  ))}
                 </div>
+
                 <div className="border-t border-gray-100 pt-4">
-                  <p className="text-xs text-gray-400 mb-2">Not sure about the mix?</p>
+                  <p className="text-xs text-gray-400 mb-2">Not sure what to choose?</p>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                    We'll review your backlink profile and recommend the mix.
+                  </p>
                   <button onClick={openLinkPlan} className="flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
                     Get a Link Plan <ArrowRight size={13} />
                   </button>
@@ -202,26 +223,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. TRUST / PROOF BAR */}
-      <section className="bg-gray-950 py-5">
+      {/* 2. PROOF BAR */}
+      <section className="bg-gray-950 py-6">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-center">
-            <div className="flex items-center gap-2">
-              <span className="text-base">⭐</span>
-              <span className="text-xl font-black text-white">4.9</span>
-              <span className="text-xs text-gray-400">rating across review platforms</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
+            <div className="flex items-center justify-center gap-3">
+              <Trophy size={20} className="text-[#F97316]" />
+              <div>
+                <div className="text-xl font-black text-white leading-none">8+</div>
+                <div className="text-[11px] text-gray-400 mt-1">Years in Link Building</div>
+              </div>
             </div>
-            <div className="w-px h-6 bg-white/10 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="text-base">🏆</span>
-              <span className="text-xl font-black text-white">8+</span>
-              <span className="text-xs text-gray-400">years in link building</span>
+            <div className="flex items-center justify-center gap-3 sm:border-x sm:border-white/10 sm:px-6">
+              <Package size={20} className="text-[#F97316]" />
+              <div>
+                <div className="text-xl font-black text-white leading-none">3,000+</div>
+                <div className="text-[11px] text-gray-400 mt-1">Completed Orders</div>
+              </div>
             </div>
-            <div className="w-px h-6 bg-white/10 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="text-base">📦</span>
-              <span className="text-xl font-black text-white">3,000+</span>
-              <span className="text-xs text-gray-400">completed orders</span>
+            <div className="flex items-center justify-center gap-3">
+              <Sparkles size={20} className="text-[#F97316]" />
+              <div>
+                <div className="text-xl font-black text-white leading-none">Manual</div>
+                <div className="text-[11px] text-gray-400 mt-1">Link Building</div>
+              </div>
             </div>
           </div>
         </div>
@@ -241,7 +266,9 @@ export default function HomePage() {
                 to={p.href}
                 className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-[#F97316]/30 hover:shadow-lg hover:shadow-gray-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col"
               >
-                <div className="text-2xl mb-3">{p.emoji}</div>
+                <div className="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center mb-4">
+                  <p.icon size={20} className="text-[#F97316]" />
+                </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{p.name}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed mb-3">{p.desc}</p>
                 <div className="text-xl font-black text-[#F97316] mb-4">{p.price}</div>
@@ -311,7 +338,7 @@ export default function HomePage() {
                     : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <span>{t.emoji}</span>
+                <t.icon size={14} />
                 {t.label}
               </button>
             ))}
@@ -329,8 +356,8 @@ export default function HomePage() {
               >
                 {/* Preview area */}
                 <div className="bg-gray-50 border-b border-gray-100 h-32 flex items-center justify-center relative overflow-hidden">
-                  <div className="text-3xl opacity-20">
-                    {activeTab === 'niche-edits' ? '🔗' : activeTab === 'guest-posts' ? '📝' : '💬'}
+                  <div className="opacity-20">
+                    <ActiveTabIcon size={36} className="text-gray-400" />
                   </div>
                   <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
                     {ex.type}
@@ -434,7 +461,7 @@ export default function HomePage() {
                 to={s.href}
                 className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-[#F97316]/30 hover:shadow-lg hover:shadow-gray-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col"
               >
-                <div className="text-2xl mb-3">{s.emoji}</div>
+                <div className="text-2xl mb-3">{s.icon}</div>
                 <h3 className="text-sm font-bold text-gray-900 mb-2">{s.label}</h3>
                 <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">{s.desc}</p>
                 <span className="text-sm font-semibold text-[#F97316] group-hover:text-[#EA580C] flex items-center gap-1.5 transition-colors mt-auto">
