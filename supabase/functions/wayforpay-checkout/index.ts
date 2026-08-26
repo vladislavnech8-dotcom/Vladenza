@@ -14,7 +14,7 @@ function hmacMd5(key: string, data: string): string {
 
 // Server-side canonical pricing — the only source of truth for prices
 const VALID_PRICES: Record<string, number> = {
-  "niche-edit-dr10": 70,
+  "niche-edit-dr10": 1,
   "niche-edit-dr20": 90,
   "niche-edit-dr30": 110,
   "niche-edit-dr40": 200,
