@@ -1,0 +1,11 @@
+[functions.wayforpay-checkout]
+verify_jwt = false
+
+[functions.wayforpay-webhook]
+verify_jwt = false
+
+[functions.inbound-lead]
+verify_jwt = false
+
+[functions.sitemap]
+verify_jwt = false
