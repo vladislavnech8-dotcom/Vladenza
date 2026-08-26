@@ -152,11 +152,12 @@ Deno.serve(async (req: Request) => {
     const isApproved = transactionStatus === "Approved";
 
     // Store a sanitized payment result — no merchant secrets, no full card data
-    const paymentResult = {
-      transactionStatus,
+    // Explicitly build a plain object to ensure JSONB serialization (never "[object Object]")
+    const paymentResult: Record<string, unknown> = {
+      transactionStatus: String(transactionStatus || ""),
       transactionId: transactionId || null,
       authCode: authCode || null,
-      cardPan: cardPan || null, // masked pan only (e.g. "54****8763")
+      cardPan: cardPan || null,
       reasonCode: reasonCode || null,
       verifiedAt: new Date().toISOString(),
     };
@@ -167,15 +168,19 @@ Deno.serve(async (req: Request) => {
       (sum, item) => sum + item.unitPrice * item.quantity,
       0
     );
-    const cartSnapshot = {
-      items: orderItems.map((item) => ({
-        productId: item.productId,
-        name: item.name,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-      })),
+
+    // Build a plain object with plain-object items to guarantee JSONB compatibility
+    const snapshotItems: Record<string, unknown>[] = orderItems.map((item) => ({
+      productId: String(item.productId || ""),
+      name: String(item.name || ""),
+      quantity: Number(item.quantity) || 0,
+      unitPrice: Number(item.unitPrice) || 0,
+    }));
+
+    const cartSnapshot: Record<string, unknown> = {
+      items: snapshotItems,
       total: Math.round(snapshotTotal * 100) / 100,
-      currency: serverCurrency,
+      currency: String(serverCurrency || "USD"),
     };
 
     const update: Record<string, unknown> = {

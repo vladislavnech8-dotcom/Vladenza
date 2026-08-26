@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { createHmac, randomBytes, createHash } from "node:crypto";
+import { createHmac, randomBytes, createHash, createCipheriv } from "node:crypto";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,9 +20,20 @@ function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
+// AES-256-GCM authenticated encryption
+// Output format: "ivHex:tagHex:ciphertextHex"
+function encryptToken(token: string, keyHex: string): string {
+  const key = Buffer.from(keyHex, "hex");
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  const encrypted = Buffer.concat([cipher.update(token, "utf8"), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return `${iv.toString("hex")}:${tag.toString("hex")}:${encrypted.toString("hex")}`;
+}
+
 // Server-side canonical pricing — the only source of truth for prices
 const VALID_PRICES: Record<string, number> = {
-  "niche-edit-dr10": 1,
+  "niche-edit-dr10": 70,
   "niche-edit-dr20": 90,
   "niche-edit-dr30": 110,
   "niche-edit-dr40": 200,
@@ -76,13 +87,11 @@ Deno.serve(async (req: Request) => {
           return new Response(JSON.stringify({ error: "Invalid item quantity" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
-        // Server-side price verification: look up canonical price by productId
         const canonicalPrice = VALID_PRICES[item.productId];
         if (canonicalPrice === undefined) {
           return new Response(JSON.stringify({ error: `Unknown product: ${item.productId}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
-        // Use the server-verified price, NOT the client-supplied price
         productPrices.push(canonicalPrice);
         productCounts.push(qty);
         productNames.push(item.name || item.productId);
@@ -113,16 +122,22 @@ Deno.serve(async (req: Request) => {
     const orderRef = `vladenza-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const orderDate = Math.floor(Date.now() / 1000);
 
-    // Generate a cryptographically random requirements access token
+    // Generate cryptographically random requirements access token
     const requirementsToken = generateToken();
     const requirementsTokenHash = hashToken(requirementsToken);
 
-    // Generate human-readable order number
+    // Encrypt the token for server-side storage (decryptable by email function)
+    const encryptionKey = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY") || "";
+    let requirementsTokenEncrypted: string | null = null;
+    if (encryptionKey) {
+      requirementsTokenEncrypted = encryptToken(requirementsToken, encryptionKey);
+    }
+
     const { data: numData } = await supabase.rpc("generate_order_number");
     const orderNumber = numData as string || `NE-${Date.now()}`;
 
-    // Store order items with server-verified prices
-    const storedItems = items && Array.isArray(items) ? items.map((item) => ({
+    // Store order items as a proper JSON array of objects (never stringified)
+    const storedItems: CartItemInput[] = items && Array.isArray(items) ? items.map((item) => ({
       productId: item.productId,
       name: item.name || item.productId,
       unitPrice: VALID_PRICES[item.productId] || item.unitPrice,
@@ -131,7 +146,7 @@ Deno.serve(async (req: Request) => {
 
     const reqStatus = requirementsStatus === "provided" ? "received" : "pending";
 
-    const { error: dbError } = await supabase.from("orders").insert({
+    const insertPayload: Record<string, unknown> = {
       order_ref: orderRef,
       order_number: orderNumber,
       package_name: packageName,
@@ -146,10 +161,16 @@ Deno.serve(async (req: Request) => {
       status: type === "consultation" ? "consultation" : "pending_payment",
       order_status: type === "consultation" ? "pending_payment" : "pending_payment",
       order_items: storedItems,
-      requirements: requirements || [],
+      requirements: Array.isArray(requirements) ? requirements : [],
       requirements_status: reqStatus,
       requirements_token_hash: requirementsTokenHash,
-    });
+    };
+
+    if (requirementsTokenEncrypted) {
+      insertPayload.requirements_token_encrypted = requirementsTokenEncrypted;
+    }
+
+    const { error: dbError } = await supabase.from("orders").insert(insertPayload);
 
     if (dbError) throw new Error(dbError.message);
 

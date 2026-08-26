@@ -1,11 +1,27 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { createDecipheriv } from "node:crypto";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
+
+// AES-256-GCM authenticated decryption
+// Input format: "ivHex:tagHex:ciphertextHex"
+function decryptToken(encrypted: string, keyHex: string): string {
+  const parts = encrypted.split(":");
+  if (parts.length !== 3) throw new Error("Invalid encrypted token format");
+  const key = Buffer.from(keyHex, "hex");
+  const iv = Buffer.from(parts[0], "hex");
+  const tag = Buffer.from(parts[1], "hex");
+  const ciphertext = Buffer.from(parts[2], "hex");
+  const decipher = createDecipheriv("aes-256-gcm", key, iv);
+  decipher.setAuthTag(tag);
+  const decrypted = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+  return decrypted.toString("utf8");
+}
 
 interface OrderItem {
   productId: string;
@@ -43,34 +59,59 @@ Deno.serve(async (req: Request) => {
     }
 
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const ENCRYPTION_KEY = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY") || "";
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Atomic email claim: only one caller can transition from null/failed to 'sending'
+    const { data: claimed, error: claimError } = await supabase.rpc("claim_email_sending", {
+      p_order_ref: orderRef,
+    });
+
+    if (claimError) throw new Error(claimError.message);
+
+    if (!claimed) {
+      // Another caller already claimed this email, or it was already sent
+      console.log(`Email claim denied for order ${orderRef} (already claimed or sent)`);
+      return new Response(
+        JSON.stringify({ success: true, message: "Email already claimed or sent" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Fetch the order with all data needed for the email
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("id, order_number, name, email, amount, currency, order_items, cart_snapshot, requirements_status, order_status, email_sent_at, requirements_token_hash")
+      .select("id, order_number, name, email, amount, currency, order_items, cart_snapshot, requirements_status, order_status, requirements_token_encrypted")
       .eq("order_ref", orderRef)
       .single();
 
     if (orderError || !order) {
+      // Release the claim so a retry can work after the order exists
+      await supabase.from("orders").update({ email_status: "failed" }).eq("order_ref", orderRef);
       return new Response(
         JSON.stringify({ error: "Order not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Idempotency: if email already sent, skip
-    if (order.email_sent_at) {
-      console.log(`Email already sent for order ${orderRef}, skipping`);
-      return new Response(
-        JSON.stringify({ success: true, message: "Email already sent, skipping" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Decrypt the requirements token to build the secure URL
+    let requirementsToken: string | null = null;
+    if (order.requirements_token_encrypted && ENCRYPTION_KEY) {
+      try {
+        requirementsToken = decryptToken(order.requirements_token_encrypted as string, ENCRYPTION_KEY);
+      } catch (decryptErr) {
+        console.error("Token decryption failed:", decryptErr);
+      }
     }
+
+    // Build the secure requirements URL using the decrypted token
+    const requirementsUrl = requirementsToken
+      ? `${SITE_URL}/order/${requirementsToken}`
+      : `${SITE_URL}/order/${orderRef}`;
 
     // Use cart_snapshot if available, otherwise fall back to order_items
     const cartSnapshot = order.cart_snapshot as CartSnapshot | null;
@@ -94,15 +135,6 @@ Deno.serve(async (req: Request) => {
 
     // Customer first name
     const firstName = (order.name || "").trim().split(/\s+/)[0] || "there";
-
-    // Build the secure requirements URL
-    // We need the token, but we only stored the hash. The token was passed
-    // to the frontend at checkout. For the email, we need to reconstruct it.
-    // Since we can't reverse the hash, we store the token in the webhook
-    // response and the frontend passes it. For email links, we use the
-    // order_ref as a fallback lookup (the edge function can also look up
-    // by order_ref for email-based access).
-    const requirementsUrl = `${SITE_URL}/order/${orderRef}`;
 
     const subject = `Order confirmed — ${order.order_number} | Vladenza`;
 
@@ -192,7 +224,9 @@ Vladenza — Professional Link Building Services
 ${SITE_URL}`;
 
     if (!RESEND_API_KEY) {
-      console.log("RESEND_API_KEY not configured, skipping email send");
+      console.log("RESEND_API_KEY not configured, releasing email claim");
+      // Release the claim so it can retry when configured
+      await supabase.from("orders").update({ email_status: "failed" }).eq("id", order.id);
       return new Response(
         JSON.stringify({ success: false, error: "Email provider not configured" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -219,6 +253,8 @@ ${SITE_URL}`;
     if (!customerResponse.ok) {
       const errText = await customerResponse.text();
       console.error("Resend customer email error:", errText);
+      // Mark as failed so a retry can attempt again
+      await supabase.from("orders").update({ email_status: "failed" }).eq("id", order.id);
       throw new Error("Failed to send customer email");
     }
 
@@ -286,11 +322,15 @@ View in admin dashboard: ${SITE_URL}/admin`;
       }),
     });
 
-    // Mark email as sent (idempotency)
-    await supabase
+    // Mark email as sent (atomic completion)
+    const { error: completeError } = await supabase
       .from("orders")
-      .update({ email_sent_at: new Date().toISOString() })
+      .update({ email_status: "sent", email_sent_at: new Date().toISOString() })
       .eq("id", order.id);
+
+    if (completeError) {
+      console.error("Failed to mark email as sent:", completeError.message);
+    }
 
     return new Response(
       JSON.stringify({ success: true }),
