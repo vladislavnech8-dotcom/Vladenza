@@ -12,8 +12,8 @@ const TRAFFIC_FILTERS = [
   { label: '50K+', min: 50000 },
 ];
 
-const INITIAL_COUNT = 9;
-const LOAD_BATCH = 9;
+const INITIAL_COUNT = 6;
+const LOAD_BATCH = 6;
 
 export default function PlacementExplorer({ serviceType }: { serviceType?: PlacementServiceType }) {
   const [placements, setPlacements] = useState<Placement[]>([]);
