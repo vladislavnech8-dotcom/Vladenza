@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
-import { ArrowUpRight, Search } from 'lucide-react';
-import { nicheEditPlacements, getPlacementNiches } from '../data/nicheEditPlacements';
-import { trackEvent } from '../lib/analytics';
+import { useState, useMemo, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import PlacementCard from './PlacementCard';
+import { fetchPlacements, type Placement, type PlacementServiceType, getPlacementNiches } from '../data/placements';
 
 const DR_FILTERS = ['Any', 'DR20+', 'DR30+', 'DR40+', 'DR50+', 'DR60+'] as const;
 const TRAFFIC_FILTERS = [
@@ -15,76 +15,27 @@ const TRAFFIC_FILTERS = [
 const INITIAL_COUNT = 9;
 const LOAD_BATCH = 9;
 
-function formatTraffic(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
-  return n.toLocaleString();
-}
-
-function PlacementCard({ p }: { p: typeof nicheEditPlacements[number] }) {
-  const [imgError, setImgError] = useState(false);
-
-  return (
-    <a
-      href={p.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => trackEvent('view_placement', { domain: p.domain })}
-      className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#F97316]/40 hover:shadow-md transition-all duration-300 flex flex-col"
-    >
-      <div className="aspect-[16/10] w-full overflow-hidden bg-gray-50">
-        {imgError ? (
-          <div className="w-full h-full bg-gradient-to-br from-orange-50 via-orange-50/40 to-gray-100 flex items-center justify-center">
-            <span className="text-gray-300 text-sm font-medium">{p.domain}</span>
-          </div>
-        ) : (
-          <img
-            src={p.screenshot}
-            alt={`Niche edit placement on ${p.domain}`}
-            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-            onError={() => setImgError(true)}
-            loading="lazy"
-          />
-        )}
-      </div>
-      <div className="p-5 flex flex-col gap-3 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="text-sm font-semibold text-gray-800 group-hover:text-[#F97316] transition-colors truncate">{p.domain}</div>
-            <div className="text-xs text-gray-400 mt-0.5">{p.niche}</div>
-          </div>
-          <ArrowUpRight size={14} className="text-gray-300 group-hover:text-[#F97316] transition-colors flex-shrink-0 mt-0.5" />
-        </div>
-        <div className="flex items-center gap-4 pt-3 border-t border-gray-100 mt-auto">
-          <div>
-            <div className="text-[10px] text-gray-400 uppercase tracking-wide">DR</div>
-            <div className={`text-lg font-black ${p.dr >= 60 ? 'text-emerald-500' : p.dr >= 50 ? 'text-[#F97316]' : 'text-blue-500'}`}>{p.dr}</div>
-          </div>
-          <div>
-            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Traffic</div>
-            <div className="text-sm font-bold text-gray-800">{formatTraffic(p.traffic)}</div>
-          </div>
-          {p.keywords != null && (
-            <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wide">Keywords</div>
-              <div className="text-sm font-bold text-gray-800">{p.keywords}</div>
-            </div>
-          )}
-        </div>
-      </div>
-    </a>
-  );
-}
-
-export default function PlacementExplorer() {
-  const niches = useMemo(() => ['All', ...getPlacementNiches()], []);
+export default function PlacementExplorer({ serviceType }: { serviceType?: PlacementServiceType }) {
+  const [placements, setPlacements] = useState<Placement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const niches = useMemo(() => ['All', ...getPlacementNiches(placements)], [placements]);
   const [activeNiche, setActiveNiche] = useState('All');
   const [activeDr, setActiveDr] = useState<string>('Any');
   const [activeTraffic, setActiveTraffic] = useState(0);
   const [search, setSearch] = useState('');
   const [visible, setVisible] = useState(INITIAL_COUNT);
 
+  useEffect(() => {
+    const filters: Parameters<typeof fetchPlacements>[0] = { status: 'active' };
+    if (serviceType) filters.service_type = serviceType;
+    fetchPlacements(filters).then((data) => {
+      setPlacements(data);
+      setLoading(false);
+    });
+  }, [serviceType]);
+
   const filtered = useMemo(() => {
-    return nicheEditPlacements.filter((p) => {
+    return placements.filter((p) => {
       if (activeNiche !== 'All' && p.niche !== activeNiche) return false;
       if (activeDr !== 'Any') {
         const minDr = parseInt(activeDr.replace('DR', '').replace('+', ''), 10);
@@ -93,11 +44,13 @@ export default function PlacementExplorer() {
       if (p.traffic < activeTraffic) return false;
       if (search) {
         const q = search.toLowerCase();
-        if (!p.domain.toLowerCase().includes(q) && !p.niche.toLowerCase().includes(q)) return false;
+        if (!p.domain.toLowerCase().includes(q) &&
+            !p.niche.toLowerCase().includes(q) &&
+            !(p.title ?? '').toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [activeNiche, activeDr, activeTraffic, search]);
+  }, [placements, activeNiche, activeDr, activeTraffic, search]);
 
   const shown = filtered.slice(0, visible);
 
@@ -171,7 +124,11 @@ export default function PlacementExplorer() {
       </div>
 
       {/* Grid */}
-      {shown.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <span className="w-6 h-6 border-2 border-gray-200 border-t-[#F97316] rounded-full animate-spin" />
+        </div>
+      ) : shown.length === 0 ? (
         <div className="py-16 text-center">
           <p className="text-gray-400 text-sm">No placements match these filters.</p>
         </div>

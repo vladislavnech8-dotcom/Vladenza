@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, ArrowDown, ExternalLink, Check, Link2, FileText, MessagesSquare, Trophy, Package, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
@@ -7,7 +7,7 @@ import LinkPlanModal from '../components/LinkPlanModal';
 import FAQ from '../components/FAQ';
 import { useSEO } from '../hooks/useSEO';
 import { trackEvent } from '../lib/analytics';
-import { nicheEditPlacements } from '../data/nicheEditPlacements';
+import { fetchPlacements, type Placement, type PlacementServiceType, formatTraffic } from '../data/placements';
 import { NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
 import { cases } from '../data/cases';
 
@@ -65,17 +65,11 @@ const clientLogos = [
   { name: 'Foot Africa', domain: 'foot-africa.com' },
 ];
 
-const guestPostExamples = [
-  { domain: 'droven.io', niche: 'Tech', dr: 37, traffic: '260K', url: 'https://droven.io/why-predictability-matters-in-networking/' },
-  { domain: 'agicent.com', niche: 'Marketing', dr: 54, traffic: '22K', url: 'https://www.agicent.com/blog/instagram-growth-hacks-to-get-followers/' },
-  { domain: 'thefoxmagazine.com', niche: 'Tech', dr: 52, traffic: '1.3K', url: 'https://thefoxmagazine.com/technology/apps/6-techniques-for-gaining-followers-on-instagram-in-2025/' },
-];
-
-const crowdLinkExamples = [
-  { domain: 'reddit.com', niche: 'Crypto', dr: 92, traffic: '1.2B', url: 'https://reddit.com' },
-  { domain: 'quora.com', niche: 'SaaS', dr: 91, traffic: '900M', url: 'https://quora.com' },
-  { domain: 'bitcointalk.org', niche: 'Crypto', dr: 90, traffic: '4M', url: 'https://bitcointalk.org' },
-];
+const SERVICE_TYPE_MAP: Record<TabKey, PlacementServiceType> = {
+  'niche-edits': 'niche_edit',
+  'guest-posts': 'guest_post',
+  'crowd-links': 'crowd_link',
+};
 
 type TabKey = 'niche-edits' | 'guest-posts' | 'crowd-links';
 
@@ -102,9 +96,22 @@ const homeFaqs = [
 
 const featuredCases = cases.slice(0, 3);
 
+const TYPE_LABELS: Record<TabKey, string> = {
+  'niche-edits': 'Niche Edit',
+  'guest-posts': 'Guest Post',
+  'crowd-links': 'Crowd Link',
+};
+
+const TYPE_DESCS: Record<TabKey, string> = {
+  'niche-edits': 'Contextual placement',
+  'guest-posts': 'New published article',
+  'crowd-links': 'Forum / community placement',
+};
+
 export default function HomePage() {
   const [linkPlanOpen, setLinkPlanOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('niche-edits');
+  const [homepagePlacements, setHomepagePlacements] = useState<Placement[]>([]);
 
   useSEO({
     title: 'Vladenza — Link Building Services | Niche Edits, Guest Posts & Crowd Links',
@@ -112,27 +119,31 @@ export default function HomePage() {
     canonical: 'https://vladenza.com/',
   });
 
+  useEffect(() => {
+    fetchPlacements({ status: 'active', homepage_featured: true }).then(setHomepagePlacements);
+  }, []);
+
   const openLinkPlan = () => {
     trackEvent('get_link_plan');
     setLinkPlanOpen(true);
   };
 
-  const tabExamples = activeTab === 'niche-edits'
-    ? nicheEditPlacements.slice(0, 3).map((p) => ({ domain: p.domain, niche: p.niche, dr: p.dr, traffic: p.traffic >= 1000 ? `${Math.round(p.traffic / 1000)}K` : String(p.traffic), url: p.url, type: 'Niche Edit', typeDesc: 'Contextual placement' }))
-    : activeTab === 'guest-posts'
-      ? guestPostExamples.map((e) => ({ ...e, type: 'Guest Post', typeDesc: 'New published article' }))
-      : crowdLinkExamples.map((e) => ({ ...e, type: 'Crowd Link', typeDesc: 'Forum / community placement' }));
+  const activeServiceType = SERVICE_TYPE_MAP[activeTab];
+  const tabPlacements = homepagePlacements.filter((p) => p.service_type === activeServiceType).slice(0, 3);
 
-  const tabCtaLink = activeTab === 'niche-edits'
-    ? '/services/niche-edits#placements'
-    : activeTab === 'guest-posts'
-      ? '/services/guest-posting'
-      : '/services/crowd-links';
-  const tabCtaLabel = activeTab === 'niche-edits'
-    ? 'View All Niche Edit Examples'
-    : activeTab === 'guest-posts'
-      ? 'View All Guest Post Examples'
-      : 'View All Crowd Link Examples';
+  const tabExamples = tabPlacements.map((p) => ({
+    domain: p.domain,
+    niche: p.niche,
+    dr: p.dr,
+    traffic: formatTraffic(p.traffic),
+    url: p.placement_url,
+    screenshot: p.screenshot_url,
+    type: TYPE_LABELS[activeTab],
+    typeDesc: TYPE_DESCS[activeTab],
+  }));
+
+  const tabCtaLink = '/placements';
+  const tabCtaLabel = `View All ${TYPE_LABELS[activeTab]} Examples`;
 
   const ActiveTabIcon = tabs.find((t) => t.key === activeTab)!.icon;
 
@@ -346,7 +357,11 @@ export default function HomePage() {
 
           {/* Example cards */}
           <div className="grid md:grid-cols-3 gap-5 mb-6">
-            {tabExamples.map((ex, i) => (
+            {tabExamples.length === 0 ? (
+              <div className="col-span-3 py-10 text-center">
+                <p className="text-gray-400 text-sm">Examples coming soon for this service.</p>
+              </div>
+            ) : tabExamples.map((ex, i) => (
               <a
                 key={i}
                 href={ex.url}
@@ -356,9 +371,19 @@ export default function HomePage() {
               >
                 {/* Preview area */}
                 <div className="bg-gray-50 border-b border-gray-100 h-32 flex items-center justify-center relative overflow-hidden">
-                  <div className="opacity-20">
-                    <ActiveTabIcon size={36} className="text-gray-400" />
-                  </div>
+                  {ex.screenshot ? (
+                    <img
+                      src={ex.screenshot}
+                      alt={`${ex.type} on ${ex.domain}`}
+                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                      loading="lazy"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="opacity-20">
+                      <ActiveTabIcon size={36} className="text-gray-400" />
+                    </div>
+                  )}
                   <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
                     {ex.type}
                   </div>

@@ -35,6 +35,7 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
 const CookiePolicyPage = lazy(() => import('./pages/CookiePolicyPage'));
+const PlacementsPage = lazy(() => import('./pages/PlacementsPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -85,6 +86,7 @@ export default function App() {
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/refund-policy" element={<RefundPolicyPage />} />
               <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+              <Route path="/placements" element={<PlacementsPage />} />
             </Routes>
           </Suspense>
         </CookieConsentProvider>

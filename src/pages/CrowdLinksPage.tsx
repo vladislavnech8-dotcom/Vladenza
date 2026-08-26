@@ -1,6 +1,8 @@
 import { Users, MessageSquare, Globe, Globe as Globe2, TrendingUp, CheckCircle, ArrowRight, Shield, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
+import PlacementExplorer from '../components/PlacementExplorer';
 import { useSEO } from '../hooks/useSEO';
 
 const features = [
@@ -183,6 +185,22 @@ export default function CrowdLinksPage() {
                 <p className="text-gray-400 text-sm leading-relaxed">{uc.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Placement Examples */}
+      <section id="placements" className="py-16 bg-gray-50 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Crowd Link Examples</h2>
+          <p className="text-gray-500 text-sm mb-8 max-w-lg">
+            Examples from completed orders across forums and community platforms.
+          </p>
+          <PlacementExplorer serviceType="crowd_link" />
+          <div className="mt-8">
+            <Link to="/placements" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+              View All Crowd Link Examples <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>

@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase, SeoSettings } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2 } from 'lucide-react';
+import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2, LayoutGrid } from 'lucide-react';
+import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type PlacementServiceType, type PlacementStatus } from '../data/placements';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 
-type AdminSection = 'seo' | 'blog' | 'cases' | 'orders';
+type AdminSection = 'seo' | 'blog' | 'cases' | 'orders' | 'placements';
 type SeoTab = 'basic' | 'opengraph' | 'advanced';
 
 interface DbPost {
@@ -1465,12 +1466,14 @@ export default function AdminPage() {
   const [section, setSection] = useState<AdminSection>('seo');
   const [editingPost, setEditingPost] = useState<DbPost | null | 'new'>(null);
   const [editingCase, setEditingCase] = useState<DbCase | null | 'new'>(null);
+  const [editingPlacement, setEditingPlacement] = useState<Placement | null | 'new'>(null);
 
   const NAV: { id: AdminSection; label: string; icon: React.ReactNode }[] = [
     { id: 'seo',    label: 'SEO настройки', icon: <Search size={15} /> },
     { id: 'blog',   label: 'Блог',          icon: <FileText size={15} /> },
     { id: 'cases',  label: 'Кейсы',         icon: <Briefcase size={15} /> },
     { id: 'orders', label: 'Заказы',         icon: <Link2 size={15} /> },
+    { id: 'placements', label: 'Placements',  icon: <LayoutGrid size={15} /> },
   ];
 
   return (
@@ -1490,7 +1493,7 @@ export default function AdminPage() {
               {NAV.map(n => (
                 <button
                   key={n.id}
-                  onClick={() => { setSection(n.id); setEditingPost(null); setEditingCase(null); }}
+                  onClick={() => { setSection(n.id); setEditingPost(null); setEditingCase(null); setEditingPlacement(null); }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${section === n.id ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                 >
                   {n.icon} {n.label}
@@ -1551,6 +1554,24 @@ export default function AdminPage() {
           </>
         )}
         {section === 'orders' && <ClientOrdersPanel />}
+
+        {section === 'placements' && (
+          <>
+            {editingPlacement === null && (
+              <PlacementsList
+                onEdit={p => setEditingPlacement(p)}
+                onNew={() => setEditingPlacement('new')}
+              />
+            )}
+            {editingPlacement !== null && (
+              <PlacementEditor
+                initial={editingPlacement === 'new' ? null : editingPlacement}
+                onSave={() => setEditingPlacement(null)}
+                onCancel={() => setEditingPlacement(null)}
+              />
+            )}
+          </>
+        )}
       </main>
     </div>
   );
@@ -1743,6 +1764,378 @@ function Field({ label, hint, counter, children }: {
       </div>
       {children}
       {hint && <p className="text-xs text-gray-400 mt-1.5">{hint}</p>}
+    </div>
+  );
+}
+
+/* ─── Placements Panel ─────────────────────────────────────────────── */
+
+const SERVICE_TYPE_OPTIONS: { value: PlacementServiceType; label: string }[] = [
+  { value: 'niche_edit', label: 'Niche Edit' },
+  { value: 'guest_post', label: 'Guest Post' },
+  { value: 'crowd_link', label: 'Crowd Link' },
+];
+
+function PlacementsList({ onEdit, onNew }: { onEdit: (p: Placement) => void; onNew: () => void }) {
+  const [placements, setPlacements] = useState<Placement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [serviceFilter, setServiceFilter] = useState<string>('all');
+  const [nicheFilter, setNicheFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('newest');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchAllPlacements();
+    setPlacements(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = placements.filter(p => {
+    if (serviceFilter !== 'all' && p.service_type !== serviceFilter) return false;
+    if (nicheFilter !== 'all' && p.niche !== nicheFilter) return false;
+    if (statusFilter !== 'all' && p.status !== statusFilter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!p.domain.toLowerCase().includes(q) && !p.placement_url.toLowerCase().includes(q) && !(p.title ?? '').toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'dr': return b.dr - a.dr;
+      case 'traffic': return b.traffic - a.traffic;
+      case 'sort_order': return a.sort_order - b.sort_order;
+      default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+  });
+
+  const niches = Array.from(new Set(placements.map(p => p.niche).filter(Boolean))).sort();
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Placements</h2>
+          <p className="text-gray-500 text-sm mt-0.5">Manage link placement examples across all services</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={load} className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+            <RefreshCw size={13} /> Refresh
+          </button>
+          <button onClick={onNew} className="flex items-center gap-1.5 text-xs font-semibold text-white bg-[#F97316] hover:bg-[#EA580C] px-3 py-2 rounded-lg transition">
+            <Plus size={13} /> Add Placement
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 mb-5">
+        <div className="relative">
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search domain, title, URL..."
+            className="pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10"
+          />
+        </div>
+        <select value={serviceFilter} onChange={e => setServiceFilter(e.target.value)} className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10">
+          <option value="all">All Services</option>
+          {SERVICE_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        <select value={nicheFilter} onChange={e => setNicheFilter(e.target.value)} className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10">
+          <option value="all">All Niches</option>
+          {niches.map(n => <option key={n} value={n}>{n}</option>)}
+        </select>
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="hidden">Hidden</option>
+        </select>
+        <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 ml-auto">
+          <option value="newest">Newest</option>
+          <option value="dr">Highest DR</option>
+          <option value="traffic">Highest Traffic</option>
+          <option value="sort_order">Manual Order</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-16"><Loader2 className="w-5 h-5 text-gray-300 animate-spin" /></div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-white border border-dashed border-gray-200 rounded-2xl py-14 text-center">
+          <p className="text-gray-500 text-sm">No placements found.</p>
+        </div>
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50">
+                <th className="text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">Screenshot</th>
+                <th className="text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">Domain</th>
+                <th className="text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">Service</th>
+                <th className="text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">Niche</th>
+                <th className="text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">DR</th>
+                <th className="text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3 hidden lg:table-cell">Traffic</th>
+                <th className="text-center text-[10px] font-bold uppercase tracking-wider text-gray-400 px-2 py-3">Feat</th>
+                <th className="text-center text-[10px] font-bold uppercase tracking-wider text-gray-400 px-2 py-3">Home</th>
+                <th className="text-center text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">Status</th>
+                <th className="text-right text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(p => (
+                <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="w-14 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                      {p.screenshot_url ? (
+                        <img src={p.screenshot_url} alt={p.domain} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Image size={12} className="text-gray-300" /></div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-sm font-semibold text-gray-900">{p.domain}</span>
+                    {p.title && <p className="text-xs text-gray-400 truncate max-w-[200px]">{p.title}</p>}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-xs font-semibold text-gray-600">{SERVICE_TYPE_OPTIONS.find(o => o.value === p.service_type)?.label ?? p.service_type}</span>
+                  </td>
+                  <td className="px-4 py-3"><span className="text-xs text-gray-500">{p.niche}</span></td>
+                  <td className="px-4 py-3"><span className="text-sm font-bold text-gray-700">{p.dr}</span></td>
+                  <td className="px-4 py-3 hidden lg:table-cell"><span className="text-xs text-gray-500">{p.traffic.toLocaleString()}</span></td>
+                  <td className="px-2 py-3 text-center">{p.featured && <CheckCircle2 size={13} className="text-[#F97316] inline" />}</td>
+                  <td className="px-2 py-3 text-center">{p.homepage_featured && <CheckCircle2 size={13} className="text-emerald-500 inline" />}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${p.status === 'active' ? 'text-green-700 bg-green-50 border-green-200' : 'text-gray-500 bg-gray-100 border-gray-200'}`}>
+                      {p.status === 'active' ? 'Active' : 'Hidden'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button onClick={() => onEdit(p)} className="text-xs text-gray-500 hover:text-[#F97316] font-semibold px-2 py-1 rounded hover:bg-orange-50 transition">Edit</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PlacementEditor({ initial, onSave, onCancel }: {
+  initial: Placement | null;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const isNew = !initial?.id;
+  const [form, setForm] = useState({
+    service_type: (initial?.service_type ?? 'niche_edit') as PlacementServiceType,
+    domain: initial?.domain ?? '',
+    placement_url: initial?.placement_url ?? '',
+    title: initial?.title ?? '',
+    niche: initial?.niche ?? '',
+    dr: initial?.dr ?? 0,
+    traffic: initial?.traffic ?? 0,
+    keywords: initial?.keywords ?? null as number | null,
+    screenshot_url: initial?.screenshot_url ?? '',
+    status: (initial?.status ?? 'active') as PlacementStatus,
+    featured: initial?.featured ?? false,
+    homepage_featured: initial?.homepage_featured ?? false,
+    sort_order: initial?.sort_order ?? 0,
+  });
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [saveAndAdd, setSaveAndAdd] = useState(false);
+
+  const showToast = (type: 'success' | 'error', msg: string) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  async function handleSave() {
+    if (!form.domain.trim() || !form.placement_url.trim()) {
+      showToast('error', 'Domain and Placement URL are required');
+      return;
+    }
+    setSaving(true);
+    const payload = { ...form, keywords: form.keywords || null };
+    const { error } = isNew
+      ? await supabase.from('placements').insert(payload)
+      : await supabase.from('placements').update(payload).eq('id', initial!.id);
+    setSaving(false);
+    if (error) {
+      showToast('error', error.message);
+      return;
+    }
+    if (saveAndAdd) {
+      setForm({
+        service_type: form.service_type, domain: '', placement_url: '', title: '',
+        niche: form.niche, dr: 0, traffic: 0, keywords: null,
+        screenshot_url: '', status: 'active', featured: false,
+        homepage_featured: false, sort_order: form.sort_order,
+      });
+      setSaveAndAdd(false);
+      showToast('success', 'Placement saved. Add another.');
+    } else {
+      onSave();
+    }
+  }
+
+  async function handleDelete() {
+    if (!initial?.id) return;
+    if (!confirm('Delete this placement? This cannot be undone.')) return;
+    setSaving(true);
+    const { error } = await supabase.from('placements').delete().eq('id', initial.id);
+    setSaving(false);
+    if (error) { showToast('error', error.message); return; }
+    onSave();
+  }
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <button onClick={onCancel} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition">
+          <ArrowLeft size={14} /> Back
+        </button>
+        <h2 className="text-xl font-bold text-gray-900">{isNew ? 'New Placement' : 'Edit Placement'}</h2>
+      </div>
+
+      {toast && (
+        <div className={`mb-4 px-4 py-3 rounded-lg text-sm flex items-center gap-2 ${toast.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          {toast.type === 'success' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
+          {toast.msg}
+        </div>
+      )}
+
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-5 max-w-2xl">
+        {/* Service Type */}
+        <Field label="Service Type *">
+          <div className="flex gap-2">
+            {SERVICE_TYPE_OPTIONS.map(o => (
+              <button key={o.value} onClick={() => setForm(f => ({ ...f, service_type: o.value }))}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition ${form.service_type === o.value ? 'bg-[#F97316] border-[#F97316] text-white' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </Field>
+
+        {/* Domain */}
+        <Field label="Domain *">
+          <input type="text" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))}
+            placeholder="example.com"
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+        </Field>
+
+        {/* Placement URL */}
+        <Field label="Live Placement URL *">
+          <input type="url" value={form.placement_url} onChange={e => setForm(f => ({ ...f, placement_url: e.target.value }))}
+            placeholder="https://..."
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+        </Field>
+
+        {/* Title */}
+        <Field label="Placement / Article Title" hint="Optional">
+          <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+            placeholder="Article or page title..."
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+        </Field>
+
+        {/* Niche */}
+        <Field label="Niche *">
+          <input type="text" value={form.niche} onChange={e => setForm(f => ({ ...f, niche: e.target.value }))}
+            list="niche-presets" placeholder="e.g. Tech, Marketing, Health..."
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+          <datalist id="niche-presets">
+            {PLACEMENT_NICHE_PRESETS.map(n => <option key={n} value={n} />)}
+          </datalist>
+        </Field>
+
+        {/* DR + Traffic + Keywords */}
+        <div className="grid grid-cols-3 gap-4">
+          <Field label="DR">
+            <input type="number" value={form.dr} onChange={e => setForm(f => ({ ...f, dr: parseInt(e.target.value) || 0 }))}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+          </Field>
+          <Field label="Organic Traffic">
+            <input type="number" value={form.traffic} onChange={e => setForm(f => ({ ...f, traffic: parseInt(e.target.value) || 0 }))}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+          </Field>
+          <Field label="Keywords" hint="Optional">
+            <input type="number" value={form.keywords ?? ''} onChange={e => setForm(f => ({ ...f, keywords: e.target.value ? parseInt(e.target.value) : null }))}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+          </Field>
+        </div>
+
+        {/* Screenshot URL */}
+        <Field label="Screenshot URL" hint="Paste an external image URL. Preview shows below.">
+          <input type="url" value={form.screenshot_url} onChange={e => setForm(f => ({ ...f, screenshot_url: e.target.value }))}
+            placeholder="https://..."
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+        </Field>
+
+        {/* Screenshot preview */}
+        {form.screenshot_url && (
+          <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+            <img src={form.screenshot_url} alt="Preview" className="w-full max-h-48 object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+          </div>
+        )}
+
+        {/* Checkboxes */}
+        <div className="flex flex-wrap gap-6 pt-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300 text-[#F97316] focus:ring-[#F97316]/20" />
+            <span className="text-sm text-gray-700">Featured</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={form.homepage_featured} onChange={e => setForm(f => ({ ...f, homepage_featured: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300 text-[#F97316] focus:ring-[#F97316]/20" />
+            <span className="text-sm text-gray-700">Show on Homepage</span>
+          </label>
+        </div>
+
+        {/* Status + Sort Order */}
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Status">
+            <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as PlacementStatus }))}
+              className="w-full text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10">
+              <option value="active">Active</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </Field>
+          <Field label="Sort Order" hint="Lower shows first">
+            <input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+          </Field>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+          <button onClick={handleSave} disabled={saving}
+            className="flex items-center gap-1.5 text-sm font-semibold text-white bg-[#F97316] hover:bg-[#EA580C] px-5 py-2.5 rounded-lg transition disabled:opacity-50">
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Save
+          </button>
+          <button onClick={() => { setSaveAndAdd(true); handleSave(); }} disabled={saving}
+            className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 border border-gray-200 hover:border-gray-300 px-5 py-2.5 rounded-lg transition disabled:opacity-50">
+            <Plus size={14} /> Save & Add Another
+          </button>
+          {!isNew && (
+            <button onClick={handleDelete} disabled={saving}
+              className="flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-700 hover:bg-red-50 px-4 py-2.5 rounded-lg transition ml-auto">
+              <Trash2 size={14} /> Delete
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

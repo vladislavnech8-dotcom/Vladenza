@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { FileText, Globe, TrendingUp, CheckCircle, Star, ArrowRight, Clock, Shield, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
+import PlacementExplorer from '../components/PlacementExplorer';
 import OrderModal, { type Package } from '../components/OrderModal';
 import { useSEO } from '../hooks/useSEO';
 
@@ -200,6 +202,22 @@ export default function GuestPostingPage() {
                 <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Placement Examples */}
+      <section id="placements" className="py-16 bg-gray-50 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Guest Post Examples</h2>
+          <p className="text-gray-500 text-sm mb-8 max-w-lg">
+            Examples from completed orders, with Ahrefs DR and organic traffic metrics.
+          </p>
+          <PlacementExplorer serviceType="guest_post" />
+          <div className="mt-8">
+            <Link to="/placements" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+              View All Guest Post Examples <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>

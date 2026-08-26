@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Minus, Plus, Check, ArrowRight, ArrowDown, ExternalLink, Link2, Target, TrendingUp, Zap, ShoppingCart, Trophy, Package, Sparkles } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
@@ -347,7 +348,12 @@ export default function NicheEditsPage() {
           <p className="text-gray-500 text-sm mb-8 max-w-lg">
             Examples from completed orders, with Ahrefs DR and organic traffic metrics.
           </p>
-          <PlacementExplorer />
+          <PlacementExplorer serviceType="niche_edit" />
+          <div className="mt-6">
+            <Link to="/placements" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+              View All Niche Edit Examples <ArrowRight size={14} />
+            </Link>
+          </div>
           {sampleReportUrl && (
             <div className="mt-6">
               <a href={sampleReportUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
