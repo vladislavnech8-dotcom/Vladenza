@@ -13,7 +13,7 @@ const TRAFFIC_FILTERS = [
   { label: '50K+', min: 50000 },
 ];
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 6;
 
 export default function PlacementExplorer({ serviceType }: { serviceType?: PlacementServiceType }) {
   const [placements, setPlacements] = useState<Placement[]>([]);

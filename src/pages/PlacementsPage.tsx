@@ -33,7 +33,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'traffic', label: 'Highest Traffic' },
 ];
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 6;
 
 export default function PlacementsPage() {
   const [placements, setPlacements] = useState<Placement[]>([]);
