@@ -137,7 +137,7 @@ export default function HomePage() {
     dr: p.dr,
     traffic: formatTraffic(p.traffic),
     url: p.placement_url,
-    screenshot: p.screenshot_url,
+    screenshot: p.screenshots?.length > 0 ? p.screenshots[0] : p.screenshot_url,
     type: TYPE_LABELS[activeTab],
     typeDesc: TYPE_DESCS[activeTab],
   }));

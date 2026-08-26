@@ -5,7 +5,8 @@ import { trackEvent } from '../lib/analytics';
 
 export default function PlacementCard({ p }: { p: Placement }) {
   const [imgError, setImgError] = useState(false);
-  const hasScreenshot = p.screenshot_url && !imgError;
+  const primaryScreenshot = p.screenshots?.length > 0 ? p.screenshots[0] : p.screenshot_url;
+  const hasScreenshot = primaryScreenshot && !imgError;
 
   return (
     <a
@@ -18,7 +19,7 @@ export default function PlacementCard({ p }: { p: Placement }) {
       <div className="aspect-[16/10] w-full overflow-hidden bg-gray-50">
         {hasScreenshot ? (
           <img
-            src={p.screenshot_url}
+            src={primaryScreenshot}
             alt={`${SERVICE_TYPE_LABELS[p.service_type]} placement on ${p.domain}`}
             className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
             onError={() => setImgError(true)}

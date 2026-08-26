@@ -14,6 +14,7 @@ export interface Placement {
   traffic: number;
   keywords: number | null;
   screenshot_url: string;
+  screenshots: string[];
   status: PlacementStatus;
   featured: boolean;
   homepage_featured: boolean;

@@ -3,6 +3,8 @@ import { supabase, SeoSettings } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2, LayoutGrid } from 'lucide-react';
 import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type PlacementServiceType, type PlacementStatus } from '../data/placements';
+import ImageUploader from '../components/ImageUploader';
+import MultiImageUploader from '../components/MultiImageUploader';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 
@@ -445,21 +447,13 @@ function BlogEditor({
           </div>
 
           {/* Image */}
-          <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 flex items-center gap-1.5"><Image size={11} /> Hero изображение (URL)</label>
-            <input
-              type="url"
-              value={form.image_url}
-              onChange={e => upd('image_url', e.target.value)}
-              placeholder="https://images.pexels.com/..."
-              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-900/10 placeholder-gray-300"
-            />
-            {form.image_url && (
-              <div className="mt-2 h-28 rounded-xl overflow-hidden border border-gray-100">
-                <img src={form.image_url} alt="preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
-              </div>
-            )}
-          </div>
+          <ImageUploader
+            value={form.image_url}
+            onChange={url => upd('image_url', url)}
+            folder="blog"
+            label="Hero Image"
+            previewClassName="h-28"
+          />
 
           {/* Content builder */}
           <div>
@@ -780,7 +774,6 @@ function CaseEditor({
   const [tagInput, setTagInput] = useState('');
   const [slugManual, setSlugManual] = useState(!!initial?.slug);
   const [showAddSection, setShowAddSection] = useState(false);
-  const [screenshotInput, setScreenshotInput] = useState('');
 
   const upd = <K extends keyof typeof form>(key: K, val: (typeof form)[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
@@ -915,17 +908,13 @@ function CaseEditor({
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 flex items-center gap-1.5"><Image size={11} /> Hero изображение (URL)</label>
-              <input type="url" value={form.image_url} onChange={e => upd('image_url', e.target.value)}
-                placeholder="https://images.pexels.com/..."
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-900/10 placeholder-gray-300" />
-              {form.image_url && (
-                <div className="mt-2 h-24 rounded-xl overflow-hidden border border-gray-100">
-                  <img src={form.image_url} alt="preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
-                </div>
-              )}
-            </div>
+            <ImageUploader
+              value={form.image_url}
+              onChange={url => upd('image_url', url)}
+              folder="cases"
+              label="Hero Image"
+              previewClassName="h-24"
+            />
           </div>
 
           {/* Challenge / Solution / Result */}
@@ -984,27 +973,12 @@ function CaseEditor({
           {/* Screenshots */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col gap-3">
             <div className="text-xs font-bold uppercase tracking-widest text-gray-400">Скриншоты результатов</div>
-            <div className="flex gap-2">
-              <input type="url" value={screenshotInput} onChange={e => setScreenshotInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') { if (screenshotInput.trim()) upd('screenshots', [...form.screenshots, screenshotInput.trim()]); setScreenshotInput(''); } }}
-                placeholder="Вставь URL изображения + Enter"
-                className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-900/10 placeholder-gray-300" />
-              <button onClick={() => { if (screenshotInput.trim()) { upd('screenshots', [...form.screenshots, screenshotInput.trim()]); setScreenshotInput(''); } }}
-                className="px-3 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition text-sm"><Plus size={14} /></button>
-            </div>
-            {form.screenshots.length > 0 && (
-              <div className="grid grid-cols-2 gap-2">
-                {form.screenshots.map((src, i) => (
-                  <div key={i} className="relative group rounded-xl overflow-hidden border border-gray-100 h-28">
-                    <img src={src} alt="" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.opacity = '0.3')} />
-                    <button onClick={() => upd('screenshots', form.screenshots.filter((_, idx) => idx !== i))}
-                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                      <X size={10} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <MultiImageUploader
+              value={form.screenshots}
+              onChange={urls => upd('screenshots', urls)}
+              folder="cases/screenshots"
+              label=""
+            />
           </div>
 
           {/* Placement report */}
@@ -1417,8 +1391,14 @@ function SeoPanel({ userId }: { userId: string }) {
                   <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 text-sm text-blue-700">Open Graph теги управляют тем, как страница выглядит при шеринге в соц. сетях.</div>
                   <Field label="OG Title"><input type="text" value={settings.og_title ?? ''} onChange={e => update('og_title', e.target.value)} placeholder="Заголовок для соц. сетей..." className="input" /></Field>
                   <Field label="OG Description"><textarea value={settings.og_description ?? ''} onChange={e => update('og_description', e.target.value)} rows={3} placeholder="Описание для соц. сетей..." className="input resize-none" /></Field>
-                  <Field label="OG Image URL" hint="Рекомендуется 1200x630px">
-                    <input type="url" value={settings.og_image ?? ''} onChange={e => update('og_image', e.target.value)} placeholder="https://example.com/og-image.jpg" className="input" />
+                  <Field label="OG Image" hint="Recommended 1200x630px">
+                    <ImageUploader
+                      value={settings.og_image ?? ''}
+                      onChange={url => update('og_image', url)}
+                      folder="seo/og-images"
+                      label=""
+                      previewClassName="h-32"
+                    />
                   </Field>
                   {settings.og_image && (
                     <div className="rounded-xl overflow-hidden border border-gray-200 max-w-sm">
@@ -1892,11 +1872,14 @@ function PlacementsList({ onEdit, onNew }: { onEdit: (p: Placement) => void; onN
                 <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="w-14 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                      {p.screenshot_url ? (
-                        <img src={p.screenshot_url} alt={p.domain} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center"><Image size={12} className="text-gray-300" /></div>
-                      )}
+                      {(() => {
+                        const thumb = p.screenshots?.length > 0 ? p.screenshots[0] : p.screenshot_url;
+                        return thumb ? (
+                          <img src={thumb} alt={p.domain} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center"><Image size={12} className="text-gray-300" /></div>
+                        );
+                      })()}
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -1945,6 +1928,7 @@ function PlacementEditor({ initial, onSave, onCancel }: {
     traffic: initial?.traffic ?? 0,
     keywords: initial?.keywords ?? null as number | null,
     screenshot_url: initial?.screenshot_url ?? '',
+    screenshots: initial?.screenshots ?? [],
     status: (initial?.status ?? 'active') as PlacementStatus,
     featured: initial?.featured ?? false,
     homepage_featured: initial?.homepage_featured ?? false,
@@ -1978,7 +1962,7 @@ function PlacementEditor({ initial, onSave, onCancel }: {
       setForm({
         service_type: form.service_type, domain: '', placement_url: '', title: '',
         niche: form.niche, dr: 0, traffic: 0, keywords: null,
-        screenshot_url: '', status: 'active', featured: false,
+        screenshot_url: '', screenshots: [], status: 'active', featured: false,
         homepage_featured: false, sort_order: form.sort_order,
       });
       setSaveAndAdd(false);
@@ -2074,20 +2058,15 @@ function PlacementEditor({ initial, onSave, onCancel }: {
           </Field>
         </div>
 
-        {/* Screenshot URL */}
-        <Field label="Screenshot URL" hint="Paste an external image URL. Preview shows below.">
-          <input type="url" value={form.screenshot_url} onChange={e => setForm(f => ({ ...f, screenshot_url: e.target.value }))}
-            placeholder="https://..."
-            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F97316]/10 focus:border-[#F97316]/40" />
+        {/* Screenshots (multiple) */}
+        <Field label="Screenshots">
+          <MultiImageUploader
+            value={form.screenshots}
+            onChange={urls => setForm(f => ({ ...f, screenshots: urls }))}
+            folder={`placements/${form.service_type === 'niche_edit' ? 'niche-edits' : form.service_type === 'guest_post' ? 'guest-posts' : 'crowd-links'}`}
+            label=""
+          />
         </Field>
-
-        {/* Screenshot preview */}
-        {form.screenshot_url && (
-          <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-            <img src={form.screenshot_url} alt="Preview" className="w-full max-h-48 object-cover"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-          </div>
-        )}
 
         {/* Checkboxes */}
         <div className="flex flex-wrap gap-6 pt-2">
