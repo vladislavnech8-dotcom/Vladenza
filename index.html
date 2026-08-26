@@ -40,6 +40,7 @@
       'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', '1862776151346158');
       fbq('track', 'PageView');
+      if(window.__fbqPending){window.__fbqPending.forEach(function(f){f();});window.__fbqPending=[];}
     </script>
     <!-- End Meta Pixel Code -->
     <!-- Google tag (gtag.js) -->

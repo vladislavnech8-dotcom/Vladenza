@@ -11,7 +11,7 @@ import LinkPlanModal from '../components/LinkPlanModal';
 import { useCart } from '../context/CartContext';
 import { useSEO } from '../hooks/useSEO';
 import { supabase } from '../lib/supabase';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, trackMetaEvent } from '../lib/analytics';
 import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE, packageExamples, sampleReportUrl } from '../data/nicheEditPackages';
 
 const benefits = [
@@ -55,17 +55,15 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
     );
     setJustAdded(true);
     trackEvent('add_to_cart', { product_id: pkg.id, quantity: qty, price: pkg.price });
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'AddToCart', {
-        content_name: `Niche Edit ${pkg.label}`,
-        content_category: 'Niche Edits',
-        content_ids: [`niche-edit-${pkg.id}`],
-        content_type: 'product',
-        value: pkg.price * qty,
-        currency: 'USD',
-        contents: [{ id: `niche-edit-${pkg.id}`, quantity: qty, item_price: pkg.price }],
-      });
-    }
+    trackMetaEvent('AddToCart', {
+      content_name: `Niche Edit ${pkg.label}`,
+      content_category: 'Niche Edits',
+      content_ids: [`niche-edit-${pkg.id}`],
+      content_type: 'product',
+      value: pkg.price * qty,
+      currency: 'USD',
+      contents: [{ id: `niche-edit-${pkg.id}`, quantity: qty, item_price: pkg.price }],
+    });
     setTimeout(() => setJustAdded(false), 1500);
     setQty(1);
   };
@@ -150,14 +148,12 @@ export default function NicheEditsPage() {
   useEffect(() => {
     if (viewContentFired.current) return;
     viewContentFired.current = true;
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'ViewContent', {
-        content_name: 'Niche Edit Link Building',
-        content_category: 'Niche Edits',
-        content_ids: ['niche-edits'],
-        content_type: 'product',
-      });
-    }
+    trackMetaEvent('ViewContent', {
+      content_name: 'Niche Edit Link Building',
+      content_category: 'Niche Edits',
+      content_ids: ['niche-edits'],
+      content_type: 'product',
+    });
   }, []);
 
   useEffect(() => {

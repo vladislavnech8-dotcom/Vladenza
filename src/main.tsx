@@ -2,6 +2,7 @@ import { StrictMode, useEffect, useRef } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import App from './App.tsx';
+import { trackMetaEvent } from './lib/analytics';
 import './index.css';
 
 function ScrollToTop() {
@@ -20,9 +21,7 @@ function MetaPixelRouteTracker() {
       firstRender.current = false;
       return;
     }
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'PageView');
-    }
+    trackMetaEvent('PageView');
   }, [pathname]);
   return null;
 }
