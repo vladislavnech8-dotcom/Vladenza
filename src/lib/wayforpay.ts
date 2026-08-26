@@ -60,6 +60,7 @@ export interface PayResult {
   outcome: WfpOutcome;
   orderRef: string;
   orderNumber: string;
+  requirementsToken: string;
 }
 
 export interface CartItemInput {
@@ -105,6 +106,7 @@ export async function payWithWayForPay(params: {
 
   const orderRef = data.orderRef as string;
   const orderNumber = data.orderNumber as string;
+  const requirementsToken = data.requirementsToken as string;
 
   await loadWidgetScript();
 
@@ -112,9 +114,9 @@ export async function payWithWayForPay(params: {
     const wfp = new window.Wayforpay!();
     wfp.run(
       data.checkoutData,
-      () => resolve({ outcome: 'approved', orderRef, orderNumber }),
-      () => resolve({ outcome: 'declined', orderRef, orderNumber }),
-      () => resolve({ outcome: 'pending', orderRef, orderNumber })
+      () => resolve({ outcome: 'approved', orderRef, orderNumber, requirementsToken }),
+      () => resolve({ outcome: 'declined', orderRef, orderNumber, requirementsToken }),
+      () => resolve({ outcome: 'pending', orderRef, orderNumber, requirementsToken })
     );
   });
 }

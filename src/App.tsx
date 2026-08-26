@@ -31,6 +31,7 @@ const WhiteLabelPage = lazy(() => import('./pages/WhiteLabelPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const ClientAppPage = lazy(() => import('./pages/ClientAppPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderRequirementsPage = lazy(() => import('./pages/OrderRequirementsPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
@@ -81,7 +82,7 @@ export default function App() {
               <Route path="/services/white-label" element={<WhiteLabelPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/checkout/requirements-form" element={<CheckoutPage />} />
+              <Route path="/order/:token" element={<OrderRequirementsPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/refund-policy" element={<RefundPolicyPage />} />

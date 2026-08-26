@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { createHmac } from "node:crypto";
+import { createHmac, randomBytes, createHash } from "node:crypto";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +10,14 @@ const corsHeaders = {
 
 function hmacMd5(key: string, data: string): string {
   return createHmac("md5", key).update(data).digest("hex");
+}
+
+function generateToken(): string {
+  return randomBytes(32).toString("hex");
+}
+
+function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
 }
 
 // Server-side canonical pricing — the only source of truth for prices
@@ -105,6 +113,10 @@ Deno.serve(async (req: Request) => {
     const orderRef = `vladenza-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const orderDate = Math.floor(Date.now() / 1000);
 
+    // Generate a cryptographically random requirements access token
+    const requirementsToken = generateToken();
+    const requirementsTokenHash = hashToken(requirementsToken);
+
     // Generate human-readable order number
     const { data: numData } = await supabase.rpc("generate_order_number");
     const orderNumber = numData as string || `NE-${Date.now()}`;
@@ -136,6 +148,7 @@ Deno.serve(async (req: Request) => {
       order_items: storedItems,
       requirements: requirements || [],
       requirements_status: reqStatus,
+      requirements_token_hash: requirementsTokenHash,
     });
 
     if (dbError) throw new Error(dbError.message);
@@ -196,7 +209,7 @@ Deno.serve(async (req: Request) => {
       serviceUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/wayforpay-webhook`,
     };
 
-    return new Response(JSON.stringify({ success: true, orderRef, orderNumber, checkoutData }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ success: true, orderRef, orderNumber, requirementsToken, checkoutData }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
     return new Response(JSON.stringify({ error: (err as Error).message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }

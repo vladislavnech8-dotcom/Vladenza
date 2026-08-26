@@ -67,6 +67,7 @@ export default function CheckoutPage() {
   const [outcome, setOutcome] = useState<'approved' | 'declined' | 'pending' | null>(null);
   const [paidOrderRef, setPaidOrderRef] = useState('');
   const [paidOrderNumber, setPaidOrderNumber] = useState('');
+  const [paidRequirementsToken, setPaidRequirementsToken] = useState('');
   const [bulkText, setBulkText] = useState('');
   const [showBulk, setShowBulk] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -174,6 +175,7 @@ export default function CheckoutPage() {
       setOutcome(result.outcome);
       setPaidOrderRef(result.orderRef);
       setPaidOrderNumber(result.orderNumber);
+      setPaidRequirementsToken(result.requirementsToken);
       if (result.outcome === 'approved') {
         trackEvent('purchase', { value: total, currency: 'USD', transaction_id: result.orderNumber, items: items.length });
         clear();
@@ -212,8 +214,8 @@ export default function CheckoutPage() {
             </ul>
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
-            {data.requirementsChoice === 'later' && (
-              <Link to="/checkout" className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-colors">
+            {data.requirementsChoice === 'later' && paidRequirementsToken && (
+              <Link to={`/order/${paidRequirementsToken}`} className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-colors">
                 Add Requirements
               </Link>
             )}

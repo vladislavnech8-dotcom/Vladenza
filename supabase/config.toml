@@ -12,3 +12,9 @@ verify_jwt = false
 
 [functions.test-json-roundtrip]
 verify_jwt = false
+
+[functions.order-requirements]
+verify_jwt = false
+
+[functions.send-order-email]
+verify_jwt = false

@@ -201,6 +201,16 @@ Deno.serve(async (req: Request) => {
     // Send Telegram notification ONLY for confirmed payments
     if (isApproved) {
       await sendTelegramNotification(supabase, existingOrder, orderReference);
+      // Send customer confirmation + internal notification email (idempotent via email_sent_at)
+      try {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-order-email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderRef: orderReference }),
+        });
+      } catch (emailErr) {
+        console.error("Failed to send order email:", emailErr);
+      }
     }
 
     // Return the signed WayForPay acknowledgement:
