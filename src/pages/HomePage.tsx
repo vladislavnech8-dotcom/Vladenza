@@ -97,12 +97,6 @@ const homeFaqs = [
 
 const featuredCases = cases.slice(0, 3);
 
-const TYPE_LABELS: Record<TabKey, string> = {
-  'niche-edits': 'Niche Edits',
-  'guest-posts': 'Guest Posts',
-  'crowd-links': 'Crowd Links',
-};
-
 export default function HomePage() {
   const [linkPlanOpen, setLinkPlanOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('niche-edits');
@@ -124,10 +118,11 @@ export default function HomePage() {
   };
 
   const activeServiceType = SERVICE_TYPE_MAP[activeTab];
-  const tabPlacements = homepagePlacements.filter((p) => p.service_type === activeServiceType).slice(0, 3);
+  const tabPlacements = homepagePlacements.filter((p) => p.service_type === activeServiceType).slice(0, 6);
+  const totalActiveCount = homepagePlacements.length;
 
   const tabCtaLink = '/placements';
-  const tabCtaLabel = `View All ${TYPE_LABELS[activeTab]} Examples`;
+  const tabCtaLabel = 'Explore All Placement Examples';
 
   return (
     <div className="bg-white min-h-screen">
@@ -337,7 +332,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Example cards */}
+          {/* Example cards — max 6 (3 cols × 2 rows) */}
           <div className="grid md:grid-cols-3 gap-5 mb-6">
             {tabPlacements.length === 0 ? (
               <div className="col-span-3 py-10 text-center">
@@ -348,9 +343,16 @@ export default function HomePage() {
             ))}
           </div>
 
-          <Link to={tabCtaLink} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
-            {tabCtaLabel} <ArrowRight size={14} />
-          </Link>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <Link to={tabCtaLink} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+              {tabCtaLabel} <ArrowRight size={14} />
+            </Link>
+            {totalActiveCount > 0 && (
+              <span className="text-xs text-gray-400">
+                {totalActiveCount}+ real placements across Niche Edits, Guest Posts & Crowd Links
+              </span>
+            )}
+          </div>
         </div>
       </section>
 

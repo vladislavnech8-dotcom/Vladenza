@@ -108,9 +108,9 @@ export default function PlacementsPage() {
         {/* Header */}
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Real Link Placements</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Real Link Building Examples</h1>
             <p className="text-gray-500 text-base max-w-2xl leading-relaxed">
-              Browse examples of niche edits, guest posts and community links we have delivered across different industries, authority levels and traffic ranges.
+              Browse real placements we've delivered across niche edits, guest posts and community links.
             </p>
           </div>
         </section>
