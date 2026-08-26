@@ -151,17 +151,32 @@ Deno.serve(async (req: Request) => {
     // Mark as paid ONLY when transactionStatus is exactly "Approved"
     const isApproved = transactionStatus === "Approved";
 
-    // Store the verified payment result and original cart snapshot
+    // Store a sanitized payment result — no merchant secrets, no full card data
     const paymentResult = {
       transactionStatus,
       transactionId: transactionId || null,
       authCode: authCode || null,
-      cardPan: cardPan || null,
+      cardPan: cardPan || null, // masked pan only (e.g. "54****8763")
       reasonCode: reasonCode || null,
       verifiedAt: new Date().toISOString(),
     };
 
-    const cartSnapshot = (existingOrder.order_items || []) as OrderItem[];
+    // Build cart snapshot from server-stored order_items (never from the callback)
+    const orderItems = (existingOrder.order_items || []) as OrderItem[];
+    const snapshotTotal = orderItems.reduce(
+      (sum, item) => sum + item.unitPrice * item.quantity,
+      0
+    );
+    const cartSnapshot = {
+      items: orderItems.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+      })),
+      total: Math.round(snapshotTotal * 100) / 100,
+      currency: serverCurrency,
+    };
 
     const update: Record<string, unknown> = {
       status: isApproved ? "paid" : "failed",
