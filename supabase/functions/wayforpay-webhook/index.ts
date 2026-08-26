@@ -101,29 +101,9 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Idempotency: if already paid, return accept without re-processing
-    const alreadyPaid =
-      existingOrder.order_status === "paid" ||
-      existingOrder.order_status === "ready_for_review" ||
-      existingOrder.order_status === "requirements_pending";
-
-    if (alreadyPaid) {
-      console.log(`Order ${orderReference} already processed, skipping duplicate callback`);
-      const responseSig = merchantSecret
-        ? hmacMd5(merchantSecret, [orderReference, "accept"].join(";"))
-        : "demo";
-      return new Response(
-        JSON.stringify({
-          orderReference,
-          status: "accept",
-          time: Math.floor(Date.now() / 1000),
-          signature: responseSig,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Validate that amount and currency match the order stored on the server
+    // Validate that amount and currency match the order stored on the server.
+    // This runs BEFORE idempotency so a replayed callback with tampered
+    // amount/currency is rejected rather than silently accepted.
     const serverAmount = Number(existingOrder.amount);
     const serverCurrency = String(existingOrder.currency || "USD");
     const callbackAmount = Number(amount);
@@ -141,6 +121,31 @@ Deno.serve(async (req: Request) => {
         status: 409,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // Idempotency: if already paid, return accept without re-processing.
+    // Amount/currency already validated above, so a duplicate with matching
+    // values is safe to acknowledge.
+    const alreadyPaid =
+      existingOrder.order_status === "paid" ||
+      existingOrder.order_status === "ready_for_review" ||
+      existingOrder.order_status === "requirements_pending";
+
+    if (alreadyPaid) {
+      console.log(`Order ${orderReference} already processed, skipping duplicate callback`);
+      const ackTime = Math.floor(Date.now() / 1000);
+      const responseSig = merchantSecret
+        ? hmacMd5(merchantSecret, [orderReference, "accept", String(ackTime)].join(";"))
+        : "demo";
+      return new Response(
+        JSON.stringify({
+          orderReference,
+          status: "accept",
+          time: ackTime,
+          signature: responseSig,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Mark as paid ONLY when transactionStatus is exactly "Approved"
@@ -184,16 +189,17 @@ Deno.serve(async (req: Request) => {
     }
 
     // Return the signed WayForPay acknowledgement:
-    // orderReference;status;time  (signed with HMAC_MD5)
+    // signature is HMAC_MD5 of "orderReference;accept;time"
+    const ackTime = Math.floor(Date.now() / 1000);
     const responseSig = merchantSecret
-      ? hmacMd5(merchantSecret, [orderReference, "accept"].join(";"))
+      ? hmacMd5(merchantSecret, [orderReference, "accept", String(ackTime)].join(";"))
       : "demo";
 
     return new Response(
       JSON.stringify({
         orderReference,
         status: "accept",
-        time: Math.floor(Date.now() / 1000),
+        time: ackTime,
         signature: responseSig,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
