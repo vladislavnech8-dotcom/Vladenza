@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { X, Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { trackMetaEvent } from '../lib/analytics';
 
 export default function CartDrawer() {
   const { items, total, itemCount, isOpen, closeCart, updateQuantity, removeItem } = useCart();
@@ -93,6 +94,14 @@ export default function CartDrawer() {
               </div>
               <button
                 onClick={() => {
+                  trackMetaEvent('InitiateCheckout', {
+                    value: total,
+                    currency: 'USD',
+                    num_items: itemCount,
+                    content_ids: items.map((i) => i.productId),
+                    content_type: 'product',
+                    contents: items.map((i) => ({ id: i.productId, quantity: i.quantity, item_price: i.unitPrice })),
+                  });
                   closeCart();
                   navigate('/checkout');
                 }}

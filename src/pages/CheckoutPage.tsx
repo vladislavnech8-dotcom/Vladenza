@@ -1,11 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, Check, Loader2, CheckCircle, AlertCircle, CreditCard, ClipboardPaste, Lock } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { useCart } from '../context/CartContext';
 import { useCheckout, type PlacementRequirement } from '../context/CheckoutContext';
 import { payWithWayForPay } from '../lib/wayforpay';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, trackMetaEvent } from '../lib/analytics';
 
 type Step = 1 | 2 | 3 | 4;
 const STEPS = ['Cart', 'Requirements', 'Review', 'Payment'] as const;
@@ -70,6 +70,7 @@ export default function CheckoutPage() {
   const [bulkText, setBulkText] = useState('');
   const [showBulk, setShowBulk] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const initiateCheckoutFired = useRef(false);
 
   // Generate placement requirements from cart items
   const placementReqs = useMemo<PlacementRequirement[]>(() => {
@@ -297,7 +298,21 @@ export default function CheckoutPage() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={() => { setStep(2); trackEvent('begin_checkout', { total, itemCount }); }} className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200">
+                  <button onClick={() => {
+                    if (!initiateCheckoutFired.current) {
+                      initiateCheckoutFired.current = true;
+                      trackMetaEvent('InitiateCheckout', {
+                        value: total,
+                        currency: 'USD',
+                        num_items: itemCount,
+                        content_ids: items.map((i) => i.productId),
+                        content_type: 'product',
+                        contents: items.map((i) => ({ id: i.productId, quantity: i.quantity, item_price: i.unitPrice })),
+                      });
+                    }
+                    setStep(2);
+                    trackEvent('begin_checkout', { total, itemCount });
+                  }} className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200">
                     Continue to Requirements <ArrowRight size={15} />
                   </button>
                 </div>
