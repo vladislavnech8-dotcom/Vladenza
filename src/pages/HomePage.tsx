@@ -7,9 +7,10 @@ import LinkPlanModal from '../components/LinkPlanModal';
 import FAQ from '../components/FAQ';
 import { useSEO } from '../hooks/useSEO';
 import { trackEvent } from '../lib/analytics';
-import { fetchPlacements, type Placement, type PlacementServiceType, formatTraffic } from '../data/placements';
+import { fetchPlacements, type Placement, type PlacementServiceType } from '../data/placements';
 import { NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
 import { cases } from '../data/cases';
+import PlacementCard from '../components/PlacementCard';
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -97,15 +98,9 @@ const homeFaqs = [
 const featuredCases = cases.slice(0, 3);
 
 const TYPE_LABELS: Record<TabKey, string> = {
-  'niche-edits': 'Niche Edit',
-  'guest-posts': 'Guest Post',
-  'crowd-links': 'Crowd Link',
-};
-
-const TYPE_DESCS: Record<TabKey, string> = {
-  'niche-edits': 'Contextual placement',
-  'guest-posts': 'New published article',
-  'crowd-links': 'Forum / community placement',
+  'niche-edits': 'Niche Edits',
+  'guest-posts': 'Guest Posts',
+  'crowd-links': 'Crowd Links',
 };
 
 export default function HomePage() {
@@ -131,21 +126,8 @@ export default function HomePage() {
   const activeServiceType = SERVICE_TYPE_MAP[activeTab];
   const tabPlacements = homepagePlacements.filter((p) => p.service_type === activeServiceType).slice(0, 3);
 
-  const tabExamples = tabPlacements.map((p) => ({
-    domain: p.domain,
-    niche: p.niche,
-    dr: p.dr,
-    traffic: formatTraffic(p.traffic),
-    url: p.placement_url,
-    screenshot: p.screenshots?.length > 0 ? p.screenshots[0] : p.screenshot_url,
-    type: TYPE_LABELS[activeTab],
-    typeDesc: TYPE_DESCS[activeTab],
-  }));
-
   const tabCtaLink = '/placements';
   const tabCtaLabel = `View All ${TYPE_LABELS[activeTab]} Examples`;
-
-  const ActiveTabIcon = tabs.find((t) => t.key === activeTab)!.icon;
 
   return (
     <div className="bg-white min-h-screen">
@@ -357,54 +339,12 @@ export default function HomePage() {
 
           {/* Example cards */}
           <div className="grid md:grid-cols-3 gap-5 mb-6">
-            {tabExamples.length === 0 ? (
+            {tabPlacements.length === 0 ? (
               <div className="col-span-3 py-10 text-center">
                 <p className="text-gray-400 text-sm">Examples coming soon for this service.</p>
               </div>
-            ) : tabExamples.map((ex, i) => (
-              <a
-                key={i}
-                href={ex.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#F97316]/30 hover:shadow-lg hover:shadow-gray-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col"
-              >
-                {/* Preview area */}
-                <div className="bg-gray-50 border-b border-gray-100 h-32 flex items-center justify-center relative overflow-hidden">
-                  {ex.screenshot ? (
-                    <img
-                      src={ex.screenshot}
-                      alt={`${ex.type} on ${ex.domain}`}
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                      loading="lazy"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  ) : (
-                    <div className="opacity-20">
-                      <ActiveTabIcon size={36} className="text-gray-400" />
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    {ex.type}
-                  </div>
-                </div>
-                {/* Content */}
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-bold text-gray-900 truncate">{ex.domain}</span>
-                    <ExternalLink size={12} className="text-gray-300 group-hover:text-[#F97316] transition-colors flex-shrink-0" />
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
-                    <span className="font-semibold text-gray-600">{ex.niche}</span>
-                    <span>DR {ex.dr}</span>
-                    <span>{ex.traffic} traffic</span>
-                  </div>
-                  <p className="text-xs text-gray-400 mb-4">{ex.typeDesc}</p>
-                  <span className="text-sm font-semibold text-[#F97316] group-hover:text-[#EA580C] flex items-center gap-1.5 transition-colors mt-auto">
-                    View live placement <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </div>
-              </a>
+            ) : tabPlacements.map((p) => (
+              <PlacementCard key={p.id} p={p} />
             ))}
           </div>
 

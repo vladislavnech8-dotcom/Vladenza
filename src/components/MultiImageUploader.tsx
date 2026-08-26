@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, X, AlertCircle, Loader2, Plus } from 'lucide-react';
+import { Upload, X, AlertCircle, Loader2, Plus, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -41,6 +41,7 @@ export default function MultiImageUploader({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useCallback(async (file: File): Promise<string | null> => {
@@ -92,7 +93,6 @@ export default function MultiImageUploader({
   };
 
   const handleReplace = async (index: number) => {
-    // Use a temporary input to get a single file
     const tempInput = document.createElement('input');
     tempInput.type = 'file';
     tempInput.accept = 'image/jpeg,image/png,image/webp';
@@ -114,6 +114,28 @@ export default function MultiImageUploader({
     tempInput.click();
   };
 
+  const moveLeft = (index: number) => {
+    if (index === 0) return;
+    const next = [...value];
+    [next[index - 1], next[index]] = [next[index], next[index - 1]];
+    onChange(next);
+  };
+
+  const moveRight = (index: number) => {
+    if (index === value.length - 1) return;
+    const next = [...value];
+    [next[index + 1], next[index]] = [next[index], next[index + 1]];
+    onChange(next);
+  };
+
+  const makePrimary = (index: number) => {
+    if (index === 0) return;
+    const next = [...value];
+    const [item] = next.splice(index, 1);
+    next.unshift(item);
+    onChange(next);
+  };
+
   return (
     <div>
       {label && (
@@ -132,62 +154,133 @@ export default function MultiImageUploader({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-2">
-        {/* Existing images */}
-        {value.map((src, i) => (
-          <div key={i} className="relative group rounded-xl overflow-hidden border border-gray-200 h-28">
-            <img
-              src={src}
-              alt={`Screenshot ${i + 1}`}
-              className="w-full h-full object-cover"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.3'; }}
-            />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-              <button
-                onClick={() => handleReplace(i)}
-                disabled={uploading}
-                className="bg-white/90 hover:bg-white text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 transition disabled:opacity-50"
-              >
-                <Upload size={11} /> Replace
-              </button>
-              <button
-                onClick={() => handleRemove(i)}
-                disabled={uploading}
-                className="bg-red-500/90 hover:bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 transition disabled:opacity-50"
-              >
-                <X size={11} /> Delete
-              </button>
-            </div>
-            {uploading && (
-              <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
-                <Loader2 size={16} className="text-gray-500 animate-spin" />
+      {value.length > 0 && (
+        <div className="space-y-2">
+          {value.map((src, i) => (
+            <div
+              key={i}
+              draggable
+              onDragStart={() => setDragIndex(i)}
+              onDragEnd={() => setDragIndex(null)}
+              onDragOver={(e) => { e.preventDefault(); }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (dragIndex !== null && dragIndex !== i) {
+                  const next = [...value];
+                  const [item] = next.splice(dragIndex, 1);
+                  next.splice(i, 0, item);
+                  onChange(next);
+                }
+                setDragIndex(null);
+              }}
+              className={`flex items-center gap-3 p-2 bg-white border rounded-xl transition ${dragIndex === i ? 'opacity-40 border-[#F97316]' : 'border-gray-200'}`}
+            >
+              {/* Order number */}
+              <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${i === 0 ? 'bg-[#F97316] text-white' : 'bg-gray-100 text-gray-400'}`}>{i + 1}</span>
+                {i === 0 && <Star size={9} className="text-[#F97316] fill-[#F97316]" />}
               </div>
-            )}
-          </div>
-        ))}
 
-        {/* Upload tile */}
-        <div
-          onClick={() => !uploading && inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors h-28 ${
-            dragOver ? 'border-[#F97316] bg-orange-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-          } ${uploading ? 'pointer-events-none' : ''}`}
-        >
-          {uploading ? (
-            <Loader2 size={18} className="text-[#F97316] animate-spin" />
-          ) : (
-            <>
-              <Plus size={18} className="text-gray-300" />
-              <span className="text-[10px] text-gray-400 text-center px-2">Add images</span>
-            </>
-          )}
+              {/* Thumbnail */}
+              <div className="relative w-20 h-14 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0 bg-gray-50">
+                <img
+                  src={src}
+                  alt={`Screenshot ${i + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.3'; }}
+                />
+                {uploading && (
+                  <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                    <Loader2 size={14} className="text-gray-500 animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              {/* Label */}
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-semibold text-gray-700">
+                  {i === 0 ? 'Primary screenshot' : `Screenshot ${i + 1}`}
+                </span>
+                <p className="text-[10px] text-gray-400 truncate">{src.split('/').pop()}</p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button
+                  onClick={() => moveLeft(i)}
+                  disabled={i === 0 || uploading}
+                  className="w-7 h-7 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 flex items-center justify-center transition disabled:opacity-20"
+                  title="Move left"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <button
+                  onClick={() => moveRight(i)}
+                  disabled={i === value.length - 1 || uploading}
+                  className="w-7 h-7 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 flex items-center justify-center transition disabled:opacity-20"
+                  title="Move right"
+                >
+                  <ChevronRight size={14} />
+                </button>
+                {i !== 0 && (
+                  <button
+                    onClick={() => makePrimary(i)}
+                    disabled={uploading}
+                    className="w-7 h-7 rounded-lg hover:bg-orange-50 text-gray-400 hover:text-[#F97316] flex items-center justify-center transition disabled:opacity-20"
+                    title="Make primary"
+                  >
+                    <Star size={13} />
+                  </button>
+                )}
+                <button
+                  onClick={() => handleReplace(i)}
+                  disabled={uploading}
+                  className="w-7 h-7 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 flex items-center justify-center transition disabled:opacity-20"
+                  title="Replace"
+                >
+                  <Upload size={12} />
+                </button>
+                <button
+                  onClick={() => handleRemove(i)}
+                  disabled={uploading}
+                  className="w-7 h-7 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 flex items-center justify-center transition disabled:opacity-20"
+                  title="Delete"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
+      )}
+
+      {/* Upload drop zone */}
+      <div
+        onClick={() => !uploading && inputRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        className={`mt-2 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors py-6 ${
+          dragOver ? 'border-[#F97316] bg-orange-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+        } ${uploading ? 'pointer-events-none' : ''}`}
+      >
+        {uploading ? (
+          <>
+            <Loader2 size={18} className="text-[#F97316] animate-spin" />
+            <span className="text-xs text-gray-500">Uploading...</span>
+          </>
+        ) : (
+          <>
+            <Upload size={18} className="text-gray-300" />
+            <span className="text-xs text-gray-400 font-medium">Upload placement screenshot</span>
+            <span className="text-[10px] text-gray-300">Drag & drop JPG, PNG or WebP or click to browse</span>
+          </>
+        )}
       </div>
 
-      <p className="text-[10px] text-gray-400 mt-1.5">JPG, PNG, WebP — max 5MB each. Click or drag & drop.</p>
+      <p className="text-[10px] text-gray-400 mt-1.5">
+        JPG, PNG, WebP — max 5MB each. First screenshot is the primary card image. Drag rows to reorder.
+      </p>
 
       {/* Legacy URL input */}
       <details className="mt-1.5">
