@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Check, ArrowRight, ArrowDown, ExternalLink, Link2, Target, TrendingUp, Zap, ShoppingCart, Trophy, Package, Sparkles } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
@@ -55,6 +55,17 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
     );
     setJustAdded(true);
     trackEvent('add_to_cart', { product_id: pkg.id, quantity: qty, price: pkg.price });
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'AddToCart', {
+        content_name: `Niche Edit ${pkg.label}`,
+        content_category: 'Niche Edits',
+        content_ids: [`niche-edit-${pkg.id}`],
+        content_type: 'product',
+        value: pkg.price * qty,
+        currency: 'USD',
+        contents: [{ id: `niche-edit-${pkg.id}`, quantity: qty, item_price: pkg.price }],
+      });
+    }
     setTimeout(() => setJustAdded(false), 1500);
     setQty(1);
   };
@@ -134,6 +145,20 @@ export default function NicheEditsPage() {
 
   const [relatedCases, setRelatedCases] = useState<RelatedCase[]>([]);
   const [linkPlanOpen, setLinkPlanOpen] = useState(false);
+  const viewContentFired = useRef(false);
+
+  useEffect(() => {
+    if (viewContentFired.current) return;
+    viewContentFired.current = true;
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'ViewContent', {
+        content_name: 'Niche Edit Link Building',
+        content_category: 'Niche Edits',
+        content_ids: ['niche-edits'],
+        content_type: 'product',
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const preloaded = typeof window === 'undefined'
