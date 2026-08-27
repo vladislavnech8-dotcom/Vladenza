@@ -192,13 +192,6 @@ Deno.serve(async (req: Request) => {
     if (req.method === "POST" || req.method === "PATCH" || req.method === "PUT") {
       const { requirements: incoming } = postBody as { requirements: RequirementEntry[] };
 
-      if (!Array.isArray(requirements) || requirements.length === 0) {
-        return new Response(
-          JSON.stringify({ error: "No requirements provided." }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-
       if (!Array.isArray(incoming) || incoming.length === 0) {
         return new Response(
           JSON.stringify({ error: "No requirements provided." }),
