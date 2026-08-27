@@ -34,6 +34,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
 const SeoAuditPage = lazy(() => import('./pages/SeoAuditPage'));
 const GuestPostingPage = lazy(() => import('./pages/GuestPostingPage'));
 const NicheEditsPage = lazy(() => import('./pages/NicheEditsPage'));
@@ -74,6 +75,12 @@ function AdminRoute() {
   return session ? <AdminPage /> : <LoginPage />;
 }
 
+function AdminOrdersRoute() {
+  const { session, loading } = useAuth();
+  if (loading) return <PageLoader />;
+  return session ? <AdminOrdersPage /> : <LoginPage />;
+}
+
 export default function App() {
   return (
     <CartProvider>
@@ -86,6 +93,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
+              <Route path="/admin/orders" element={<AuthProvider><AdminOrdersRoute /></AuthProvider>} />
               <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
               <Route path="/services/seo-audit" element={<SeoAuditPage />} />
               <Route path="/services/guest-posting" element={<GuestPostingPage />} />
