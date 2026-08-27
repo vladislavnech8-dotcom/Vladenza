@@ -39,7 +39,14 @@ Deno.serve(async (req: Request) => {
 
   try {
     const url = new URL(req.url);
-    const token = url.searchParams.get("token");
+    let token = url.searchParams.get("token");
+    let postBody: { token?: string; requirements?: RequirementInput[] } | null = null;
+
+    // For POST, always read the body (contains requirements, and possibly token)
+    if (req.method === "POST") {
+      postBody = await req.json();
+      if (!token) token = postBody?.token;
+    }
 
     if (!token || token.length < 16) {
       return new Response(
@@ -117,8 +124,7 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      const body = await req.json();
-      const { requirements } = body as { requirements: RequirementInput[] };
+      const { requirements } = postBody as { requirements: RequirementInput[] };
 
       if (!Array.isArray(requirements) || requirements.length === 0) {
         return new Response(

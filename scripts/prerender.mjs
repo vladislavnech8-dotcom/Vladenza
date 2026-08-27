@@ -16,6 +16,8 @@ const STATIC_ROUTES = [
   '/privacy-policy', '/terms', '/refund-policy', '/cookie-policy',
   '/placements',
 ];
+
+
 const NICHE_SLUGS = ['igaming', 'saas', 'auto', 'health', 'proxy', 'renovations'];
 const CROWD_LINKS_LANGUAGES = ['english', 'spanish', 'german', 'french', 'portuguese', 'korean'];
 
@@ -108,6 +110,11 @@ async function getDynamicData() {
 
 async function main() {
   const template = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
+
+  // Write a blank SPA shell for dynamic routes (e.g. /order/:token) so React
+  // uses createRoot instead of hydrateRoot, avoiding hydration mismatches.
+  fs.writeFileSync(path.join(distDir, 'spa-fallback.html'), template);
+
   const { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
 
   const ROUTES = [

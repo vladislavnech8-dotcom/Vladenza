@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, Component, ErrorInfo, ReactNode } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
 import CartDrawer from './components/CartDrawer';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import { CartProvider } from './context/CartContext';
@@ -7,6 +8,29 @@ import { CheckoutProvider } from './context/CheckoutContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
 import HomePage from './pages/HomePage';
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error, info: ErrorInfo) { console.error('App error boundary:', error, info); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="text-center max-w-md px-6">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
+              <AlertCircle size={32} className="text-red-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
+            <p className="text-gray-500 text-sm mb-6">An unexpected error occurred. Please try refreshing the page.</p>
+            <a href="/" className="text-sm font-semibold text-[#F97316] hover:underline">Back to Home</a>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
@@ -58,6 +82,7 @@ export default function App() {
           <CartDrawer />
           <CookieConsentBanner />
           <Suspense fallback={<PageLoader />}>
+            <ErrorBoundary>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
@@ -89,6 +114,7 @@ export default function App() {
               <Route path="/cookie-policy" element={<CookiePolicyPage />} />
               <Route path="/placements" element={<PlacementsPage />} />
             </Routes>
+            </ErrorBoundary>
           </Suspense>
         </CookieConsentProvider>
       </CheckoutProvider>

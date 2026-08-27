@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { CheckCircle, Loader2, AlertCircle, ArrowRight, ExternalLink } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { CheckCircle, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 import Navigation from '../components/Navigation';
-import { supabase } from '../lib/supabase';
 
 interface PlacementSection {
   placementId: string;
@@ -39,12 +37,13 @@ export default function OrderRequirementsPage() {
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('order-requirements', {
-        method: 'GET',
-        query: { token },
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/order-requirements?token=${encodeURIComponent(token || '')}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
       });
+      const data = await res.json();
 
-      if (error || !data?.success) {
+      if (!res.ok || !data?.success) {
         if (data?.error?.includes('already')) {
           setState('already-submitted');
           setOrderNumber(data.orderNumber || '');
@@ -97,12 +96,18 @@ export default function OrderRequirementsPage() {
     setErrorMsg('');
 
     try {
-      const { data, error } = await supabase.functions.invoke('order-requirements', {
+      const postUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/order-requirements?token=${encodeURIComponent(token || '')}`;
+      const res = await fetch(postUrl, {
         method: 'POST',
-        body: { token, requirements: forms },
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ requirements: forms }),
       });
+      const data = await res.json();
 
-      if (error || !data?.success) {
+      if (!res.ok || !data?.success) {
         setState('error');
         setErrorMsg(data?.error || 'Could not save requirements. Please try again.');
         return;
@@ -316,7 +321,7 @@ export default function OrderRequirementsPage() {
               </div>
             ))}
 
-            {errorMsg && state === 'error' && (
+            {errorMsg && (
               <p className="text-red-500 text-xs bg-red-50 border border-red-100 rounded-lg px-3 py-2">{errorMsg}</p>
             )}
 
