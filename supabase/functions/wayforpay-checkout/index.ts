@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { createHmac, randomBytes, createHash, createCipheriv } from "node:crypto";
+import { createHmac, createHash } from "node:crypto";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,22 +13,45 @@ function hmacMd5(key: string, data: string): string {
 }
 
 function generateToken(): string {
-  return randomBytes(32).toString("hex");
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-// AES-256-GCM authenticated encryption
+// AES-256-GCM authenticated encryption using Web Crypto API
 // Output format: "ivHex:tagHex:ciphertextHex"
-function encryptToken(token: string, keyHex: string): string {
-  const key = Buffer.from(keyHex, "hex");
-  const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", key, iv);
-  const encrypted = Buffer.concat([cipher.update(token, "utf8"), cipher.final()]);
-  const tag = cipher.getAuthTag();
-  return `${iv.toString("hex")}:${tag.toString("hex")}:${encrypted.toString("hex")}`;
+async function encryptToken(token: string, keyHex: string): Promise<string> {
+  const keyBytes = new Uint8Array(keyHex.match(/.{2}/g)!.map(h => parseInt(h, 16)));
+  const iv = new Uint8Array(12);
+  crypto.getRandomValues(iv);
+  const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+  const encoded = new TextEncoder().encode(token);
+  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoded);
+  const encryptedBytes = new Uint8Array(encrypted);
+  // Web Crypto AES-GCM appends the 16-byte tag to the ciphertext
+  const ciphertext = encryptedBytes.slice(0, encryptedBytes.length - 16);
+  const tag = encryptedBytes.slice(encryptedBytes.length - 16);
+  const toHex = (arr: Uint8Array) => Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
+  return `${toHex(iv)}:${toHex(tag)}:${toHex(ciphertext)}`;
+}
+
+// Fetch the encryption key from env or database fallback
+async function getEncryptionKey(supabase: ReturnType<typeof createClient>): Promise<string> {
+  const envKey = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY");
+  if (envKey) return envKey;
+
+  const { data, error } = await supabase
+    .from("app_secrets")
+    .select("value")
+    .eq("name", "REQUIREMENTS_TOKEN_ENCRYPTION_KEY")
+    .single();
+
+  if (error || !data) throw new Error("Encryption key not configured");
+  return data.value as string;
 }
 
 // Server-side canonical pricing — the only source of truth for prices
@@ -127,11 +150,8 @@ Deno.serve(async (req: Request) => {
     const requirementsTokenHash = hashToken(requirementsToken);
 
     // Encrypt the token for server-side storage (decryptable by email function)
-    const encryptionKey = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY") || "";
-    let requirementsTokenEncrypted: string | null = null;
-    if (encryptionKey) {
-      requirementsTokenEncrypted = encryptToken(requirementsToken, encryptionKey);
-    }
+    const encryptionKey = await getEncryptionKey(supabase);
+    const requirementsTokenEncrypted = await encryptToken(requirementsToken, encryptionKey);
 
     const { data: numData } = await supabase.rpc("generate_order_number");
     const orderNumber = numData as string || `NE-${Date.now()}`;

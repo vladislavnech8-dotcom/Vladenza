@@ -1,6 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { createDecipheriv } from "node:crypto";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,19 +7,38 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-// AES-256-GCM authenticated decryption
+// AES-256-GCM authenticated decryption using Web Crypto API
 // Input format: "ivHex:tagHex:ciphertextHex"
-function decryptToken(encrypted: string, keyHex: string): string {
+async function decryptToken(encrypted: string, keyHex: string): Promise<string> {
   const parts = encrypted.split(":");
   if (parts.length !== 3) throw new Error("Invalid encrypted token format");
-  const key = Buffer.from(keyHex, "hex");
-  const iv = Buffer.from(parts[0], "hex");
-  const tag = Buffer.from(parts[1], "hex");
-  const ciphertext = Buffer.from(parts[2], "hex");
-  const decipher = createDecipheriv("aes-256-gcm", key, iv);
-  decipher.setAuthTag(tag);
-  const decrypted = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
-  return decrypted.toString("utf8");
+  const fromHex = (hex: string) => new Uint8Array(hex.match(/.{2}/g)!.map(h => parseInt(h, 16)));
+  const keyBytes = fromHex(keyHex);
+  const iv = fromHex(parts[0]);
+  const tag = fromHex(parts[1]);
+  const ciphertext = fromHex(parts[2]);
+  // Web Crypto expects ciphertext + tag concatenated
+  const combined = new Uint8Array(ciphertext.length + tag.length);
+  combined.set(ciphertext, 0);
+  combined.set(tag, ciphertext.length);
+  const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKey, combined);
+  return new TextDecoder().decode(decrypted);
+}
+
+// Fetch the encryption key from env or database fallback
+async function getEncryptionKey(supabase: ReturnType<typeof createClient>): Promise<string> {
+  const envKey = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY");
+  if (envKey) return envKey;
+
+  const { data, error } = await supabase
+    .from("app_secrets")
+    .select("value")
+    .eq("name", "REQUIREMENTS_TOKEN_ENCRYPTION_KEY")
+    .single();
+
+  if (error || !data) throw new Error("Encryption key not configured");
+  return data.value as string;
 }
 
 interface OrderItem {
@@ -59,7 +77,6 @@ Deno.serve(async (req: Request) => {
     }
 
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    const ENCRYPTION_KEY = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY") || "";
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -100,9 +117,10 @@ Deno.serve(async (req: Request) => {
 
     // Decrypt the requirements token to build the secure URL
     let requirementsToken: string | null = null;
-    if (order.requirements_token_encrypted && ENCRYPTION_KEY) {
+    if (order.requirements_token_encrypted) {
       try {
-        requirementsToken = decryptToken(order.requirements_token_encrypted as string, ENCRYPTION_KEY);
+        const encryptionKey = await getEncryptionKey(supabase);
+        requirementsToken = await decryptToken(order.requirements_token_encrypted as string, encryptionKey);
       } catch (decryptErr) {
         console.error("Token decryption failed:", decryptErr);
       }
