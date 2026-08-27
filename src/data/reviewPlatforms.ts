@@ -8,8 +8,6 @@ export interface ReviewPlatform {
 }
 
 export const REVIEW_PLATFORMS: ReviewPlatform[] = [
-  { name: 'Trustpilot', domain: 'trustpilot.com', score: '4.9', reviewCount: '50+ reviews', href: 'https://www.trustpilot.com/review/vladenza.com', accent: '#00B67A' },
-  { name: 'Clutch',     domain: 'clutch.co',      score: '4.9', reviewCount: '40+ reviews', href: 'https://clutch.co/profile/vladenza',              accent: '#EF3E27' },
-  { name: 'Fiverr',     domain: 'fiverr.com',      score: '4.9', reviewCount: '200+ orders', href: 'https://www.fiverr.com/vladenza',                 accent: '#1DBF73' },
-  { name: 'Google',     domain: 'google.com',      score: '4.9', reviewCount: '60+ reviews', href: 'https://g.page/r/vladenza',                       accent: '#4285F4' },
+  { name: 'Fiverr', domain: 'fiverr.com', score: '4.9', reviewCount: '1.1K reviews', href: 'https://www.fiverr.com/fittranslate?public_mode=true', accent: '#1DBF73' },
+  { name: 'Clutch', domain: 'clutch.co', score: '5.0', reviewCount: '11 reviews', href: 'https://clutch.co/profile/vladenza', accent: '#EF3E27' },
 ];

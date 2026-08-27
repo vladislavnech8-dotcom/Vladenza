@@ -137,7 +137,7 @@ export default function PricingPage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden pt-32 pb-16" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
-        <div className="max-w-7xl mx-auto px-6 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
             <Zap size={12} />
             Pricing
@@ -154,7 +154,7 @@ export default function PricingPage() {
 
       {/* Service pricing sections */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col gap-16">
           {services.map((svc) => (
             <div key={svc.name} id={svc.name.toLowerCase().replace(/\s+/g, '-')}>
               {/* Service header */}
@@ -223,7 +223,7 @@ export default function PricingPage() {
 
       {/* Bottom CTA */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Not sure which service fits?
           </h2>

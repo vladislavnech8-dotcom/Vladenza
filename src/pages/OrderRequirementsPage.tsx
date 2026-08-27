@@ -140,7 +140,7 @@ export default function OrderRequirementsPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-2xl mx-auto px-6 py-20 text-center">
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
           <Loader2 size={32} className="text-[#F97316] animate-spin mx-auto mb-4" />
           <p className="text-gray-400 text-sm">Loading your order...</p>
         </div>
@@ -153,7 +153,7 @@ export default function OrderRequirementsPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-2xl mx-auto px-6 py-16 text-center">
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} className="text-red-500" />
           </div>
@@ -173,7 +173,7 @@ export default function OrderRequirementsPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-2xl mx-auto px-6 py-16 text-center">
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
           <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
             <CheckCircle size={32} className="text-green-500" />
           </div>
@@ -232,7 +232,7 @@ export default function OrderRequirementsPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-2xl mx-auto px-6 py-16 text-center">
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} className="text-red-500" />
           </div>
@@ -260,12 +260,12 @@ export default function OrderRequirementsPage() {
       <Navigation />
       <div className="pt-[88px]">
         <div className="border-b border-gray-100 bg-gray-50">
-          <div className="max-w-3xl mx-auto px-6 py-4">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
             <Link to="/" className="text-xs text-gray-400 hover:text-gray-700 transition-colors">Back to Home</Link>
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto px-6 py-10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Add Your Link Requirements</h1>
           {orderNumber && <p className="text-gray-400 text-sm mb-6">Order #{orderNumber}</p>}
           <p className="text-gray-500 text-sm mb-6">

@@ -122,7 +122,7 @@ export default function FAQ({ faqs, compact }: { faqs?: { q: string; a: string }
         <path d="M 30 30 L 30 80 L 80 80" fill="none" stroke="#F97316" strokeWidth="2.5" opacity="0.18" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M 1410 30 L 1410 80 L 1360 80" fill="none" stroke="#F97316" strokeWidth="2.5" opacity="0.18" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
-      <div className="max-w-7xl mx-auto px-6 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
             FAQ

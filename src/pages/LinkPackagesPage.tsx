@@ -187,7 +187,7 @@ export default function LinkPackagesPage() {
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
       {/* Niche tabs */}
       <div className="bg-white border-b border-gray-100 sticky top-[88px] z-40">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex gap-1 py-2 overflow-x-auto">
             {otherNiches.map((n) => (
               <Link
@@ -214,7 +214,7 @@ export default function LinkPackagesPage() {
             ))
           )}
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Link2 size={12} />
@@ -238,7 +238,7 @@ export default function LinkPackagesPage() {
 
       {/* Stats */}
       <section className="py-12 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {data.stats.map((s) => (
               <div key={s.label}>
@@ -252,7 +252,7 @@ export default function LinkPackagesPage() {
 
       {/* Packages */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-white mb-3">{data.label} link packages</h2>
             <p className="text-gray-400 text-sm max-w-lg mx-auto">Flexible volumes built for different campaign phases — from foundation building to aggressive authority scaling.</p>
@@ -286,7 +286,7 @@ export default function LinkPackagesPage() {
 
       {/* Why this niche */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
@@ -335,7 +335,7 @@ export default function LinkPackagesPage() {
 
       {/* Other niches */}
       <section className="py-16 bg-white border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-2">Explore other niche packages</h3>
           </div>

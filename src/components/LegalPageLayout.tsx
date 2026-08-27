@@ -26,7 +26,7 @@ export default function LegalPageLayout({
     <div className="bg-white min-h-screen">
       <Navigation />
       <div className="pt-[88px]">
-        <div className="max-w-3xl mx-auto px-6 py-12 lg:py-16">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{title}</h1>
           <p className="text-gray-400 text-xs mb-8">Last updated: {lastUpdated}</p>
 

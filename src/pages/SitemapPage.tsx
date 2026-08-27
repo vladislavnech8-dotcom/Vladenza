@@ -19,7 +19,7 @@ const sections: SitemapSection[] = [
     color: 'text-gray-700 bg-gray-50 border-gray-200',
     links: [
       { label: 'Home', href: '/', desc: 'Overview of all services and agency overview' },
-      { label: 'Reviews', href: '/reviews', desc: 'Client reviews on Clutch, Google, and Fiverr — leave your own' },
+      { label: 'Reviews', href: '/reviews', desc: 'Client reviews on Fiverr and Clutch — leave your own' },
     ],
   },
   {
@@ -81,7 +81,7 @@ export default function SitemapPage() {
     <ServicePageLayout>
       {/* Hero */}
       <section className="relative overflow-hidden py-16 lg:py-20" style={{ background: 'linear-gradient(160deg,#fff7f0 0%,#ffffff 55%)' }}>
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-1.5 mb-5">
               <Globe size={13} className="text-[#F97316]" />
@@ -115,7 +115,7 @@ export default function SitemapPage() {
 
       {/* Sections grid */}
       <section className="py-12 lg:py-16">
-        <div className="max-w-7xl mx-auto px-6 space-y-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-10">
           {sections.map((section) => {
             const Icon = section.icon;
             return (
@@ -165,7 +165,7 @@ export default function SitemapPage() {
 
       {/* XML note */}
       <section className="py-10 lg:py-12 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-6 bg-gray-50 border border-gray-200 rounded-2xl">
             <div className="w-11 h-11 bg-gray-900 rounded-xl flex items-center justify-center shrink-0">
               <FileCode size={18} className="text-white" />

@@ -140,7 +140,7 @@ export default function HomePage() {
             background: 'radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 65%)',
           }}
         />
-        <div className="relative max-w-7xl mx-auto px-6 pt-10 lg:pt-12">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-10 lg:pt-12">
           <div className="grid lg:grid-cols-[1fr_360px] gap-10 lg:gap-12 items-start">
 
             {/* LEFT: content */}
@@ -213,7 +213,7 @@ export default function HomePage() {
 
       {/* 2. PROOF BAR */}
       <section className="bg-gray-950 py-6">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
             <div className="flex items-center justify-center gap-3">
               <Trophy size={20} className="text-[#F97316]" />
@@ -242,7 +242,7 @@ export default function HomePage() {
 
       {/* 3. CHOOSE HOW YOU WANT TO BUILD LINKS */}
       <section id="products" className="py-16 bg-white scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Choose How You Want to Build Links</h2>
           <p className="text-gray-500 text-sm mb-10 max-w-lg">
             Buy individual placements or combine different link types into a broader campaign.
@@ -282,7 +282,7 @@ export default function HomePage() {
 
       {/* 4. COMPANIES WE'VE WORKED WITH */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-xs font-bold uppercase tracking-widest text-[#F97316] mb-3">Selected Clients</div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Companies We've Worked With</h2>
           <p className="text-gray-500 text-sm mb-10 max-w-lg">
@@ -308,7 +308,7 @@ export default function HomePage() {
 
       {/* 5. SEE THE LINKS BEFORE YOU BUY */}
       <section id="placements" className="py-16 bg-white scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">See the Links Before You Buy</h2>
           <p className="text-gray-500 text-sm mb-8 max-w-lg">
             Browse real examples of placements we've delivered across different link types, niches, DR levels and traffic ranges.
@@ -358,7 +358,7 @@ export default function HomePage() {
 
       {/* 6. REAL CAMPAIGNS. REAL OUTCOMES. */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Campaigns. Real Outcomes.</h2>
           <p className="text-gray-500 text-sm mb-10 max-w-lg">
             Real client campaigns with documented link-building and organic search results.
@@ -416,7 +416,7 @@ export default function HomePage() {
 
       {/* 7. NEED MORE THAN LINK BUILDING? */}
       <section className="py-16 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Need More Than Link Building?</h2>
           <p className="text-gray-500 text-sm mb-10 max-w-lg">
             Additional SEO services for clients who need strategy, analysis or broader search visibility.
@@ -442,7 +442,7 @@ export default function HomePage() {
 
       {/* 8. QUESTIONS BEFORE YOU BUY */}
       <section id="faq" className="py-16 bg-gray-50 scroll-mt-20">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Questions Before You Buy</h2>
           <p className="text-gray-500 text-sm mb-8">Honest answers to the things that matter before ordering.</p>
           <div className="grid md:grid-cols-2 gap-3">
@@ -462,7 +462,7 @@ export default function HomePage() {
 
       {/* 9. FINAL CTA */}
       <section className="py-16 bg-gray-950">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Not Sure Which Links You Need?</h2>
           <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
             Send us your website and budget. We'll review your backlink profile and recommend a practical link-building mix.

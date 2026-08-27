@@ -166,7 +166,7 @@ const testimonials = [
   {
     name: 'Elena V.',
     role: 'SEO Manager, iGaming Portal',
-    platform: 'Google',
+    platform: 'Clutch',
     text: "We've tried 4 link building agencies before. This is the only one that actually moves the needle in competitive niches. The white-label setup is seamless — clients think we have a huge in-house team.",
     stars: 5,
   },
@@ -175,13 +175,6 @@ const testimonials = [
     role: 'Agency Director, UK',
     platform: 'Clutch',
     text: "We tripled our link building client base in 18 months. The quality is consistently exceptional and the branded reports are professional enough to go straight to clients without a single edit.",
-    stars: 5,
-  },
-  {
-    name: 'Sophie R.',
-    role: 'E-commerce Director',
-    platform: 'Trustpilot',
-    text: "Fast turnaround, real editorial placements, and they follow up to make sure links are still live. The 12-month guarantee gave us the confidence to resell at a premium — rare professionalism in this industry.",
     stars: 5,
   },
   {
@@ -194,7 +187,7 @@ const testimonials = [
   {
     name: 'Andrei P.',
     role: 'CMO, Fintech Startup',
-    platform: 'GoodFirms',
+    platform: 'Fiverr',
     text: "Their 23-point quality review gives us complete confidence in every placement. Zero client complaints about link quality since switching, and our retention has improved significantly.",
     stars: 5,
   },
@@ -265,10 +258,7 @@ const faqs = [
 
 const faviconMap: Record<string, string> = {
   Clutch: 'clutch.co',
-  GoodFirms: 'goodfirms.co',
-  Trustpilot: 'trustpilot.com',
   Fiverr: 'fiverr.com',
-  Google: 'google.com',
 };
 
 function PlatformIcon({ favicon, alt }: { favicon: string; alt: string }) {
@@ -366,7 +356,7 @@ export default function WhiteLabelPage() {
           <line x1="80" y1="600" x2="580" y2="0" stroke="#F97316" strokeWidth="0.8" opacity="0.05"/>
         </svg>
 
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/30 bg-[#F97316]/10 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Lock size={11} />
@@ -402,7 +392,7 @@ export default function WhiteLabelPage() {
 
       {/* ── Stats strip ──────────────────────────────────── */}
       <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {whyItMatters.map((item) => (
               <div key={item.stat} className="text-center">
@@ -416,7 +406,7 @@ export default function WhiteLabelPage() {
 
       {/* ── Benefits ─────────────────────────────────────── */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               Why Agencies Choose Us
@@ -442,7 +432,7 @@ export default function WhiteLabelPage() {
 
       {/* ── What we build ────────────────────────────────── */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Every link type. Every niche.</h2>
             <p className="text-gray-400 text-sm">Mix and match to build a natural, diverse profile for each client — all under your brand.</p>
@@ -464,7 +454,7 @@ export default function WhiteLabelPage() {
 
       {/* ── Process — dark ───────────────────────────────── */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-white mb-3">From first call to first links — in 1 week</h2>
             <p className="text-gray-400 text-sm max-w-lg mx-auto">No lengthy onboarding. No complicated integrations. A clean handoff and results you can show clients.</p>
@@ -491,7 +481,7 @@ export default function WhiteLabelPage() {
 
       {/* ── Packages ─────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               Packages
@@ -534,7 +524,7 @@ export default function WhiteLabelPage() {
 
       {/* ── Testimonials ─────────────────────────────────── */}
       <section className="py-16 lg:py-20 bg-gray-50/50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-3">
               What Agency Partners Say
@@ -604,7 +594,7 @@ export default function WhiteLabelPage() {
 
       {/* ── FAQ ──────────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">Common questions</h2>
             <p className="text-gray-500 text-sm">Everything agencies ask before becoming a partner.</p>

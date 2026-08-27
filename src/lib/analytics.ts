@@ -54,3 +54,28 @@ export function trackMetaEvent(
     window.__fbqPending.push(fire);
   }
 }
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
+const UTM_STORAGE_KEY = 'vladenza_utm';
+
+export function captureUtmParams(): void {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+  const utm: Record<string, string> = {};
+  let hasUtm = false;
+  for (const key of UTM_KEYS) {
+    const val = params.get(key);
+    if (val) { utm[key] = val; hasUtm = true; }
+  }
+  if (hasUtm) {
+    try { sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm)); } catch { /* ignore */ }
+  }
+}
+
+export function getStoredUtmParams(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = sessionStorage.getItem(UTM_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}

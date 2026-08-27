@@ -167,7 +167,7 @@ export default function CaseStudyDetailPage() {
 
       {/* Breadcrumb */}
       <div className="border-b border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400 overflow-hidden">
           <a href="/" className="hover:text-gray-700 transition-colors whitespace-nowrap">Home</a>
           <span className="text-gray-300">/</span>
           <a href="/case-studies" className="hover:text-gray-700 transition-colors whitespace-nowrap">Case Studies</a>
@@ -184,7 +184,7 @@ export default function CaseStudyDetailPage() {
         <div className="absolute top-0 right-0 w-[480px] h-[280px] pointer-events-none opacity-[0.06]"
           style={{ background: `radial-gradient(ellipse at top right, ${c.color}, transparent 70%)` }}
         />
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <a href="/case-studies" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-6">
             <ArrowLeft size={12} /> All cases
           </a>
@@ -209,7 +209,7 @@ export default function CaseStudyDetailPage() {
 
       {/* Stats strip */}
       <section className="border-y border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {c.stats.map((s, i) => (
               <div key={s.label} className="py-7 px-4 sm:px-6 first:pl-0">
@@ -226,7 +226,7 @@ export default function CaseStudyDetailPage() {
 
       {/* Body */}
       <div className="py-14 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-[1fr_280px] gap-14">
 
             {/* Article */}
@@ -346,7 +346,7 @@ export default function CaseStudyDetailPage() {
 
       {/* More cases */}
       <section className="py-14 border-t border-gray-100 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold text-gray-900">More case studies</h2>
             <a href="/case-studies" className="text-sm font-semibold text-[#F97316] flex items-center gap-1.5 hover:underline">

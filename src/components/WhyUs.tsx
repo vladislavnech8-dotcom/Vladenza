@@ -68,7 +68,7 @@ export default function WhyUs() {
         <line x1="140" y1="50" x2="140" y2="90" stroke="#F97316" strokeWidth="2" opacity="0.12" strokeLinecap="round"/>
         <line x1="120" y1="70" x2="160" y2="70" stroke="#F97316" strokeWidth="2" opacity="0.12" strokeLinecap="round"/>
       </svg>
-      <div className="max-w-7xl mx-auto px-6 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
             Why Choose Us

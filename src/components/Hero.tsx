@@ -38,7 +38,7 @@ export default function Hero({ onGetQuote }: HeroProps) {
         <line x1="0" y1="88" x2="600" y2="88" stroke="#F97316" strokeWidth="1" opacity="0.08" strokeDasharray="4 8"/>
       </svg>
 
-      <div className="relative max-w-5xl mx-auto px-6 py-24 flex flex-col items-center justify-center text-center">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-24 flex flex-col items-center justify-center text-center">
 
         <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.08] tracking-tight mb-6 max-w-4xl mx-auto text-balance">
           Link Building Services for{' '}

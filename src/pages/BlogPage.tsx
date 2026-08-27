@@ -198,7 +198,7 @@ export default function BlogPage() {
       <section className="relative pt-16 pb-14 lg:pt-24 lg:pb-16 overflow-hidden bg-white">
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg,#fff8f3 0%,#ffffff 40%)' }} />
         <div className="absolute top-0 right-0 w-[600px] h-[400px] pointer-events-none opacity-[0.04]" style={{ background: 'radial-gradient(ellipse at top right, #F97316, transparent 70%)' }} />
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-5 h-0.5 rounded-full bg-[#F97316]" />
@@ -217,7 +217,7 @@ export default function BlogPage() {
 
       {/* Content */}
       <section className="py-12 lg:py-16 bg-gray-50/50 min-h-[60vh]">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-[1fr_280px] gap-10">
 
             {/* Posts */}

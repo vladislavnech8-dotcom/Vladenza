@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
 import PlatformIcon from './PlatformIcon';
 
-const platforms = REVIEW_PLATFORMS.filter((p) => ['Fiverr', 'Clutch', 'Google'].includes(p.name));
+const platforms = REVIEW_PLATFORMS;
 
 const testimonials = [
   {
@@ -34,7 +34,7 @@ export default function ReviewsBar() {
 
   return (
     <section className="py-16 bg-white border-t border-gray-100">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Top row: heading + platform badges inline */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
@@ -43,7 +43,7 @@ export default function ReviewsBar() {
               Trusted by <span className="text-[#F97316]">840+ clients</span>
             </h2>
             <p className="text-gray-400 text-sm max-w-sm">
-              Real results from real campaigns across platforms.
+              Real results from real campaigns, reviewed on Fiverr and Clutch.
             </p>
           </div>
 

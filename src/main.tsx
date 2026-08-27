@@ -2,7 +2,7 @@ import { StrictMode, useEffect, useRef } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import App from './App.tsx';
-import { trackMetaEvent } from './lib/analytics';
+import { trackMetaEvent, captureUtmParams } from './lib/analytics';
 import './index.css';
 
 function ScrollToTop() {
@@ -19,6 +19,7 @@ function MetaPixelRouteTracker() {
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
+      captureUtmParams();
       return;
     }
     trackMetaEvent('PageView');

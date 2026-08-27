@@ -100,7 +100,7 @@ export default function AiLlmPage() {
           <line x1="0" y1="600" x2="500" y2="0" stroke="#F97316" strokeWidth="1" opacity="0.07"/>
           <line x1="80" y1="600" x2="580" y2="0" stroke="#F97316" strokeWidth="0.8" opacity="0.05"/>
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/30 bg-[#F97316]/10 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Cpu size={12} />
@@ -127,7 +127,7 @@ export default function AiLlmPage() {
 
       {/* Why it matters */}
       <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {whyItMatters.map((item) => (
               <div key={item.stat} className="text-center">
@@ -141,7 +141,7 @@ export default function AiLlmPage() {
 
       {/* Services */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               What We Do
@@ -165,7 +165,7 @@ export default function AiLlmPage() {
 
       {/* Platforms */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Platforms we optimise for</h2>
             <p className="text-gray-400 text-sm">We track citation rates across every major AI engine — not just ChatGPT.</p>
@@ -184,7 +184,7 @@ export default function AiLlmPage() {
 
       {/* Approach */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-white mb-3">Our GEO methodology</h2>
             <p className="text-gray-400 text-sm max-w-lg mx-auto">A systematic five-step process to make your brand the trusted answer in AI-generated responses.</p>

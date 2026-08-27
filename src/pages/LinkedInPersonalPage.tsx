@@ -115,7 +115,7 @@ export default function LinkedInPersonalPage() {
             ))
           )}
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Users size={12} />
@@ -143,7 +143,7 @@ export default function LinkedInPersonalPage() {
 
       {/* Stats */}
       <section className="py-12 bg-gray-950 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { val: '3×', label: 'Avg. profile view increase' },
@@ -162,7 +162,7 @@ export default function LinkedInPersonalPage() {
 
       {/* Features */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               What's Included
@@ -186,7 +186,7 @@ export default function LinkedInPersonalPage() {
 
       {/* Tiers */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
               Packages
@@ -234,7 +234,7 @@ export default function LinkedInPersonalPage() {
 
       {/* Process */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               How It Works
@@ -263,7 +263,7 @@ export default function LinkedInPersonalPage() {
 
       {/* Testimonials */}
       <section className="py-16 bg-gray-50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">What clients say</h2>
             <p className="text-gray-500 text-sm">Real results from real people.</p>

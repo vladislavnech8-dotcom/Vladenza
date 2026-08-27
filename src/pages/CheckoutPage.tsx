@@ -99,7 +99,7 @@ export default function CheckoutPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-3xl mx-auto px-6 py-16 text-center">
+        <div className="pt-[88px] max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
           <p className="text-gray-400 text-sm mb-4">Your cart is empty.</p>
           <Link to="/services/niche-edits#packages" className="text-sm font-semibold text-[#F97316] hover:underline">
             Browse Niche Edit Packages
@@ -178,6 +178,14 @@ export default function CheckoutPage() {
       setPaidRequirementsToken(result.requirementsToken);
       if (result.outcome === 'approved') {
         trackEvent('purchase', { value: total, currency: 'USD', transaction_id: result.orderNumber, items: items.length });
+        trackMetaEvent('Purchase', {
+          value: total,
+          currency: 'USD',
+          content_ids: items.map((i) => i.productId),
+          content_type: 'product',
+          num_items: itemCount,
+          contents: items.map((i) => ({ id: i.productId, quantity: i.quantity, item_price: i.unitPrice })),
+        });
         clear();
       }
     } catch (err) {
@@ -192,7 +200,7 @@ export default function CheckoutPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-2xl mx-auto px-6 py-16 text-center">
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
           <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
             <CheckCircle size={32} className="text-green-500" />
           </div>
@@ -233,7 +241,7 @@ export default function CheckoutPage() {
     return (
       <div className="bg-white min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-2xl mx-auto px-6 py-16 text-center">
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
           <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 ${outcome === 'declined' ? 'bg-red-50' : 'bg-orange-50'}`}>
             {outcome === 'declined' ? <AlertCircle size={32} className="text-red-500" /> : <Loader2 size={32} className="text-[#F97316] animate-spin" />}
           </div>
@@ -257,7 +265,7 @@ export default function CheckoutPage() {
       <div className="pt-[88px]">
         {/* Header with stepper */}
         <div className="border-b border-gray-100 bg-gray-50">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-4">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
             <Link to="/services/niche-edits" className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mr-4">
               <ArrowLeft size={12} /> Back
             </Link>
@@ -265,7 +273,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
           <div className="grid lg:grid-cols-[1fr_300px] gap-8">
             {/* LEFT: current step */}
             <div>

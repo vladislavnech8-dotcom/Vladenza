@@ -111,7 +111,7 @@ export default function LinkedInCompanyPage() {
             ))
           )}
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Building2 size={12} />
@@ -139,7 +139,7 @@ export default function LinkedInCompanyPage() {
 
       {/* Features */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               What's Included
@@ -163,7 +163,7 @@ export default function LinkedInCompanyPage() {
 
       {/* Stats */}
       <section className="py-14 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { val: '5×', label: 'Avg. follower growth in 6 months' },
@@ -182,7 +182,7 @@ export default function LinkedInCompanyPage() {
 
       {/* Tiers */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
               Packages
@@ -229,7 +229,7 @@ export default function LinkedInCompanyPage() {
 
       {/* Process */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">How it works</h2>
             <p className="text-gray-500 text-sm max-w-lg mx-auto">Fully managed. You stay focused on your business — we handle everything on LinkedIn.</p>
@@ -250,7 +250,7 @@ export default function LinkedInCompanyPage() {
 
       {/* Testimonials */}
       <section className="py-16 bg-gray-50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-3 gap-5">
             {[
               { text: 'Our LinkedIn went from 800 followers to 6,000 in 5 months. The quality of inbound inquiries has been outstanding.', name: 'David M.', role: 'CEO, B2B SaaS' },

@@ -108,7 +108,7 @@ export default function PlacementsPage() {
       <div className="pt-[88px]">
         {/* Header */}
         <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Real Link Building Examples</h1>
             <p className="text-gray-500 text-base max-w-2xl leading-relaxed">
               Browse real placements we've delivered across niche edits, guest posts and community links.
@@ -118,7 +118,7 @@ export default function PlacementsPage() {
 
         {/* Filters */}
         <section className="py-6 bg-gray-50 border-y border-gray-100">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex flex-col gap-4">
               {/* Service filter tabs */}
               <div className="flex flex-wrap items-center gap-2">
@@ -220,7 +220,7 @@ export default function PlacementsPage() {
 
         {/* Grid */}
         <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             {loading ? (
               <div className="flex justify-center py-16">
                 <span className="w-6 h-6 border-2 border-gray-200 border-t-[#F97316] rounded-full animate-spin" />

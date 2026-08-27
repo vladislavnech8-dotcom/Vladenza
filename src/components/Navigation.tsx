@@ -397,7 +397,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
 
         {/* Main nav bar */}
         <div className={`bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300 ${scrolled ? 'shadow-sm' : ''}`}>
-          <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6">
 
             {/* Logo */}
             <a

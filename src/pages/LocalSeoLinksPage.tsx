@@ -111,7 +111,7 @@ export default function LocalSeoLinksPage() {
             ))
           )}
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <MapPin size={12} />
@@ -147,7 +147,7 @@ export default function LocalSeoLinksPage() {
 
       {/* Stats */}
       <section className="py-12 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((s) => (
               <div key={s.label}>
@@ -161,7 +161,7 @@ export default function LocalSeoLinksPage() {
 
       {/* Features */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               How It Works
@@ -193,7 +193,7 @@ export default function LocalSeoLinksPage() {
 
       {/* Packages */}
       <section id="packages" className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-white mb-3">Local SEO link packages</h2>
             <p className="text-gray-400 text-sm max-w-lg mx-auto">
@@ -239,7 +239,7 @@ export default function LocalSeoLinksPage() {
 
       {/* Industries + why local links */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
 
             <div>

@@ -251,7 +251,7 @@ export default function SeoAuditSamplePage() {
             ))
           )}
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <FileText size={12} />
@@ -277,7 +277,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Score banner ─────────────────────────────────────────────────── */}
       <section className="bg-gray-950 py-10">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-6">
             {[
               { label: 'Critical Issues', value: '5', sub: 'need immediate fix', color: 'text-red-400' },
@@ -297,7 +297,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Visual & UX Review ───────────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><Eye size={11} /> Visual & UX Review</SectionLabel>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">First impressions & conversion flow</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10 max-w-2xl">
@@ -396,7 +396,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── On-Page ──────────────────────────────────────────────────────── */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><FileText size={11} /> On-Page SEO</SectionLabel>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">Title, H1, and meta findings</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10 max-w-2xl">
@@ -472,7 +472,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Site Structure ───────────────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><Layers size={11} /> Site Structure Plan</SectionLabel>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">The full silo architecture</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-4 max-w-2xl">
@@ -556,7 +556,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Keyword Strategy ─────────────────────────────────────────────── */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><Target size={11} /> Keyword Strategy</SectionLabel>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">5-tier keyword framework</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-4 max-w-2xl">
@@ -599,7 +599,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Competitor Analysis ──────────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><BarChart2 size={11} /> Competitor Analysis</SectionLabel>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">What's working for the market leader</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10 max-w-2xl">
@@ -664,7 +664,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Link Building Plan ───────────────────────────────────────────── */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
               <Link2 size={11} /> Off-page Strategy
@@ -736,7 +736,7 @@ export default function SeoAuditSamplePage() {
 
       {/* ── Next steps CTA ───────────────────────────────────────────────── */}
       <section className="py-16 bg-white">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <SectionLabel><Zap size={11} /> Action Plan</SectionLabel>
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Priority order for implementation</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10">

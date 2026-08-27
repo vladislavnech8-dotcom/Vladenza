@@ -89,7 +89,7 @@ export default function GuestPostingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden pt-10 pb-10 lg:pt-12 lg:pb-12">
         <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">Link Building Service</p>
             <h1 className="text-[28px] md:text-4xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
@@ -126,7 +126,7 @@ export default function GuestPostingPage() {
 
       {/* Features */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               Why It Works
@@ -150,7 +150,7 @@ export default function GuestPostingPage() {
 
       {/* Tiers */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
               Packages
@@ -187,7 +187,7 @@ export default function GuestPostingPage() {
 
       {/* Process */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">How it works</h2>
             <p className="text-gray-500 text-sm max-w-lg mx-auto">End-to-end managed. You approve domains, we handle everything else.</p>
@@ -208,7 +208,7 @@ export default function GuestPostingPage() {
 
       {/* Placement Examples */}
       <section id="placements" className="py-16 bg-gray-50 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Guest Post Examples</h2>
           <p className="text-gray-500 text-sm mb-8 max-w-lg">
             Examples from completed orders, with Ahrefs DR and organic traffic metrics.

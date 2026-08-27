@@ -197,7 +197,7 @@ export default function AdminOrdersPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-gray-950 border-b border-gray-800 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center">
               <Package size={14} className="text-white" />
@@ -217,7 +217,7 @@ export default function AdminOrdersPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {/* Search & Filters */}
         <div className="bg-white border border-gray-200 rounded-xl p-4 mb-5">
           <div className="flex gap-2 mb-3">

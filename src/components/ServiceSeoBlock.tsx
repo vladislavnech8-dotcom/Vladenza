@@ -71,7 +71,7 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
 
   return (
     <section className="py-16 bg-white border-t border-gray-100">
-      <div className="max-w-3xl mx-auto px-6">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight tracking-tight mb-5">
           {heading}
         </h2>

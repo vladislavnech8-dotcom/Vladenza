@@ -163,7 +163,7 @@ export default function SeoAuditPage() {
           )}
           <path d="M 30 30 L 30 80 L 80 80" fill="none" stroke="#F97316" strokeWidth="2.5" opacity="0.2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <FileText size={12} />
@@ -203,7 +203,7 @@ export default function SeoAuditPage() {
 
       {/* ── Modules ──────────────────────────────────────────────────────── */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               What's Covered
@@ -229,7 +229,7 @@ export default function SeoAuditPage() {
 
       {/* ── Process + Deliverables ───────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
@@ -296,7 +296,7 @@ export default function SeoAuditPage() {
 
       {/* ── What makes this different ────────────────────────────────────── */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
               Why This Audit
@@ -353,7 +353,7 @@ export default function SeoAuditPage() {
 
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       <section className="py-20 bg-white">
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">Common questions</h2>
             <p className="text-gray-500 text-sm">Everything you need to know before ordering.</p>

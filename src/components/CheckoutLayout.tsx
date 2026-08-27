@@ -20,7 +20,7 @@ export default function CheckoutLayout({ children, step }: Props) {
       <div className="pt-[88px]">
         {/* Step indicator */}
         <div className="border-b border-gray-100 bg-gray-50">
-          <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-2">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-2">
             <Link to="/services/niche-edits" className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mr-4">
               <ArrowLeft size={12} /> Back
             </Link>
@@ -48,7 +48,7 @@ export default function CheckoutLayout({ children, step }: Props) {
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto px-6 py-10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
           {children}
         </div>
       </div>

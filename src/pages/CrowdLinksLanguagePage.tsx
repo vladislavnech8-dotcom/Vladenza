@@ -132,7 +132,7 @@ export default function CrowdLinksLanguagePage() {
     <ServicePageLayout defaultService={`Crowd Links — ${data.label}`}>
       {/* Hero — service description */}
       <section className="relative overflow-hidden py-20 lg:py-24" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Globe2 size={12} />
@@ -153,7 +153,7 @@ export default function CrowdLinksLanguagePage() {
 
       {/* 3 packages with descriptions and advantages */}
       <section id="packages" className="py-16 bg-gray-950">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-3">{data.label} crowd link packages</h2>
             <p className="text-gray-400 text-sm max-w-lg mx-auto">Choose the volume that fits your campaign — every tier gets the same manual-quality delivery.</p>
@@ -199,7 +199,7 @@ export default function CrowdLinksLanguagePage() {
 
       {/* Reviews — cards linking out to verify */}
       <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Don't just take our word for it</h2>
             <p className="text-gray-500 text-sm max-w-lg mx-auto">See real, verified reviews directly on each platform.</p>
@@ -243,7 +243,7 @@ export default function CrowdLinksLanguagePage() {
 
       {/* Tags */}
       <section className="py-10 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide mr-1">Related:</span>
             {data.tags.map((tag) => (

@@ -41,7 +41,7 @@ export default function Footer(_: FooterProps) {
   const { openPreferences } = useCookieConsent();
   return (
     <footer className="bg-gray-950 border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 
           {/* Brand col */}

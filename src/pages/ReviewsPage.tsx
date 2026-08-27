@@ -20,10 +20,29 @@ function PlatformIcon({ favicon, alt, size = 20 }: { favicon: string; alt: strin
 
 const platforms = [
   {
+    name: 'Fiverr',
+    favicon: 'fiverr.com',
+    score: '4.9',
+    reviews: '1.1K',
+    tag: 'Freelance Platform',
+    tagColor: 'text-green-600 bg-green-50 border-green-200',
+    description: 'Reviews on Fiverr help us rank higher and reach more clients looking for SEO services.',
+    cta: 'View Profile on Fiverr',
+    url: 'https://www.fiverr.com/fittranslate?public_mode=true',
+    bg: 'from-emerald-50 to-white',
+    border: 'border-emerald-100',
+    btnBg: 'bg-[#1DBF73] hover:bg-green-600',
+    steps: [
+      'Open our Fiverr profile via the button below',
+      'Find the order you placed with us',
+      'Leave a star rating and written feedback',
+    ],
+  },
+  {
     name: 'Clutch',
     favicon: 'clutch.co',
     score: '5.0',
-    reviews: '5',
+    reviews: '11',
     tag: 'B2B Reviews',
     tagColor: 'text-red-600 bg-red-50 border-red-200',
     description: 'Clutch is the leading B2B ratings & reviews platform. Your review helps other businesses find reliable SEO partners.',
@@ -38,82 +57,6 @@ const platforms = [
       'Rate our cooperation and write a few sentences about the results',
     ],
   },
-  {
-    name: 'GoodFirms',
-    favicon: 'goodfirms.co',
-    score: '5.0',
-    reviews: '1',
-    tag: 'IT Research',
-    tagColor: 'text-orange-600 bg-orange-50 border-orange-200',
-    description: 'GoodFirms is a globally recognized B2B research platform. Reviews here increase our credibility with enterprise clients.',
-    cta: 'Leave a Review on GoodFirms',
-    url: 'https://www.goodfirms.co/company/vladenza',
-    bg: 'from-orange-50 to-white',
-    border: 'border-orange-100',
-    btnBg: 'bg-[#F97316] hover:bg-orange-600',
-    steps: [
-      'Click the button to open our GoodFirms profile',
-      'Sign in or create a free account',
-      'Share your experience working with Vladenza',
-    ],
-  },
-  {
-    name: 'Trustpilot',
-    favicon: 'trustpilot.com',
-    score: '5.0',
-    reviews: '10',
-    tag: 'Consumer Reviews',
-    tagColor: 'text-green-700 bg-green-50 border-green-200',
-    description: 'Trustpilot is one of the world\'s most trusted review platforms, helping clients make informed decisions.',
-    cta: 'Leave a Review on Trustpilot',
-    url: 'https://au.trustpilot.com/review/linksclerk.com',
-    bg: 'from-green-50 to-white',
-    border: 'border-green-100',
-    btnBg: 'bg-[#00B67A] hover:bg-green-700',
-    steps: [
-      'Open our Trustpilot page via the button below',
-      'Sign in or create a Trustpilot account',
-      'Rate your experience and leave a short review',
-    ],
-  },
-  {
-    name: 'Fiverr',
-    favicon: 'fiverr.com',
-    score: '5.0',
-    reviews: '1.1k',
-    tag: 'Freelance Platform',
-    tagColor: 'text-green-600 bg-green-50 border-green-200',
-    description: 'Reviews on Fiverr help us rank higher and reach more clients looking for SEO services.',
-    cta: 'View Profile on Fiverr',
-    url: 'https://www.fiverr.com/fittranslate',
-    bg: 'from-emerald-50 to-white',
-    border: 'border-emerald-100',
-    btnBg: 'bg-[#1DBF73] hover:bg-green-600',
-    steps: [
-      'Open our Fiverr profile via the button below',
-      'Find the order you placed with us',
-      'Leave a star rating and written feedback',
-    ],
-  },
-  {
-    name: 'Google',
-    favicon: 'google.com',
-    score: '5.0',
-    reviews: '1',
-    tag: 'Google Maps',
-    tagColor: 'text-blue-600 bg-blue-50 border-blue-200',
-    description: 'Google reviews directly impact local search visibility. A quick star rating takes under 60 seconds.',
-    cta: 'Leave a Google Review',
-    url: 'https://maps.app.goo.gl/CA9Nbs5WBcGcBEnN6',
-    bg: 'from-blue-50 to-white',
-    border: 'border-blue-100',
-    btnBg: 'bg-gray-900 hover:bg-gray-700',
-    steps: [
-      'Click the button below — Google will open directly',
-      'Sign in with your Google account if needed',
-      'Select a star rating and add a short comment',
-    ],
-  },
 ];
 
 const testimonials = [
@@ -125,13 +68,6 @@ const testimonials = [
     stars: 5,
   },
   {
-    name: 'Elena V.',
-    role: 'SEO Manager, iGaming Portal',
-    platform: 'Google',
-    text: 'We\'ve tried 4 link building agencies before. Vladenza is the only one that actually moves the needle in competitive niches. Our DA went from 28 to 54 in 9 months.',
-    stars: 5,
-  },
-  {
     name: 'James K.',
     role: 'Founder, Health & Wellness Brand',
     platform: 'Fiverr',
@@ -139,17 +75,10 @@ const testimonials = [
     stars: 5,
   },
   {
-    name: 'Andrei P.',
-    role: 'CMO, Fintech Startup',
-    platform: 'GoodFirms',
-    text: 'The SEO audit uncovered 3 critical issues we\'d been missing. After fixing them and running a 3-month link campaign, organic leads increased by 31%.',
-    stars: 5,
-  },
-  {
-    name: 'Sophie R.',
-    role: 'E-commerce Director',
-    platform: 'Trustpilot',
-    text: 'Fast turnaround, real editorial placements, and they actually follow up to make sure links are still live. Rare professionalism in this industry.',
+    name: 'Elena V.',
+    role: 'SEO Manager, iGaming Portal',
+    platform: 'Clutch',
+    text: 'We\'ve tried 4 link building agencies before. Vladenza is the only one that actually moves the needle in competitive niches. Our DA went from 28 to 54 in 9 months.',
     stars: 5,
   },
   {
@@ -162,24 +91,21 @@ const testimonials = [
 ];
 
 const stats = [
-  { value: '5.0', label: 'Average Rating', sub: 'across all platforms' },
-  { value: '1.1k+', label: 'Verified Reviews', sub: 'Clutch, Google, Fiverr, Trustpilot, GoodFirms' },
+  { value: '4.9', label: 'Average Rating', sub: 'across Fiverr and Clutch' },
+  { value: '1.1K+', label: 'Verified Reviews', sub: 'Fiverr and Clutch' },
   { value: '840+', label: 'Campaigns', sub: 'delivered since 2018' },
   { value: '97%', label: 'Repeat Rate', sub: 'clients who reorder' },
 ];
 
 const faviconMap: Record<string, string> = {
   Clutch: 'clutch.co',
-  GoodFirms: 'goodfirms.co',
-  Trustpilot: 'trustpilot.com',
   Fiverr: 'fiverr.com',
-  Google: 'google.com',
 };
 
 export default function ReviewsPage() {
   useSEO({
     title: 'Reviews & Ratings — Vladenza SEO Agency',
-    description: 'See what 360+ clients say about Vladenza on Clutch, Google, Fiverr, Trustpilot and GoodFirms. Leave a review and help other businesses find trusted SEO partners.',
+    description: 'See what clients say about Vladenza on Fiverr and Clutch. Leave a review and help other businesses find trusted SEO partners.',
     canonical: 'https://vladenza.com/reviews',
   });
 
@@ -196,17 +122,17 @@ export default function ReviewsPage() {
           </defs>
           <rect width="100%" height="100%" fill="url(#revGlow)"/>
         </svg>
-        <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-1.5 mb-6">
               <Star size={12} className="fill-[#F97316] text-[#F97316]" />
               <span className="text-xs font-semibold text-[#F97316] tracking-wide uppercase">Client Reviews</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-black text-gray-900 leading-[1.1] tracking-tight mb-5">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 leading-[1.1] tracking-tight mb-5">
               What Our Clients<br />
               <span className="text-[#F97316]">Say About Us</span>
             </h1>
-            <p className="text-gray-500 text-lg leading-relaxed mb-8">
+            <p className="text-gray-500 text-base sm:text-lg leading-relaxed mb-8">
               We've helped 840+ websites grow organic traffic in competitive niches. Here's what they say — and where you can share your experience too.
             </p>
             {/* Platform badges */}
@@ -236,11 +162,11 @@ export default function ReviewsPage() {
 
       {/* Stats strip */}
       <section className="border-y border-gray-100 bg-gray-50/60">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
-                <div className="text-3xl font-black text-gray-900 mb-0.5">{s.value}</div>
+                <div className="text-2xl sm:text-3xl font-black text-gray-900 mb-0.5">{s.value}</div>
                 <div className="text-xs font-bold text-gray-700">{s.label}</div>
                 <div className="text-[10px] text-gray-400">{s.sub}</div>
               </div>
@@ -251,7 +177,7 @@ export default function ReviewsPage() {
 
       {/* Leave a review — platform cards */}
       <section className="py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-3">
               Worked with us? <span className="text-[#F97316]">Leave a Review</span>
@@ -261,7 +187,7 @@ export default function ReviewsPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+          <div className="grid md:grid-cols-2 gap-5">
             {platforms.map((p) => (
                 <div
                   key={p.name}
@@ -326,7 +252,7 @@ export default function ReviewsPage() {
 
       {/* Testimonials grid */}
       <section className="py-16 lg:py-20 bg-gray-50/50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-3">
               Recent Client Feedback
@@ -336,7 +262,7 @@ export default function ReviewsPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-5">
             {testimonials.map((t) => {
               const favicon = faviconMap[t.platform];
               return (

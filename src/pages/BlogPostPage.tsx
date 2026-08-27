@@ -242,7 +242,7 @@ export default function BlogPostPage() {
     <ServicePageLayout>
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400">
           <button onClick={() => navigate('/')} className="hover:text-gray-700 transition-colors">Home</button>
           <span className="text-gray-200">/</span>
           <button onClick={() => navigate('/blog')} className="hover:text-gray-700 transition-colors">Blog</button>
@@ -253,7 +253,7 @@ export default function BlogPostPage() {
 
       {/* Article header */}
       <div className="bg-white pt-12 pb-0">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className={`text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${catColor}`}>
               {post.category}
@@ -290,7 +290,7 @@ export default function BlogPostPage() {
 
       {/* Body */}
       <div className="py-14 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-[1fr_220px] gap-14">
 
             {/* Article */}
@@ -402,7 +402,7 @@ export default function BlogPostPage() {
 
       {/* Related posts */}
       <section className="py-14 bg-gray-50/50 border-t border-gray-100">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold text-gray-900">More to read</h2>
             <button

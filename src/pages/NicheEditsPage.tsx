@@ -185,7 +185,7 @@ export default function NicheEditsPage() {
       {/* Hero — compact */}
       <section className="relative overflow-hidden pt-10 pb-10 lg:pt-12 lg:pb-12">
         <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-[1fr_320px] gap-10 lg:gap-12 items-start">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">Link Building Service</p>
@@ -258,7 +258,7 @@ export default function NicheEditsPage() {
 
       {/* Trust strip — compact */}
       <section className="bg-gray-950 py-6">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
             <div className="flex items-center justify-center gap-3">
               <Trophy size={20} className="text-[#F97316]" />
@@ -290,7 +290,7 @@ export default function NicheEditsPage() {
 
       {/* Why Use Niche Edits — 4 cards */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Why Use Niche Edits?</h2>
           <p className="text-gray-500 text-sm mb-10 max-w-xl">
             Niche edits let you add links to already-published pages. They're useful on their own and can complement guest posts and other link types in a broader campaign.
@@ -311,7 +311,7 @@ export default function NicheEditsPage() {
 
       {/* Packages */}
       <section id="packages" className="py-16 bg-gray-950 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Choose Your Niche Edit</h2>
           <p className="text-gray-400 text-sm max-w-lg mb-10">
             Choose a DR and traffic level based on your campaign and budget. We'll source a relevant opportunity within the selected range and manually review the placement before it goes live.
@@ -326,7 +326,7 @@ export default function NicheEditsPage() {
 
       {/* Not sure what to choose? — compact recommendation card */}
       <section className="py-10 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row items-center gap-6 bg-orange-50/50 border border-orange-100 rounded-2xl p-6">
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-lg font-bold text-gray-900 mb-2">Not sure which links you need?</h2>
@@ -351,7 +351,7 @@ export default function NicheEditsPage() {
 
       {/* Different Links for Different Campaigns */}
       <section className="py-12 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Different Links for Different Campaigns</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-3">
             Not every campaign needs the same backlink mix. Some sites need more referring domains. Others need stronger placements pointing to important commercial pages. Competitive niches may need a larger share of higher-DR, higher-traffic websites.
@@ -364,7 +364,7 @@ export default function NicheEditsPage() {
 
       {/* Real Placement Explorer */}
       <section id="placements" className="py-16 bg-white scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Niche Edit Placements</h2>
           <p className="text-gray-500 text-sm mb-8 max-w-lg">
             Examples from completed orders, with Ahrefs DR and organic traffic metrics.
@@ -387,7 +387,7 @@ export default function NicheEditsPage() {
 
       {/* How Ordering Works */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10 text-center">How Ordering Works</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {howSteps.map((step, i) => (
@@ -409,7 +409,7 @@ export default function NicheEditsPage() {
       {/* Real Campaign Cases */}
       {relatedCases.length > 0 && (
         <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Real Campaigns. Real Outcomes.</h2>
             <p className="text-gray-500 text-sm mb-8 max-w-lg">
               See how niche edits fit into broader link-building campaigns across competitive markets.
@@ -426,7 +426,7 @@ export default function NicheEditsPage() {
 
       {/* Niche Edits vs Guest Posts */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 text-center">Niche Edits vs. Guest Posts</h2>
           <div className="mb-10" />
           <NicheEditsVsGuestPosts onScrollToPackages={() => scrollToId('packages')} />
@@ -454,7 +454,7 @@ export default function NicheEditsPage() {
 
       {/* Final CTA */}
       <section className="py-16 bg-gray-950">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Ready to Add Niche Edits?</h2>
           <p className="text-gray-400 text-sm mb-6">
             Choose your DR and traffic level and add the placements you need.

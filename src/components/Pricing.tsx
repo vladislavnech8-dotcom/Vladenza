@@ -170,7 +170,7 @@ const plans = [
 export default function Pricing() {
   return (
     <section id="pricing" className="py-24" style={{ background: 'linear-gradient(180deg, #f5f5f5 0%, #fef6ee 100%)' }}>
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
             Pricing

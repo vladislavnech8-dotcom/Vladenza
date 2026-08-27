@@ -43,7 +43,7 @@ export default function CaseStudiesPage() {
 
       {/* Hero */}
       <section className="pt-20 pb-14 lg:pt-28 lg:pb-20" style={{ background: 'linear-gradient(160deg,#fff8f3 0%,#ffffff 55%)' }}>
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-5 h-0.5 rounded-full bg-[#F97316]" />
@@ -70,7 +70,7 @@ export default function CaseStudiesPage() {
 
       {/* Stats strip */}
       <section className="bg-gray-950 py-10">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { value: '840+', label: 'Client campaigns' },
@@ -89,7 +89,7 @@ export default function CaseStudiesPage() {
 
       {/* Filter + Grid */}
       <section id="cases" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
           {niches.length > 1 && (
             <div className="flex flex-wrap gap-2 mb-10">
@@ -167,7 +167,7 @@ export default function CaseStudiesPage() {
 
       {/* CTA */}
       <section className="py-20 bg-gray-950">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Your results could be<br />
             <span className="text-[#F97316]">on this page next</span>
