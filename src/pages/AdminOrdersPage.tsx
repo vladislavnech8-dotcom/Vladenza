@@ -16,6 +16,7 @@ interface OrderItem {
 }
 
 interface Requirement {
+  placementId?: string;
   targetUrl: string;
   anchor: string;
   niche: string;
@@ -70,6 +71,7 @@ const ORDER_BADGES: Record<string, { label: string; cls: string }> = {
 
 const REQ_BADGES: Record<string, { label: string; cls: string }> = {
   pending:  { label: 'Pending',  cls: 'text-amber-700 bg-amber-50 border-amber-200' },
+  partial:  { label: 'Partial',  cls: 'text-orange-700 bg-orange-50 border-orange-200' },
   received: { label: 'Received', cls: 'text-green-700 bg-green-50 border-green-200' },
 };
 
@@ -258,6 +260,7 @@ export default function AdminOrdersPage() {
             <FilterSelect label="Requirements" value={filterReq} onChange={(v) => { setFilterReq(v); setPage(1); }} options={[
               { value: 'all', label: 'All' },
               { value: 'pending', label: 'Pending' },
+              { value: 'partial', label: 'Partial' },
               { value: 'received', label: 'Received' },
             ]} />
             {hasFilters && (
@@ -596,29 +599,40 @@ function OrderDetailDrawer({ order, session, onClose, onUpdated }: {
           <Section title="Customer Requirements">
             {Array.isArray(order.requirements) && order.requirements.length > 0 ? (
               <div className="flex flex-col gap-3">
-                {order.requirements.map((req, i) => (
-                  <div key={i} className="bg-orange-50/40 border border-orange-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-xs font-bold text-orange-700">
-                        {i + 1}
-                      </span>
-                      <span className="text-xs font-semibold text-gray-500">Placement {i + 1}</span>
-                      {req.willProvideLater && (
-                        <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
-                          Will provide later
+                {order.requirements.map((req, i) => {
+                  const isPending = req.willProvideLater || (!req.targetUrl?.trim() && !req.anchor?.trim() && !req.niche?.trim());
+                  return (
+                    <div key={i} className={`border rounded-lg p-4 ${isPending ? 'bg-amber-50/40 border-amber-200' : 'bg-green-50/30 border-green-200'}`}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isPending ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
+                          {i + 1}
                         </span>
+                        <span className="text-xs font-semibold text-gray-500">Placement {i + 1}</span>
+                        {isPending ? (
+                          <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <Clock size={9} /> Pending
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-semibold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <CheckCircle2 size={9} /> Complete
+                          </span>
+                        )}
+                      </div>
+                      {isPending ? (
+                        <p className="text-xs text-amber-600 italic">
+                          {req.willProvideLater ? 'Customer will provide details later.' : 'No data submitted yet.'}
+                        </p>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-2">
+                          <ReqField label="Target URL" value={req.targetUrl} link />
+                          <ReqField label="Anchor Text" value={req.anchor} />
+                          <ReqField label="Niche / Topic" value={req.niche} />
+                          {req.notes && <ReqField label="Notes" value={req.notes} />}
+                        </div>
                       )}
                     </div>
-                    {!req.willProvideLater && (
-                      <div className="grid grid-cols-1 gap-2">
-                        <ReqField label="Target URL" value={req.targetUrl} link />
-                        <ReqField label="Anchor Text" value={req.anchor} />
-                        <ReqField label="Niche / Topic" value={req.niche} />
-                        {req.notes && <ReqField label="Notes" value={req.notes} />}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="flex items-center gap-2 text-gray-400 text-xs">
