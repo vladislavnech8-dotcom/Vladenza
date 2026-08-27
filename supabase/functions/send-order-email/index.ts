@@ -268,10 +268,9 @@ ${SITE_URL}`;
       }),
     });
 
+    const customerData = await customerResponse.json();
     if (!customerResponse.ok) {
-      const errText = await customerResponse.text();
-      console.error("Resend customer email error:", errText);
-      // Mark as failed so a retry can attempt again
+      console.error("Resend customer email error:", customerData);
       await supabase.from("orders").update({ email_status: "failed" }).eq("id", order.id);
       throw new Error("Failed to send customer email");
     }
@@ -351,7 +350,7 @@ View in admin dashboard: ${SITE_URL}/admin`;
     }
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, messageId: customerData.id }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
