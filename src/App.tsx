@@ -62,6 +62,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
 const CookiePolicyPage = lazy(() => import('./pages/CookiePolicyPage'));
 const PlacementsPage = lazy(() => import('./pages/PlacementsPage'));
+const CrmPage = lazy(() => import('./pages/CrmPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -79,6 +80,12 @@ function AdminOrdersRoute() {
   const { session, loading } = useAuth();
   if (loading) return <PageLoader />;
   return session ? <AdminOrdersPage /> : <LoginPage />;
+}
+
+function CrmRoute() {
+  const { session, loading } = useAuth();
+  if (loading) return <PageLoader />;
+  return session ? <CrmPage /> : <LoginPage />;
 }
 
 export default function App() {
@@ -121,6 +128,7 @@ export default function App() {
               <Route path="/refund-policy" element={<RefundPolicyPage />} />
               <Route path="/cookie-policy" element={<CookiePolicyPage />} />
               <Route path="/placements" element={<PlacementsPage />} />
+              <Route path="/crm" element={<AuthProvider><CrmRoute /></AuthProvider>} />
             </Routes>
             </ErrorBoundary>
           </Suspense>

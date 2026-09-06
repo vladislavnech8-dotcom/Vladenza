@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase, SeoSettings } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2, LayoutGrid, Package } from 'lucide-react';
+import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2, LayoutGrid, Package, Users } from 'lucide-react';
 import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type PlacementServiceType, type PlacementStatus } from '../data/placements';
 import ImageUploader from '../components/ImageUploader';
 import MultiImageUploader from '../components/MultiImageUploader';
@@ -1487,6 +1487,9 @@ export default function AdminPage() {
             </a>
             <a href="/admin/orders" className="flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 transition px-3 py-1.5 rounded-lg hover:bg-white/10">
               <Package size={13} /> Paid Orders
+            </a>
+            <a href="/crm" className="flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition px-3 py-1.5 rounded-lg hover:bg-white/10">
+              <Users size={13} /> CRM
             </a>
             <div className="w-px h-4 bg-gray-700" />
             <span className="text-xs text-gray-500 hidden sm:block">{user?.email}</span>
