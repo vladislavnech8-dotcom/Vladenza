@@ -17,7 +17,6 @@ const STATIC_ROUTES = [
   '/placements',
 ];
 
-
 const NICHE_SLUGS = ['igaming', 'saas', 'auto', 'health', 'proxy', 'renovations'];
 const CROWD_LINKS_LANGUAGES = ['english', 'spanish', 'german', 'french', 'portuguese', 'korean'];
 
@@ -67,6 +66,17 @@ function injectFaqSchema(html, faqs) {
   return html.replace('</head>', `  ${scriptTag}\n</head>`);
 }
 
+function injectHreflang(html, enPath, ukPath) {
+  const enUrl = `https://vladenza.com${enPath === '/' ? '/' : enPath + '/'}`;
+  const ukUrl = `https://vladenza.com${ukPath === '/' ? '/' : ukPath + '/'}`;
+  const tags = [
+    `<link rel="alternate" hreflang="en" href="${enUrl}">`,
+    `<link rel="alternate" hreflang="uk" href="${ukUrl}">`,
+    `<link rel="alternate" hreflang="x-default" href="${enUrl}">`,
+  ].join('\n  ');
+  return html.replace('</head>', `  ${tags}\n</head>`);
+}
+
 async function getDynamicData() {
   let dbPosts = [];
   let dbCases = [];
@@ -108,16 +118,30 @@ async function getDynamicData() {
   return { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases };
 }
 
+function buildRoutes() {
+  const baseRoutes = [
+    ...STATIC_ROUTES,
+    ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
+    ...CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`),
+    ...caseSlugs_global.map((s) => `/case-studies/${s}`),
+    ...blogSlugs_global.map((s) => `/blog/${s}`),
+  ];
+  return baseRoutes;
+}
+
+let caseSlugs_global = [];
+let blogSlugs_global = [];
+
 async function main() {
   const template = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
 
-  // Write a blank SPA shell for dynamic routes (e.g. /order/:token) so React
-  // uses createRoot instead of hydrateRoot, avoiding hydration mismatches.
   fs.writeFileSync(path.join(distDir, 'spa-fallback.html'), template);
 
   const { blogSlugs, caseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
+  caseSlugs_global = caseSlugs;
+  blogSlugs_global = blogSlugs;
 
-  const ROUTES = [
+  const baseRoutes = [
     ...STATIC_ROUTES,
     ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
     ...CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`),
@@ -125,25 +149,49 @@ async function main() {
     ...blogSlugs.map((s) => `/blog/${s}`),
   ];
 
+  // Build both EN and UK route sets
+  const allRoutes = [
+    ...baseRoutes.map((r) => ({ route: r, locale: 'en' })),
+    ...baseRoutes.map((r) => ({ route: r === '/' ? '/uk' : '/uk' + r, locale: 'uk', enRoute: r })),
+  ];
+
   let successCount = 0;
 
-  for (const route of ROUTES) {
+  for (const { route, locale, enRoute } of allRoutes) {
     try {
+      const renderRoute = route;
+      const contentRoute = enRoute || route;
       let preload;
-      const caseMatch = route.match(/^\/case-studies\/(.+)$/);
-      const blogMatch = route.match(/^\/blog\/(.+)$/);
+      const caseMatch = contentRoute.match(/^\/case-studies\/(.+)$/);
+      const blogMatch = contentRoute.match(/^\/blog\/(.+)$/);
       if (caseMatch && dbCasesBySlug.has(caseMatch[1])) {
         preload = { caseData: dbCasesBySlug.get(caseMatch[1]) };
       } else if (blogMatch && dbPostsBySlug.has(blogMatch[1])) {
         preload = { postData: dbPostsBySlug.get(blogMatch[1]) };
-      } else if (route === '/services/niche-edits') {
+      } else if (contentRoute === '/services/niche-edits') {
         preload = { relatedCases: nicheEditsCases };
       }
 
-      const { html: appHtml, seo, faqSchema } = await render(route, preload);
-      const meta = seo || (route === '/' ? HOME_META : null);
+      const { html: appHtml, seo, faqSchema } = await render(renderRoute, preload);
+      const meta = seo || (renderRoute === '/' ? HOME_META : null);
       let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
-      if (meta) html = injectMeta(html, meta);
+
+      // Set lang attribute on <html>
+      html = html.replace(/<html\s+lang="[^"]*"/, `<html lang="${locale}"`);
+
+      // Adjust canonical for UK pages
+      if (meta) {
+        if (locale === 'uk') {
+          meta.canonical = `https://vladenza.com${route === '/uk' ? '/uk/' : route + '/'}`;
+        }
+        html = injectMeta(html, meta);
+      }
+
+      // Inject hreflang
+      const enPath = locale === 'uk' ? (enRoute || '/') : route;
+      const ukPath = locale === 'uk' ? route : (route === '/' ? '/uk' : '/uk' + route);
+      html = injectHreflang(html, enPath, ukPath);
+
       if (faqSchema) html = injectFaqSchema(html, faqSchema);
 
       const outPath = route === '/'
@@ -158,15 +206,32 @@ async function main() {
     }
   }
 
-  const sitemapUrls = ROUTES.map((r) => `  <url><loc>https://vladenza.com${r === '/' ? '/' : r + '/'}</loc></url>`).join('\n');
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls}\n</urlset>\n`;
+  // Generate sitemap with hreflang annotations
+  const sitemapEntries = baseRoutes.map((r) => {
+    const enUrl = `https://vladenza.com${r === '/' ? '/' : r + '/'}`;
+    const ukUrl = `https://vladenza.com${r === '/' ? '/uk/' : '/uk' + r + '/'}`;
+    return `  <url>
+    <loc>${enUrl}</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="${ukUrl}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}"/>
+  </url>
+  <url>
+    <loc>${ukUrl}</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="${ukUrl}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}"/>
+  </url>`;
+  }).join('\n');
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sitemapEntries}\n</urlset>\n`;
   fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
 
-  console.log(`\n✓ Готово: ${successCount}/${ROUTES.length} страниц пререндерено.`);
-  console.log(`✓ sitemap.xml сгенерирован, ${ROUTES.length} URL`);
+  console.log(`\n✓ Готово: ${successCount}/${allRoutes.length} страниц пререндерено.`);
+  console.log(`✓ sitemap.xml сгенерирован, ${baseRoutes.length * 2} URL`);
 
-  if (successCount < ROUTES.length) {
-    console.warn(`⚠ ${ROUTES.length - successCount} страниц не удалось пререндерить — см. ошибки выше.`);
+  if (successCount < allRoutes.length) {
+    console.warn(`⚠ ${allRoutes.length - successCount} страниц не удалось пререндерить — см. ошибки выше.`);
   }
 }
 

@@ -5,6 +5,7 @@ import ServicePageLayout from '../components/ServicePageLayout';
 import { type CaseSection, type CaseStudy } from '../data/cases';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 
 function RenderSection({ section, color }: { section: CaseSection; color: string }) {
   switch (section.type) {
@@ -112,6 +113,8 @@ function dbToCase(d: Record<string, unknown>): CaseStudy {
 }
 
 export default function CaseStudyDetailPage() {
+  const { locale, localizePath: lp } = useLocale();
+  const uk = locale === 'uk';
   const { slug } = useParams<{ slug: string }>();
   const preloaded = typeof window === 'undefined'
     ? (globalThis as Record<string, unknown>).__SSR_PRELOADED_CASE__ as Record<string, unknown> | undefined
@@ -133,9 +136,9 @@ export default function CaseStudyDetailPage() {
   }, [slug]);
 
   useSEO({
-    title: c ? `${c.title} — SEO Case Study | Vladenza` : 'Case Study | Vladenza',
-    description: c ? `${c.challenge.slice(0, 155)}` : 'SEO link building case study from Vladenza.',
-    canonical: `https://vladenza.com/case-studies/${slug}`,
+    title: c ? `${c.title} — ${uk ? 'SEO-кейс' : 'SEO Case Study'} | Vladenza` : `${uk ? 'Кейс' : 'Case Study'} | Vladenza`,
+    description: c ? `${c.challenge.slice(0, 155)}` : (uk ? 'SEO-кейс із лінкбілдингу від Vladenza.' : 'SEO link building case study from Vladenza.'),
+    canonical: `https://vladenza.com${lp(`/case-studies/${slug}`)}`,
     ogImage: c?.image,
   });
 
@@ -153,9 +156,9 @@ export default function CaseStudyDetailPage() {
     return (
       <ServicePageLayout>
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-          <p className="text-gray-500 text-sm">Case study not found.</p>
-          <a href="/case-studies" className="text-[#F97316] text-sm font-semibold flex items-center gap-1.5 hover:underline">
-            <ArrowLeft size={13} /> Back to all cases
+          <p className="text-gray-500 text-sm">{uk ? 'Кейс не знайдено.' : 'Case study not found.'}</p>
+          <a href={lp('/case-studies')} className="text-[#F97316] text-sm font-semibold flex items-center gap-1.5 hover:underline">
+            <ArrowLeft size={13} /> {uk ? 'Назад до всіх кейсів' : 'Back to all cases'}
           </a>
         </div>
       </ServicePageLayout>
@@ -168,9 +171,9 @@ export default function CaseStudyDetailPage() {
       {/* Breadcrumb */}
       <div className="border-b border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400 overflow-hidden">
-          <a href="/" className="hover:text-gray-700 transition-colors whitespace-nowrap">Home</a>
+          <a href={lp('/')} className="hover:text-gray-700 transition-colors whitespace-nowrap">{uk ? 'Головна' : 'Home'}</a>
           <span className="text-gray-300">/</span>
-          <a href="/case-studies" className="hover:text-gray-700 transition-colors whitespace-nowrap">Case Studies</a>
+          <a href={lp('/case-studies')} className="hover:text-gray-700 transition-colors whitespace-nowrap">{uk ? 'Кейси' : 'Case Studies'}</a>
           <span className="text-gray-300">/</span>
           <span className="text-gray-600 truncate">{c.title}</span>
         </div>
@@ -185,8 +188,8 @@ export default function CaseStudyDetailPage() {
           style={{ background: `radial-gradient(ellipse at top right, ${c.color}, transparent 70%)` }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <a href="/case-studies" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-6">
-            <ArrowLeft size={12} /> All cases
+          <a href={lp('/case-studies')} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-6">
+            <ArrowLeft size={12} /> {uk ? 'Усі кейси' : 'All cases'}
           </a>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5">
@@ -234,15 +237,15 @@ export default function CaseStudyDetailPage() {
               {/* Summary cards */}
               <div className="grid sm:grid-cols-3 gap-4 mb-10 pb-10 border-b border-gray-100">
                 <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Challenge</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">{uk ? 'Виклик' : 'Challenge'}</div>
                   <p className="text-gray-700 text-sm leading-relaxed">{c.challenge}</p>
                 </div>
                 <div className="rounded-2xl p-5 border-l-[3px] bg-gray-50" style={{ borderColor: c.color }}>
-                  <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: c.color }}>What We Did</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: c.color }}>{uk ? 'Що ми зробили' : 'What We Did'}</div>
                   <p className="text-gray-700 text-sm leading-relaxed">{c.solution}</p>
                 </div>
                 <div className="bg-gray-950 rounded-2xl p-5">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Results</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{uk ? 'Результати' : 'Results'}</div>
                   <p className="text-gray-300 text-sm leading-relaxed">{c.result}</p>
                 </div>
               </div>
@@ -257,11 +260,11 @@ export default function CaseStudyDetailPage() {
               {/* Screenshots */}
               {c.screenshots && c.screenshots.length > 0 && (
                 <div className="mt-10">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Results Screenshots</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">{uk ? 'Скріншоти результатів' : 'Results Screenshots'}</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {c.screenshots.map((src, i) => (
                       <div key={i} className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
-                        <img src={src} alt={`Screenshot ${i + 1}`} className="w-full h-auto object-cover" loading="lazy" />
+                        <img src={src} alt={`${uk ? 'Скріншот' : 'Screenshot'} ${i + 1}`} className="w-full h-auto object-cover" loading="lazy" />
                       </div>
                     ))}
                   </div>
@@ -271,7 +274,7 @@ export default function CaseStudyDetailPage() {
               {/* Placement report */}
               {c.placementReport && c.placementReport.length > 0 && (
                 <div className="mt-10">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Placement Report</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">{uk ? 'Звіт про розміщення' : 'Placement Report'}</h2>
                   <div className="overflow-x-auto rounded-xl border border-gray-200">
                     <table className="w-full text-sm">
                       <thead>
@@ -311,7 +314,7 @@ export default function CaseStudyDetailPage() {
 
                 {/* Metrics */}
                 <div className="border border-gray-200 rounded-2xl p-5">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Key metrics</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">{uk ? 'Ключові показники' : 'Key metrics'}</div>
                   <div className="flex flex-col gap-3.5">
                     {c.stats.map((s, i) => (
                       <div key={s.label} className="flex items-center justify-between">
@@ -327,14 +330,14 @@ export default function CaseStudyDetailPage() {
                   className="rounded-2xl p-5 border-l-[3px] bg-gray-50"
                   style={{ borderColor: c.color }}
                 >
-                  <div className="text-sm font-bold text-gray-900 mb-1">Want similar results?</div>
-                  <p className="text-xs text-gray-500 mb-4 leading-relaxed">Tell us your niche — we'll build the strategy.</p>
+                  <div className="text-sm font-bold text-gray-900 mb-1">{uk ? 'Хочете подібних результатів?' : 'Want similar results?'}</div>
+                  <p className="text-xs text-gray-500 mb-4 leading-relaxed">{uk ? 'Розкажіть про вашу нішу — ми розробимо стратегію.' : "Tell us your niche — we'll build the strategy."}</p>
                   <a
-                    href="/#contact"
+                    href={lp('/#contact')}
                     className="flex items-center justify-center gap-2 text-white font-bold text-sm py-2.5 rounded-xl transition-all duration-200 hover:opacity-90 hover:shadow-md"
                     style={{ backgroundColor: c.color }}
                   >
-                    Get a Free Proposal <ArrowRight size={13} />
+                    {uk ? 'Отримати безкоштовну пропозицію' : 'Get a Free Proposal'} <ArrowRight size={13} />
                   </a>
                 </div>
 
@@ -348,16 +351,16 @@ export default function CaseStudyDetailPage() {
       <section className="py-14 border-t border-gray-100 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold text-gray-900">More case studies</h2>
-            <a href="/case-studies" className="text-sm font-semibold text-[#F97316] flex items-center gap-1.5 hover:underline">
-              View all <ArrowRight size={13} />
+            <h2 className="text-xl font-bold text-gray-900">{uk ? 'Більше кейсів' : 'More case studies'}</h2>
+            <a href={lp('/case-studies')} className="text-sm font-semibold text-[#F97316] flex items-center gap-1.5 hover:underline">
+              {uk ? 'Переглянути всі' : 'View all'} <ArrowRight size={13} />
             </a>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             {otherCases.map((oc) => (
               <a
                 key={oc.slug}
-                href={`/case-studies/${oc.slug}`}
+                href={lp(`/case-studies/${oc.slug}`)}
                 className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100 hover:-translate-y-0.5 transition-all duration-200"
               >
                 <div className="h-[3px]" style={{ backgroundColor: oc.color }} />

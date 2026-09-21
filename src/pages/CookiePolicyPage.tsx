@@ -1,95 +1,21 @@
 import LegalPageLayout, { LegalSection } from '../components/LegalPageLayout';
+import { useLocale } from '../context/LocaleContext';
 
-const toc = [
-  { id: 'what-are-cookies', label: 'What Are Cookies' },
-  { id: 'types-of-cookies', label: 'Types of Cookies We Use' },
-  { id: 'essential', label: 'Essential Cookies' },
-  { id: 'analytics', label: 'Analytics & Marketing Cookies' },
-  { id: 'managing-preferences', label: 'Managing Your Preferences' },
-  { id: 'third-party', label: 'Third-Party Cookies' },
-  { id: 'changes', label: 'Changes to This Policy' },
-  { id: 'contact', label: 'Contact' },
-];
+const tr = (en: string, uk: string, isUk: boolean) => isUk ? uk : en;
 
 export default function CookiePolicyPage() {
-  return (
-    <LegalPageLayout
-      title="Cookie Policy"
-      description="How Vladenza uses cookies and similar technologies on vladenza.com."
-      canonical="https://vladenza.com/cookie-policy"
-      lastUpdated="August 25, 2026"
-      tableOfContents={toc}
-    >
-      <LegalSection id="what-are-cookies" title="What Are Cookies">
-        <p>
-          Cookies are small text files stored on your device when you visit a website. They allow the site to remember your actions and preferences over time. We use cookies to operate the website, understand how it is used, and measure the effectiveness of our marketing.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="types-of-cookies" title="Types of Cookies We Use">
-        <p>We categorize cookies into two groups:</p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li><strong>Essential cookies</strong> &mdash; required for the website to function. These cannot be disabled.</li>
-          <li><strong>Optional cookies</strong> &mdash; analytics and marketing cookies that help us improve. These are only loaded after you provide consent.</li>
-        </ul>
-      </LegalSection>
-
-      <LegalSection id="essential" title="Essential Cookies">
-        <p>
-          Essential cookies are necessary for core website functionality. They enable features such as:
-        </p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li>Maintaining your shopping cart and checkout state.</li>
-          <li>Remembering your cookie consent decision.</li>
-          <li>Securing the website against abuse.</li>
-        </ul>
-        <p>These cookies do not require consent and cannot be disabled.</p>
-      </LegalSection>
-
-      <LegalSection id="analytics" title="Analytics & Marketing Cookies">
-        <p>
-          We use the following optional tools, loaded only after you consent:
-        </p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li><strong>Google Analytics</strong> &mdash; collects anonymized usage data (page views, session duration, traffic source).</li>
-          <li><strong>Google Ads</strong> &mdash; conversion tracking to measure the effectiveness of our advertising.</li>
-        </ul>
-        <p>
-          If you reject optional cookies, these scripts will not be loaded and no analytics or marketing data will be collected from your visit.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="managing-preferences" title="Managing Your Preferences">
-        <p>
-          When you first visit vladenza.com, you will see a cookie consent panel. You can choose to:
-        </p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li><strong>Accept All</strong> &mdash; enables both essential and optional cookies.</li>
-          <li><strong>Reject Optional</strong> &mdash; enables only essential cookies.</li>
-          <li><strong>Preferences</strong> &mdash; review and customize which categories are enabled.</li>
-        </ul>
-        <p>
-          Your decision is stored and the banner will not be shown again. You can reopen cookie preferences at any time by clicking &ldquo;Cookies&rdquo; in the footer.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="third-party" title="Third-Party Cookies">
-        <p>
-          Our analytics and marketing tools (Google Analytics, Google Ads) may set their own cookies on your device. These are governed by the respective providers&rsquo; privacy policies. We only load these tools after you have consented to optional cookies.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="changes" title="Changes to This Policy">
-        <p>
-          We may update this Cookie Policy from time to time. Changes will be posted on this page with an updated &ldquo;Last updated&rdquo; date.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="contact" title="Contact">
-        <p>
-          Questions about cookies? Contact us at <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>.
-        </p>
-      </LegalSection>
-    </LegalPageLayout>
-  );
+  const { locale } = useLocale();
+  const isUk = locale === 'uk';
+  const toc = [['what-are-cookies','What Are Cookies','Що таке файли cookie'],['types-of-cookies','Types of Cookies We Use','Типи файлів cookie, які ми використовуємо'],['essential','Essential Cookies','Необхідні файли cookie'],['analytics','Analytics & Marketing Cookies','Аналітичні та маркетингові файли cookie'],['managing-preferences','Managing Your Preferences','Керування налаштуваннями'],['third-party','Third-Party Cookies','Сторонні файли cookie'],['changes','Changes to This Policy','Зміни до цієї політики'],['contact','Contact','Контакти']].map(([id,en,uk]) => ({ id, label: tr(en,uk,isUk) }));
+  const email = <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>;
+  return <LegalPageLayout title={tr('Cookie Policy','Політика використання файлів cookie',isUk)} description={tr('How Vladenza uses cookies and similar technologies on vladenza.com.','Як Vladenza використовує файли cookie та подібні технології на vladenza.com.',isUk)} canonical={`https://vladenza.com${isUk ? '/uk' : ''}/cookie-policy`} lastUpdated={tr('August 25, 2026','25 серпня 2026 року',isUk)} tableOfContents={toc}>
+    <LegalSection id="what-are-cookies" title={tr('What Are Cookies','Що таке файли cookie',isUk)}><p>{tr('Cookies are small text files stored on your device when you visit a website. They allow the site to remember your actions and preferences over time. We use cookies to operate the website, understand how it is used, and measure the effectiveness of our marketing.','Файли cookie — це невеликі текстові файли, які зберігаються на вашому пристрої під час відвідування сайту. Вони дають змогу сайту запам’ятовувати ваші дії та налаштування. Ми використовуємо cookie для роботи сайту, розуміння способів його використання та вимірювання ефективності маркетингу.',isUk)}</p></LegalSection>
+    <LegalSection id="types-of-cookies" title={tr('Types of Cookies We Use','Типи файлів cookie, які ми використовуємо',isUk)}><p>{tr('We categorize cookies into two groups:','Ми поділяємо файли cookie на дві групи:',isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1"><li><strong>{tr('Essential cookies','Необхідні cookie',isUk)}</strong> &mdash; {tr('required for the website to function. These cannot be disabled.','потрібні для роботи сайту. Їх неможливо вимкнути.',isUk)}</li><li><strong>{tr('Optional cookies','Необов’язкові cookie',isUk)}</strong> &mdash; {tr('analytics and marketing cookies that help us improve. These are only loaded after you provide consent.','аналітичні та маркетингові cookie, які допомагають нам удосконалювати сайт. Вони завантажуються лише після вашої згоди.',isUk)}</li></ul></LegalSection>
+    <LegalSection id="essential" title={tr('Essential Cookies','Необхідні файли cookie',isUk)}><p>{tr('Essential cookies are necessary for core website functionality. They enable features such as:','Необхідні cookie потрібні для основних функцій сайту. Вони забезпечують, зокрема:',isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1"><li>{tr('Maintaining your shopping cart and checkout state.','збереження стану кошика та оформлення замовлення.',isUk)}</li><li>{tr('Remembering your cookie consent decision.','збереження вашого рішення щодо згоди на cookie.',isUk)}</li><li>{tr('Securing the website against abuse.','захист сайту від зловживань.',isUk)}</li></ul><p>{tr('These cookies do not require consent and cannot be disabled.','Ці cookie не потребують згоди та не можуть бути вимкнені.',isUk)}</p></LegalSection>
+    <LegalSection id="analytics" title={tr('Analytics & Marketing Cookies','Аналітичні та маркетингові файли cookie',isUk)}><p>{tr('We use the following optional tools, loaded only after you consent:','Ми використовуємо такі необов’язкові інструменти, які завантажуються лише після вашої згоди:',isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1"><li><strong>Google Analytics</strong> &mdash; {tr('collects anonymized usage data (page views, session duration, traffic source).','збирає анонімізовані дані про використання (перегляди сторінок, тривалість сеансу, джерело трафіку).',isUk)}</li><li><strong>Google Ads</strong> &mdash; {tr('conversion tracking to measure the effectiveness of our advertising.','відстежує конверсії, щоб вимірювати ефективність нашої реклами.',isUk)}</li></ul><p>{tr('If you reject optional cookies, these scripts will not be loaded and no analytics or marketing data will be collected from your visit.','Якщо ви відхилите необов’язкові cookie, ці скрипти не завантажуватимуться, а аналітичні чи маркетингові дані під час вашого візиту не збиратимуться.',isUk)}</p></LegalSection>
+    <LegalSection id="managing-preferences" title={tr('Managing Your Preferences','Керування налаштуваннями',isUk)}><p>{tr('When you first visit vladenza.com, you will see a cookie consent panel. You can choose to:','Під час першого відвідування vladenza.com ви побачите панель згоди на cookie. Ви можете:',isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1"><li><strong>{tr('Accept All','Прийняти всі',isUk)}</strong> &mdash; {tr('enables both essential and optional cookies.','увімкнути необхідні та необов’язкові cookie.',isUk)}</li><li><strong>{tr('Reject Optional','Відхилити необов’язкові',isUk)}</strong> &mdash; {tr('enables only essential cookies.','увімкнути лише необхідні cookie.',isUk)}</li><li><strong>{tr('Preferences','Налаштування',isUk)}</strong> &mdash; {tr('review and customize which categories are enabled.','переглянути та налаштувати ввімкнені категорії.',isUk)}</li></ul><p>{tr('Your decision is stored and the banner will not be shown again. You can reopen cookie preferences at any time by clicking “Cookies” in the footer.','Ваш вибір зберігається, і банер більше не показується. Ви можете будь-коли знову відкрити налаштування cookie, натиснувши «Файли cookie» у футері.',isUk)}</p></LegalSection>
+    <LegalSection id="third-party" title={tr('Third-Party Cookies','Сторонні файли cookie',isUk)}><p>{tr('Our analytics and marketing tools (Google Analytics, Google Ads) may set their own cookies on your device. These are governed by the respective providers’ privacy policies. We only load these tools after you have consented to optional cookies.','Наші аналітичні та маркетингові інструменти (Google Analytics, Google Ads) можуть встановлювати власні cookie на вашому пристрої. На них поширюються політики конфіденційності відповідних постачальників. Ми завантажуємо ці інструменти лише після вашої згоди на необов’язкові cookie.',isUk)}</p></LegalSection>
+    <LegalSection id="changes" title={tr('Changes to This Policy','Зміни до цієї політики',isUk)}><p>{tr('We may update this Cookie Policy from time to time. Changes will be posted on this page with an updated “Last updated” date.','Час від часу ми можемо оновлювати цю Політику використання файлів cookie. Зміни буде опубліковано на цій сторінці із зазначенням оновленої дати.',isUk)}</p></LegalSection>
+    <LegalSection id="contact" title={tr('Contact','Контакти',isUk)}><p>{tr('Questions about cookies? Contact us at ','Маєте запитання щодо cookie? Напишіть нам на адресу ',isUk)}{email}.</p></LegalSection>
+  </LegalPageLayout>;
 }

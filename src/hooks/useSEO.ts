@@ -28,11 +28,24 @@ function buildCanonicalFromLocation(): string {
   return `${SITE_URL}${normalized || ''}`;
 }
 
-// The host serves nested pages as directory/index.html and redirects the
-// no-trailing-slash form with a 301. Always normalize to the trailing-slash
-// form so canonical never points at a URL that itself redirects.
 function normalizeTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`;
+}
+
+function getHreflangPair(pathname: string): { en: string; uk: string } {
+  let enPath = pathname;
+  let ukPath = pathname;
+  if (pathname.startsWith('/uk')) {
+    enPath = pathname.slice(3) || '/';
+    ukPath = pathname;
+  } else {
+    enPath = pathname;
+    ukPath = pathname === '/' ? '/uk' : '/uk' + pathname;
+  }
+  return {
+    en: normalizeTrailingSlash(`${SITE_URL}${enPath}`),
+    uk: normalizeTrailingSlash(`${SITE_URL}${ukPath}`),
+  };
 }
 
 export function useSEO({ title, description, canonical, ogImage, schema }: SEOProps) {
@@ -58,12 +71,33 @@ export function useSEO({ title, description, canonical, ogImage, schema }: SEOPr
     setMeta('name', 'twitter:description', desc);
     setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:image', image);
-    const existing = document.querySelectorAll('link[rel="canonical"]');
-    existing.forEach((el) => el.remove());
+
+    // Remove existing canonical + hreflang
+    document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+    document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+
+    // Canonical
     const canonicalEl = document.createElement('link');
     canonicalEl.rel = 'canonical';
     canonicalEl.href = pageUrl;
     document.head.appendChild(canonicalEl);
+
+    // Hreflang
+    const { pathname } = window.location;
+    const pair = getHreflangPair(pathname);
+    const hreflangs: Array<{ hreflang: string; href: string }> = [
+      { hreflang: 'en', href: pair.en },
+      { hreflang: 'uk', href: pair.uk },
+      { hreflang: 'x-default', href: pair.en },
+    ];
+    for (const h of hreflangs) {
+      const link = document.createElement('link');
+      link.rel = 'alternate';
+      link.setAttribute('hreflang', h.hreflang);
+      link.href = h.href;
+      document.head.appendChild(link);
+    }
+
     const schemaId = 'ld-json-schema';
     let schemaEl = document.getElementById(schemaId);
     if (schema) {

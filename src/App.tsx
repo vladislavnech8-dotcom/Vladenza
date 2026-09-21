@@ -7,6 +7,7 @@ import { CartProvider } from './context/CartContext';
 import { CheckoutProvider } from './context/CheckoutContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
+import { LocaleProvider } from './context/LocaleContext';
 import HomePage from './pages/HomePage';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -88,6 +89,37 @@ function CrmRoute() {
   return session ? <CrmPage /> : <LoginPage />;
 }
 
+// Public routes that get mirrored under /uk/
+const publicRoutes = (
+  <>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/services/seo-audit" element={<SeoAuditPage />} />
+    <Route path="/services/guest-posting" element={<GuestPostingPage />} />
+    <Route path="/services/niche-edits" element={<NicheEditsPage />} />
+    <Route path="/services/crowd-links" element={<CrowdLinksPage />} />
+    <Route path="/services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
+    <Route path="/services/ai-llm" element={<AiLlmPage />} />
+    <Route path="/services/link-packages/:niche" element={<LinkPackagesPage />} />
+    <Route path="/services/local-seo-links" element={<LocalSeoLinksPage />} />
+    <Route path="/case-studies" element={<CaseStudiesPage />} />
+    <Route path="/case-studies/:slug" element={<CaseStudyDetailPage />} />
+    <Route path="/blog" element={<BlogPage />} />
+    <Route path="/blog/:slug" element={<BlogPostPage />} />
+    <Route path="/sitemap" element={<SitemapPage />} />
+    <Route path="/reviews" element={<ReviewsPage />} />
+    <Route path="/services/linkedin-personal" element={<LinkedInPersonalPage />} />
+    <Route path="/services/linkedin-company" element={<LinkedInCompanyPage />} />
+    <Route path="/seo-audit-sample" element={<SeoAuditSamplePage />} />
+    <Route path="/services/white-label" element={<WhiteLabelPage />} />
+    <Route path="/pricing" element={<PricingPage />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+    <Route path="/terms" element={<TermsPage />} />
+    <Route path="/refund-policy" element={<RefundPolicyPage />} />
+    <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+    <Route path="/placements" element={<PlacementsPage />} />
+  </>
+);
+
 export default function App() {
   return (
     <CartProvider>
@@ -97,39 +129,49 @@ export default function App() {
           <CookieConsentBanner />
           <Suspense fallback={<PageLoader />}>
             <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
-              <Route path="/admin/orders" element={<AuthProvider><AdminOrdersRoute /></AuthProvider>} />
-              <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
-              <Route path="/services/seo-audit" element={<SeoAuditPage />} />
-              <Route path="/services/guest-posting" element={<GuestPostingPage />} />
-              <Route path="/services/niche-edits" element={<NicheEditsPage />} />
-              <Route path="/services/crowd-links" element={<CrowdLinksPage />} />
-              <Route path="/services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
-              <Route path="/services/ai-llm" element={<AiLlmPage />} />
-              <Route path="/services/link-packages/:niche" element={<LinkPackagesPage />} />
-              <Route path="/services/local-seo-links" element={<LocalSeoLinksPage />} />
-              <Route path="/case-studies" element={<CaseStudiesPage />} />
-              <Route path="/case-studies/:slug" element={<CaseStudyDetailPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/blog/:slug" element={<BlogPostPage />} />
-              <Route path="/sitemap" element={<SitemapPage />} />
-              <Route path="/reviews" element={<ReviewsPage />} />
-              <Route path="/services/linkedin-personal" element={<LinkedInPersonalPage />} />
-              <Route path="/services/linkedin-company" element={<LinkedInCompanyPage />} />
-              <Route path="/seo-audit-sample" element={<SeoAuditSamplePage />} />
-              <Route path="/services/white-label" element={<WhiteLabelPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/order/:token" element={<OrderRequirementsPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/refund-policy" element={<RefundPolicyPage />} />
-              <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-              <Route path="/placements" element={<PlacementsPage />} />
-              <Route path="/crm" element={<AuthProvider><CrmRoute /></AuthProvider>} />
-            </Routes>
+              <Routes>
+                {/* English routes (no prefix) */}
+                <Route element={<LocaleProvider />}>
+                  {publicRoutes}
+                </Route>
+
+                {/* Ukrainian routes (/uk/ prefix) */}
+                <Route path="/uk" element={<LocaleProvider />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="services/seo-audit" element={<SeoAuditPage />} />
+                  <Route path="services/guest-posting" element={<GuestPostingPage />} />
+                  <Route path="services/niche-edits" element={<NicheEditsPage />} />
+                  <Route path="services/crowd-links" element={<CrowdLinksPage />} />
+                  <Route path="services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
+                  <Route path="services/ai-llm" element={<AiLlmPage />} />
+                  <Route path="services/link-packages/:niche" element={<LinkPackagesPage />} />
+                  <Route path="services/local-seo-links" element={<LocalSeoLinksPage />} />
+                  <Route path="case-studies" element={<CaseStudiesPage />} />
+                  <Route path="case-studies/:slug" element={<CaseStudyDetailPage />} />
+                  <Route path="blog" element={<BlogPage />} />
+                  <Route path="blog/:slug" element={<BlogPostPage />} />
+                  <Route path="sitemap" element={<SitemapPage />} />
+                  <Route path="reviews" element={<ReviewsPage />} />
+                  <Route path="services/linkedin-personal" element={<LinkedInPersonalPage />} />
+                  <Route path="services/linkedin-company" element={<LinkedInCompanyPage />} />
+                  <Route path="seo-audit-sample" element={<SeoAuditSamplePage />} />
+                  <Route path="services/white-label" element={<WhiteLabelPage />} />
+                  <Route path="pricing" element={<PricingPage />} />
+                  <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+                  <Route path="terms" element={<TermsPage />} />
+                  <Route path="refund-policy" element={<RefundPolicyPage />} />
+                  <Route path="cookie-policy" element={<CookiePolicyPage />} />
+                  <Route path="placements" element={<PlacementsPage />} />
+                </Route>
+
+                {/* Non-localized routes (admin, checkout, etc.) */}
+                <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
+                <Route path="/admin/orders" element={<AuthProvider><AdminOrdersRoute /></AuthProvider>} />
+                <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/order/:token" element={<OrderRequirementsPage />} />
+                <Route path="/crm" element={<AuthProvider><CrmRoute /></AuthProvider>} />
+              </Routes>
             </ErrorBoundary>
           </Suspense>
         </CookieConsentProvider>

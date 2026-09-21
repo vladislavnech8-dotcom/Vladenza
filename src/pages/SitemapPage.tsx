@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Home, Wrench, BookOpen, BarChart2, Globe, ExternalLink, ChevronRight, FileCode } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 import { blogPosts } from '../data/blogPosts';
 import { cases } from '../data/cases';
 
@@ -68,11 +69,17 @@ const sections: SitemapSection[] = [
   },
 ];
 
+const sitemapUk: Record<string, string> = {
+  Main: 'Головна', Home: 'Головна', Reviews: 'Відгуки', Services: 'Послуги', 'Link Packages by Niche': 'Пакети посилань за нішами', 'Case Studies': 'Кейси', Blog: 'Блог', 'Site Navigation': 'Навігація сайтом', Sitemap: 'Карта сайту', 'Every page on the Vladenza website — organised by section for easy navigation.': 'Усі сторінки сайту Vladenza, упорядковані за розділами для зручної навігації.', 'pages indexed': 'сторінок проіндексовано', 'sitemap.xml for Google Search Console': 'sitemap.xml для Google Search Console', 'All Articles': 'Усі статті', 'All Case Studies': 'Усі кейси', 'XML Sitemap for Search Engines': 'XML-карта сайту для пошукових систем', 'Open sitemap.xml': 'Відкрити sitemap.xml', 'Submit ': 'Надішліть ', ' to Google Search Console to ensure all pages are indexed.': ' у Google Search Console, щоб усі сторінки було проіндексовано.'
+};
+const st = (value: string, locale: string) => locale === 'uk' ? (sitemapUk[value] ?? value) : value;
+
 export default function SitemapPage() {
+  const { locale, localizePath: lp } = useLocale();
   useSEO({
-    title: 'Sitemap — Vladenza SEO Agency',
-    description: 'Full sitemap of Vladenza — link building services, niche packages, SEO case studies, and blog articles.',
-    canonical: 'https://vladenza.com/sitemap',
+    title: locale === 'uk' ? 'Карта сайту — SEO-агенція Vladenza' : 'Sitemap — Vladenza SEO Agency',
+    description: locale === 'uk' ? 'Повна карта сайту Vladenza: послуги лінкбілдингу, нішеві пакети, SEO-кейси та статті блогу.' : 'Full sitemap of Vladenza — link building services, niche packages, SEO case studies, and blog articles.',
+    canonical: `https://vladenza.com${lp('/sitemap')}`,
   });
 
   const totalLinks = sections.reduce((acc, s) => acc + s.links.length, 0);
@@ -85,18 +92,18 @@ export default function SitemapPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-1.5 mb-5">
               <Globe size={13} className="text-[#F97316]" />
-              <span className="text-xs font-semibold text-[#F97316] tracking-wide uppercase">Site Navigation</span>
+              <span className="text-xs font-semibold text-[#F97316] tracking-wide uppercase">{st('Site Navigation', locale)}</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-black text-gray-900 leading-[1.1] tracking-tight mb-4">
-              Sitemap
+              {st('Sitemap', locale)}
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed mb-6">
-              Every page on the Vladenza website — organised by section for easy navigation.
+              {st('Every page on the Vladenza website — organised by section for easy navigation.', locale)}
             </p>
             <div className="flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-600">
                 <Globe size={11} className="text-gray-400" />
-                {totalLinks} pages indexed
+                {totalLinks} {st('pages indexed', locale)}
               </span>
               <a
                 href="/sitemap.xml"
@@ -105,7 +112,7 @@ export default function SitemapPage() {
                 className="inline-flex items-center gap-1.5 bg-gray-900 text-white rounded-full px-4 py-1.5 text-xs font-semibold hover:bg-gray-700 transition-colors"
               >
                 <FileCode size={11} />
-                sitemap.xml for Google Search Console
+                {st('sitemap.xml for Google Search Console', locale)}
                 <ExternalLink size={11} />
               </a>
             </div>
@@ -125,7 +132,7 @@ export default function SitemapPage() {
                   <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${section.color}`}>
                     <Icon size={16} />
                   </div>
-                  <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{st(section.title, locale)}</h2>
                   <span className="ml-1 text-xs font-semibold text-gray-400 bg-gray-100 rounded-full px-2.5 py-0.5">
                     {section.links.length}
                   </span>
@@ -136,7 +143,7 @@ export default function SitemapPage() {
                   {section.links.map((link) => (
                     <Link
                       key={link.href}
-                      to={link.href}
+                      to={lp(link.href)}
                       className="group flex items-start gap-3 p-4 bg-white border border-gray-100 rounded-2xl hover:border-[#F97316]/40 hover:shadow-sm transition-all duration-200"
                     >
                       <ChevronRight
@@ -145,13 +152,13 @@ export default function SitemapPage() {
                       />
                       <div className="min-w-0">
                         <div className="text-sm font-semibold text-gray-900 group-hover:text-[#F97316] transition-colors leading-snug truncate">
-                          {link.label}
+                          {st(link.label, locale)}
                         </div>
                         {link.desc && (
-                          <div className="text-xs text-gray-400 mt-0.5 leading-snug line-clamp-2">{link.desc}</div>
+                          <div className="text-xs text-gray-400 mt-0.5 leading-snug line-clamp-2">{st(link.desc, locale)}</div>
                         )}
                         <div className="text-[10px] text-gray-300 mt-1 font-mono truncate">
-                          vladenza.com{link.href}
+                          vladenza.com{lp(link.href)}
                         </div>
                       </div>
                     </Link>
@@ -171,9 +178,9 @@ export default function SitemapPage() {
               <FileCode size={18} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 mb-0.5">XML Sitemap for Search Engines</p>
+              <p className="text-sm font-bold text-gray-900 mb-0.5">{st('XML Sitemap for Search Engines', locale)}</p>
               <p className="text-sm text-gray-500">
-                Submit <span className="font-mono text-gray-700 text-xs bg-gray-100 px-1.5 py-0.5 rounded">https://vladenza.com/sitemap.xml</span> to Google Search Console to ensure all pages are indexed.
+                {st('Submit ', locale)}<span className="font-mono text-gray-700 text-xs bg-gray-100 px-1.5 py-0.5 rounded">https://vladenza.com/sitemap.xml</span>{st(' to Google Search Console to ensure all pages are indexed.', locale)}
               </p>
             </div>
             <a
@@ -182,7 +189,7 @@ export default function SitemapPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-700 transition-colors shrink-0"
             >
-              Open sitemap.xml <ExternalLink size={13} />
+              {st('Open sitemap.xml', locale)} <ExternalLink size={13} />
             </a>
           </div>
         </div>

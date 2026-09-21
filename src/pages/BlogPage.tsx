@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { blogPosts } from '../data/blogPosts';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 
 interface DbPost {
   id: string;
@@ -95,15 +96,16 @@ const CATEGORY_LIST = [
   'White Label SEO',
 ];
 
-function CategoryBadge({ category, color }: { category: string; color: string }) {
+function CategoryBadge({ category, color, uk = false }: { category: string; color: string; uk?: boolean }) {
+  const categoryLabel = uk ? ({ 'All Posts': 'Усі статті', 'Link Building': 'Лінкбілдинг', 'SEO Strategy': 'SEO-стратегія', 'AI & LLM SEO': 'SEO для AI та LLM', 'Crowd Marketing': 'Крауд-маркетинг', 'SaaS SEO': 'SEO для SaaS', 'iGaming SEO': 'SEO для iGaming', 'White Label SEO': 'White Label SEO' }[category] ?? category) : category;
   return (
     <span className={`inline-flex items-center text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${color}`}>
-      {category}
+      {categoryLabel}
     </span>
   );
 }
 
-function PostCard({ post, onNavigate }: { post: Post; onNavigate: (slug: string) => void }) {
+function PostCard({ post, onNavigate, uk }: { post: Post; onNavigate: (slug: string) => void; uk: boolean }) {
   return (
     <button
       onClick={() => onNavigate(post.slug)}
@@ -118,7 +120,7 @@ function PostCard({ post, onNavigate }: { post: Post; onNavigate: (slug: string)
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="absolute top-3.5 left-3.5">
-          <CategoryBadge category={post.category} color={post.categoryColor} />
+          <CategoryBadge category={post.category} color={post.categoryColor} uk={uk} />
         </div>
       </div>
       <div className="p-5 flex flex-col flex-1 gap-3">
@@ -130,7 +132,7 @@ function PostCard({ post, onNavigate }: { post: Post; onNavigate: (slug: string)
         </h3>
         <p className="text-gray-400 text-[13px] leading-relaxed line-clamp-2">{post.excerpt}</p>
         <div className="flex items-center gap-1 text-[#F97316] text-xs font-semibold mt-auto pt-1">
-          Read article <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+          {uk ? 'Читати статтю' : 'Read article'} <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
         </div>
       </div>
     </button>
@@ -152,15 +154,17 @@ function SkeletonCard() {
 }
 
 export default function BlogPage() {
+  const { locale, localizePath: lp } = useLocale();
+  const uk = locale === 'uk';
   const navigate = useNavigate();
   const { posts: allPosts, loading } = useAllPosts();
   const [activeCategory, setActiveCategory] = useState('All Posts');
   const [search, setSearch] = useState('');
 
   useSEO({
-    title: 'SEO Blog — Link Building & AI Search Strategies | Vladenza',
-    description: 'Expert articles on link building, guest posting, niche edits, GEO, AI/LLM visibility, and technical SEO. Practical playbooks from the Vladenza team.',
-    canonical: 'https://vladenza.com/blog',
+    title: uk ? 'SEO-блог — лінкбілдинг та стратегії AI-пошуку | Vladenza' : 'SEO Blog — Link Building & AI Search Strategies | Vladenza',
+    description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, niche edits, GEO, видимість в AI/LLM та технічне SEO. Практичні поради від команди Vladenza.' : 'Expert articles on link building, guest posting, niche edits, GEO, AI/LLM visibility, and technical SEO. Practical playbooks from the Vladenza team.',
+    canonical: `https://vladenza.com${lp('/blog')}`,
   });
 
   const categoryCounts = useMemo(() => {
@@ -202,14 +206,14 @@ export default function BlogPage() {
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-5 h-0.5 rounded-full bg-[#F97316]" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F97316]">Blog & Resources</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F97316]">{uk ? 'Блог і ресурси' : 'Blog & Resources'}</span>
             </div>
             <h1 className="text-4xl md:text-[52px] font-bold text-gray-900 leading-[1.05] tracking-tight mb-5">
-              SEO insights from<br />
-              <span className="text-[#F97316]">practitioners</span>
+              {uk ? 'SEO-інсайти від' : 'SEO insights from'}<br />
+              <span className="text-[#F97316]">{uk ? 'практиків' : 'practitioners'}</span>
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed max-w-lg">
-              Tactical breakdowns, data-driven research, and honest takes on link building, AI search, and organic growth.
+              {uk ? 'Практичні розбори, дослідження на основі даних і чесні погляди на лінкбілдинг, AI-пошук та органічне зростання.' : 'Tactical breakdowns, data-driven research, and honest takes on link building, AI search, and organic growth.'}
             </p>
           </div>
         </div>
@@ -241,7 +245,7 @@ export default function BlogPage() {
                 <>
                   {/* Featured */}
                   <button
-                    onClick={() => navigate(`/blog/${featured.slug}`)}
+                    onClick={() => navigate(lp(`/blog/${featured.slug}`))}
                     className="group w-full bg-white border border-gray-200/80 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] transition-all duration-300 text-left flex flex-col md:flex-row mb-8"
                   >
                     <div className="relative md:w-[48%] h-64 md:h-auto overflow-hidden flex-shrink-0 bg-gray-100">
@@ -251,11 +255,11 @@ export default function BlogPage() {
                         className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-[600ms] ease-out"
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10 md:to-black/20" />
-                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-[0.12em] bg-[#F97316] text-white px-3 py-1 rounded-full shadow-sm">Featured</span>
+                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-[0.12em] bg-[#F97316] text-white px-3 py-1 rounded-full shadow-sm">{uk ? 'Рекомендоване' : 'Featured'}</span>
                     </div>
                     <div className="p-8 lg:p-10 flex flex-col justify-center flex-1 gap-4">
                       <div className="flex items-center gap-3">
-                        <CategoryBadge category={featured.category} color={featured.categoryColor} />
+                        <CategoryBadge category={featured.category} color={featured.categoryColor} uk={uk} />
                         <div className="flex items-center gap-1 text-gray-400 text-xs">
                           <Clock size={11} /> {featured.readTime}
                         </div>
@@ -263,7 +267,7 @@ export default function BlogPage() {
                       <h2 className="text-gray-900 font-bold text-2xl leading-[1.2] group-hover:text-[#F97316] transition-colors duration-200">{featured.title}</h2>
                       <p className="text-gray-500 text-[15px] leading-relaxed line-clamp-3">{featured.excerpt}</p>
                       <div className="flex items-center gap-1.5 text-[#F97316] text-sm font-semibold">
-                        Read article <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+                        {uk ? 'Читати статтю' : 'Read article'} <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
                       </div>
                     </div>
                   </button>
@@ -272,7 +276,7 @@ export default function BlogPage() {
                   {rest.length > 0 && (
                     <div className="grid sm:grid-cols-2 gap-5">
                       {rest.map((post) => (
-                        <PostCard key={post.id} post={post} onNavigate={(s) => navigate(`/blog/${s}`)} />
+                        <PostCard key={post.id} post={post} uk={uk} onNavigate={(s) => navigate(lp(`/blog/${s}`))} />
                       ))}
                     </div>
                   )}
@@ -280,7 +284,7 @@ export default function BlogPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-24 text-gray-400">
                   <Search size={32} className="mb-3 opacity-30" />
-                  <p className="text-sm">No articles found</p>
+                  <p className="text-sm">{uk ? 'Статей не знайдено' : 'No articles found'}</p>
                 </div>
               )}
             </div>
@@ -295,7 +299,7 @@ export default function BlogPage() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search articles..."
+                  placeholder={uk ? 'Шукати статті...' : 'Search articles...'}
                   className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/10 transition-all shadow-sm"
                 />
               </div>
@@ -304,7 +308,7 @@ export default function BlogPage() {
               <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm">
                 <h3 className="text-gray-900 font-bold text-sm mb-4 flex items-center gap-2">
                   <Tag size={13} className="text-[#F97316]" />
-                  Categories
+                  {uk ? 'Категорії' : 'Categories'}
                 </h3>
                 <div className="flex flex-col gap-1">
                   {CATEGORY_LIST.map((cat) => {
@@ -321,7 +325,7 @@ export default function BlogPage() {
                             : 'text-gray-600 hover:bg-orange-50/60 hover:text-gray-900'
                         }`}
                       >
-                        <span>{cat}</span>
+                        <span>{uk ? ({ 'All Posts': 'Усі статті', 'Link Building': 'Лінкбілдинг', 'SEO Strategy': 'SEO-стратегія', 'AI & LLM SEO': 'SEO для AI та LLM', 'Crowd Marketing': 'Крауд-маркетинг', 'SaaS SEO': 'SEO для SaaS', 'iGaming SEO': 'SEO для iGaming', 'White Label SEO': 'White Label SEO' }[cat] ?? cat) : cat}</span>
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
                           isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
                         }`}>{count}</span>
@@ -333,12 +337,12 @@ export default function BlogPage() {
 
               {/* Most Read */}
               <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm">
-                <h3 className="text-gray-900 font-bold text-sm mb-4">Most Read</h3>
+                <h3 className="text-gray-900 font-bold text-sm mb-4">{uk ? 'Найпопулярніше' : 'Most Read'}</h3>
                 <div className="flex flex-col gap-4">
                   {allPosts.slice(0, 4).map((post, i) => (
                     <button
                       key={post.id}
-                      onClick={() => navigate(`/blog/${post.slug}`)}
+                      onClick={() => navigate(lp(`/blog/${post.slug}`))}
                       className="flex gap-3 group text-left"
                     >
                       <div className="text-2xl font-black text-gray-100 flex-shrink-0 w-7 leading-none group-hover:text-[#F97316]/20 transition-colors">{i + 1}</div>
@@ -357,13 +361,13 @@ export default function BlogPage() {
               <div className="bg-gray-950 rounded-2xl p-5 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'radial-gradient(circle at 70% 30%, #F97316, transparent 60%)' }} />
                 <div className="relative">
-                  <p className="text-white font-bold text-sm mb-1.5">Need link building?</p>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4">Get a free strategy session with our team.</p>
+                  <p className="text-white font-bold text-sm mb-1.5">{uk ? 'Потрібен лінкбілдинг?' : 'Need link building?'}</p>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4">{uk ? 'Отримайте безкоштовну стратегічну сесію з нашою командою.' : 'Get a free strategy session with our team.'}</p>
                   <a
-                    href="/#contact"
+                    href={lp('/#contact')}
                     className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200"
                   >
-                    Get Started <ArrowRight size={12} />
+                    {uk ? 'Почати' : 'Get Started'} <ArrowRight size={12} />
                   </a>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import { Star, ExternalLink } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 
 /* ─── Favicon-based logos ─────────────────────────────────────── */
 
@@ -102,11 +103,18 @@ const faviconMap: Record<string, string> = {
   Fiverr: 'fiverr.com',
 };
 
+const reviewsUk: Record<string, string> = {
+  'Freelance Platform': 'Фриланс-платформа', 'B2B Reviews': 'B2B-відгуки', 'Average Rating': 'Середня оцінка', 'across Fiverr and Clutch': 'на Fiverr і Clutch', 'Verified Reviews': 'Підтверджені відгуки', 'Fiverr and Clutch': 'Fiverr і Clutch', Campaigns: 'Кампанії', 'delivered since 2018': 'виконано з 2018 року', 'Repeat Rate': 'Частка повторних замовлень', 'clients who reorder': 'клієнтів замовляють знову',
+  'Client Reviews': 'Відгуки клієнтів', 'What Our Clients': 'Що кажуть наші', 'Say About Us': 'клієнти', "We've helped 840+ websites grow organic traffic in competitive niches. Here's what they say — and where you can share your experience too.": 'Ми допомогли понад 840 сайтам збільшити органічний трафік у конкурентних нішах. Ось що кажуть клієнти — і де ви теж можете поділитися своїм досвідом.', 'Worked with us?': 'Працювали з нами?', 'Leave a Review': 'Залиште відгук', 'Your feedback helps other businesses choose the right SEO partner and takes less than 2 minutes.': 'Ваш відгук допоможе іншим компаніям обрати правильного SEO-партнера і займе менш як 2 хвилини.', 'Recent Client Feedback': 'Останні відгуки клієнтів', 'Real results from real campaigns. Names and details shared with permission.': 'Реальні результати реальних кампаній. Імена та деталі опубліковано з дозволу клієнтів.', 'View Profile on Fiverr': 'Переглянути профіль на Fiverr', 'Leave a Review on Clutch': 'Залишити відгук на Clutch', 'Reviews on Fiverr help us rank higher and reach more clients looking for SEO services.': 'Відгуки на Fiverr допомагають нам підвищувати рейтинг і знаходити більше клієнтів, які шукають SEO-послуги.', 'Clutch is the leading B2B ratings & reviews platform. Your review helps other businesses find reliable SEO partners.': 'Clutch — провідна B2B-платформа оцінок і відгуків. Ваш відгук допоможе іншим компаніям знайти надійних SEO-партнерів.', 'Open our Fiverr profile via the button below': 'Відкрийте наш профіль Fiverr кнопкою нижче', 'Find the order you placed with us': 'Знайдіть замовлення, яке ви зробили у нас', 'Leave a star rating and written feedback': 'Залиште оцінку в зірках і письмовий відгук', 'Click the button below to open our Clutch profile': 'Натисніть кнопку нижче, щоб відкрити наш профіль на Clutch', 'Sign in with LinkedIn or email': 'Увійдіть через LinkedIn або email', 'Rate our cooperation and write a few sentences about the results': 'Оцініть нашу співпрацю та напишіть кілька речень про результати', 'reviews': 'відгуків',
+};
+const rt = (value: string, locale: string) => locale === 'uk' ? (reviewsUk[value] ?? value) : value;
+
 export default function ReviewsPage() {
+  const { locale, localizePath: lp } = useLocale();
   useSEO({
-    title: 'Reviews & Ratings — Vladenza SEO Agency',
-    description: 'See what clients say about Vladenza on Fiverr and Clutch. Leave a review and help other businesses find trusted SEO partners.',
-    canonical: 'https://vladenza.com/reviews',
+    title: locale === 'uk' ? 'Відгуки та оцінки — SEO-агенція Vladenza' : 'Reviews & Ratings — Vladenza SEO Agency',
+    description: locale === 'uk' ? 'Дізнайтеся, що клієнти говорять про Vladenza на Fiverr і Clutch. Залиште відгук та допоможіть іншим компаніям знайти надійних SEO-партнерів.' : 'See what clients say about Vladenza on Fiverr and Clutch. Leave a review and help other businesses find trusted SEO partners.',
+    canonical: `https://vladenza.com${lp('/reviews')}`,
   });
 
   return (
@@ -126,14 +134,13 @@ export default function ReviewsPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-1.5 mb-6">
               <Star size={12} className="fill-[#F97316] text-[#F97316]" />
-              <span className="text-xs font-semibold text-[#F97316] tracking-wide uppercase">Client Reviews</span>
+              <span className="text-xs font-semibold text-[#F97316] tracking-wide uppercase">{rt('Client Reviews', locale)}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 leading-[1.1] tracking-tight mb-5">
-              What Our Clients<br />
-              <span className="text-[#F97316]">Say About Us</span>
+              {locale === 'uk' ? <>Що кажуть наші<br /><span className="text-[#F97316]">клієнти</span></> : <>What Our Clients<br /><span className="text-[#F97316]">Say About Us</span></>}
             </h1>
             <p className="text-gray-500 text-base sm:text-lg leading-relaxed mb-8">
-              We've helped 840+ websites grow organic traffic in competitive niches. Here's what they say — and where you can share your experience too.
+              {rt("We've helped 840+ websites grow organic traffic in competitive niches. Here's what they say — and where you can share your experience too.", locale)}
             </p>
             {/* Platform badges */}
             <div className="flex flex-wrap gap-3">
@@ -151,7 +158,7 @@ export default function ReviewsPage() {
                       <Star key={i} size={9} className="fill-[#F97316] text-[#F97316]" />
                     ))}
                   </span>
-                  {p.score} on {p.name}
+                  {p.score} на {p.name}
                   <ExternalLink size={11} className="text-gray-400" />
                 </a>
               ))}
@@ -167,8 +174,8 @@ export default function ReviewsPage() {
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-2xl sm:text-3xl font-black text-gray-900 mb-0.5">{s.value}</div>
-                <div className="text-xs font-bold text-gray-700">{s.label}</div>
-                <div className="text-[10px] text-gray-400">{s.sub}</div>
+                <div className="text-xs font-bold text-gray-700">{rt(s.label, locale)}</div>
+                <div className="text-[10px] text-gray-400">{rt(s.sub, locale)}</div>
               </div>
             ))}
           </div>
@@ -180,10 +187,10 @@ export default function ReviewsPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-3">
-              Worked with us? <span className="text-[#F97316]">Leave a Review</span>
+              {locale === 'uk' ? <>Працювали з нами? <span className="text-[#F97316]">Залиште відгук</span></> : <>Worked with us? <span className="text-[#F97316]">Leave a Review</span></>}
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto text-sm leading-relaxed">
-              Your feedback helps other businesses choose the right SEO partner and takes less than 2 minutes.
+              {rt('Your feedback helps other businesses choose the right SEO partner and takes less than 2 minutes.', locale)}
             </p>
           </div>
 
@@ -209,7 +216,7 @@ export default function ReviewsPage() {
                   </div>
                   <div className="flex items-baseline gap-1.5 mb-1">
                     <span className="text-sm font-bold text-[#F97316]">{p.score}</span>
-                    <span className="text-xs text-gray-400">({p.reviews} reviews)</span>
+                    <span className="text-xs text-gray-400">({p.reviews} {rt('reviews', locale)})</span>
                   </div>
 
                   {/* Stars */}
@@ -220,7 +227,7 @@ export default function ReviewsPage() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-gray-500 text-xs leading-relaxed mb-4 flex-1">{p.description}</p>
+                  <p className="text-gray-500 text-xs leading-relaxed mb-4 flex-1">{rt(p.description, locale)}</p>
 
                   {/* Steps */}
                   <ol className="mb-5 space-y-1.5">
@@ -229,7 +236,7 @@ export default function ReviewsPage() {
                         <span className="w-4 h-4 rounded-full bg-white border border-gray-200 text-[9px] font-bold text-gray-700 flex items-center justify-center shrink-0 mt-0.5">
                           {i + 1}
                         </span>
-                        {step}
+                        {rt(step, locale)}
                       </li>
                     ))}
                   </ol>
@@ -241,7 +248,7 @@ export default function ReviewsPage() {
                     rel="noopener noreferrer"
                     className={`inline-flex items-center justify-center gap-1.5 w-full text-white text-xs font-bold py-2.5 rounded-xl ${p.btnBg} transition-colors duration-200`}
                   >
-                    {p.cta}
+                    {rt(p.cta, locale)}
                     <ExternalLink size={11} />
                   </a>
                 </div>
@@ -255,10 +262,10 @@ export default function ReviewsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-3">
-              Recent Client Feedback
+              {rt('Recent Client Feedback', locale)}
             </h2>
             <p className="text-gray-500 text-sm max-w-md mx-auto">
-              Real results from real campaigns. Names and details shared with permission.
+              {rt('Real results from real campaigns. Names and details shared with permission.', locale)}
             </p>
           </div>
 
@@ -293,7 +300,7 @@ export default function ReviewsPage() {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-gray-900">{t.name}</div>
-                      <div className="text-[10px] text-gray-400">{t.role}</div>
+                      <div className="text-[10px] text-gray-400">{locale === 'uk' ? t.role.replace('Head of Growth', 'Керівник з розвитку').replace('Founder', 'Засновник').replace('Health & Wellness Brand', 'бренд здоров’я та добробуту').replace('SEO Manager', 'SEO-менеджер').replace('iGaming Portal', 'iGaming-порталу').replace('Digital Agency Owner', 'Власник digital-агенції') : t.role}</div>
                     </div>
                   </div>
                 </div>

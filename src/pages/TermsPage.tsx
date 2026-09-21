@@ -1,163 +1,50 @@
 import LegalPageLayout, { LegalSection } from '../components/LegalPageLayout';
+import { useLocale } from '../context/LocaleContext';
 
-const toc = [
-  { id: 'service-description', label: 'Service Description' },
-  { id: 'customer-responsibilities', label: 'Customer Responsibilities' },
-  { id: 'order-acceptance', label: 'Order Acceptance & Payment' },
-  { id: 'delivery', label: 'Delivery' },
-  { id: 'revisions', label: 'Revisions & Replacements' },
-  { id: 'cancellations', label: 'Cancellations & Refunds' },
-  { id: 'third-party', label: 'Third-Party Publishers' },
-  { id: 'seo-disclaimer', label: 'SEO Performance Disclaimer' },
-  { id: 'intellectual-property', label: 'Intellectual Property' },
-  { id: 'prohibited-use', label: 'Prohibited Use' },
-  { id: 'liability', label: 'Limitation of Liability' },
-  { id: 'changes', label: 'Changes to These Terms' },
-  { id: 'contact', label: 'Contact' },
-];
+const tr = (en: string, uk: string, isUk: boolean) => isUk ? uk : en;
 
 export default function TermsPage() {
-  return (
-    <LegalPageLayout
-      title="Terms & Conditions"
-      description="Terms and conditions for purchasing link-building services from Vladenza."
-      canonical="https://vladenza.com/terms"
-      lastUpdated="August 25, 2026"
-      tableOfContents={toc}
-    >
-      <LegalSection id="overview" title="Overview">
-        <p>
-          These Terms &amp; Conditions govern your use of vladenza.com and the purchase of digital SEO and link-building services from Vladenza. By placing an order or using our website, you agree to these terms.
-        </p>
-      </LegalSection>
+  const { locale, localizePath } = useLocale();
+  const isUk = locale === 'uk';
+  const toc = [
+    ['service-description', 'Service Description', 'Опис послуг'], ['customer-responsibilities', 'Customer Responsibilities', 'Обов’язки клієнта'], ['order-acceptance', 'Order Acceptance & Payment', 'Прийняття замовлення та оплата'], ['delivery', 'Delivery', 'Виконання та доставка'], ['revisions', 'Revisions & Replacements', 'Правки та заміни'], ['cancellations', 'Cancellations & Refunds', 'Скасування та повернення коштів'], ['third-party', 'Third-Party Publishers', 'Сторонні видавці'], ['seo-disclaimer', 'SEO Performance Disclaimer', 'Застереження щодо результатів SEO'], ['intellectual-property', 'Intellectual Property', 'Інтелектуальна власність'], ['prohibited-use', 'Prohibited Use', 'Заборонене використання'], ['liability', 'Limitation of Liability', 'Обмеження відповідальності'], ['changes', 'Changes to These Terms', 'Зміни до цих умов'], ['contact', 'Contact', 'Контакти'],
+  ].map(([id, en, uk]) => ({ id, label: tr(en, uk, isUk) }));
+  const link = (path: string, en: string, uk: string) => <a href={localizePath(path)} className="text-[#F97316] hover:underline">{tr(en, uk, isUk)}</a>;
 
-      <LegalSection id="service-description" title="Service Description">
-        <p>Vladenza sells digital SEO and link-building services including:</p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li><strong>Niche edits</strong> &mdash; backlinks inserted into existing, relevant articles on third-party websites.</li>
-          <li><strong>Guest posts</strong> &mdash; new articles written and published on third-party websites with your backlink included.</li>
-          <li><strong>Crowd / community links</strong> &mdash; contextual mentions in forums, Q&amp;A sites, and online communities.</li>
-          <li><strong>Custom link-building campaigns</strong> &mdash; combined packages tailored to your site, competitors, and budget.</li>
-        </ul>
-        <p>
-          All placements are on third-party websites we do not own. We manually review each placement for relevance and quality before delivery.
-        </p>
-      </LegalSection>
+  return <LegalPageLayout title={tr('Terms & Conditions', 'Умови та положення', isUk)} description={tr('Terms and conditions for purchasing link-building services from Vladenza.', 'Умови придбання послуг з лінкбілдингу у Vladenza.', isUk)} canonical={`https://vladenza.com${isUk ? '/uk' : ''}/terms`} lastUpdated={tr('August 25, 2026', '25 серпня 2026 року', isUk)} tableOfContents={toc}>
+    <LegalSection id="overview" title={tr('Overview', 'Огляд', isUk)}><p>{tr('These Terms & Conditions govern your use of vladenza.com and the purchase of digital SEO and link-building services from Vladenza. By placing an order or using our website, you agree to these terms.', 'Ці Умови та положення регулюють користування сайтом vladenza.com і придбання цифрових SEO-послуг та послуг з лінкбілдингу у Vladenza. Розміщуючи замовлення або користуючись сайтом, ви погоджуєтеся з цими умовами.', isUk)}</p></LegalSection>
 
-      <LegalSection id="customer-responsibilities" title="Customer Responsibilities">
-        <p>You are responsible for providing accurate and complete information when placing an order, including:</p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li><strong>Target URLs</strong> &mdash; the pages on your website that should receive backlinks.</li>
-          <li><strong>Anchor text</strong> &mdash; preferred anchor text for each placement, or authorization for Vladenza to recommend anchors.</li>
-          <li><strong>Content requirements</strong> &mdash; any niche, topic, or content restrictions for placements.</li>
-          <li><strong>Website approval</strong> &mdash; where applicable, you may request to approve specific websites before placement. This must be indicated before outreach begins.</li>
-        </ul>
-        <p>
-          If you choose to provide requirements after checkout, we will contact you by email. Delays in providing requirements may delay delivery.
-        </p>
-      </LegalSection>
+    <LegalSection id="service-description" title={tr('Service Description', 'Опис послуг', isUk)}><p>{tr('Vladenza sells digital SEO and link-building services including:', 'Vladenza продає цифрові SEO-послуги та послуги з лінкбілдингу, зокрема:', isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1">
+      <li><strong>{tr('Niche edits', 'Тематичні вставки посилань', isUk)}</strong> &mdash; {tr('backlinks inserted into existing, relevant articles on third-party websites.', 'зворотні посилання, додані до наявних релевантних статей на сторонніх сайтах.', isUk)}</li>
+      <li><strong>{tr('Guest posts', 'Гостьові публікації', isUk)}</strong> &mdash; {tr('new articles written and published on third-party websites with your backlink included.', 'нові статті, написані та опубліковані на сторонніх сайтах із вашим зворотним посиланням.', isUk)}</li>
+      <li><strong>{tr('Crowd / community links', 'Посилання з форумів і спільнот', isUk)}</strong> &mdash; {tr('contextual mentions in forums, Q&A sites, and online communities.', 'контекстні згадки на форумах, сайтах запитань і відповідей та в онлайн-спільнотах.', isUk)}</li>
+      <li><strong>{tr('Custom link-building campaigns', 'Індивідуальні кампанії з лінкбілдингу', isUk)}</strong> &mdash; {tr('combined packages tailored to your site, competitors, and budget.', 'комбіновані пакети, адаптовані до вашого сайту, конкурентів і бюджету.', isUk)}</li>
+    </ul><p>{tr('All placements are on third-party websites we do not own. We manually review each placement for relevance and quality before delivery.', 'Усі розміщення здійснюються на сторонніх сайтах, якими ми не володіємо. Перед передачею результату ми вручну перевіряємо кожне розміщення на релевантність і якість.', isUk)}</p></LegalSection>
 
-      <LegalSection id="order-acceptance" title="Order Acceptance & Payment">
-        <p>
-          An order is created when you complete checkout and payment is successfully processed. Submitting requirements or adding items to your cart does not constitute a completed order. Only paid orders enter our fulfillment workflow.
-        </p>
-        <p>
-          Prices are listed in USD unless otherwise stated. We verify all prices server-side before processing payment. Payment is processed by our payment provider (WayForPay).
-        </p>
-      </LegalSection>
+    <LegalSection id="customer-responsibilities" title={tr('Customer Responsibilities', 'Обов’язки клієнта', isUk)}><p>{tr('You are responsible for providing accurate and complete information when placing an order, including:', 'Під час оформлення замовлення ви відповідаєте за надання точної та повної інформації, зокрема:', isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1">
+      <li><strong>{tr('Target URLs', 'Цільові URL-адреси', isUk)}</strong> &mdash; {tr('the pages on your website that should receive backlinks.', 'сторінки вашого сайту, на які мають вести зворотні посилання.', isUk)}</li>
+      <li><strong>{tr('Anchor text', 'Анкорний текст', isUk)}</strong> &mdash; {tr('preferred anchor text for each placement, or authorization for Vladenza to recommend anchors.', 'бажаний анкор для кожного розміщення або дозвіл Vladenza запропонувати анкори.', isUk)}</li>
+      <li><strong>{tr('Content requirements', 'Вимоги до контенту', isUk)}</strong> &mdash; {tr('any niche, topic, or content restrictions for placements.', 'будь-які обмеження щодо тематики, теми чи контенту розміщень.', isUk)}</li>
+      <li><strong>{tr('Website approval', 'Погодження сайту', isUk)}</strong> &mdash; {tr('where applicable, you may request to approve specific websites before placement. This must be indicated before outreach begins.', 'якщо це передбачено, ви можете попросити погоджувати конкретні сайти до розміщення. Це потрібно зазначити до початку комунікації з видавцями.', isUk)}</li>
+    </ul><p>{tr('If you choose to provide requirements after checkout, we will contact you by email. Delays in providing requirements may delay delivery.', 'Якщо ви вирішите надати вимоги після оформлення замовлення, ми зв’яжемося з вами електронною поштою. Затримка з наданням вимог може відтермінувати виконання.', isUk)}</p></LegalSection>
 
-      <LegalSection id="delivery" title="Delivery">
-        <p>
-          Delivery refers to the completion of the purchased link-building service and delivery of the final placement report. Typical delivery times vary by service:
-        </p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li>Niche edits: 3&ndash;7 days</li>
-          <li>Guest posts: 10&ndash;21 days</li>
-          <li>Crowd links: 5&ndash;10 days</li>
-        </ul>
-        <p>
-          Delivery times are estimates and may vary based on niche, publisher response times, and whether website approval is required.
-        </p>
-      </LegalSection>
+    <LegalSection id="order-acceptance" title={tr('Order Acceptance & Payment', 'Прийняття замовлення та оплата', isUk)}><p>{tr('An order is created when you complete checkout and payment is successfully processed. Submitting requirements or adding items to your cart does not constitute a completed order. Only paid orders enter our fulfillment workflow.', 'Замовлення створюється після завершення оформлення та успішної обробки платежу. Надання вимог або додавання товарів до кошика не означає завершення замовлення. До процесу виконання потрапляють лише оплачені замовлення.', isUk)}</p><p>{tr('Prices are listed in USD unless otherwise stated. We verify all prices server-side before processing payment. Payment is processed by our payment provider (WayForPay).', 'Ціни вказані в доларах США, якщо не зазначено інше. Перед обробкою платежу ми перевіряємо всі ціни на сервері. Платежі обробляє наш платіжний провайдер (WayForPay).', isUk)}</p></LegalSection>
 
-      <LegalSection id="revisions" title="Revisions & Replacements">
-        <p>
-          If a placement is removed by the third-party publisher within the coverage period, we will replace it with a comparable placement at no additional cost. Replacement is separate from refunds and is our standard remedy for removed links.
-        </p>
-        <p>
-          Replacements are subject to availability of comparable websites within the originally selected DR and traffic range.
-        </p>
-      </LegalSection>
+    <LegalSection id="delivery" title={tr('Delivery', 'Виконання та доставка', isUk)}><p>{tr('Delivery refers to the completion of the purchased link-building service and delivery of the final placement report. Typical delivery times vary by service:', 'Під виконанням мається на увазі завершення придбаної послуги з лінкбілдингу та надання підсумкового звіту про розміщення. Типові строки залежать від послуги:', isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1"><li>{tr('Niche edits: 3–7 days', 'Тематичні вставки: 3–7 днів', isUk)}</li><li>{tr('Guest posts: 10–21 days', 'Гостьові публікації: 10–21 день', isUk)}</li><li>{tr('Crowd links: 5–10 days', 'Посилання з форумів: 5–10 днів', isUk)}</li></ul><p>{tr('Delivery times are estimates and may vary based on niche, publisher response times, and whether website approval is required.', 'Строки є орієнтовними та можуть змінюватися залежно від тематики, швидкості відповіді видавців і необхідності погодження сайту.', isUk)}</p></LegalSection>
 
-      <LegalSection id="cancellations" title="Cancellations & Refunds">
-        <p>
-          Cancellation and refund eligibility depend on the stage of work. See our <a href="/refund-policy" className="text-[#F97316] hover:underline">Refund Policy</a> for full details.
-        </p>
-        <p>
-          Once a placement has been published and delivered, the service is considered complete and refunds are generally not available, except where a replacement cannot be provided.
-        </p>
-      </LegalSection>
+    <LegalSection id="revisions" title={tr('Revisions & Replacements', 'Правки та заміни', isUk)}><p>{tr('If a placement is removed by the third-party publisher within the coverage period, we will replace it with a comparable placement at no additional cost. Replacement is separate from refunds and is our standard remedy for removed links.', 'Якщо сторонній видавець видалить розміщення протягом періоду покриття, ми без додаткової плати замінимо його на зіставне. Заміна є окремою від повернення коштів і нашим стандартним способом вирішення питання з видаленими посиланнями.', isUk)}</p><p>{tr('Replacements are subject to availability of comparable websites within the originally selected DR and traffic range.', 'Заміни залежать від наявності зіставних сайтів у межах початково обраного діапазону DR і трафіку.', isUk)}</p></LegalSection>
 
-      <LegalSection id="third-party" title="Third-Party Publishers & Website Availability">
-        <p>
-          All placements are on third-party websites we do not own or control. We carefully select and review each website, but we cannot guarantee that a third-party site will remain online, indexed, or unchanged indefinitely.
-        </p>
-        <p>
-          Links may be removed, pages may be deindexed, or websites may change ownership. We provide replacement coverage for placements removed within the coverage period, but we are not liable for changes made by third-party publishers beyond our control.
-        </p>
-      </LegalSection>
+    <LegalSection id="cancellations" title={tr('Cancellations & Refunds', 'Скасування та повернення коштів', isUk)}><p>{tr('Cancellation and refund eligibility depend on the stage of work. See our', 'Можливість скасування та повернення коштів залежить від етапу роботи. Докладніше дивіться в нашій', isUk)} {link('/refund-policy', 'Refund Policy', 'Політиці повернення коштів')}.</p><p>{tr('Once a placement has been published and delivered, the service is considered complete and refunds are generally not available, except where a replacement cannot be provided.', 'Після публікації розміщення та передачі звіту послуга вважається завершеною, і повернення коштів зазвичай не здійснюється, крім випадків, коли неможливо надати заміну.', isUk)}</p></LegalSection>
 
-      <LegalSection id="seo-disclaimer" title="SEO Performance Disclaimer">
-        <p>
-          <strong>Purchasing backlinks or link-building services does NOT guarantee:</strong>
-        </p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li>Specific Google rankings or position changes</li>
-          <li>Increases in organic traffic</li>
-          <li>Leads, sales, or revenue</li>
-          <li>Specific SEO outcomes or timelines</li>
-        </ul>
-        <p>
-          Search engine rankings depend on many factors outside our control, including algorithm updates, competitor activity, on-page SEO, content quality, and existing domain authority. We guarantee manual placement on real websites within the selected metrics, not search rankings.
-        </p>
-      </LegalSection>
+    <LegalSection id="third-party" title={tr('Third-Party Publishers & Website Availability', 'Сторонні видавці та доступність сайтів', isUk)}><p>{tr('All placements are on third-party websites we do not own or control. We carefully select and review each website, but we cannot guarantee that a third-party site will remain online, indexed, or unchanged indefinitely.', 'Усі розміщення здійснюються на сторонніх сайтах, якими ми не володіємо й не керуємо. Ми ретельно добираємо та перевіряємо кожен сайт, але не можемо гарантувати, що сторонній сайт безстроково залишатиметься доступним, індексованим або незмінним.', isUk)}</p><p>{tr('Links may be removed, pages may be deindexed, or websites may change ownership. We provide replacement coverage for placements removed within the coverage period, but we are not liable for changes made by third-party publishers beyond our control.', 'Посилання можуть бути видалені, сторінки — виключені з індексу, а власники сайтів — змінитися. Ми надаємо заміну для розміщень, видалених протягом періоду покриття, але не відповідаємо за зміни, внесені сторонніми видавцями поза нашим контролем.', isUk)}</p></LegalSection>
 
-      <LegalSection id="intellectual-property" title="Intellectual Property">
-        <p>
-          All content on vladenza.com, including text, graphics, logos, and design, is the property of Vladenza or its licensors and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works from our content without permission.
-        </p>
-        <p>
-          Guest post content created for your campaign is delivered to you as part of the service. You may use it as agreed, but the published article remains on the third-party publisher&rsquo;s website.
-        </p>
-      </LegalSection>
+    <LegalSection id="seo-disclaimer" title={tr('SEO Performance Disclaimer', 'Застереження щодо результатів SEO', isUk)}><p><strong>{tr('Purchasing backlinks or link-building services does NOT guarantee:', 'Придбання зворотних посилань або послуг з лінкбілдингу НЕ гарантує:', isUk)}</strong></p><ul className="list-disc pl-5 flex flex-col gap-1"><li>{tr('Specific Google rankings or position changes', 'конкретних позицій або змін позицій у Google', isUk)}</li><li>{tr('Increases in organic traffic', 'зростання органічного трафіку', isUk)}</li><li>{tr('Leads, sales, or revenue', 'лідів, продажів або доходу', isUk)}</li><li>{tr('Specific SEO outcomes or timelines', 'конкретних SEO-результатів або строків їх досягнення', isUk)}</li></ul><p>{tr('Search engine rankings depend on many factors outside our control, including algorithm updates, competitor activity, on-page SEO, content quality, and existing domain authority. We guarantee manual placement on real websites within the selected metrics, not search rankings.', 'Позиції в пошукових системах залежать від багатьох факторів поза нашим контролем, зокрема оновлень алгоритмів, дій конкурентів, внутрішньої SEO-оптимізації, якості контенту та наявного авторитету домену. Ми гарантуємо ручне розміщення на реальних сайтах у межах обраних показників, а не позиції в пошуку.', isUk)}</p></LegalSection>
 
-      <LegalSection id="prohibited-use" title="Prohibited Use">
-        <p>You may not use our services for:</p>
-        <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li>Websites containing illegal content, malware, or phishing.</li>
-          <li>Submitting URLs you do not own or control without authorization.</li>
-          <li>Attempting to manipulate or reverse-engineer our pricing or placement process.</li>
-          <li>Reselling our services without authorization (except under a white-label agreement).</li>
-        </ul>
-      </LegalSection>
+    <LegalSection id="intellectual-property" title={tr('Intellectual Property', 'Інтелектуальна власність', isUk)}><p>{tr('All content on vladenza.com, including text, graphics, logos, and design, is the property of Vladenza or its licensors and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works from our content without permission.', 'Увесь контент на vladenza.com, зокрема тексти, графіка, логотипи та дизайн, є власністю Vladenza або її ліцензіарів і захищений законодавством про інтелектуальну власність. Без дозволу не можна відтворювати, поширювати наш контент або створювати на його основі похідні роботи.', isUk)}</p><p>{tr('Guest post content created for your campaign is delivered to you as part of the service. You may use it as agreed, but the published article remains on the third-party publisher’s website.', 'Контент гостьових публікацій, створений для вашої кампанії, передається вам як частина послуги. Ви можете використовувати його відповідно до домовленості, але опублікована стаття залишається на сайті стороннього видавця.', isUk)}</p></LegalSection>
 
-      <LegalSection id="liability" title="Limitation of Liability">
-        <p>
-          To the maximum extent permitted by law, Vladenza shall not be liable for any indirect, incidental, consequential, or punitive damages arising from the use of our services. Our total liability for any claim shall not exceed the amount you paid for the specific order giving rise to the claim.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="changes" title="Changes to These Terms">
-        <p>
-          We may update these Terms from time to time. Changes will be posted on this page with an updated &ldquo;Last updated&rdquo; date. Continued use of our services after changes constitutes acceptance of the updated terms.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="contact" title="Contact">
-        <p>
-          Questions about these Terms? Contact us at <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>.
-        </p>
-      </LegalSection>
-    </LegalPageLayout>
-  );
+    <LegalSection id="prohibited-use" title={tr('Prohibited Use', 'Заборонене використання', isUk)}><p>{tr('You may not use our services for:', 'Ви не можете використовувати наші послуги для:', isUk)}</p><ul className="list-disc pl-5 flex flex-col gap-1"><li>{tr('Websites containing illegal content, malware, or phishing.', 'сайтів із незаконним контентом, шкідливим програмним забезпеченням або фішингом.', isUk)}</li><li>{tr('Submitting URLs you do not own or control without authorization.', 'подання URL-адрес, якими ви не володієте й не керуєте, без дозволу.', isUk)}</li><li>{tr('Attempting to manipulate or reverse-engineer our pricing or placement process.', 'спроб маніпулювати нашими цінами чи процесом розміщення або здійснювати їх зворотну розробку.', isUk)}</li><li>{tr('Reselling our services without authorization (except under a white-label agreement).', 'перепродажу наших послуг без дозволу (крім випадків угоди white-label).', isUk)}</li></ul></LegalSection>
+    <LegalSection id="liability" title={tr('Limitation of Liability', 'Обмеження відповідальності', isUk)}><p>{tr('To the maximum extent permitted by law, Vladenza shall not be liable for any indirect, incidental, consequential, or punitive damages arising from the use of our services. Our total liability for any claim shall not exceed the amount you paid for the specific order giving rise to the claim.', 'У максимальному обсязі, дозволеному законом, Vladenza не несе відповідальності за будь-які непрямі, випадкові, побічні чи штрафні збитки, що виникають унаслідок користування нашими послугами. Загальна відповідальність за будь-якою претензією не може перевищувати суму, сплачену за конкретне замовлення, яке стало підставою для претензії.', isUk)}</p></LegalSection>
+    <LegalSection id="changes" title={tr('Changes to These Terms', 'Зміни до цих умов', isUk)}><p>{tr('We may update these Terms from time to time. Changes will be posted on this page with an updated “Last updated” date. Continued use of our services after changes constitutes acceptance of the updated terms.', 'Час від часу ми можемо оновлювати ці Умови. Зміни буде опубліковано на цій сторінці із зазначенням оновленої дати. Подальше користування нашими послугами після внесення змін означає прийняття оновлених умов.', isUk)}</p></LegalSection>
+    <LegalSection id="contact" title={tr('Contact', 'Контакти', isUk)}><p>{tr('Questions about these Terms? Contact us at', 'Маєте запитання щодо цих Умов? Напишіть нам на адресу', isUk)} <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>.</p></LegalSection>
+  </LegalPageLayout>;
 }

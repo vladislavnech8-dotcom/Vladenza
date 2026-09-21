@@ -1,123 +1,24 @@
 import LegalPageLayout, { LegalSection } from '../components/LegalPageLayout';
+import { useLocale } from '../context/LocaleContext';
 
-const toc = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'before-work-starts', label: 'A. Before Work Has Started' },
-  { id: 'research-started', label: 'B. Research/Outreach Has Started' },
-  { id: 'website-approved', label: 'C. Website Has Been Approved' },
-  { id: 'placement-ordered', label: 'D. Placement Ordered with Publisher' },
-  { id: 'placement-published', label: 'E. Placement Already Published' },
-  { id: 'publisher-costs', label: 'Third-Party Publisher Costs' },
-  { id: 'replacements', label: 'Replacements vs Refunds' },
-  { id: 'how-to-request', label: 'How to Request a Refund' },
-  { id: 'contact', label: 'Contact' },
-];
-
-// TODO: Finalize exact refund percentages with business team before publishing.
-// These values represent the current policy and may need adjustment.
-const REFUND_PERCENTAGES = {
-  beforeWorkStarted: 100,
-  researchStarted: 70,
-  websiteApproved: 40,
-  placementOrdered: 0,
-  placementPublished: 0,
-};
+const tr = (en: string, uk: string, isUk: boolean) => isUk ? uk : en;
+const REFUND_PERCENTAGES = { beforeWorkStarted: 100, researchStarted: 70, websiteApproved: 40, placementOrdered: 0, placementPublished: 0 };
 
 export default function RefundPolicyPage() {
-  return (
-    <LegalPageLayout
-      title="Refund Policy"
-      description="Refund policy for digital link-building services purchased from Vladenza."
-      canonical="https://vladenza.com/refund-policy"
-      lastUpdated="August 25, 2026"
-      tableOfContents={toc}
-    >
-      <LegalSection id="overview" title="Overview">
-        <p>
-          Vladenza sells digital link-building services. Because our work involves research, outreach, and payments to third-party publishers, refund eligibility depends on how far the work has progressed at the time of your cancellation request.
-        </p>
-        <p>
-          Only <strong>paid orders</strong> are eligible for refunds. Unpaid orders, abandoned checkouts, and quote requests are not charged and therefore not subject to refunds.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="before-work-starts" title="A. Order Submitted, Work Has Not Started">
-        <p>
-          If you request a cancellation before we have begun any research, outreach, or placement work, you are eligible for a <strong>{REFUND_PERCENTAGES.beforeWorkStarted}% refund</strong> of the order total.
-        </p>
-        <p>
-          This typically applies to cancellations requested within 24 hours of payment, before our team has reviewed your requirements.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="research-started" title="B. Research or Outreach Has Started">
-        <p>
-          If we have begun researching placement opportunities or conducting outreach but no website has been confirmed or approved yet, you are eligible for a <strong>{REFUND_PERCENTAGES.researchStarted}% refund</strong> of the order total.
-        </p>
-        <p>
-          This reflects the labor already invested in sourcing and evaluating potential placements.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="website-approved" title="C. Website Has Been Approved">
-        <p>
-          If a specific website has been confirmed or approved (by you or by us, depending on the approval flow), you are eligible for a <strong>{REFUND_PERCENTAGES.websiteApproved}% refund</strong> of the order total.
-        </p>
-        <p>
-          At this stage, we have committed to a specific publisher and may have incurred non-recoverable costs.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="placement-ordered" title="D. Placement Ordered with Publisher">
-        <p>
-          Once a placement has been ordered and paid for with a third-party publisher, <strong>refunds are generally not available</strong> for that placement. Publisher payments become non-refundable after confirmation.
-        </p>
-        <p>
-          See the &ldquo;Third-Party Publisher Costs&rdquo; section below for more details.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="placement-published" title="E. Placement Already Published">
-        <p>
-          Once a backlink or article has been published and delivered in your report, the service is considered complete. <strong>Refunds are not available</strong> for delivered placements.
-        </p>
-        <p>
-          If a placement is removed by the publisher within the coverage period, you are entitled to a <strong>replacement</strong> rather than a refund. See the &ldquo;Replacements vs Refunds&rdquo; section below.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="publisher-costs" title="Third-Party Publisher Costs">
-        <p>
-          Many of our placements involve payments to third-party website owners or publishers. Once we have confirmed and paid for a placement with a publisher, that cost is typically non-refundable on the publisher&rsquo;s side.
-        </p>
-        <p>
-          This is why refund percentages decrease as work progresses &mdash; we may have already committed funds to publishers that cannot be recovered.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="replacements" title="Replacements vs Refunds">
-        <p>
-          If a placement is removed by the third-party publisher within the coverage period, we will <strong>replace it</strong> with a comparable placement at no additional cost. This is the standard remedy for removed links and is separate from the refund process.
-        </p>
-        <p>
-          Replacements are subject to the availability of comparable websites within the originally selected DR and traffic range. If a replacement cannot be provided after reasonable effort, a partial refund may be considered at our discretion.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="how-to-request" title="How to Request a Refund">
-        <p>
-          To request a cancellation or refund, email <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a> with your order number and the reason for your request. We will review the current status of your order and respond within 2 business days.
-        </p>
-        <p>
-          Approved refunds will be processed back to the original payment method. Processing times depend on your payment provider and may take 5&ndash;10 business days.
-        </p>
-      </LegalSection>
-
-      <LegalSection id="contact" title="Contact">
-        <p>
-          Questions about refunds? Contact us at <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>.
-        </p>
-      </LegalSection>
-    </LegalPageLayout>
-  );
+  const { locale } = useLocale();
+  const isUk = locale === 'uk';
+  const toc = [['overview','Overview','Огляд'],['before-work-starts','A. Before Work Has Started','A. До початку роботи'],['research-started','B. Research/Outreach Has Started','B. Розпочато дослідження або комунікацію'],['website-approved','C. Website Has Been Approved','C. Сайт погоджено'],['placement-ordered','D. Placement Ordered with Publisher','D. Розміщення замовлено у видавця'],['placement-published','E. Placement Already Published','E. Розміщення вже опубліковано'],['publisher-costs','Third-Party Publisher Costs','Витрати на сторонніх видавців'],['replacements','Replacements vs Refunds','Заміни та повернення коштів'],['how-to-request','How to Request a Refund','Як запросити повернення коштів'],['contact','Contact','Контакти']].map(([id,en,uk]) => ({ id, label: tr(en,uk,isUk) }));
+  const email = <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>;
+  return <LegalPageLayout title={tr('Refund Policy','Політика повернення коштів',isUk)} description={tr('Refund policy for digital link-building services purchased from Vladenza.','Політика повернення коштів за цифрові послуги з лінкбілдингу, придбані у Vladenza.',isUk)} canonical={`https://vladenza.com${isUk ? '/uk' : ''}/refund-policy`} lastUpdated={tr('August 25, 2026','25 серпня 2026 року',isUk)} tableOfContents={toc}>
+    <LegalSection id="overview" title={tr('Overview','Огляд',isUk)}><p>{tr('Vladenza sells digital link-building services. Because our work involves research, outreach, and payments to third-party publishers, refund eligibility depends on how far the work has progressed at the time of your cancellation request.','Vladenza продає цифрові послуги з лінкбілдингу. Оскільки наша робота передбачає дослідження, комунікацію та платежі стороннім видавцям, можливість повернення коштів залежить від етапу роботи на момент вашого запиту на скасування.',isUk)}</p><p>{tr('Only paid orders are eligible for refunds. Unpaid orders, abandoned checkouts, and quote requests are not charged and therefore not subject to refunds.','Повернення коштів можливе лише для оплачених замовлень. Неоплачені замовлення, незавершені оформлення та запити на розрахунок вартості не оплачуються, тому повернення до них не застосовується.',isUk)}</p></LegalSection>
+    <LegalSection id="before-work-starts" title={tr('A. Order Submitted, Work Has Not Started','A. Замовлення подано, роботу не розпочато',isUk)}><p>{tr('If you request a cancellation before we have begun any research, outreach, or placement work, you are eligible for a ','Якщо ви запитуєте скасування до початку будь-яких досліджень, комунікації чи роботи з розміщення, вам належить ',isUk)}<strong>{REFUND_PERCENTAGES.beforeWorkStarted}% {tr('refund','повернення коштів',isUk)}</strong>{tr(' of the order total.',' від загальної суми замовлення.',isUk)}</p><p>{tr('This typically applies to cancellations requested within 24 hours of payment, before our team has reviewed your requirements.','Зазвичай це стосується запитів на скасування протягом 24 годин після оплати, до того як наша команда перевірила ваші вимоги.',isUk)}</p></LegalSection>
+    <LegalSection id="research-started" title={tr('B. Research or Outreach Has Started','B. Розпочато дослідження або комунікацію',isUk)}><p>{tr('If we have begun researching placement opportunities or conducting outreach but no website has been confirmed or approved yet, you are eligible for a ','Якщо ми розпочали пошук можливостей для розміщення або комунікацію, але ще не підтвердили чи не погодили жоден сайт, вам належить ',isUk)}<strong>{REFUND_PERCENTAGES.researchStarted}% {tr('refund','повернення коштів',isUk)}</strong>{tr(' of the order total.',' від загальної суми замовлення.',isUk)}</p><p>{tr('This reflects the labor already invested in sourcing and evaluating potential placements.','Це враховує вже виконану роботу з пошуку та оцінювання потенційних розміщень.',isUk)}</p></LegalSection>
+    <LegalSection id="website-approved" title={tr('C. Website Has Been Approved','C. Сайт погоджено',isUk)}><p>{tr('If a specific website has been confirmed or approved (by you or by us, depending on the approval flow), you are eligible for a ','Якщо конкретний сайт було підтверджено або погоджено (вами чи нами, залежно від процедури погодження), вам належить ',isUk)}<strong>{REFUND_PERCENTAGES.websiteApproved}% {tr('refund','повернення коштів',isUk)}</strong>{tr(' of the order total.',' від загальної суми замовлення.',isUk)}</p><p>{tr('At this stage, we have committed to a specific publisher and may have incurred non-recoverable costs.','На цьому етапі ми вже взяли на себе зобов’язання перед конкретним видавцем і могли понести невідшкодовувані витрати.',isUk)}</p></LegalSection>
+    <LegalSection id="placement-ordered" title={tr('D. Placement Ordered with Publisher','D. Розміщення замовлено у видавця',isUk)}><p>{tr('Once a placement has been ordered and paid for with a third-party publisher, ','Після того як розміщення замовлено й оплачено сторонньому видавцю, ',isUk)}<strong>{tr('refunds are generally not available','повернення коштів зазвичай неможливе',isUk)}</strong>{tr(' for that placement. Publisher payments become non-refundable after confirmation.',' за це розміщення. Платежі видавцям після підтвердження не повертаються.',isUk)}</p><p>{tr('See the “Third-Party Publisher Costs” section below for more details.','Докладніше дивіться нижче в розділі «Витрати на сторонніх видавців».',isUk)}</p></LegalSection>
+    <LegalSection id="placement-published" title={tr('E. Placement Already Published','E. Розміщення вже опубліковано',isUk)}><p>{tr('Once a backlink or article has been published and delivered in your report, the service is considered complete. ','Після публікації зворотного посилання або статті та надання її у вашому звіті послуга вважається завершеною. ',isUk)}<strong>{tr('Refunds are not available','Повернення коштів за опубліковані розміщення неможливе',isUk)}</strong>{tr(' for delivered placements.','.',isUk)}</p><p>{tr('If a placement is removed by the publisher within the coverage period, you are entitled to a replacement rather than a refund. See the “Replacements vs Refunds” section below.','Якщо видавець видалить розміщення протягом періоду покриття, ви маєте право на заміну, а не на повернення коштів. Дивіться розділ «Заміни та повернення коштів» нижче.',isUk)}</p></LegalSection>
+    <LegalSection id="publisher-costs" title={tr('Third-Party Publisher Costs','Витрати на сторонніх видавців',isUk)}><p>{tr('Many of our placements involve payments to third-party website owners or publishers. Once we have confirmed and paid for a placement with a publisher, that cost is typically non-refundable on the publisher’s side.','Багато наших розміщень передбачають платежі власникам сторонніх сайтів або видавцям. Після підтвердження та оплати розміщення видавцю ці витрати зазвичай не повертаються з боку видавця.',isUk)}</p><p>{tr('This is why refund percentages decrease as work progresses — we may have already committed funds to publishers that cannot be recovered.','Саме тому відсоток повернення зменшується в міру виконання роботи: ми могли вже переказати видавцям кошти, які неможливо повернути.',isUk)}</p></LegalSection>
+    <LegalSection id="replacements" title={tr('Replacements vs Refunds','Заміни та повернення коштів',isUk)}><p>{tr('If a placement is removed by the third-party publisher within the coverage period, we will replace it with a comparable placement at no additional cost. This is the standard remedy for removed links and is separate from the refund process.','Якщо сторонній видавець видалить розміщення протягом періоду покриття, ми без додаткової плати замінимо його на зіставне. Це стандартний спосіб вирішення питання з видаленими посиланнями, окремий від процедури повернення коштів.',isUk)}</p><p>{tr('Replacements are subject to the availability of comparable websites within the originally selected DR and traffic range. If a replacement cannot be provided after reasonable effort, a partial refund may be considered at our discretion.','Заміни залежать від наявності зіставних сайтів у межах початково обраного діапазону DR і трафіку. Якщо після докладених розумних зусиль заміну надати неможливо, на наш розсуд може розглядатися часткове повернення коштів.',isUk)}</p></LegalSection>
+    <LegalSection id="how-to-request" title={tr('How to Request a Refund','Як запросити повернення коштів',isUk)}><p>{tr('To request a cancellation or refund, email ','Щоб запросити скасування або повернення коштів, напишіть на ',isUk)}{email}{tr(' with your order number and the reason for your request. We will review the current status of your order and respond within 2 business days.',' із номером замовлення та причиною запиту. Ми перевіримо поточний статус замовлення та відповімо протягом 2 робочих днів.',isUk)}</p><p>{tr('Approved refunds will be processed back to the original payment method. Processing times depend on your payment provider and may take 5–10 business days.','Схвалені повернення буде здійснено на початковий спосіб оплати. Строк обробки залежить від вашого платіжного провайдера та може становити 5–10 робочих днів.',isUk)}</p></LegalSection>
+    <LegalSection id="contact" title={tr('Contact','Контакти',isUk)}><p>{tr('Questions about refunds? Contact us at ','Маєте запитання щодо повернення коштів? Напишіть нам на адресу ',isUk)}{email}.</p></LegalSection>
+  </LegalPageLayout>;
 }

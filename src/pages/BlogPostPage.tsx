@@ -5,6 +5,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { blogPosts, type Section } from '../data/blogPosts';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 
 interface DbPost {
   id: string;
@@ -21,7 +22,7 @@ interface DbPost {
   created_at: string;
 }
 
-function renderInline(text: string): React.ReactNode {
+function renderInline(text: string, lp: (path: string) => string): React.ReactNode {
   const parts: React.ReactNode[] = [];
   const regex = /\[([^\]]+)\]\(((?:https?:\/\/)?[^)]+)\)/g;
   let last = 0;
@@ -34,7 +35,7 @@ function renderInline(text: string): React.ReactNode {
     const linkClass = 'text-[#F97316] font-medium underline underline-offset-2 hover:text-[#EA580C] transition-colors';
     parts.push(
       isInternal ? (
-        <Link key={match.index} to={to} className={linkClass}>{match[1]}</Link>
+        <Link key={match.index} to={lp(to)} className={linkClass}>{match[1]}</Link>
       ) : (
         <a key={match.index} href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>{match[1]}</a>
       )
@@ -45,12 +46,12 @@ function renderInline(text: string): React.ReactNode {
   return parts.length === 1 && typeof parts[0] === 'string' ? parts[0] : <>{parts}</>;
 }
 
-function RenderSection({ section, sectionIndex }: { section: Section; sectionIndex?: number }) {
+function RenderSection({ section, sectionIndex, lp }: { section: Section; sectionIndex?: number; lp: (path: string) => string }) {
   switch (section.type) {
     case 'intro':
       return (
         <p className="text-[19px] text-gray-700 leading-[1.75] font-normal border-l-[3px] border-[#F97316] pl-6 my-8">
-          {renderInline(section.text ?? '')}
+          {renderInline(section.text ?? '', lp)}
         </p>
       );
     case 'h2': {
@@ -64,7 +65,7 @@ function RenderSection({ section, sectionIndex }: { section: Section; sectionInd
     case 'h3':
       return <h3 className="text-[17px] font-bold text-gray-900 mt-9 mb-3 leading-snug">{section.text}</h3>;
     case 'p':
-      return <p className="text-gray-600 leading-[1.8] my-4 text-[15px]">{renderInline(section.text ?? '')}</p>;
+      return <p className="text-gray-600 leading-[1.8] my-4 text-[15px]">{renderInline(section.text ?? '', lp)}</p>;
     case 'ul':
       return (
         <ul className="my-5 flex flex-col gap-2.5">
@@ -134,7 +135,7 @@ function RenderSection({ section, sectionIndex }: { section: Section; sectionInd
               <p className="text-white text-xl sm:text-2xl font-bold leading-snug max-w-md">{section.text}</p>
               {section.subtext && <p className="text-gray-400 text-sm mt-2 max-w-sm leading-relaxed">{section.subtext}</p>}
             </div>
-            <Link to={section.href ?? '/'} className="relative flex-shrink-0 bg-[#F97316] hover:bg-[#EA580C] active:bg-[#C2410C] transition-colors text-white font-semibold px-7 py-3.5 rounded-xl text-sm whitespace-nowrap shadow-lg shadow-orange-900/30">
+            <Link to={lp(section.href ?? '/')}  className="relative flex-shrink-0 bg-[#F97316] hover:bg-[#EA580C] active:bg-[#C2410C] transition-colors text-white font-semibold px-7 py-3.5 rounded-xl text-sm whitespace-nowrap shadow-lg shadow-orange-900/30">
               {section.button}
             </Link>
           </div>
@@ -176,6 +177,8 @@ function usePost(slug: string | undefined) {
 }
 
 export default function BlogPostPage() {
+  const { locale, localizePath: lp } = useLocale();
+  const uk = locale === 'uk';
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { post, loading } = usePost(slug);
@@ -185,9 +188,9 @@ export default function BlogPostPage() {
   const staticPost = blogPosts[staticIndex];
 
   useSEO({
-    title: post ? `${(post as DbPost).title ?? staticPost?.title} | Vladenza Blog` : 'Blog Post | Vladenza',
-    description: post ? ((post as DbPost).excerpt ?? staticPost?.excerpt ?? 'Read this article on SEO and link building from Vladenza.') : 'Read this article on SEO and link building from Vladenza.',
-    canonical: `https://vladenza.com/blog/${slug}`,
+    title: post ? `${(post as DbPost).title ?? staticPost?.title} | ${uk ? 'Блог Vladenza' : 'Vladenza Blog'}` : `${uk ? 'Стаття блогу' : 'Blog Post'} | Vladenza`,
+    description: post ? ((post as DbPost).excerpt ?? staticPost?.excerpt ?? (uk ? 'Читайте статтю про SEO та лінкбілдинг від Vladenza.' : 'Read this article on SEO and link building from Vladenza.')) : (uk ? 'Читайте статтю про SEO та лінкбілдинг від Vladenza.' : 'Read this article on SEO and link building from Vladenza.'),
+    canonical: `https://vladenza.com${lp(`/blog/${slug}`)}`,
     ogImage: post ? ((post as DbPost).image_url ?? staticPost?.image) : undefined,
   });
 
@@ -210,13 +213,13 @@ export default function BlogPostPage() {
       <ServicePageLayout>
         <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
           <div className="text-6xl font-black text-gray-100 mb-4">404</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Article not found</h1>
-          <p className="text-gray-500 mb-6">This article may have been moved or removed.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{uk ? 'Статтю не знайдено' : 'Article not found'}</h1>
+          <p className="text-gray-500 mb-6">{uk ? 'Можливо, статтю переміщено або видалено.' : 'This article may have been moved or removed.'}</p>
           <button
-            onClick={() => navigate('/blog')}
+            onClick={() => navigate(lp('/blog'))}
             className="inline-flex items-center gap-2 bg-[#F97316] text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-[#EA580C] transition-colors"
           >
-            <ArrowLeft size={14} /> Back to Blog
+            <ArrowLeft size={14} /> {uk ? 'Назад до блогу' : 'Back to Blog'}
           </button>
         </div>
       </ServicePageLayout>
@@ -228,7 +231,7 @@ export default function BlogPostPage() {
   const catColor = (post as DbPost).category_color ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).categoryColor;
   const readTime = (post as DbPost).read_time ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).readTime;
   const postDate = (post as DbPost).created_at
-    ? new Date((post as DbPost).created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    ? new Date((post as DbPost).created_at).toLocaleDateString(uk ? 'uk-UA' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     : (post as NonNullable<ReturnType<typeof blogPosts.find>>).date;
   const sections: Section[] = (post as DbPost).content_json ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).content ?? [];
 
@@ -243,9 +246,9 @@ export default function BlogPostPage() {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400">
-          <button onClick={() => navigate('/')} className="hover:text-gray-700 transition-colors">Home</button>
+          <button onClick={() => navigate(lp('/'))} className="hover:text-gray-700 transition-colors">{uk ? 'Головна' : 'Home'}</button>
           <span className="text-gray-200">/</span>
-          <button onClick={() => navigate('/blog')} className="hover:text-gray-700 transition-colors">Blog</button>
+          <button onClick={() => navigate(lp('/blog'))} className="hover:text-gray-700 transition-colors">{uk ? 'Блог' : 'Blog'}</button>
           <span className="text-gray-200">/</span>
           <span className="text-gray-500 truncate max-w-[240px]">{post.title}</span>
         </div>
@@ -299,7 +302,7 @@ export default function BlogPostPage() {
                 let h2Count = 0;
                 return sections.map((section, i) => {
                   const idx = section.type === 'h2' ? h2Count++ : undefined;
-                  return <RenderSection key={i} section={section} sectionIndex={idx} />;
+                  return <RenderSection key={i} section={section} sectionIndex={idx} lp={lp} />;
                 });
               })()}
 
@@ -307,7 +310,7 @@ export default function BlogPostPage() {
               <div className="mt-14 pt-8 border-t border-gray-100">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
-                    <Share2 size={13} /> Share
+                    <Share2 size={13} /> {uk ? 'Поділитися' : 'Share'}
                   </span>
                   <a
                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`}
@@ -329,7 +332,7 @@ export default function BlogPostPage() {
                     onClick={handleCopy}
                     className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
                   >
-                    <Link2 size={12} /> {copied ? 'Copied!' : 'Copy link'}
+                    <Link2 size={12} /> {copied ? (uk ? 'Скопійовано!' : 'Copied!') : (uk ? 'Копіювати посилання' : 'Copy link')}
                   </button>
                 </div>
               </div>
@@ -338,22 +341,22 @@ export default function BlogPostPage() {
               <div className="mt-10 grid sm:grid-cols-2 gap-4">
                 {prevPost ? (
                   <button
-                    onClick={() => navigate(`/blog/${prevPost.slug}`)}
+                    onClick={() => navigate(lp(`/blog/${prevPost.slug}`))}
                     className="group flex flex-col gap-1.5 border border-gray-200 rounded-2xl p-5 hover:border-[#F97316]/30 hover:bg-orange-50/30 transition-all text-left"
                   >
                     <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-gray-400 tracking-widest">
-                      <ArrowLeft size={10} /> Previous
+                      <ArrowLeft size={10} /> {uk ? 'Попередня' : 'Previous'}
                     </span>
                     <span className="text-sm font-semibold text-gray-900 leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2">{prevPost.title}</span>
                   </button>
                 ) : <div />}
                 {nextPost ? (
                   <button
-                    onClick={() => navigate(`/blog/${nextPost.slug}`)}
+                    onClick={() => navigate(lp(`/blog/${nextPost.slug}`))}
                     className="group flex flex-col gap-1.5 border border-gray-200 rounded-2xl p-5 hover:border-[#F97316]/30 hover:bg-orange-50/30 transition-all text-left sm:items-end"
                   >
                     <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-gray-400 tracking-widest">
-                      Next <ArrowRight size={10} />
+                      {uk ? 'Наступна' : 'Next'} <ArrowRight size={10} />
                     </span>
                     <span className="text-sm font-semibold text-gray-900 leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2 sm:text-right">{nextPost.title}</span>
                   </button>
@@ -366,7 +369,7 @@ export default function BlogPostPage() {
               {sections.filter(s => s.type === 'h2').length > 0 && (
                 <div className="sticky top-[104px]">
                   <div className="border-l border-gray-200 pl-5">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">In this article</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">{uk ? 'У цій статті' : 'In this article'}</h3>
                     <nav className="flex flex-col gap-0.5">
                       {sections
                         .filter((s) => s.type === 'h2')
@@ -386,10 +389,10 @@ export default function BlogPostPage() {
                     </nav>
                     <div className="mt-6 pt-5 border-t border-gray-100">
                       <a
-                        href="/#contact"
+                        href={lp('/#contact')}
                         className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-2.5 px-4 rounded-xl text-xs text-center transition-colors block"
                       >
-                        Get a Free Link Audit
+                        {uk ? 'Отримати безкоштовний аудит посилань' : 'Get a Free Link Audit'}
                       </a>
                     </div>
                   </div>
@@ -404,19 +407,19 @@ export default function BlogPostPage() {
       <section className="py-14 bg-gray-50/50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold text-gray-900">More to read</h2>
+            <h2 className="text-xl font-bold text-gray-900">{uk ? 'Ще почитати' : 'More to read'}</h2>
             <button
-              onClick={() => navigate('/blog')}
+              onClick={() => navigate(lp('/blog'))}
               className="text-sm font-semibold text-[#F97316] flex items-center gap-1.5 hover:underline"
             >
-              All articles <ArrowRight size={13} />
+              {uk ? 'Усі статті' : 'All articles'} <ArrowRight size={13} />
             </button>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {related.map((rp) => (
               <button
                 key={rp.id}
-                onClick={() => navigate(`/blog/${rp.slug}`)}
+                onClick={() => navigate(lp(`/blog/${rp.slug}`))}
                 className="group bg-white border border-gray-200/80 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 text-left"
               >
                 <div className="h-40 overflow-hidden bg-gray-100">

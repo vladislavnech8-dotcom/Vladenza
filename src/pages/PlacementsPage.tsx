@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import PlacementCard from '../components/PlacementCard';
 import Pagination from '../components/Pagination';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 import { fetchPlacements, type Placement, type PlacementServiceType, getPlacementNiches } from '../data/placements';
 
 type ServiceFilter = 'all' | PlacementServiceType;
@@ -35,7 +36,11 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 const PAGE_SIZE = 6;
 
+const placementsUk: Record<string, string> = { All: 'Усі', 'Niche Edits': 'Розміщення в готових статтях', 'Guest Posts': 'Гостьові публікації', 'Crowd Links': 'Крауд-посилання', Any: 'Будь-який', 'DR20+': 'DR20+', 'DR30+': 'DR30+', 'DR40+': 'DR40+', 'DR50+': 'DR50+', 'DR60+': 'DR60+', '1K+': '1 тис.+', '5K+': '5 тис.+', '10K+': '10 тис.+', '50K+': '50 тис.+', 'Manual Order': 'Вручну', Newest: 'Найновіші', 'Highest DR': 'Найвищий DR', 'Highest Traffic': 'Найвищий трафік', Niche: 'Ніша', Traffic: 'Трафік', Sort: 'Сортування', 'Search by domain, title or URL': 'Пошук за доменом, назвою або URL', 'No placements match these filters.': 'За цими фільтрами розміщень не знайдено.', 'Real Link Building Examples': 'Реальні приклади лінкбілдингу', "Browse real placements we've delivered across niche edits, guest posts and community links.": 'Перегляньте реальні розміщення, які ми виконали в готових статтях, гостьових публікаціях і спільнотах.', 'Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.': 'Метрики отримано з Ahrefs, вони можуть змінюватися. DR = рейтинг домену. Трафік = орієнтовна кількість органічних візитів на місяць.' };
+const pct = (value: string, locale: string) => locale === 'uk' ? (placementsUk[value] ?? value) : value;
+
 export default function PlacementsPage() {
+  const { locale } = useLocale();
   const [placements, setPlacements] = useState<Placement[]>([]);
   const [loading, setLoading] = useState(true);
   const [serviceFilter, setServiceFilter] = useState<ServiceFilter>('all');
@@ -47,9 +52,9 @@ export default function PlacementsPage() {
   const [page, setPage] = useState(1);
 
   useSEO({
-    title: 'Real Link Placements — Niche Edits, Guest Posts & Crowd Links | Vladenza',
-    description: 'Browse real examples of niche edits, guest posts and community links we have delivered across different industries, authority levels and traffic ranges.',
-    canonical: 'https://vladenza.com/placements',
+    title: locale === 'uk' ? 'Реальні розміщення посилань — готові статті, гостьові публікації та крауд-посилання | Vladenza' : 'Real Link Placements — Niche Edits, Guest Posts & Crowd Links | Vladenza',
+    description: locale === 'uk' ? 'Перегляньте реальні приклади готових статей, гостьових публікацій і крауд-посилань у різних нішах, з різними показниками авторитетності та трафіку.' : 'Browse real examples of niche edits, guest posts and community links we have delivered across different industries, authority levels and traffic ranges.',
+    canonical: `https://vladenza.com${locale === 'uk' ? '/uk/placements' : '/placements'}`,
   });
 
   useEffect(() => {
@@ -109,9 +114,9 @@ export default function PlacementsPage() {
         {/* Header */}
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Real Link Building Examples</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">{pct('Real Link Building Examples', locale)}</h1>
             <p className="text-gray-500 text-base max-w-2xl leading-relaxed">
-              Browse real placements we've delivered across niche edits, guest posts and community links.
+              {pct("Browse real placements we've delivered across niche edits, guest posts and community links.", locale)}
             </p>
           </div>
         </section>
@@ -132,7 +137,7 @@ export default function PlacementsPage() {
                         : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
-                    {f.label}
+                    {pct(f.label, locale)}
                   </button>
                 ))}
               </div>
@@ -141,14 +146,14 @@ export default function PlacementsPage() {
               <div className="flex flex-wrap items-center gap-4">
                 {/* Niche */}
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Niche</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{pct('Niche', locale)}</span>
                   <div className="relative">
                     <select
                       value={nicheFilter}
                       onChange={(e) => { setNicheFilter(e.target.value); resetPage(); }}
                       className="appearance-none text-sm bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#F97316]/20 focus:border-[#F97316]/40 text-gray-600"
                     >
-                      {niches.map((n) => <option key={n} value={n}>{n}</option>)}
+                      {niches.map((n) => <option key={n} value={n}>{pct(n, locale)}</option>)}
                     </select>
                     <Filter size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                   </div>
@@ -167,14 +172,14 @@ export default function PlacementsPage() {
                           : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
                       }`}
                     >
-                      {d}
+                      {pct(d, locale)}
                     </button>
                   ))}
                 </div>
 
                 {/* Traffic */}
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Traffic</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{pct('Traffic', locale)}</span>
                   {TRAFFIC_FILTERS.map((t) => (
                     <button
                       key={t.label}
@@ -185,20 +190,20 @@ export default function PlacementsPage() {
                           : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
                       }`}
                     >
-                      {t.label}
+                      {pct(t.label, locale)}
                     </button>
                   ))}
                 </div>
 
                 {/* Sort */}
                 <div className="flex items-center gap-1.5 ml-auto">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sort</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{pct('Sort', locale)}</span>
                   <select
                     value={sort}
                     onChange={(e) => { setSort(e.target.value as SortKey); resetPage(); }}
                     className="appearance-none text-sm bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#F97316]/20 focus:border-[#F97316]/40 text-gray-600"
                   >
-                    {SORT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    {SORT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{pct(s.label, locale)}</option>)}
                   </select>
                 </div>
               </div>
@@ -210,7 +215,7 @@ export default function PlacementsPage() {
                   type="text"
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); resetPage(); }}
-                  placeholder="Search by domain, title or URL"
+                  placeholder={pct('Search by domain, title or URL', locale)}
                   className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all"
                 />
               </div>
@@ -227,7 +232,7 @@ export default function PlacementsPage() {
               </div>
             ) : shown.length === 0 ? (
               <div className="py-16 text-center">
-                <p className="text-gray-400 text-sm">No placements match these filters.</p>
+                <p className="text-gray-400 text-sm">{pct('No placements match these filters.', locale)}</p>
               </div>
             ) : (
               <>
@@ -240,7 +245,7 @@ export default function PlacementsPage() {
                 <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
 
                 <p className="text-center text-xs text-gray-400 mt-6">
-                  Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.
+                  {pct('Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.', locale)}
                 </p>
               </>
             )}

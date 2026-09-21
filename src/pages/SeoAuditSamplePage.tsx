@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -230,12 +231,14 @@ const linkPlan = [
 // ─── component ───────────────────────────────────────────────────────────────
 
 export default function SeoAuditSamplePage() {
+  const { locale, localizePath: lp } = useLocale();
   const [openTier, setOpenTier] = useState<number | null>(0);
+  const uk = locale === 'uk';
 
   useSEO({
-    title: 'SEO Audit Sample Report — Website Analysis & Growth Plan | Vladenza',
-    description: 'See what a full Vladenza SEO audit looks like: UX review, technical findings, site structure plan, keyword strategy, competitor analysis, and a 6-month link building roadmap.',
-    canonical: 'https://vladenza.com/seo-audit-sample',
+    title: uk ? 'Зразок SEO-аудиту — Аналіз сайту та план зростання | Vladenza' : 'SEO Audit Sample Report — Website Analysis & Growth Plan | Vladenza',
+    description: uk ? 'Перегляньте приклад повного SEO-аудиту Vladenza: UX-огляд, технічні знахідки, структура сайту, стратегія ключових слів, аналіз конкурентів і 6-місячна дорожня карта лінкбілдингу.' : 'See what a full Vladenza SEO audit looks like: UX review, technical findings, site structure plan, keyword strategy, competitor analysis, and a 6-month link building roadmap.',
+    canonical: `https://vladenza.com${lp('/seo-audit-sample')}`,
   });
 
   return (
@@ -255,17 +258,17 @@ export default function SeoAuditSamplePage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <FileText size={12} />
-              Sample Audit Report
+              {uk ? 'Зразок звіту аудиту' : 'Sample Audit Report'}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-5">
-              What a Full SEO Audit<br />
-              <span className="text-[#F97316]">Looks Like in Practice</span>
+              {uk ? 'Як виглядає повний SEO-аудит' : 'What a Full SEO Audit'}<br />
+              <span className="text-[#F97316]">{uk ? 'на практиці' : 'Looks Like in Practice'}</span>
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-2xl">
-              This is a real-structure audit we produced for a local services business — domain and niche references removed. It covers UX & conversion issues, on-page findings, site architecture, keyword strategy, competitor insights, and a 6-month link building plan.
+              {uk ? 'Це аудит реальної структури, підготовлений для локального сервісного бізнесу — згадки про домен і нішу вилучено. Він охоплює UX і конверсійні проблеми, on-page знахідки, архітектуру сайту, стратегію ключових слів, аналіз конкурентів і 6-місячний план лінкбілдингу.' : 'This is a real-structure audit we produced for a local services business — domain and niche references removed. It covers UX & conversion issues, on-page findings, site architecture, keyword strategy, competitor insights, and a 6-month link building plan.'}
             </p>
             <div className="flex flex-wrap gap-3 text-sm">
-              {['Visual & UX review', 'On-page findings', 'Site structure plan', 'Keyword tiers', 'Link building roadmap'].map(t => (
+              {(uk ? ['Візуальний та UX-огляд', 'On-page знахідки', 'План структури сайту', 'Рівні ключових слів', 'Дорожня карта лінкбілдингу'] : ['Visual & UX review', 'On-page findings', 'Site structure plan', 'Keyword tiers', 'Link building roadmap']).map(t => (
                 <div key={t} className="flex items-center gap-1.5 bg-white border border-gray-200 px-3.5 py-1.5 rounded-full text-gray-600">
                   <CheckCircle size={12} className="text-[#F97316]" /> {t}
                 </div>
@@ -280,10 +283,10 @@ export default function SeoAuditSamplePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-6">
             {[
-              { label: 'Critical Issues', value: '5', sub: 'need immediate fix', color: 'text-red-400' },
-              { label: 'Warnings', value: '9', sub: 'medium priority', color: 'text-orange-400' },
-              { label: 'Opportunities', value: '12', sub: 'growth potential', color: 'text-blue-400' },
-              { label: 'Pages in Plan', value: '~94', sub: 'after restructure', color: 'text-green-400' },
+              { label: (uk ? 'Критичні проблеми' : 'Critical Issues'), value: '5', sub: uk ? 'потрібне негайне виправлення' : 'need immediate fix', color: 'text-red-400' },
+              { label: (uk ? 'Попередження' : 'Warnings'), value: '9', sub: uk ? 'середній пріоритет' : 'medium priority', color: 'text-orange-400' },
+              { label: (uk ? 'Можливості' : 'Opportunities'), value: '12', sub: uk ? 'потенціал зростання' : 'growth potential', color: 'text-blue-400' },
+              { label: (uk ? 'Сторінок у плані' : 'Pages in Plan'), value: '~94', sub: uk ? 'після перебудови' : 'after restructure', color: 'text-green-400' },
             ].map(m => (
               <div key={m.label} className="bg-white/5 border border-white/10 rounded-xl p-5 text-center">
                 <div className={`text-3xl font-black mb-1 ${m.color}`}>{m.value}</div>
@@ -299,7 +302,7 @@ export default function SeoAuditSamplePage() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><Eye size={11} /> Visual & UX Review</SectionLabel>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">First impressions & conversion flow</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{uk ? 'Перше враження та конверсійний шлях' : 'First impressions & conversion flow'}</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10 max-w-2xl">
             Design directly impacts bounce rate, CTR, and time-on-site. These are the UX issues that damage conversions before a user even reads a word of content.
           </p>
@@ -397,8 +400,8 @@ export default function SeoAuditSamplePage() {
       {/* ── On-Page ──────────────────────────────────────────────────────── */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <SectionLabel><FileText size={11} /> On-Page SEO</SectionLabel>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Title, H1, and meta findings</h2>
+          <SectionLabel><FileText size={11} /> {uk ? 'On-page SEO' : 'On-Page SEO'}</SectionLabel>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{uk ? 'Знахідки щодо title, H1 і meta' : 'Title, H1, and meta findings'}</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10 max-w-2xl">
             On-page signals are the clearest ranking inputs. These issues directly affect how search engines understand and index each page.
           </p>
@@ -473,15 +476,15 @@ export default function SeoAuditSamplePage() {
       {/* ── Site Structure ───────────────────────────────────────────────── */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <SectionLabel><Layers size={11} /> Site Structure Plan</SectionLabel>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">The full silo architecture</h2>
+          <SectionLabel><Layers size={11} /> {uk ? 'План структури сайту' : 'Site Structure Plan'}</SectionLabel>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{uk ? 'Повна silo-архітектура' : 'The full silo architecture'}</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-4 max-w-2xl">
             The current site has service pages and location pages, but they operate in isolation. The recommended structure adds a third layer — Service + Location pages — and connects everything through proper internal linking.
           </p>
 
           {/* Internal linking diagram */}
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Internal linking model</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">{uk ? 'Модель внутрішнього лінкінгу' : 'Internal linking model'}</p>
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-center text-sm">
               <div className="bg-white border-2 border-[#F97316] rounded-xl px-5 py-4 shadow-sm w-40">
                 <div className="text-xs text-gray-400 mb-1">Hub</div>
@@ -558,7 +561,7 @@ export default function SeoAuditSamplePage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><Target size={11} /> Keyword Strategy</SectionLabel>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">5-tier keyword framework</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{uk ? '5-рівнева система ключових слів' : '5-tier keyword framework'}</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-4 max-w-2xl">
             Since the site is at an early stage, starting with every keyword at once would spread link equity too thin and produce no visible results. The correct approach is sequential: build authority tier by tier.
           </p>
@@ -601,7 +604,7 @@ export default function SeoAuditSamplePage() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <SectionLabel><BarChart2 size={11} /> Competitor Analysis</SectionLabel>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">What's working for the market leader</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{uk ? 'Що працює для лідера ринку' : "What's working for the market leader"}</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10 max-w-2xl">
             The leading competitor in this niche has built a systematically larger site, but their approach has several exploitable weaknesses. Here's the objective comparison.
           </p>
@@ -667,7 +670,7 @@ export default function SeoAuditSamplePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
-              <Link2 size={11} /> Off-page Strategy
+              <Link2 size={11} /> {uk ? 'Off-page стратегія' : 'Off-page Strategy'}
             </div>
             <h2 className="text-3xl font-bold text-white mb-3">6-month link building roadmap</h2>
             <p className="text-gray-400 text-sm max-w-2xl mx-auto leading-relaxed">
@@ -737,8 +740,8 @@ export default function SeoAuditSamplePage() {
       {/* ── Next steps CTA ───────────────────────────────────────────────── */}
       <section className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <SectionLabel><Zap size={11} /> Action Plan</SectionLabel>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Priority order for implementation</h2>
+          <SectionLabel><Zap size={11} /> {uk ? 'План дій' : 'Action Plan'}</SectionLabel>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{uk ? 'Пріоритетний порядок впровадження' : 'Priority order for implementation'}</h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-10">
             Not everything should be fixed at once. These are the highest-impact items in the correct sequence.
           </p>
