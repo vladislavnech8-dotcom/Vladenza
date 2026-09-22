@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ServicePageLayout from '../components/ServicePageLayout';
-import { type CaseSection, type CaseStudy } from '../data/cases';
+import { type CaseSection, type CaseStudy, casesUk } from '../data/cases';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
@@ -135,11 +135,35 @@ export default function CaseStudyDetailPage() {
     });
   }, [slug]);
 
+  const cUk = uk && c && casesUk[c.slug] ? { ...c, ...casesUk[c.slug] } : c;
+  const otherCasesUk = otherCases.map((oc) => {
+    const tr = uk && casesUk[oc.slug];
+    return tr ? { ...oc, niche: tr.niche ?? oc.niche, title: tr.title ?? oc.title, metric_sub: tr.metricSub ?? oc.metric_sub, period: tr.period ?? oc.period } : oc;
+  });
+
   useSEO({
-    title: c ? `${c.title} — ${uk ? 'SEO-кейс' : 'SEO Case Study'} | Vladenza` : `${uk ? 'Кейс' : 'Case Study'} | Vladenza`,
-    description: c ? `${c.challenge.slice(0, 155)}` : (uk ? 'SEO-кейс із лінкбілдингу від Vladenza.' : 'SEO link building case study from Vladenza.'),
+    title: cUk ? `${cUk.title} — ${uk ? 'SEO-кейс' : 'SEO Case Study'} | Vladenza` : `${uk ? 'Кейс' : 'Case Study'} | Vladenza`,
+    description: cUk ? `${cUk.challenge.slice(0, 155)}` : (uk ? 'SEO-кейс із лінкбілдингу від Vladenza.' : 'SEO link building case study from Vladenza.'),
     canonical: `https://vladenza.com${lp(`/case-studies/${slug}`)}`,
-    ogImage: c?.image,
+    ogImage: cUk?.image,
+    schema: cUk ? {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      inLanguage: uk ? 'uk' : 'en',
+      headline: cUk.title,
+      description: cUk.challenge.slice(0, 155),
+      image: cUk.image ? [cUk.image] : undefined,
+      author: { '@type': 'Organization', name: 'Vladenza' },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Vladenza',
+        logo: { '@type': 'ImageObject', url: 'https://vladenza.com/logo.svg' },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://vladenza.com${lp(`/case-studies/${slug}`)}`,
+      },
+    } : undefined,
   });
 
   if (loading) {
@@ -175,17 +199,17 @@ export default function CaseStudyDetailPage() {
           <span className="text-gray-300">/</span>
           <a href={lp('/case-studies')} className="hover:text-gray-700 transition-colors whitespace-nowrap">{uk ? 'Кейси' : 'Case Studies'}</a>
           <span className="text-gray-300">/</span>
-          <span className="text-gray-600 truncate">{c.title}</span>
+          <span className="text-gray-600 truncate">{cUk!.title}</span>
         </div>
       </div>
 
       {/* Hero */}
       <section
         className="relative pt-12 pb-14 overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${c.color}08 0%, #ffffff 60%)` }}
+        style={{ background: `linear-gradient(135deg, ${cUk!.color}08 0%, #ffffff 60%)` }}
       >
         <div className="absolute top-0 right-0 w-[480px] h-[280px] pointer-events-none opacity-[0.06]"
-          style={{ background: `radial-gradient(ellipse at top right, ${c.color}, transparent 70%)` }}
+          style={{ background: `radial-gradient(ellipse at top right, ${cUk!.color}, transparent 70%)` }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <a href={lp('/case-studies')} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-6">
@@ -194,18 +218,18 @@ export default function CaseStudyDetailPage() {
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-3.5 rounded-full" style={{ backgroundColor: c.color }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: c.color }}>
-                {c.niche}
+              <div className="w-1 h-3.5 rounded-full" style={{ backgroundColor: cUk!.color }} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: cUk!.color }}>
+                {cUk!.niche}
               </span>
             </div>
-            <span className="text-xs text-gray-400">{c.service}</span>
+            <span className="text-xs text-gray-400">{cUk!.service}</span>
             <span className="text-xs text-gray-400">·</span>
-            <span className="text-xs text-gray-400">{c.period}</span>
+            <span className="text-xs text-gray-400">{cUk!.period}</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl lg:text-[44px] font-bold text-gray-900 leading-[1.1] tracking-tight max-w-3xl">
-            {c.title}
+            {cUk!.title}
           </h1>
         </div>
       </section>
@@ -214,11 +238,11 @@ export default function CaseStudyDetailPage() {
       <section className="border-y border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
-            {c.stats.map((s, i) => (
+            {cUk!.stats.map((s, i) => (
               <div key={s.label} className="py-7 px-4 sm:px-6 first:pl-0">
                 <div className="flex items-center gap-1.5 mb-1">
-                  {i === 0 && <TrendingUp size={14} style={{ color: c.color }} />}
-                  <div className="text-2xl font-black" style={{ color: i === 0 ? c.color : '#111827' }}>{s.value}</div>
+                  {i === 0 && <TrendingUp size={14} style={{ color: cUk!.color }} />}
+                  <div className="text-2xl font-black" style={{ color: i === 0 ? cUk!.color : '#111827' }}>{s.value}</div>
                 </div>
                 <div className="text-xs text-gray-400 uppercase tracking-wide">{s.label}</div>
               </div>
@@ -238,22 +262,22 @@ export default function CaseStudyDetailPage() {
               <div className="grid sm:grid-cols-3 gap-4 mb-10 pb-10 border-b border-gray-100">
                 <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">{uk ? 'Виклик' : 'Challenge'}</div>
-                  <p className="text-gray-700 text-sm leading-relaxed">{c.challenge}</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">{cUk!.challenge}</p>
                 </div>
-                <div className="rounded-2xl p-5 border-l-[3px] bg-gray-50" style={{ borderColor: c.color }}>
-                  <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: c.color }}>{uk ? 'Що ми зробили' : 'What We Did'}</div>
-                  <p className="text-gray-700 text-sm leading-relaxed">{c.solution}</p>
+                <div className="rounded-2xl p-5 border-l-[3px] bg-gray-50" style={{ borderColor: cUk!.color }}>
+                  <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: cUk!.color }}>{uk ? 'Що ми зробили' : 'What We Did'}</div>
+                  <p className="text-gray-700 text-sm leading-relaxed">{cUk!.solution}</p>
                 </div>
                 <div className="bg-gray-950 rounded-2xl p-5">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{uk ? 'Результати' : 'Results'}</div>
-                  <p className="text-gray-300 text-sm leading-relaxed">{c.result}</p>
+                  <p className="text-gray-300 text-sm leading-relaxed">{cUk!.result}</p>
                 </div>
               </div>
 
               {/* Full body */}
               <div>
-                {c.body.map((section, i) => (
-                  <RenderSection key={i} section={section} color={c.color} />
+                {cUk!.body.map((section, i) => (
+                  <RenderSection key={i} section={section} color={cUk!.color} />
                 ))}
               </div>
 
@@ -300,7 +324,7 @@ export default function CaseStudyDetailPage() {
 
               {/* Tags */}
               <div className="mt-12 pt-8 border-t border-gray-100 flex flex-wrap gap-2">
-                {c.tags.map((t) => (
+                {cUk!.tags.map((t) => (
                   <span key={t} className="px-3 py-1 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-md">
                     {t}
                   </span>
@@ -316,10 +340,10 @@ export default function CaseStudyDetailPage() {
                 <div className="border border-gray-200 rounded-2xl p-5">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">{uk ? 'Ключові показники' : 'Key metrics'}</div>
                   <div className="flex flex-col gap-3.5">
-                    {c.stats.map((s, i) => (
+                    {cUk!.stats.map((s, i) => (
                       <div key={s.label} className="flex items-center justify-between">
                         <span className="text-xs text-gray-400">{s.label}</span>
-                        <span className="text-sm font-bold" style={{ color: i === 0 ? c.color : '#111827' }}>{s.value}</span>
+                        <span className="text-sm font-bold" style={{ color: i === 0 ? cUk!.color : '#111827' }}>{s.value}</span>
                       </div>
                     ))}
                   </div>
@@ -328,14 +352,14 @@ export default function CaseStudyDetailPage() {
                 {/* CTA */}
                 <div
                   className="rounded-2xl p-5 border-l-[3px] bg-gray-50"
-                  style={{ borderColor: c.color }}
+                  style={{ borderColor: cUk!.color }}
                 >
                   <div className="text-sm font-bold text-gray-900 mb-1">{uk ? 'Хочете подібних результатів?' : 'Want similar results?'}</div>
                   <p className="text-xs text-gray-500 mb-4 leading-relaxed">{uk ? 'Розкажіть про вашу нішу — ми розробимо стратегію.' : "Tell us your niche — we'll build the strategy."}</p>
                   <a
                     href={lp('/#contact')}
                     className="flex items-center justify-center gap-2 text-white font-bold text-sm py-2.5 rounded-xl transition-all duration-200 hover:opacity-90 hover:shadow-md"
-                    style={{ backgroundColor: c.color }}
+                    style={{ backgroundColor: cUk!.color }}
                   >
                     {uk ? 'Отримати безкоштовну пропозицію' : 'Get a Free Proposal'} <ArrowRight size={13} />
                   </a>
@@ -357,7 +381,7 @@ export default function CaseStudyDetailPage() {
             </a>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            {otherCases.map((oc) => (
+            {otherCasesUk.map((oc) => (
               <a
                 key={oc.slug}
                 href={lp(`/case-studies/${oc.slug}`)}

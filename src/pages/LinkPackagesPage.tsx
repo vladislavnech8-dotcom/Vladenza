@@ -351,19 +351,36 @@ export default function LinkPackagesPage() {
         </div>
       </section>
       <ServiceSeoBlock
-        heading={`${data.label} link building packages built for your niche`}
-        intro={`Generic backlinks rarely move the needle in ${data.label}. Ranking here demands placements on sites your audience and Google already associate with the industry. Our ${data.label} packages bundle niche-relevant guest posts, contextual insertions, and supporting signals into one managed campaign.`}
-        body={[
-          `Every ${data.label} campaign is built around topical relevance. We prioritise publications and communities that carry weight in your vertical, then blend link types for a natural profile rather than a single repeated tactic.`,
-          "Under the hood, packages draw on the same quality standards as our core services: [guest posting](/services/guest-posting) on real-traffic sites, [niche edits](/services/niche-edits) for faster authority transfer, and [crowd links](/services/crowd-links) for diversity. Read the [2026 link building playbook](/blog/link-building-2026) to see how this approach also builds AI visibility.",
-          "Want evidence before you commit? Our [case studies](/case-studies) document ranking and traffic gains across competitive niches just like yours.",
-        ]}
-        faqs={[
-          { q: `Why choose a niche-specific package over generic links?`, a: `Relevance is one of the strongest ranking signals. Links from sites within your industry pass more contextual authority and look far more natural than random high-DR placements with no topical connection.` },
-          { q: 'What link types are included?', a: 'Packages combine niche-relevant guest posts, contextual niche edits, and supporting crowd and citation signals — mixed for a natural, varied profile.' },
-          { q: 'Can I customise the package?', a: 'Yes. We tailor link volume, authority tiers, and anchor strategy to your goals, competition, and budget. Request a custom quote and we respond within 24 hours.' },
-          { q: 'How soon will I see results?', a: 'Most clients see movement within a few weeks to a few months depending on niche competitiveness. Consistency matters more than a single burst of links.' },
-        ]}
+        heading={locale === 'uk'
+          ? `Пакети лінкбілдингу для ніші ${data.label}`
+          : `${data.label} link building packages built for your niche`}
+        intro={locale === 'uk'
+          ? `Універсальні беклінки рідко дають результат у ніші ${data.label}. Для ранжування тут потрібні розміщення на сайтах, які ваша аудиторія та Google вже асоціюють із цією індустрією. Наші пакети для ${data.label} об'єднують нішеві гостьові публікації, контекстні вставки та допоміжні сигнали в одну керовану кампанію.`
+          : `Generic backlinks rarely move the needle in ${data.label}. Ranking here demands placements on sites your audience and Google already associate with the industry. Our ${data.label} packages bundle niche-relevant guest posts, contextual insertions, and supporting signals into one managed campaign.`}
+        body={locale === 'uk'
+          ? [
+            `Кожна кампанія у ніші ${data.label} побудована навколо топічної релевантності. Ми пріоритезуємо публікації та спільноти, які мають вагу у вашій вертикалі, а потім поєднуємо типи посилань для природного профілю замість одного повторюваного тактичного прийому.`,
+            "Пакети базуються на тих самих стандартах якості, що й наші основні послуги: [гостьові публікації](/services/guest-posting) на сайтах з реальним трафіком, [нішеві едити](/services/niche-edits) для швидшої передачі авторитету та [крауд-посилання](/services/crowd-links) для розмаїття. Прочитайте [playbook лінкбілдингу 2026](/blog/link-building-2026), щоб побачити, як цей підхід також будує видимість в AI.",
+            "Хочете доказів перед стартом? Наші [кейси](/case-studies) документують зростання позицій та трафіку на конкурентних нішах, схожих на вашу.",
+          ]
+          : [
+            `Every ${data.label} campaign is built around topical relevance. We prioritise publications and communities that carry weight in your vertical, then blend link types for a natural profile rather than a single repeated tactic.`,
+            "Under the hood, packages draw on the same quality standards as our core services: [guest posting](/services/guest-posting) on real-traffic sites, [niche edits](/services/niche-edits) for faster authority transfer, and [crowd links](/services/crowd-links) for diversity. Read the [2026 link building playbook](/blog/link-building-2026) to see how this approach also builds AI visibility.",
+            "Want evidence before you commit? Our [case studies](/case-studies) document ranking and traffic gains across competitive niches just like yours.",
+          ]}
+        faqs={locale === 'uk'
+          ? [
+            { q: 'Навіщо обирати нішевий пакет замість універсальних посилань?', a: 'Релевантність — один із найсильніших сигналів ранжування. Посилання з сайтів вашої індустрії передають більше контекстного авторитету та виглядають набагато природніше, ніж випадкові високі-DR розміщення без топікового зв\u2019язку.' },
+            { q: 'Які типи посилань включені?', a: 'Пакети поєднують нішеві гостьові публікації, контекстні нішеві едити та допоміжні крауд- та цитатні сигнали — змішані для природного, різноманітного профілю.' },
+            { q: 'Чи можу я налаштувати пакет?', a: 'Так. Ми адаптуємо обсяг посилань, рівні авторитету та стратегію анкорів під ваші цілі, конкуренцію та бюджет. Запросіть індивідуальну пропозицію — ми відповімо протягом 24 годин.' },
+            { q: 'Як скоро я побачу результати?', a: 'Більшість клієнтів помічають рух протягом кількох тижнів до кількох місяців залежно від конкурентності ніші. Послідовність важливіша за одноразовий сплеск посилань.' },
+          ]
+          : [
+            { q: `Why choose a niche-specific package over generic links?`, a: `Relevance is one of the strongest ranking signals. Links from sites within your industry pass more contextual authority and look far more natural than random high-DR placements with no topical connection.` },
+            { q: 'What link types are included?', a: 'Packages combine niche-relevant guest posts, contextual niche edits, and supporting crowd and citation signals — mixed for a natural, varied profile.' },
+            { q: 'Can I customise the package?', a: 'Yes. We tailor link volume, authority tiers, and anchor strategy to your goals, competition, and budget. Request a custom quote and we respond within 24 hours.' },
+            { q: 'How soon will I see results?', a: 'Most clients see movement within a few weeks to a few months depending on niche competitiveness. Consistency matters more than a single burst of links.' },
+          ]}
       />
     </ServicePageLayout>
   );

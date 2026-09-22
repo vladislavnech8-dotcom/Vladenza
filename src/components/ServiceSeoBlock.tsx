@@ -42,7 +42,7 @@ function renderInline(text: string, lp: (p: string) => string): React.ReactNode 
 
 export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
   const [open, setOpen] = useState<number | null>(0);
-  const { localizePath: lp } = useLocale();
+  const { locale, localizePath: lp } = useLocale();
 
   if (typeof window === 'undefined') {
     lastRenderedFaqSchema = faqs;
@@ -60,16 +60,18 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
     el.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
+      inLanguage: locale === 'uk' ? 'uk' : 'en',
       mainEntity: faqs.map((f) => ({
         '@type': 'Question',
         name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
+        inLanguage: locale === 'uk' ? 'uk' : 'en',
+        acceptedAnswer: { '@type': 'Answer', text: f.a, inLanguage: locale === 'uk' ? 'uk' : 'en' },
       })),
     });
     return () => {
       document.getElementById(id)?.remove();
     };
-  }, [faqs]);
+  }, [faqs, locale]);
 
   return (
     <section className="py-16 bg-white border-t border-gray-100">
@@ -88,7 +90,7 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
 
         {faqs.length > 0 && (
           <div className="mt-16">
-            <h3 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">Frequently asked questions</h3>
+            <h3 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">{locale === 'uk' ? 'Поширені запитання' : 'Frequently asked questions'}</h3>
             <div className="flex flex-col gap-3">
               {faqs.map((f, i) => {
                 const isOpen = open === i;

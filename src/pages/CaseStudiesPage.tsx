@@ -4,6 +4,7 @@ import ServicePageLayout from '../components/ServicePageLayout';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
+import { casesUk } from '../data/cases';
 
 interface CasePreview {
   slug: string;
@@ -25,6 +26,19 @@ export default function CaseStudiesPage() {
     title: uk ? 'SEO-кейси — реальні результати лінкбілдингу | Vladenza' : 'SEO Case Studies — Real Results from Link Building Campaigns | Vladenza',
     description: uk ? 'Перегляньте понад 840 кампаній клієнтів. Реальні результати Vladenza: зростання трафіку, позицій та ROI у нішах iGaming, SaaS, health, fintech та інших.' : 'Browse 840+ client campaigns. See how Vladenza delivers measurable SEO results — traffic growth, ranking improvements, and ROI across iGaming, SaaS, health, fintech, and more.',
     canonical: `https://vladenza.com${lp('/case-studies')}`,
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      inLanguage: uk ? 'uk' : 'en',
+      name: uk ? 'SEO-кейси Vladenza' : 'Vladenza SEO Case Studies',
+      description: uk ? 'Перегляньте понад 840 кампаній клієнтів. Реальні результати Vladenza: зростання трафіку, позицій та ROI.' : 'Browse 840+ client campaigns. See how Vladenza delivers measurable SEO results — traffic growth, ranking improvements, and ROI.',
+      url: `https://vladenza.com${lp('/case-studies')}`,
+      publisher: {
+        '@type': 'Organization',
+        name: 'Vladenza',
+        logo: { '@type': 'ImageObject', url: 'https://vladenza.com/logo.svg' },
+      },
+    },
   });
 
   const [cases, setCases] = useState<CasePreview[]>([]);
@@ -36,7 +50,15 @@ export default function CaseStudiesPage() {
       .select('slug,title,niche,service,period,metric,metric_sub,color,challenge')
       .eq('published', true)
       .order('created_at', { ascending: false })
-      .then(({ data }) => { if (data) setCases(data as CasePreview[]); });
+      .then(({ data }) => {
+        if (data) {
+          const mapped = (data as CasePreview[]).map((c) => {
+            const tr = uk && casesUk[c.slug];
+            return tr ? { ...c, title: tr.title ?? c.title, niche: tr.niche ?? c.niche, service: tr.service ?? c.service, period: tr.period ?? c.period, metric_sub: tr.metricSub ?? c.metric_sub, challenge: tr.challenge ?? c.challenge } : c;
+          });
+          setCases(mapped);
+        }
+      });
   }, []);
 
   const niches = ['All', ...Array.from(new Set(cases.map(c => c.niche).filter(Boolean)))];

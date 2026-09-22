@@ -92,21 +92,21 @@ const content = {
       title: 'Niche Edits vs. Guest Posts',
     },
     seoBlock: {
-      heading: 'Niche Edits as Part of Your Link Building Strategy',
-      intro: 'Niche edits, also called link insertions, add backlinks to articles that are already published. They are commonly used alongside guest posts, forum links, and other placements to build referring domain diversity and support important pages.',
+      heading: 'Link Insertions as Part of Your Link Building Strategy',
+      intro: 'Link insertions, also called niche edits, add backlinks to articles that are already published. They are commonly used alongside guest posts, forum links, and other placements to build referring domain diversity and support important pages.',
       body: [
         'Selection should consider both measurable criteria and relevance. We look at DR, organic traffic, the actual article, topic, target page, anchor, and the existing backlink profile — not just a DR threshold.',
         'Clients can order individual placements by DR and traffic level, but larger campaigns may use a mix of price levels. Not every backlink needs to be a premium placement. A DR10+ link serves a different purpose than a DR50+ link, and both can have a place in the same profile depending on the campaign.',
         'For clients running ongoing link-building campaigns, we can analyze competitors and the existing backlink profile before recommending the mix of [niche edits](/blog/niche-edits-vs-guest-posts), [guest posts](/services/guest-posting), and [community links](/services/crowd-links). See real outcomes in our [case studies](/case-studies), or explore niche-specific bundles in our [link building packages](/services/link-packages/saas).',
       ],
       faqs: [
-        { q: 'What is a niche edit?', a: 'A niche edit, also called a link insertion, is a backlink added to an existing article. The link is placed inside relevant content rather than publishing a completely new guest post.' },
-        { q: 'Are niche edits safe?', a: 'No link-building method is completely risk-free. We manually review potential placements and focus on relevant websites and articles rather than approving sites only because they meet a DR threshold.' },
-        { q: 'Are niche edits faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3–7 days, although publisher response times can vary." },
+        { q: 'What is a link insertion?', a: 'A link insertion, also called a niche edit, is a backlink added to an existing article. The link is placed inside relevant content rather than publishing a completely new guest post.' },
+        { q: 'Are link insertions safe?', a: 'No link-building method is completely risk-free. We manually review potential placements and focus on relevant websites and articles rather than approving sites only because they meet a DR threshold.' },
+        { q: 'Are link insertions faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3–7 days, although publisher response times can vary." },
         { q: 'Can I control the anchor text?', a: 'Yes. Clients can provide preferred anchors. For ongoing campaigns, we can also recommend anchors based on the current backlink profile and target pages.' },
         { q: 'Which DR package should I choose?', a: 'It depends on the current backlink profile, competitors, target pages, and budget. Not every link needs to be DR50–60+. Clients can order a specific level or ask us to recommend a mix.' },
         { q: 'Do you guarantee indexing?', a: 'No. We can check whether a page is accessible and indexed when evaluating it, but indexing is controlled by search engines and can change over time.' },
-        { q: 'Are niche edits permanent?', a: "Placements are intended to remain live, but third-party websites are outside our permanent control. If a placement is removed within the coverage period, contact us and we'll replace it." },
+        { q: 'Are link insertions permanent?', a: "Placements are intended to remain live, but third-party websites are outside our permanent control. If a placement is removed within the coverage period, contact us and we'll replace it." },
       ],
     },
     finalCta: {

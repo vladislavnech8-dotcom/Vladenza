@@ -2,7 +2,7 @@ import { Clock, ArrowLeft, ArrowRight, Tag, Share2, Twitter, Linkedin, Link2 } f
 import { useState, useEffect } from 'react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { blogPosts, type Section } from '../data/blogPosts';
+import { blogPosts, blogPostsUk, type Section } from '../data/blogPosts';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
@@ -187,11 +187,42 @@ export default function BlogPostPage() {
   const staticIndex = blogPosts.findIndex((p) => p.slug === slug);
   const staticPost = blogPosts[staticIndex];
 
+  // Resolve the post slug for translation lookup (works for both DB and static posts)
+  const postSlug = post ? ((post as DbPost).slug ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).slug) : undefined;
+  const ukTranslation = uk && postSlug ? blogPostsUk[postSlug] : undefined;
+  const postUk = ukTranslation
+    ? { ...post, ...(ukTranslation as Partial<DbPost>) } as typeof post
+    : post;
+
+  const articleTitle = postUk ? ((postUk as DbPost).title ?? staticPost?.title) : (uk ? 'Стаття блогу' : 'Blog Post');
+  const articleDesc = postUk ? ((postUk as DbPost).excerpt ?? staticPost?.excerpt ?? (uk ? 'Читайте статтю про SEO та лінкбілдинг від Vladenza.' : 'Read this article on SEO and link building from Vladenza.')) : (uk ? 'Читайте статтю про SEO та лінкбілдинг від Vladenza.' : 'Read this article on SEO and link building from Vladenza.');
+  const articleImage = postUk ? ((postUk as DbPost).image_url ?? staticPost?.image) : undefined;
+  const articleDate = (post as DbPost)?.created_at ?? staticPost?.date;
+
   useSEO({
-    title: post ? `${(post as DbPost).title ?? staticPost?.title} | ${uk ? 'Блог Vladenza' : 'Vladenza Blog'}` : `${uk ? 'Стаття блогу' : 'Blog Post'} | Vladenza`,
-    description: post ? ((post as DbPost).excerpt ?? staticPost?.excerpt ?? (uk ? 'Читайте статтю про SEO та лінкбілдинг від Vladenza.' : 'Read this article on SEO and link building from Vladenza.')) : (uk ? 'Читайте статтю про SEO та лінкбілдинг від Vladenza.' : 'Read this article on SEO and link building from Vladenza.'),
+    title: `${articleTitle} | ${uk ? 'Блог Vladenza' : 'Vladenza Blog'}`,
+    description: articleDesc,
     canonical: `https://vladenza.com${lp(`/blog/${slug}`)}`,
-    ogImage: post ? ((post as DbPost).image_url ?? staticPost?.image) : undefined,
+    ogImage: articleImage,
+    schema: postUk ? {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      inLanguage: uk ? 'uk' : 'en',
+      headline: articleTitle,
+      description: articleDesc,
+      image: articleImage ? [articleImage] : undefined,
+      datePublished: articleDate,
+      author: { '@type': 'Organization', name: 'Vladenza' },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Vladenza',
+        logo: { '@type': 'ImageObject', url: 'https://vladenza.com/logo.svg' },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://vladenza.com${lp(`/blog/${slug}`)}`,
+      },
+    } : undefined,
   });
 
   const prevPost = staticIndex > 0 ? blogPosts[staticIndex - 1] : null;
@@ -227,13 +258,13 @@ export default function BlogPostPage() {
   }
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const heroImage = (post as DbPost).image_url ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).image;
-  const catColor = (post as DbPost).category_color ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).categoryColor;
-  const readTime = (post as DbPost).read_time ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).readTime;
-  const postDate = (post as DbPost).created_at
-    ? new Date((post as DbPost).created_at).toLocaleDateString(uk ? 'uk-UA' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-    : (post as NonNullable<ReturnType<typeof blogPosts.find>>).date;
-  const sections: Section[] = (post as DbPost).content_json ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).content ?? [];
+  const heroImage = (postUk as DbPost).image_url ?? (postUk as NonNullable<ReturnType<typeof blogPosts.find>>).image;
+  const catColor = (postUk as DbPost).category_color ?? (postUk as NonNullable<ReturnType<typeof blogPosts.find>>).categoryColor;
+  const readTime = (postUk as DbPost).read_time ?? (postUk as NonNullable<ReturnType<typeof blogPosts.find>>).readTime;
+  const postDate = (postUk as DbPost).created_at
+    ? new Date((postUk as DbPost).created_at).toLocaleDateString(uk ? 'uk-UA' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    : (postUk as NonNullable<ReturnType<typeof blogPosts.find>>).date;
+  const sections: Section[] = (postUk as DbPost).content_json ?? (postUk as NonNullable<ReturnType<typeof blogPosts.find>>).content ?? [];
 
   function handleCopy() {
     navigator.clipboard?.writeText(shareUrl);
@@ -250,7 +281,7 @@ export default function BlogPostPage() {
           <span className="text-gray-200">/</span>
           <button onClick={() => navigate(lp('/blog'))} className="hover:text-gray-700 transition-colors">{uk ? 'Блог' : 'Blog'}</button>
           <span className="text-gray-200">/</span>
-          <span className="text-gray-500 truncate max-w-[240px]">{post.title}</span>
+          <span className="text-gray-500 truncate max-w-[240px]">{postUk!.title}</span>
         </div>
       </div>
 
@@ -259,7 +290,7 @@ export default function BlogPostPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className={`text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${catColor}`}>
-              {post.category}
+              {postUk!.category}
             </span>
             <div className="flex items-center gap-1.5 text-gray-400 text-xs">
               <Clock size={11} /> {readTime}
@@ -269,15 +300,15 @@ export default function BlogPostPage() {
           </div>
 
           <h1 className="text-3xl md:text-[44px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-5 max-w-3xl">
-            {post.title}
+            {postUk!.title}
           </h1>
 
           <p className="text-gray-500 text-[17px] leading-[1.6] max-w-2xl mb-7">
-            {post.excerpt}
+            {postUk!.excerpt}
           </p>
 
           <div className="flex flex-wrap gap-2 pb-8 border-b border-gray-100">
-            {post.tags.map((tag) => (
+            {postUk!.tags.map((tag) => (
               <span key={tag} className="flex items-center gap-1 px-2.5 py-1 text-[11px] text-gray-500 bg-gray-50 border border-gray-200 rounded-full">
                 <Tag size={9} /> {tag}
               </span>
@@ -286,7 +317,7 @@ export default function BlogPostPage() {
 
           {/* Cover image */}
           <div className="rounded-2xl overflow-hidden mt-8 h-[280px] md:h-[400px] bg-gray-100">
-            <img src={heroImage} alt={post.title} className="w-full h-full object-cover" />
+            <img src={heroImage} alt={postUk!.title} className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
@@ -313,7 +344,7 @@ export default function BlogPostPage() {
                     <Share2 size={13} /> {uk ? 'Поділитися' : 'Share'}
                   </span>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(postUk!.title)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
@@ -347,7 +378,7 @@ export default function BlogPostPage() {
                     <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-gray-400 tracking-widest">
                       <ArrowLeft size={10} /> {uk ? 'Попередня' : 'Previous'}
                     </span>
-                    <span className="text-sm font-semibold text-gray-900 leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2">{prevPost.title}</span>
+                    <span className="text-sm font-semibold text-gray-900 leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2">{uk && blogPostsUk[prevPost.slug] ? blogPostsUk[prevPost.slug]!.title! : prevPost.title}</span>
                   </button>
                 ) : <div />}
                 {nextPost ? (
@@ -358,7 +389,7 @@ export default function BlogPostPage() {
                     <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-gray-400 tracking-widest">
                       {uk ? 'Наступна' : 'Next'} <ArrowRight size={10} />
                     </span>
-                    <span className="text-sm font-semibold text-gray-900 leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2 sm:text-right">{nextPost.title}</span>
+                    <span className="text-sm font-semibold text-gray-900 leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2 sm:text-right">{uk && blogPostsUk[nextPost.slug] ? blogPostsUk[nextPost.slug]!.title! : nextPost.title}</span>
                   </button>
                 ) : <div />}
               </div>
@@ -416,7 +447,9 @@ export default function BlogPostPage() {
             </button>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {related.map((rp) => (
+            {related.map((rp) => {
+              const rpUk = uk && blogPostsUk[rp.slug] ? blogPostsUk[rp.slug]! : undefined;
+              return (
               <button
                 key={rp.id}
                 onClick={() => navigate(lp(`/blog/${rp.slug}`))}
@@ -425,20 +458,21 @@ export default function BlogPostPage() {
                 <div className="h-40 overflow-hidden bg-gray-100">
                   <img
                     src={rp.image}
-                    alt={rp.title}
+                    alt={rpUk ? rpUk.title! : rp.title}
                     loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[600ms] ease-out"
                   />
                 </div>
                 <div className="p-4 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border ${rp.categoryColor}`}>{rp.category}</span>
-                    <span className="text-gray-400 text-[10px] flex items-center gap-1"><Clock size={9} /> {(rp as { readTime?: string }).readTime ?? '5 min'}</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border ${rp.categoryColor}`}>{rpUk ? rpUk.category! : rp.category}</span>
+                    <span className="text-gray-400 text-[10px] flex items-center gap-1"><Clock size={9} /> {rpUk ? rpUk.readTime! : ((rp as { readTime?: string }).readTime ?? '5 min')}</span>
                   </div>
-                  <h3 className="text-gray-900 font-semibold text-sm leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2">{rp.title}</h3>
+                  <h3 className="text-gray-900 font-semibold text-sm leading-snug group-hover:text-[#F97316] transition-colors line-clamp-2">{rpUk ? rpUk.title! : rp.title}</h3>
                 </div>
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

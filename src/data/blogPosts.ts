@@ -1,3 +1,5 @@
+export { blogPostsUk } from './blogPostsUk';
+
 export interface BlogPost {
   id: number;
   slug: string;

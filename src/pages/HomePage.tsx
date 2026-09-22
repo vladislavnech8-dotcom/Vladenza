@@ -9,7 +9,7 @@ import { useSEO } from '../hooks/useSEO';
 import { trackEvent } from '../lib/analytics';
 import { fetchPlacements, type Placement, type PlacementServiceType } from '../data/placements';
 import { NICHE_EDIT_STARTING_PRICE } from '../data/nicheEditPackages';
-import { cases } from '../data/cases';
+import { cases, casesUk } from '../data/cases';
 import PlacementCard from '../components/PlacementCard';
 import { useLocale } from '../context/LocaleContext';
 import { homePageContent } from '../lib/homeContent';
@@ -42,11 +42,16 @@ const SERVICE_TYPE_MAP: Record<TabKey, PlacementServiceType> = {
 
 type TabKey = 'niche-edits' | 'guest-posts' | 'crowd-links';
 
-const featuredCases = cases.slice(0, 3);
+
+
 
 export default function HomePage() {
   const { locale, localizePath: lp } = useLocale();
   const c = homePageContent[locale];
+  const featuredCases = cases.slice(0, 3).map(cs => {
+    const tr = casesUk[cs.slug];
+    return tr ? { ...cs, ...tr } : cs;
+  });
   const [linkPlanOpen, setLinkPlanOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('niche-edits');
   const [homepagePlacements, setHomepagePlacements] = useState<Placement[]>([]);
@@ -55,6 +60,14 @@ export default function HomePage() {
     title: c.seo.title,
     description: c.seo.description,
     canonical: locale === 'uk' ? 'https://vladenza.com/uk/' : 'https://vladenza.com/',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Vladenza',
+      description: c.seo.description,
+      url: 'https://vladenza.com',
+      logo: 'https://vladenza.com/logo.svg',
+    },
   });
 
   useEffect(() => {

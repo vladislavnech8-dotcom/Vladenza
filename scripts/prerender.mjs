@@ -179,6 +179,17 @@ async function main() {
       // Set lang attribute on <html>
       html = html.replace(/<html\s+lang="[^"]*"/, `<html lang="${locale}"`);
 
+      // Localize Organization schema for UK pages
+      if (locale === 'uk') {
+        html = html.replace('"name": "SEO & Link Building Services"', '"name": "Послуги SEO та лінкбілдингу"');
+        html = html.replace('"name": "Guest Posting"', '"name": "Гостьові публікації"');
+        html = html.replace('"name": "Link Insertions"', '"name": "Розміщення посилань"');
+        html = html.replace('"name": "Crowd Marketing"', '"name": "Крауд-маркетинг"');
+        html = html.replace('"name": "SEO Audit"', '"name": "SEO-аудит"');
+        html = html.replace('"name": "AI & LLM Visibility"', '"name": "Видимість в AI та LLM"');
+        html = html.replace('"availableLanguage": ["English"]', '"availableLanguage": ["English", "Ukrainian"]');
+        html = html.replace('"description": "Vladenza is a results-driven SEO agency specializing in high-authority link building, guest posting, niche edits, and AI/LLM visibility."', '"description": "Vladenza — агенція SEO, що спеціалізується на лінкбілдингу з високим авторитетом, гостьових публікаціях, розміщенні посилань та видимості в AI/LLM."');
+      }
       // Adjust canonical for UK pages
       if (meta) {
         if (locale === 'uk') {

@@ -108,17 +108,112 @@ const LANGUAGE_DATA: Record<string, LanguageData> = {
   },
 };
 
+const LANGUAGE_DATA_UK: Record<string, LanguageData> = {
+  english: {
+    label: 'Англійська',
+    metaTitle: 'Крауд-маркетинг англійською — форумні та спільнотні посилання | Vladenza',
+    metaDescription: 'Крауд-посилання на англомовних форумах, Q&A-платформах та спільнотах США, Великої Британії та глобального англомовного ринку. Ручне розміщення, без спаму.',
+    heroDesc: 'Ми будуємо форумні та спільнотні посилання на англомовних платформах — найбільший вибір із усіх ринків, що ми покриваємо: спільноти США, Великої Британії, Канади та Австралії.',
+    marketNote: 'Найбільший і найзріліший крауд-маркетинговий ринок, на якому ми працюємо — найширший вибір нішевих форумів, сабредитів та Q&A-платформ серед усіх мов, що ми покриваємо.',
+    intro: 'Крауд-маркетинг англійською дає доступ до найбільшого пулу форумів, сабредитів та нішевих спільнот серед усіх ринків, на яких ми працюємо. Для більшості брендів, що орієнтуються на США, Велику Британію чи глобальну англомовну аудиторію, це найбільш об’ємний і найдешевший спосіб диверсифікувати профіль посилань справжніми спільнотними сигналами.',
+    body: [
+      'Оскільки англомовних спільнот дуже багато, ми можемо бути вибірковими — розміщуємо згадки лише в тредах і обговореннях, дійсно релевантних вашій ніші, а не нарощуємо обсяг нерелевантними форумами. Кожен акаунт, з якого ми пишемо, є віковим і має реальну історію публікацій.',
+      'Англомовні крауд-посилання особливо добре працюють як підтримуючий шар під кампаніями [гостьових публікацій](/services/guest-posting) та [нішевих едитів](/services/niche-edits) для того самого англомовного ринку — дивіться [повну послугу крауд-маркетингу](/services/crowd-links), щоб зрозуміти, як вони поєднуються.',
+    ],
+    extraFaq: { q: 'Чи покриваєте ви Reddit і Quora зокрема?', a: 'Так — Reddit і Quora є частиною нашого англомовного інвентарю поряд із десятками нішевих форумів, обраних за тим, де ваша цільова аудиторія дійсно активна, а не просто за найвідомішими назвами.' },
+    tags: ['форумні посилання', 'крауд-маркетинг', 'англомовні беклінки', 'спільнотні посилання', 'лінкбілдинг', 'SEO для США та Великої Британії'],
+  },
+  spanish: {
+    label: 'Іспанська',
+    metaTitle: 'Крауд-маркетинг іспанською — форумні посилання (Іспанія та Латам) | Vladenza',
+    metaDescription: 'Нативні іспаномовні крауд-посилання на форумах та спільнотах в Іспанії та Латинській Америці. Ручне розміщення, нішевий підбір, без спаму.',
+    heroDesc: 'Ми будуємо форумні та спільнотні посилання на іспаномовних платформах, покриваючи як іспанські, так і латиноамериканські спільноти — ринок, який більшість лінкбілдинг-вендорів не обслуговує нативно.',
+    marketNote: 'Швидкозростаючий і все ще недостатньо обслугований ринок — більшість лінкбілдинг-вендорів працюють лише англійською, залишаючи реальну можливість іспаномовного розміщення невикористаною.',
+    intro: 'Крауд-маркетинг іспанською охоплює одразу дві різні аудиторії — Іспанію та Латинську Америку — через форуми та спільноти, де обговорення відбуваються нативно іспанською, а не через перекладений англомовний контент. Це важливо для брендів, які дійсно орієнтуються на іспаномовні ринки, а не просто запускають англомовні кампанії через перекладача.',
+    body: [
+      'Розміщення пишуться нативно іспанською контриб’юторами, знайомими з регіональними відмінностями між іспанською в Іспанії та Латинській Америці — а не машинним перекладом з англійської, що є поширеним компромісом серед дешевших вендорів і виглядає неприродно як для носіїв, так і для модераторів.',
+      'Це працює найкраще в поєднанні з [гостьовими публікаціями](/services/guest-posting) на іспаномовних майданчиках для повнішого локального профілю посилань — дивіться [повну послугу крауд-маркетингу](/services/crowd-links) для повної картини.',
+    ],
+    extraFaq: { q: 'Чи орієнтуєтесь ви на Іспанію, Латинську Америку чи обидва?', a: 'На обидва, і ми коригуємо пропорції залежно від того, де знаходяться ваші реальні клієнти — повідомте цільовий регіон під час запиту котировки, і ми зважимо розміщення відповідно.' },
+    tags: ['форумні посилання', 'крауд-маркетинг', 'іспаномовні беклінки', 'спільнотні посилання', 'лінкбілдинг', 'SEO для Іспанії та Латаму'],
+  },
+  german: {
+    label: 'Німецька',
+    metaTitle: 'Крауд-маркетинг німецькою — форумні посилання DACH | Vladenza',
+    metaDescription: 'Німецькомовні крауд-посилання на форумах та спільнотах регіону DACH (Німеччина, Австрія, Швейцарія). Фокус на якість, нативні розміщення.',
+    heroDesc: 'Ми будуємо форумні та спільнотні посилання на німецькомовних платформах у регіоні DACH — менший, але помітно якісніший і добре модерований ринок.',
+    marketNote: 'Німецькомовні форуми відомі суворою модерацією та меншим обсягом розміщень порівняно з англійською — тут ми віддаємо пріоритет якості та відсотку прийняття над силою кількості.',
+    intro: 'Німецькомовні спільноти модеровані суворіше за англомовні чи іспаномовні форуми, що означає менший обсяг розміщень, але справжню вищу планку того, що приймається і залишається активним. Для брендів регіону DACH це означає менше, але більш довговічні та вищої довіри згадки.',
+    body: [
+      'Оскільки німецька форумна модерація суворіша, ми виділяємо більше часу на кожне розміщення — внески пишуться так, щоб додати реальну цінність обговоренню, що саме й зберігає їх від видалення. Це не пакет високого обсягу за задумом.',
+      'Поєднуйте це з [нішевими едитами](/services/niche-edits) на авторитетних німецьких майданчиках для сильнішого загального профілю — дивіться [повну послугу крауд-маркетингу](/services/crowd-links) для комбінованих варіантів.',
+    ],
+    extraFaq: { q: 'Чому німецький пакет має менший обсяг за англійський?', a: 'Німецькомовних форумів менше, і вони модеровані суворіше за англомовні спільноти, тож ми свідомо віддаємо пріоритет розміщенням, які проходять перевірку, а не досягненню певного обсягу.' },
+    tags: ['форумні посилання', 'крауд-маркетинг', 'німецькомовні беклінки', 'DACH SEO', 'лінкбілдинг', 'спільнотні посилання'],
+  },
+  french: {
+    label: 'Французька',
+    metaTitle: 'Крауд-маркетинг французькою — форумні посилання (Франція та франкофонія) | Vladenza',
+    metaDescription: 'Французькомовні крауд-посилання на форумах та спільнотах Франції, Бельгії та Квебеку. Нативні розміщення, ручна перевірка.',
+    heroDesc: 'Ми будуємо форумні та спільнотні посилання на французькомовних платформах у Франції, Бельгії та Квебеку.',
+    marketNote: 'Покриваєє як метропольну Францію, так і бельгійські та квебекські франкомовні спільноти, які мають різні платформи та тон одна від одної.',
+    intro: 'Крауд-маркетинг французькою охоплює кілька дійсно різних ринків — Францію, франкомовну Бельгію та Квебек — кожен зі своїми спільнотними платформами та тоном спілкування. Ми не вважаємо їх взаємозамінними.',
+    body: [
+      'Розміщення підбираються під правильну регіональну спільноту, а не просто лишаються на найбільшому французькому форумі незалежно від релевантності — бренд, орієнтований на Квебек, і бренд, орієнтований на Париж, потребують різних стратегій розміщення навіть однією мовою.',
+      'Поєднуйте з [гостьовими публікаціями](/services/guest-posting) на французькомовних сайтах для повнішого покриття — дивіться [повну послугу крауд-маркетингу](/services/crowd-links) для деталей.',
+    ],
+    extraFaq: { q: 'Чи можете ви зосередитись саме на Квебеку замість Франції?', a: 'Так — повідомте цільовий регіон (Франція, Бельгія чи Квебек) під час запиту котировки, і ми зважимо спільнотний мікс у відповідний бік.' },
+    tags: ['форумні посилання', 'крауд-маркетинг', 'французькомовні беклінки', 'спільнотні посилання', 'лінкбілдинг', 'франкофонне SEO'],
+  },
+  portuguese: {
+    label: 'Португальська (Бразилія)',
+    metaTitle: 'Крауд-маркетинг бразильською португальською — форумні посилання | Vladenza',
+    metaDescription: 'Крауд-посилання бразильською португальською на форумах та спільнотах. Один із найшвидкозростаючих цифрових ринків, нативне розміщення.',
+    heroDesc: 'Ми будуємо форумні та спільнотні посилання на платформах бразильською португальською — один із найшвидкозростаючих і найцифрово активніших ринків, що ми обслуговуємо.',
+    marketNote: 'Бразилія має одну з найбільших і найактивніших онлайн-спільнот у світі — висока залученість, але й висока конкуренція за увагу.',
+    intro: 'Бразильські онлайн-спільноти винятково великі та активні, що означає реальну можливість для видимості бренду — але й реальну конкуренцію за увагу всередині цих тредів. Шаблонні чи універсальні внески швидко ігноруються.',
+    body: [
+      'Розміщення пишуться контриб’юторами, які вільно володіють бразильською португальською (відмінною від європейської португальської у лексиці та тоні), і підбираються до спільнот, де залученість дійсно висока, а не просто за кількістю підписників.',
+      'Добре працює в парі з [нішевими едитами](/services/niche-edits) на бразильських майданчиках — дивіться [повну послугу крауд-маркетингу](/services/crowd-links) для комбінованих пакетів.',
+    ],
+    extraFaq: { q: 'Це бразильська чи європейська португальська?', a: 'За замовчуванням — бразильська португальська, оскільки це значно більший ринок — повідомте, якщо вам потрібні саме розміщення європейською португальською (Португалія).' },
+    tags: ['форумні посилання', 'крауд-маркетинг', 'бразильські беклінки', 'спільнотні посилання', 'лінкбілдинг', 'SEO для Бразилії'],
+  },
+  korean: {
+    label: 'Корейська',
+    metaTitle: 'Крауд-маркетинг корейською — посилання Naver Cafe та спільнот | Vladenza',
+    metaDescription: 'Корейськомовні крауд-посилання на спільнотах Naver Cafe та корейських онлайн-форумах. Спеціалізований ринок, що небагато лінкбілдинг-агентств покриває.',
+    heroDesc: 'Ми будуємо спільнотні посилання всередині корейського онлайн-екосистему, включно зі спільнотами Naver Cafe — платформами, на яких більшість західних лінкбілдинг-агентств взагалі не працюють.',
+    marketNote: 'Корейський веб працює на іншому наборі платформ, ніж решта світу (орієнтований на Naver, а не на Google/Reddit) — це спеціалізована, менш комодитизована можливість.',
+    intro: 'Онлайн-екосистем Кореї структурований інакше за більшість західних ринків — Naver, а не Google, домінує в пошуку та спільнотній поведінці, а спільноти Naver Cafe функціонують так само, як форуми в інших місцях. Більшість лінкбілдинг-вендорів просто не працюють тут, і саме тому варто робити це якісно, якщо ви орієнтуєтесь на цей ринок.',
+    body: [
+      'Оскільки це більш спеціалізована можливість із меншим пулом контриб’юторів, ніж англійська чи іспанська, час виконання та доступний обсяг більш обмежені — ми підтвердимо реалістичні строки на етапі котировки, а не обіцяємо фіксований граф наперед.',
+      'Для брендів, які серйозно орієнтуються на корейський ринок, це найкраще поєднувати з [гостьовими публікаціями](/services/guest-posting) на корейських майданчиках — дивіться [повну послугу крауд-маркетингу](/services/crowd-links) для повної картини.',
+    ],
+    extraFaq: { q: 'Чи відрізняється це від інших мовних пакетів?', a: 'Так — корейські розміщення йдуть через спільноти Naver Cafe, а не через платформи типу Reddit/форумів, які ми використовуємо для англійської, іспанської, німецької та французької, оскільки саме там відбувається корейське онлайн-обговорення.' },
+    tags: ['форумні посилання', 'крауд-маркетинг', 'корейські беклінки', 'naver cafe', 'лінкбілдинг', 'спільнотні посилання'],
+  },
+};
+
 const packages = [
   { name: 'Basic', links: '30 Links', domains: '30 unique domains', price: '$290', priceNote: '$9.67 per link', desc: 'Entry-level presence in this language market — good for testing before scaling up.', advantages: ['30 unique-domain placements', 'Manual review of every link', 'Delivered in 5–10 days'], highlight: false, popular: false },
   { name: 'Standard', links: '60 Links', domains: '60 unique domains', price: '$520', priceNote: '$8.67 per link', desc: 'Consistent presence across primary communities in this market — our most popular volume.', advantages: ['60 unique-domain placements', 'Manual review of every link', 'Detailed reporting with anchors', 'Replacement guarantee'], highlight: true, popular: true },
   { name: 'Powerful', links: '120 Links', domains: '120 unique domains', price: '$940', priceNote: '$7.83 per link', desc: 'High-volume coverage for competitive campaigns needing strong profile diversification.', advantages: ['120 unique-domain placements', 'Manual review of every link', 'Priority delivery scheduling', 'Detailed reporting with anchors', 'Replacement guarantee'], highlight: false, popular: false },
 ];
 
+const packagesUK = [
+  { name: 'Базовий', links: '30 посилань', domains: '30 унікальних доменів', price: '$290', priceNote: '$9.67 за посилання', desc: 'Початкова присутність на цьому мовному ринку — добре підходить для тестування перед масштабуванням.', advantages: ['30 розміщень на унікальних доменах', 'Ручна перевірка кожного посилання', 'Доставка за 5–10 днів'], highlight: false, popular: false },
+  { name: 'Стандарт', links: '60 посилань', domains: '60 унікальних доменів', price: '$520', priceNote: '$8.67 за посилання', desc: 'Стабільна присутність у ключових спільнотах цього ринку — наш найпопулярніший обсяг.', advantages: ['60 розміщень на унікальних доменах', 'Ручна перевірка кожного посилання', 'Детальний звіт з анкорами', 'Гарантія заміни'], highlight: true, popular: true },
+  { name: 'Потужний', links: '120 посилань', domains: '120 унікальних доменів', price: '$940', priceNote: '$7.83 за посилання', desc: 'Великий обсяг для конкурентних кампаній, що потребують сильної диверсифікації профілю.', advantages: ['120 розміщень на унікальних доменах', 'Ручна перевірка кожного посилання', 'Пріоритетне планування доставки', 'Детальний звіт з анкорами', 'Гарантія заміни'], highlight: false, popular: false },
+];
+
 export default function CrowdLinksLanguagePage() {
   const { language } = useParams<{ language: string }>();
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
   const { locale, localizePath: lp } = useLocale();
-  const data = language ? LANGUAGE_DATA[language] : undefined;
+  const SOURCE = locale === 'uk' ? LANGUAGE_DATA_UK : LANGUAGE_DATA;
+  const data = language ? SOURCE[language] : undefined;
+  const pkgs = locale === 'uk' ? packagesUK : packages;
 
   if (!data) {
     return <Navigate to={lp('/services/crowd-links')} replace />;
@@ -130,24 +225,70 @@ export default function CrowdLinksLanguagePage() {
     canonical: locale === 'uk' ? `https://vladenza.com/uk/services/crowd-links/${language}` : `https://vladenza.com/services/crowd-links/${language}`,
   });
 
+  const ui = locale === 'uk' ? {
+    heroBadge: 'Крауд-маркетинг',
+    heroTitle1: 'Будуємо',
+    heroTitle2: 'форумні',
+    heroTitleAccent: '& спільнотні посилання',
+    viewPackages: 'Переглянути пакети',
+    packagesTitle: `${data.label} — пакети крауд-посилань`,
+    packagesDesc: 'Оберіть обсяг, що підходить вашій кампанії — кожен тариф отримує однакову ручну якість доставки.',
+    mostPopular: '★ Найпопулярніший',
+    oneTime: 'одноразовий платіж',
+    orderNow: 'Замовити зараз',
+    reviewsTitle: 'Не вірьте нам на слово',
+    reviewsDesc: 'Перегляньте реальні, верифіковані відгуки безпосередньо на кожній платформі.',
+    viewReviews: 'Переглянути відгуки',
+    seoHeading: `${data.label} — крауд-посилання: натуральні спільнотні сигнали`,
+    faqs: [
+      { q: 'Що таке крауд-посилання?', a: 'Крауд-посилання — це беклінки та згадки бренду, розміщені на форумах, Q&A-платформах та онлайн-спільнотах як частина натурального, корисного обговорення — техніка, яку часто називають крауд-маркетингом.' },
+      { q: 'Чи безпечні крауд-посилання для SEO?', a: 'Так. Оскільки вони розміщуються як реальні внески з вікових акаунтів на багатьох платформах, вони створюють натуральний, диверсифікований сигнал, а не спам-слід.' },
+      data.extraFaq,
+      { q: 'Як скоро я побачу результати?', a: 'Результати зазвичай видно протягом 2–3 тижнів після доставки, хоча це залежить від конкурентності ніші.' },
+    ],
+    tagsLabel: 'Пов\'язане:',
+  } : {
+    heroBadge: 'Crowd Marketing',
+    heroTitle1: 'We Build',
+    heroTitle2: 'Forum',
+    heroTitleAccent: '& Community Links',
+    viewPackages: 'View Packages',
+    packagesTitle: `${data.label} crowd link packages`,
+    packagesDesc: 'Choose the volume that fits your campaign — every tier gets the same manual-quality delivery.',
+    mostPopular: '★ Most Popular',
+    oneTime: 'one-time payment',
+    orderNow: 'Order Now',
+    reviewsTitle: "Don't just take our word for it",
+    reviewsDesc: 'See real, verified reviews directly on each platform.',
+    viewReviews: 'View Reviews',
+    seoHeading: `${data.label} crowd links: natural community signals`,
+    faqs: [
+      { q: 'What are crowd links?', a: 'Crowd links are backlinks and brand mentions placed within forums, Q&A platforms, and online communities as part of natural, helpful discussion — a technique often called crowd marketing.' },
+      { q: 'Are crowd links safe for SEO?', a: 'Yes. Because they are placed as genuine contributions from aged accounts across many platforms, they create a natural, diversified signal rather than a spammy footprint.' },
+      data.extraFaq,
+      { q: 'How soon will I see results?', a: 'Results are typically visible within 2–3 weeks of delivery, though this varies by niche competitiveness.' },
+    ],
+    tagsLabel: 'Related:',
+  };
+
   return (
-    <ServicePageLayout defaultService={`Crowd Marketing — ${data.label}`}>
+    <ServicePageLayout defaultService={`${ui.heroBadge} — ${data.label}`}>
       {/* Hero — service description */}
       <section className="relative overflow-hidden py-20 lg:py-24" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Globe2 size={12} />
-              Crowd Marketing — {data.label}
+              {ui.heroBadge} — {data.label}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-[1.08] tracking-tight mb-6">
-              We Build {data.label} Forum<br />
-              <span className="text-[#F97316]">& Community Links</span>
+              {ui.heroTitle1} {data.label} {ui.heroTitle2}<br />
+              <span className="text-[#F97316]">{ui.heroTitleAccent}</span>
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed mb-4 max-w-xl">{data.heroDesc}</p>
             <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-xl">{data.marketNote}</p>
             <a href="#packages" className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md">
-              View Packages <ArrowRight size={14} />
+              {ui.viewPackages} <ArrowRight size={14} />
             </a>
           </div>
         </div>
@@ -157,17 +298,17 @@ export default function CrowdLinksLanguagePage() {
       <section id="packages" className="py-16 bg-gray-950">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">{data.label} crowd link packages</h2>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto">Choose the volume that fits your campaign — every tier gets the same manual-quality delivery.</p>
+            <h2 className="text-3xl font-bold text-white mb-3">{ui.packagesTitle}</h2>
+            <p className="text-gray-400 text-sm max-w-lg mx-auto">{ui.packagesDesc}</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 items-start">
-            {packages.map((pkg) => (
+            {pkgs.map((pkg) => (
               <div
                 key={pkg.name}
                 className={`relative rounded-2xl border overflow-hidden flex flex-col ${pkg.highlight ? 'bg-[#F97316] border-[#F97316] shadow-2xl shadow-orange-500/20 scale-[1.02]' : 'bg-[#161616] border-white/10'}`}
               >
                 {pkg.popular && (
-                  <div className="bg-white/15 text-white text-[10px] font-black uppercase tracking-widest text-center py-2.5 border-b border-white/20">★ Most Popular</div>
+                  <div className="bg-white/15 text-white text-[10px] font-black uppercase tracking-widest text-center py-2.5 border-b border-white/20">{ui.mostPopular}</div>
                 )}
                 <div className="p-7 flex flex-col flex-1">
                   <div className="mb-5">
@@ -175,7 +316,7 @@ export default function CrowdLinksLanguagePage() {
                     <span className={`text-sm font-semibold ${pkg.highlight ? 'text-white/90' : 'text-[#F97316]'}`}>{pkg.domains}</span>
                   </div>
                   <div className="mb-1"><span className="text-4xl font-black text-white">{pkg.price}</span></div>
-                  <div className={`text-xs mb-5 ${pkg.highlight ? 'text-orange-100' : 'text-gray-500'}`}>{pkg.priceNote} · one-time payment</div>
+                  <div className={`text-xs mb-5 ${pkg.highlight ? 'text-orange-100' : 'text-gray-500'}`}>{pkg.priceNote} · {ui.oneTime}</div>
                   <div className={`h-px mb-5 ${pkg.highlight ? 'bg-white/25' : 'bg-white/8'}`} />
                   <p className={`text-sm leading-relaxed mb-5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{pkg.desc}</p>
                   <ul className="space-y-2 mb-6 flex-1">
@@ -190,7 +331,7 @@ export default function CrowdLinksLanguagePage() {
                     onClick={() => setSelectedPkg(pkg)}
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${pkg.highlight ? 'bg-white text-[#F97316] hover:bg-gray-50' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
                   >
-                    Order Now <ArrowRight size={13} />
+                    {ui.orderNow} <ArrowRight size={13} />
                   </button>
                 </div>
               </div>
@@ -203,8 +344,8 @@ export default function CrowdLinksLanguagePage() {
       <section className="py-16 bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Don't just take our word for it</h2>
-            <p className="text-gray-500 text-sm max-w-lg mx-auto">See real, verified reviews directly on each platform.</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{ui.reviewsTitle}</h2>
+            <p className="text-gray-500 text-sm max-w-lg mx-auto">{ui.reviewsDesc}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {REVIEW_PLATFORMS.map((p) => (
@@ -222,7 +363,7 @@ export default function CrowdLinksLanguagePage() {
                 </div>
                 <div className="text-xs text-gray-400 mb-3">{p.score} · {p.reviewCount}</div>
                 <span className="text-xs font-semibold text-[#F97316] flex items-center gap-1 group-hover:gap-1.5 transition-all">
-                  View Reviews <ArrowRight size={11} />
+                  {ui.viewReviews} <ArrowRight size={11} />
                 </span>
               </a>
             ))}
@@ -232,22 +373,17 @@ export default function CrowdLinksLanguagePage() {
 
       {/* Long-form content + FAQ */}
       <ServiceSeoBlock
-        heading={`${data.label} crowd links: natural community signals`}
+        heading={ui.seoHeading}
         intro={data.intro}
         body={data.body}
-        faqs={[
-          { q: 'What are crowd links?', a: 'Crowd links are backlinks and brand mentions placed within forums, Q&A platforms, and online communities as part of natural, helpful discussion — a technique often called crowd marketing.' },
-          { q: 'Are crowd links safe for SEO?', a: 'Yes. Because they are placed as genuine contributions from aged accounts across many platforms, they create a natural, diversified signal rather than a spammy footprint.' },
-          data.extraFaq,
-          { q: 'How soon will I see results?', a: 'Results are typically visible within 2–3 weeks of delivery, though this varies by niche competitiveness.' },
-        ]}
+        faqs={ui.faqs}
       />
 
       {/* Tags */}
       <section className="py-10 bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide mr-1">Related:</span>
+            <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide mr-1">{ui.tagsLabel}</span>
             {data.tags.map((tag) => (
               <span key={tag} className="text-xs bg-white border border-gray-200 rounded-full px-3 py-1.5 text-gray-600">{tag}</span>
             ))}

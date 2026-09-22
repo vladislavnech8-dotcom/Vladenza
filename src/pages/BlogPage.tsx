@@ -2,7 +2,7 @@ import { Clock, ArrowUpRight, Search, Tag, ArrowRight } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import { useNavigate } from 'react-router-dom';
-import { blogPosts } from '../data/blogPosts';
+import { blogPosts, blogPostsUk } from '../data/blogPosts';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
@@ -157,7 +157,18 @@ export default function BlogPage() {
   const { locale, localizePath: lp } = useLocale();
   const uk = locale === 'uk';
   const navigate = useNavigate();
-  const { posts: allPosts, loading } = useAllPosts();
+  const { posts: allPostsRaw, loading } = useAllPosts();
+  const allPosts = useMemo(
+    () => uk
+      ? allPostsRaw.map(p => {
+          const tr = blogPostsUk[p.slug];
+          return tr
+            ? { ...p, title: tr.title ?? p.title, excerpt: tr.excerpt ?? p.excerpt, category: tr.category ?? p.category, readTime: tr.readTime ?? p.readTime }
+            : p;
+        })
+      : allPostsRaw,
+    [allPostsRaw, uk]
+  );
   const [activeCategory, setActiveCategory] = useState('All Posts');
   const [search, setSearch] = useState('');
 
@@ -165,6 +176,19 @@ export default function BlogPage() {
     title: uk ? 'SEO-блог — лінкбілдинг та стратегії AI-пошуку | Vladenza' : 'SEO Blog — Link Building & AI Search Strategies | Vladenza',
     description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, niche edits, GEO, видимість в AI/LLM та технічне SEO. Практичні поради від команди Vladenza.' : 'Expert articles on link building, guest posting, niche edits, GEO, AI/LLM visibility, and technical SEO. Practical playbooks from the Vladenza team.',
     canonical: `https://vladenza.com${lp('/blog')}`,
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'Blog',
+      inLanguage: uk ? 'uk' : 'en',
+      name: uk ? 'Блог Vladenza' : 'Vladenza Blog',
+      description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, niche edits, GEO, видимість в AI/LLM та технічне SEO.' : 'Expert articles on link building, guest posting, niche edits, GEO, AI/LLM visibility, and technical SEO.',
+      url: `https://vladenza.com${lp('/blog')}`,
+      publisher: {
+        '@type': 'Organization',
+        name: 'Vladenza',
+        logo: { '@type': 'ImageObject', url: 'https://vladenza.com/logo.svg' },
+      },
+    },
   });
 
   const categoryCounts = useMemo(() => {
