@@ -7,8 +7,24 @@ import { CartProvider } from './context/CartContext';
 import { CheckoutProvider } from './context/CheckoutContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
-import { LocaleProvider } from './context/LocaleContext';
+import { LocaleProvider, useLocale } from './context/LocaleContext';
 import HomePage from './pages/HomePage';
+
+function ErrorFallback() {
+  const { t, localizePath } = useLocale();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="text-center max-w-md px-6">
+        <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
+          <AlertCircle size={32} className="text-red-500" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t['error.title']}</h1>
+        <p className="text-gray-500 text-sm mb-6">{t['error.body']}</p>
+        <a href={localizePath('/')} className="text-sm font-semibold text-[#F97316] hover:underline">{t['error.backHome']}</a>
+      </div>
+    </div>
+  );
+}
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
@@ -16,18 +32,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   componentDidCatch(error: Error, info: ErrorInfo) { console.error('App error boundary:', error, info); }
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-white">
-          <div className="text-center max-w-md px-6">
-            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
-              <AlertCircle size={32} className="text-red-500" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-            <p className="text-gray-500 text-sm mb-6">An unexpected error occurred. Please try refreshing the page.</p>
-            <a href="/" className="text-sm font-semibold text-[#F97316] hover:underline">Back to Home</a>
-          </div>
-        </div>
-      );
+      return <ErrorFallback />;
     }
     return this.props.children;
   }

@@ -149,6 +149,7 @@ export interface TranslationKey {
   'common.search': string;
   'common.loading': string;
   'common.noResults': string;
+  'form.selectService': string;
 }
 
 export const translations: Record<Locale, TranslationKey> = {
@@ -175,9 +176,9 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.svc.seoAuditDesc': 'Full technical & strategic audit',
     'nav.svc.guestPosting': 'Guest Posting',
     'nav.svc.guestPostingDesc': 'Editorial links on real traffic sites',
-    'nav.svc.nicheEdits': 'Niche Edits',
+    'nav.svc.nicheEdits': 'Link Insertions',
     'nav.svc.nicheEditsDesc': 'Links inserted in aged, indexed content',
-    'nav.svc.crowdLinks': 'Crowd Links',
+    'nav.svc.crowdLinks': 'Crowd Marketing',
     'nav.svc.crowdLinksDesc': 'Forum & community link building',
     'nav.svc.aiLlm': 'AI & LLM SEO',
     'nav.svc.aiLlmDesc': 'Get cited by ChatGPT & Perplexity',
@@ -267,8 +268,8 @@ export const translations: Record<Locale, TranslationKey> = {
     'form.successTitle': 'You\u2019re on the list!',
     'form.successBody': 'We\u2019ll be in touch within 24 hours with your custom plan.',
     'form.services.guestPosting': 'Guest Posting',
-    'form.services.nicheEdits': 'Niche Edits',
-    'form.services.crowdLinks': 'Crowd Links',
+    'form.services.nicheEdits': 'Link Insertions',
+    'form.services.crowdLinks': 'Crowd Marketing',
     'form.services.linkPackages': 'Link Packages',
     'form.services.seoAudit': 'SEO Audit',
     'form.services.aiLlm': 'AI / LLM',
@@ -292,6 +293,7 @@ export const translations: Record<Locale, TranslationKey> = {
     'common.search': 'Search',
     'common.loading': 'Loading',
     'common.noResults': 'No results found.',
+    'form.selectService': 'Select service',
   },
 
   uk: {
@@ -434,6 +436,7 @@ export const translations: Record<Locale, TranslationKey> = {
     'common.search': 'Пошук',
     'common.loading': 'Завантаження',
     'common.noResults': 'Результатів не знайдено.',
+    'form.selectService': 'Оберіть послугу',
   },
 };
 

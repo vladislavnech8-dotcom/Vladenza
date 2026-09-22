@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
+import { useLocale } from '../context/LocaleContext';
 
 export interface Faq {
   q: string;
@@ -20,7 +21,7 @@ interface Props {
   faqs: Faq[];
 }
 
-function renderInline(text: string): React.ReactNode {
+function renderInline(text: string, lp: (p: string) => string): React.ReactNode {
   const parts: React.ReactNode[] = [];
   const regex = /\[([^\]]+)\]\((\/[^)]+)\)/g;
   let last = 0;
@@ -29,7 +30,7 @@ function renderInline(text: string): React.ReactNode {
   while ((match = regex.exec(text)) !== null) {
     if (match.index > last) parts.push(text.slice(last, match.index));
     parts.push(
-      <Link key={key++} to={match[2]} className="text-[#F97316] font-medium hover:underline underline-offset-2">
+      <Link key={key++} to={lp(match[2])} className="text-[#F97316] font-medium hover:underline underline-offset-2">
         {match[1]}
       </Link>
     );
@@ -41,6 +42,7 @@ function renderInline(text: string): React.ReactNode {
 
 export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
   const [open, setOpen] = useState<number | null>(0);
+  const { localizePath: lp } = useLocale();
 
   if (typeof window === 'undefined') {
     lastRenderedFaqSchema = faqs;
@@ -75,11 +77,11 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight tracking-tight mb-5">
           {heading}
         </h2>
-        <p className="text-gray-600 text-[17px] leading-[1.8] mb-6">{renderInline(intro)}</p>
+        <p className="text-gray-600 text-[17px] leading-[1.8] mb-6">{renderInline(intro, lp)}</p>
         <div className="flex flex-col gap-5">
           {body.map((p, i) => (
             <p key={i} className="text-gray-500 text-[15px] leading-[1.85]">
-              {renderInline(p)}
+              {renderInline(p, lp)}
             </p>
           ))}
         </div>
@@ -110,7 +112,7 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
                       className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                     >
                       <div className="overflow-hidden">
-                        <p className="px-5 pb-5 text-[14px] text-gray-500 leading-[1.8]">{renderInline(f.a)}</p>
+                        <p className="px-5 pb-5 text-[14px] text-gray-500 leading-[1.8]">{renderInline(f.a, lp)}</p>
                       </div>
                     </div>
                   </div>

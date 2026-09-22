@@ -153,7 +153,7 @@ export default function LeadForm({ defaultService }: LeadFormProps) {
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2.5">Select service</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2.5">{t['form.selectService']}</p>
             <div className="flex flex-wrap gap-2">
               {serviceIds.map((id) => (
                 <button

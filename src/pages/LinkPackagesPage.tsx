@@ -5,6 +5,7 @@ import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import OrderModal, { type Package } from '../components/OrderModal';
 import { useSEO } from '../hooks/useSEO';
+import { useLocale } from '../context/LocaleContext';
 
 const nicheData: Record<string, {
   label: string;
@@ -173,13 +174,14 @@ const otherNiches = [
 
 export default function LinkPackagesPage() {
   const { niche = 'igaming' } = useParams<{ niche: string }>();
+  const { locale, localizePath: lp } = useLocale();
   const data = nicheData[niche] ?? nicheData['igaming'];
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
 
   useSEO({
     title: `Buy ${data.label} Backlinks | Vladenza`,
     description: `Buy ${data.label} backlinks — niche-specific link building packages. ${data.desc.slice(0, 60)}...`,
-    canonical: `https://vladenza.com/services/link-packages/${niche}`,
+    canonical: locale === 'uk' ? `https://vladenza.com/uk/services/link-packages/${niche}` : `https://vladenza.com/services/link-packages/${niche}`,
   });
 
   return (
@@ -192,7 +194,7 @@ export default function LinkPackagesPage() {
             {otherNiches.map((n) => (
               <Link
                 key={n.key}
-                to={n.href}
+                to={lp(n.href)}
                 className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${niche === n.key ? 'bg-[#F97316] text-white' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
               >
                 {n.label}
@@ -341,7 +343,7 @@ export default function LinkPackagesPage() {
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
             {otherNiches.filter((n) => n.key !== niche).map((n) => (
-              <Link key={n.key} to={n.href} className="px-5 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-[#F97316]/40 hover:text-[#F97316] transition-all duration-200 flex items-center gap-2">
+              <Link key={n.key} to={lp(n.href)} className="px-5 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-[#F97316]/40 hover:text-[#F97316] transition-all duration-200 flex items-center gap-2">
                 {n.label} Packages <ArrowRight size={13} />
               </Link>
             ))}

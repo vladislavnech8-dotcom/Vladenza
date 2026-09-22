@@ -13,9 +13,9 @@ type SortKey = 'newest' | 'dr' | 'traffic' | 'sort_order';
 
 const SERVICE_FILTERS: { value: ServiceFilter; label: string }[] = [
   { value: 'all', label: 'All' },
-  { value: 'niche_edit', label: 'Niche Edits' },
+  { value: 'niche_edit', label: 'Link Insertions' },
   { value: 'guest_post', label: 'Guest Posts' },
-  { value: 'crowd_link', label: 'Crowd Links' },
+  { value: 'crowd_link', label: 'Crowd Marketing' },
 ];
 
 const DR_FILTERS = ['Any', 'DR20+', 'DR30+', 'DR40+', 'DR50+', 'DR60+'] as const;
@@ -36,7 +36,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 const PAGE_SIZE = 6;
 
-const placementsUk: Record<string, string> = { All: 'Усі', 'Niche Edits': 'Розміщення в готових статтях', 'Guest Posts': 'Гостьові публікації', 'Crowd Links': 'Крауд-посилання', Any: 'Будь-який', 'DR20+': 'DR20+', 'DR30+': 'DR30+', 'DR40+': 'DR40+', 'DR50+': 'DR50+', 'DR60+': 'DR60+', '1K+': '1 тис.+', '5K+': '5 тис.+', '10K+': '10 тис.+', '50K+': '50 тис.+', 'Manual Order': 'Вручну', Newest: 'Найновіші', 'Highest DR': 'Найвищий DR', 'Highest Traffic': 'Найвищий трафік', Niche: 'Ніша', Traffic: 'Трафік', Sort: 'Сортування', 'Search by domain, title or URL': 'Пошук за доменом, назвою або URL', 'No placements match these filters.': 'За цими фільтрами розміщень не знайдено.', 'Real Link Building Examples': 'Реальні приклади лінкбілдингу', "Browse real placements we've delivered across niche edits, guest posts and community links.": 'Перегляньте реальні розміщення, які ми виконали в готових статтях, гостьових публікаціях і спільнотах.', 'Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.': 'Метрики отримано з Ahrefs, вони можуть змінюватися. DR = рейтинг домену. Трафік = орієнтовна кількість органічних візитів на місяць.' };
+const placementsUk: Record<string, string> = { All: 'Усі', 'Link Insertions': 'Розміщення в готових статтях', 'Guest Posts': 'Гостьові публікації', 'Crowd Marketing': 'Крауд-посилання', Any: 'Будь-який', 'DR20+': 'DR20+', 'DR30+': 'DR30+', 'DR40+': 'DR40+', 'DR50+': 'DR50+', 'DR60+': 'DR60+', '1K+': '1 тис.+', '5K+': '5 тис.+', '10K+': '10 тис.+', '50K+': '50 тис.+', 'Manual Order': 'Вручну', Newest: 'Найновіші', 'Highest DR': 'Найвищий DR', 'Highest Traffic': 'Найвищий трафік', Niche: 'Ніша', Traffic: 'Трафік', Sort: 'Сортування', 'Search by domain, title or URL': 'Пошук за доменом, назвою або URL', 'No placements match these filters.': 'За цими фільтрами розміщень не знайдено.', 'Real Link Building Examples': 'Реальні приклади лінкбілдингу', "Browse real placements we've delivered across niche edits, guest posts and community links.": 'Перегляньте реальні розміщення, які ми виконали в готових статтях, гостьових публікаціях і спільнотах.', 'Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.': 'Метрики отримано з Ahrefs, вони можуть змінюватися. DR = рейтинг домену. Трафік = орієнтовна кількість органічних візитів на місяць.' };
 const pct = (value: string, locale: string) => locale === 'uk' ? (placementsUk[value] ?? value) : value;
 
 export default function PlacementsPage() {

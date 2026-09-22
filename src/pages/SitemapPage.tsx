@@ -29,8 +29,8 @@ const sections: SitemapSection[] = [
     color: 'text-orange-600 bg-orange-50 border-orange-200',
     links: [
       { label: 'Guest Posting', href: '/services/guest-posting', desc: 'High-authority DR 30–90+ link placements on real traffic sites' },
-      { label: 'Niche Edits', href: '/services/niche-edits', desc: 'Contextual link insertions into aged, indexed content' },
-      { label: 'Crowd Links', href: '/services/crowd-links', desc: 'Forum & community link building across 50+ platforms' },
+      { label: 'Link Insertions', href: '/services/niche-edits', desc: 'Contextual link insertions into aged, indexed content' },
+      { label: 'Crowd Marketing', href: '/services/crowd-links', desc: 'Forum & community link building across 50+ platforms' },
       { label: 'SEO Audit', href: '/services/seo-audit', desc: 'Technical, on-page, and backlink profile analysis' },
       { label: 'AI & LLM Visibility', href: '/services/ai-llm', desc: 'Get cited by ChatGPT, Gemini, and Perplexity' },
       { label: 'Local SEO Links', href: '/services/local-seo-links', desc: 'Geo-targeted links for local business rankings' },

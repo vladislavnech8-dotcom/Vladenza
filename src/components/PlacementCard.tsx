@@ -3,8 +3,29 @@ import { ArrowUpRight, ZoomIn } from 'lucide-react';
 import { type Placement, SERVICE_TYPE_LABELS, formatTraffic } from '../data/placements';
 import { trackEvent } from '../lib/analytics';
 import Lightbox from './Lightbox';
+import { useLocale } from '../context/LocaleContext';
+
+const content = {
+  en: {
+    viewFullScreenshot: 'View full screenshot',
+    viewScreenshots: (n: number) => `View ${n} screenshots`,
+    traffic: 'Traffic',
+    keywords: 'Keywords',
+    viewPlacement: 'View Placement',
+  },
+  uk: {
+    viewFullScreenshot: 'Переглянути скріншот',
+    viewScreenshots: (n: number) => `Переглянути ${n} скріншотів`,
+    traffic: 'Трафік',
+    keywords: 'Ключові слова',
+    viewPlacement: 'Переглянути розміщення',
+  },
+};
 
 export default function PlacementCard({ p }: { p: Placement }) {
+  const { locale } = useLocale();
+  const c = content[locale];
+
   const [imgError, setImgError] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -43,7 +64,7 @@ export default function PlacementCard({ p }: { p: Placement }) {
                   <ZoomIn size={18} className="text-gray-800" />
                 </div>
                 <span className="text-white text-xs font-semibold bg-black/40 px-2.5 py-1 rounded-full whitespace-nowrap">
-                  {screenshots.length > 1 ? `View ${screenshots.length} screenshots` : 'View full screenshot'}
+                  {screenshots.length > 1 ? c.viewScreenshots(screenshots.length) : c.viewFullScreenshot}
                 </span>
               </div>
             </div>
@@ -82,12 +103,12 @@ export default function PlacementCard({ p }: { p: Placement }) {
               <div className={`text-lg font-black ${p.dr >= 60 ? 'text-emerald-500' : p.dr >= 50 ? 'text-[#F97316]' : 'text-blue-500'}`}>{p.dr}</div>
             </div>
             <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wide">Traffic</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wide">{c.traffic}</div>
               <div className="text-sm font-bold text-gray-800">{formatTraffic(p.traffic)}</div>
             </div>
             {p.keywords != null && (
               <div>
-                <div className="text-[10px] text-gray-400 uppercase tracking-wide">Keywords</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide">{c.keywords}</div>
                 <div className="text-sm font-bold text-gray-800">{p.keywords}</div>
               </div>
             )}
@@ -101,7 +122,7 @@ export default function PlacementCard({ p }: { p: Placement }) {
             onClick={() => trackEvent('view_placement', { domain: p.domain, service_type: p.service_type })}
             className="text-sm font-semibold text-[#F97316] hover:text-[#EA580C] flex items-center gap-1.5 transition-colors mt-auto"
           >
-            View Placement <ArrowUpRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            {c.viewPlacement} <ArrowUpRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
           </a>
         </div>
       </div>

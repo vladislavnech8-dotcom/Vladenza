@@ -15,9 +15,9 @@ interface ClientOrder {
 }
 
 const SERVICES = [
-  { id: 'Crowd Links',    full: 'Forum / Crowd Links',    Icon: Globe,    desc: 'Forum & community placements' },
+  { id: 'Crowd Marketing',    full: 'Forum / Crowd Marketing',    Icon: Globe,    desc: 'Forum & community placements' },
   { id: 'Guest Posting',  full: 'Guest Posting',           Icon: FileText, desc: 'Editorial link placements' },
-  { id: 'Niche Edits',    full: 'Niche Edits',             Icon: Edit3,    desc: 'Links in existing articles' },
+  { id: 'Link Insertions',    full: 'Link Insertions',             Icon: Edit3,    desc: 'Links in existing articles' },
   { id: 'Local SEO',      full: 'Local SEO Links',         Icon: MapPin,   desc: 'Local directories & citations' },
   { id: 'SEO Audit',      full: 'SEO Audit',               Icon: Search,   desc: 'Full technical site analysis' },
   { id: 'AI Visibility',  full: 'AI / LLM Visibility',     Icon: Cpu,      desc: 'ChatGPT & LLM presence' },

@@ -2,6 +2,84 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Loader2, AlertCircle, ArrowRight, Clock } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import { useLocale } from '../context/LocaleContext';
+
+const content = {
+  en: {
+    loading: 'Loading your order...',
+    backToHome: 'Back to Home',
+    contactSupport: 'Contact Support',
+    invalidTitle: 'Link Invalid or Expired',
+    invalidBody: 'This requirements link is no longer valid. If you believe this is an error, please contact us at',
+    savedTitle: 'Requirements Saved',
+    orderPrefix: 'Order #',
+    somePending: 'Some placements are still pending',
+    somePendingBody: 'You marked one or more placements as "will provide later." You can return to this page anytime using the same link from your email to complete them.',
+    whatHappensNext: 'What happens next?',
+    next1: 'We review your website and requirements',
+    next2: 'We source placements within the selected metrics',
+    next3: 'Placements are manually checked before delivery',
+    next4: "You'll receive the completed links in your order report",
+    continueEditing: 'Continue Editing',
+    errorTitle: 'Something Went Wrong',
+    errorFallback: 'An unexpected error occurred.',
+    tryAgain: 'Try Again',
+    addTitle: 'Add Your Link Requirements',
+    addBody: 'Tell us where each link should point. Fill in the target URL, preferred anchor text, and website niche for each placement below.',
+    completed: 'completed',
+    pendingInfo: (n: number) => `${n} placement${n > 1 ? 's' : ''} still need${n === 1 ? 's' : ''} information. Complete them now or check "will provide later" to return later.`,
+    placement: (n: number) => `Placement ${n}`,
+    saved: 'Saved',
+    pending: 'Pending',
+    targetUrl: 'Target URL *',
+    anchorText: 'Preferred Anchor Text *',
+    niche: 'Website Niche / Topic *',
+    notes: 'Additional Notes',
+    willProvideLater: 'I will provide details for this placement later',
+    saving: 'Saving...',
+    saveRequirements: 'Save Requirements',
+    needHelp: 'Need help? Email us at',
+    loadError: 'Could not load order details. Please try again or contact support.',
+    saveError: 'Could not save requirements. Please try again or contact support.',
+  },
+  uk: {
+    loading: 'Завантаження вашого замовлення...',
+    backToHome: 'На головну',
+    contactSupport: "Зв'язатися з підтримкою",
+    invalidTitle: 'Посилання недійсне або термін ді минув',
+    invalidBody: 'Це посилання для вимог більше не дійсне. Якщо ви вважаєте, що це помилка, зверніться до нас за адресою',
+    savedTitle: 'Вимоги збережено',
+    orderPrefix: 'Замовлення №',
+    somePending: 'Деякі розміщення ще очікують',
+    somePendingBody: 'Ви позначили одне або кілька розміщень як «надам пізніше». Ви можете повернутися до цієї сторінки у будь-який час, використовуючи те саме посилання з вашого email, щоб завершити їх.',
+    whatHappensNext: 'Що далі?',
+    next1: 'Ми переглядаємо ваш сайт і вимоги',
+    next2: 'Ми підбираємо розміщення за обраними метриками',
+    next3: 'Розміщення перевіряються вручну перед доставкою',
+    next4: 'Ви отримаєте готові посилання у звіті про замовлення',
+    continueEditing: 'Продовжити редагування',
+    errorTitle: 'Сталася помилка',
+    errorFallback: 'Сталася неочікувана помилка.',
+    tryAgain: 'Спробувати знову',
+    addTitle: 'Додайте вимоги до ваших посилань',
+    addBody: 'Вкажіть, куди має вести кожне посилання. Заповніть цільовий URL, бажаний якірний текст та ніше сайту для кожного розміщення нижче.',
+    completed: 'заповлено',
+    pendingInfo: (n: number) => `${n} розміщен${n > 1 ? 'ь' : n === 1 ? 'я' : 'я'} все ще потребує інформації. Заповніть їх зараз або позначте «надам пізніше», щоб повернутися пізніше.`,
+    placement: (n: number) => `Розміщення ${n}`,
+    saved: 'Збережено',
+    pending: 'Очікує',
+    targetUrl: 'Цільовий URL *',
+    anchorText: 'Бажаний якірний текст *',
+    niche: 'Ніша / тема сайту *',
+    notes: 'Додаткові нотатки',
+    willProvideLater: 'Я надам деталі для цього розміщення пізніше',
+    saving: 'Збереження...',
+    saveRequirements: 'Зберегти вимоги',
+    needHelp: 'Потрібна допомога? Напишіть нам на',
+    loadError: 'Не вдалося завантажити деталі замовлення. Спробуйте ще раз або зверніться до підтримки.',
+    saveError: 'Не вдалося зберегти вимоги. Спробуйте ще раз або зверніться до підтримки.',
+  },
+} as const;
 
 interface PlacementSection {
   placementId: string;
@@ -29,6 +107,8 @@ function isComplete(r: RequirementForm): boolean {
 
 export default function OrderRequirementsPage() {
   const { token } = useParams<{ token: string }>();
+  const { locale, localizePath: lp } = useLocale();
+  const c = content[locale];
   const [state, setState] = useState<PageState>('loading');
   const [orderNumber, setOrderNumber] = useState('');
   const [placements, setPlacements] = useState<PlacementSection[]>([]);
@@ -87,7 +167,7 @@ export default function OrderRequirementsPage() {
       setState('form');
     } catch {
       setState('error');
-      setErrorMsg('Could not load order details. Please try again or contact support.');
+      setErrorMsg(c.loadError);
     }
   }, [token]);
 
@@ -122,16 +202,16 @@ export default function OrderRequirementsPage() {
 
       if (!res.ok || !data?.success) {
         setState('error');
-        setErrorMsg(data?.error || 'Could not save requirements. Please try again.');
+        setErrorMsg(data?.error || c.saveError);
         return;
       }
 
       setAllComplete(data.allComplete ?? false);
-      setSuccessMsg(data.message || 'Requirements saved successfully.');
+      setSuccessMsg(data.message || c.savedTitle);
       setState('success');
     } catch {
       setState('error');
-      setErrorMsg('Could not save requirements. Please try again or contact support.');
+      setErrorMsg(c.saveError);
     }
   };
 
@@ -142,7 +222,7 @@ export default function OrderRequirementsPage() {
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
           <Loader2 size={32} className="text-[#F97316] animate-spin mx-auto mb-4" />
-          <p className="text-gray-400 text-sm">Loading your order...</p>
+          <p className="text-gray-400 text-sm">{c.loading}</p>
         </div>
       </div>
     );
@@ -157,12 +237,12 @@ export default function OrderRequirementsPage() {
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} className="text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Link Invalid or Expired</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.invalidTitle}</h1>
           <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">
-            This requirements link is no longer valid. If you believe this is an error, please contact us at{' '}
+            {c.invalidBody}{' '}
             <a href="mailto:info@vladenza.com" className="text-[#F97316] font-semibold">info@vladenza.com</a>.
           </p>
-          <Link to="/" className="text-sm font-semibold text-[#F97316] hover:underline">Back to Home</Link>
+          <Link to={lp('/')} className="text-sm font-semibold text-[#F97316] hover:underline">{c.backToHome}</Link>
         </div>
       </div>
     );
@@ -177,31 +257,31 @@ export default function OrderRequirementsPage() {
           <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
             <CheckCircle size={32} className="text-green-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Requirements Saved</h1>
-          {orderNumber && <p className="text-gray-400 text-sm mb-1">Order #{orderNumber}</p>}
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.savedTitle}</h1>
+          {orderNumber && <p className="text-gray-400 text-sm mb-1">{c.orderPrefix}{orderNumber}</p>}
           <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">{successMsg}</p>
 
           {!allComplete && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-md mx-auto mb-6 text-left">
               <div className="flex items-center gap-2 mb-2">
                 <Clock size={16} className="text-amber-600" />
-                <span className="text-sm font-semibold text-amber-700">Some placements are still pending</span>
+                <span className="text-sm font-semibold text-amber-700">{c.somePending}</span>
               </div>
               <p className="text-xs text-amber-600 leading-relaxed">
-                You marked one or more placements as "will provide later." You can return to this page anytime using the same link from your email to complete them.
+                {c.somePendingBody}
               </p>
             </div>
           )}
 
           {allComplete && (
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 max-w-md mx-auto mb-6 text-left">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">What happens next?</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{c.whatHappensNext}</h3>
               <ul className="flex flex-col gap-2">
                 {[
-                  'We review your website and requirements',
-                  'We source placements within the selected metrics',
-                  'Placements are manually checked before delivery',
-                  "You'll receive the completed links in your order report",
+                  c.next1,
+                  c.next2,
+                  c.next3,
+                  c.next4,
                 ].map((t) => (
                   <li key={t} className="flex items-center gap-2 text-sm text-gray-600">
                     <CheckCircle size={14} className="text-green-500 flex-shrink-0" /> {t}
@@ -217,10 +297,10 @@ export default function OrderRequirementsPage() {
                 onClick={() => setState('form')}
                 className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors"
               >
-                Continue Editing
+                {c.continueEditing}
               </button>
             )}
-            <Link to="/" className="text-sm font-semibold text-[#F97316] hover:underline">Back to Home</Link>
+            <Link to={lp('/')} className="text-sm font-semibold text-[#F97316] hover:underline">{c.backToHome}</Link>
           </div>
         </div>
       </div>
@@ -236,15 +316,15 @@ export default function OrderRequirementsPage() {
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} className="text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Something Went Wrong</h1>
-          <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">{errorMsg || 'An unexpected error occurred.'}</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.errorTitle}</h1>
+          <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">{errorMsg || c.errorFallback}</p>
           <button
             onClick={() => { setState('form'); setErrorMsg(''); }}
             className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors mr-3"
           >
-            Try Again
+            {c.tryAgain}
           </button>
-          <a href="mailto:info@vladenza.com" className="text-sm font-semibold text-gray-500 hover:text-gray-700">Contact Support</a>
+          <a href="mailto:info@vladenza.com" className="text-sm font-semibold text-gray-500 hover:text-gray-700">{c.contactSupport}</a>
         </div>
       </div>
     );
@@ -261,15 +341,15 @@ export default function OrderRequirementsPage() {
       <div className="pt-[88px]">
         <div className="border-b border-gray-100 bg-gray-50">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
-            <Link to="/" className="text-xs text-gray-400 hover:text-gray-700 transition-colors">Back to Home</Link>
+            <Link to={lp('/')} className="text-xs text-gray-400 hover:text-gray-700 transition-colors">{c.backToHome}</Link>
           </div>
         </div>
 
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Add Your Link Requirements</h1>
-          {orderNumber && <p className="text-gray-400 text-sm mb-6">Order #{orderNumber}</p>}
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.addTitle}</h1>
+          {orderNumber && <p className="text-gray-400 text-sm mb-6">{c.orderPrefix}{orderNumber}</p>}
           <p className="text-gray-500 text-sm mb-6">
-            Tell us where each link should point. Fill in the target URL, preferred anchor text, and website niche for each placement below.
+            {c.addBody}
           </p>
 
           {/* Progress indicator */}
@@ -282,7 +362,7 @@ export default function OrderRequirementsPage() {
                 />
               </div>
               <span className="text-xs font-semibold text-gray-500 whitespace-nowrap">
-                {completedCount}/{forms.length} completed
+                {completedCount}/{forms.length} {c.completed}
               </span>
             </div>
           )}
@@ -291,7 +371,7 @@ export default function OrderRequirementsPage() {
             <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-6 flex items-center gap-2">
               <Clock size={15} className="text-amber-600 flex-shrink-0" />
               <p className="text-xs text-amber-700">
-                {pendingCount} placement{pendingCount > 1 ? 's' : ''} still need{pendingCount === 1 ? 's' : ''} information. Complete them now or check "will provide later" to return later.
+                {c.pendingInfo(pendingCount)}
               </p>
             </div>
           )}
@@ -305,15 +385,15 @@ export default function OrderRequirementsPage() {
                 <div key={placement.placementId} className={`border rounded-xl p-5 transition-colors ${completed ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-white'}`}>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Placement {idx + 1}</span>
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{c.placement(idx + 1)}</span>
                       {completed && (
                         <span className="flex items-center gap-1 text-[10px] font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-md">
-                          <CheckCircle size={10} /> Saved
+                          <CheckCircle size={10} /> {c.saved}
                         </span>
                       )}
                       {form?.willProvideLater && !completed && (
                         <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
-                          <Clock size={10} /> Pending
+                          <Clock size={10} /> {c.pending}
                         </span>
                       )}
                     </div>
@@ -322,7 +402,7 @@ export default function OrderRequirementsPage() {
 
                   <div className="grid sm:grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className={labelCls}>Target URL *</label>
+                      <label className={labelCls}>{c.targetUrl}</label>
                       <input
                         type="url"
                         value={form?.targetUrl || ''}
@@ -333,7 +413,7 @@ export default function OrderRequirementsPage() {
                       />
                     </div>
                     <div>
-                      <label className={labelCls}>Preferred Anchor Text *</label>
+                      <label className={labelCls}>{c.anchorText}</label>
                       <input
                         type="text"
                         value={form?.anchor || ''}
@@ -346,7 +426,7 @@ export default function OrderRequirementsPage() {
                   </div>
 
                   <div className="mb-3">
-                    <label className={labelCls}>Website Niche / Topic *</label>
+                    <label className={labelCls}>{c.niche}</label>
                     <input
                       type="text"
                       value={form?.niche || ''}
@@ -358,7 +438,7 @@ export default function OrderRequirementsPage() {
                   </div>
 
                   <div className="mb-3">
-                    <label className={labelCls}>Additional Notes</label>
+                    <label className={labelCls}>{c.notes}</label>
                     <input
                       type="text"
                       value={form?.notes || ''}
@@ -377,7 +457,7 @@ export default function OrderRequirementsPage() {
                       disabled={submitting}
                       className="accent-[#F97316]"
                     />
-                    I will provide details for this placement later
+                    {c.willProvideLater}
                   </label>
                 </div>
               );
@@ -393,16 +473,16 @@ export default function OrderRequirementsPage() {
               className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
             >
               {submitting ? (
-                <><Loader2 size={15} className="animate-spin" /> Saving...</>
+                <><Loader2 size={15} className="animate-spin" /> {c.saving}</>
               ) : (
-                <>Save Requirements <ArrowRight size={15} /></>
+                <>{c.saveRequirements} <ArrowRight size={15} /></>
               )}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-400">
-              Need help? Email us at{' '}
+              {c.needHelp}{' '}
               <a href="mailto:info@vladenza.com" className="text-[#F97316] font-semibold">info@vladenza.com</a>
             </p>
           </div>

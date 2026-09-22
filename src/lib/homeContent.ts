@@ -37,7 +37,7 @@ export const homePageContent: Record<Locale, HomePageContent> = {
   en: {
     labels: { bestFor: 'Best for:', from: 'From' },
     seo: {
-      title: 'Vladenza — Link Building Services | Niche Edits, Guest Posts & Crowd Links',
+      title: 'Vladenza — Link Building Services | Link Insertions, Guest Posts & Crowd Marketing',
       description: 'Buy niche edits, guest posts and crowd links individually or combined into a link-building plan. From $70 per placement. 8+ years in link building.',
     },
     hero: {
@@ -59,13 +59,13 @@ export const homePageContent: Record<Locale, HomePageContent> = {
       sectionTitle: 'Choose How You Want to Build Links',
       sectionBody: 'Buy individual placements or combine different link types into a broader campaign.',
       items: [
-        { name: 'Niche Edits', desc: 'Links added inside existing, relevant articles.', best: 'contextual authority links', viewLabel: 'View', placementsLabel: 'See real placements' },
+        { name: 'Link Insertions', desc: 'Links added inside existing, relevant articles.', best: 'contextual authority links', viewLabel: 'View', placementsLabel: 'See real placements' },
         { name: 'Guest Posts', desc: 'New articles published with your backlink included naturally in the content.', best: 'new content & target pages', viewLabel: 'View', placementsLabel: '' },
-        { name: 'Crowd Links', desc: 'Contextual mentions in forums and relevant online discussions.', best: 'backlink diversity & natural link profiles', viewLabel: 'View', placementsLabel: '' },
+        { name: 'Crowd Marketing', desc: 'Contextual mentions in forums and relevant online discussions.', best: 'backlink diversity & natural link profiles', viewLabel: 'View', placementsLabel: '' },
       ],
     },
     clients: { badge: 'Selected Clients', title: "Companies We've Worked With", body: 'A selection of businesses we\u2019ve supported with link-building campaigns.' },
-    placements: { title: 'See the Links Before You Buy', body: 'Browse real examples of placements we\u2019ve delivered across different link types, niches, DR levels and traffic ranges.', empty: 'Examples coming soon for this service.', ctaLabel: 'Explore All Placement Examples', countLabel: 'real placements across Niche Edits, Guest Posts & Crowd Links' },
+    placements: { title: 'See the Links Before You Buy', body: 'Browse real examples of placements we\u2019ve delivered across different link types, niches, DR levels and traffic ranges.', empty: 'Examples coming soon for this service.', ctaLabel: 'Explore All Placement Examples', countLabel: 'real placements across Link Insertions, Guest Posts & Crowd Marketing' },
     campaigns: { title: 'Real Campaigns. Real Outcomes.', body: 'Real client campaigns with documented link-building and organic search results.', readLabel: 'Read Case Study', ctaLabel: 'Explore All Case Studies' },
     secondary: {
       title: 'Need More Than Link Building?',

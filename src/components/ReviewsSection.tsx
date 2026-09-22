@@ -1,17 +1,38 @@
 import { Star, ExternalLink } from 'lucide-react';
 import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
 import PlatformIcon from './PlatformIcon';
+import { useLocale } from '../context/LocaleContext';
+
+const content = {
+  en: {
+    heading: 'Trusted by Clients Worldwide',
+    subheading: 'Independent reviews on the platforms where our clients find and hire us.',
+    average: '/ 5 average',
+    ratingsNote: 'Ratings from Fiverr and Clutch. Click a platform below to read independent reviews.',
+    viewProfile: 'View profile',
+  },
+  uk: {
+    heading: 'Нам довіряють клієнти по всьому світу',
+    subheading: 'Незалежні відгуки на платформах, де наші клієнти знаходять і наймають нас.',
+    average: '/ 5 середня оцінка',
+    ratingsNote: 'Оцінки з Fiverr та Clutch. Натисніть на платформу нижче, щоб прочитати незалежні відгуки.',
+    viewProfile: 'Переглянути профіль',
+  },
+};
 
 export default function ReviewsSection() {
+  const { locale } = useLocale();
+  const c = content[locale];
+
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-[1fr_1fr] gap-8 lg:gap-12 items-center">
           {/* LEFT: heading + aggregate message */}
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Trusted by Clients Worldwide</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{c.heading}</h2>
             <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-md">
-              Independent reviews on the platforms where our clients find and hire us.
+              {c.subheading}
             </p>
             <div className="flex items-center gap-3 mb-6">
               <div className="flex items-center gap-0.5">
@@ -20,10 +41,10 @@ export default function ReviewsSection() {
                 ))}
               </div>
               <span className="text-2xl font-black text-gray-900">4.9</span>
-              <span className="text-sm text-gray-400">/ 5 average</span>
+              <span className="text-sm text-gray-400">{c.average}</span>
             </div>
             <p className="text-gray-400 text-xs leading-relaxed max-w-sm">
-              Ratings from Fiverr and Clutch. Click a platform below to read independent reviews.
+              {c.ratingsNote}
             </p>
           </div>
 
@@ -49,7 +70,7 @@ export default function ReviewsSection() {
                 <div className="text-2xl font-black text-gray-900 mb-0.5">{platform.score}</div>
                 <div className="text-xs text-gray-400 mb-4">{platform.reviewCount}</div>
                 <div className="flex items-center gap-1.5 mt-auto pt-3 border-t border-gray-100">
-                  <span className="text-sm font-semibold text-gray-700">View profile</span>
+                  <span className="text-sm font-semibold text-gray-700">{c.viewProfile}</span>
                   <ExternalLink size={12} className="text-gray-300 group-hover:text-[#F97316] transition-colors" />
                 </div>
               </a>

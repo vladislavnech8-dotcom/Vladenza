@@ -7,6 +7,7 @@ import OrderModal, { type Package } from '../components/OrderModal';
 import PlatformIcon from '../components/PlatformIcon';
 import { useSEO } from '../hooks/useSEO';
 import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
+import { useLocale } from '../context/LocaleContext';
 
 interface LanguageData {
   label: string;
@@ -116,27 +117,28 @@ const packages = [
 export default function CrowdLinksLanguagePage() {
   const { language } = useParams<{ language: string }>();
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
+  const { locale, localizePath: lp } = useLocale();
   const data = language ? LANGUAGE_DATA[language] : undefined;
 
   if (!data) {
-    return <Navigate to="/services/crowd-links" replace />;
+    return <Navigate to={lp('/services/crowd-links')} replace />;
   }
 
   useSEO({
     title: data.metaTitle,
     description: data.metaDescription,
-    canonical: `https://vladenza.com/services/crowd-links/${language}`,
+    canonical: locale === 'uk' ? `https://vladenza.com/uk/services/crowd-links/${language}` : `https://vladenza.com/services/crowd-links/${language}`,
   });
 
   return (
-    <ServicePageLayout defaultService={`Crowd Links — ${data.label}`}>
+    <ServicePageLayout defaultService={`Crowd Marketing — ${data.label}`}>
       {/* Hero — service description */}
       <section className="relative overflow-hidden py-20 lg:py-24" style={{ background: 'linear-gradient(160deg, #fff7f0 0%, #ffffff 60%)' }}>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Globe2 size={12} />
-              Crowd Links — {data.label}
+              Crowd Marketing — {data.label}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-[1.08] tracking-tight mb-6">
               We Build {data.label} Forum<br />

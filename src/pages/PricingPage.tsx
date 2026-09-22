@@ -41,7 +41,7 @@ const services: ServicePricing[] = [
   },
   {
     icon: Link2,
-    name: 'Niche Edits',
+    name: 'Link Insertions',
     href: '/services/niche-edits',
     tagline: 'Links inserted in aged, indexed content',
     tiers: [
@@ -52,7 +52,7 @@ const services: ServicePricing[] = [
   },
   {
     icon: Users,
-    name: 'Crowd Links',
+    name: 'Crowd Marketing',
     href: '/services/crowd-links',
     tagline: 'Forum & community link building',
     tiers: [
@@ -115,7 +115,7 @@ const services: ServicePricing[] = [
 ];
 
 const pricingUk: Record<string, string> = {
-  'SEO Audit': 'SEO-аудит', 'Guest Posting': 'Гостьові публікації', 'Niche Edits': 'Розміщення посилань у готових статтях', 'Crowd Links': 'Крауд-маркетинг', 'AI & LLM SEO': 'SEO для AI та LLM', 'Local SEO Links': 'Локальні SEO-посилання', 'LinkedIn Personal': 'Особистий LinkedIn', 'LinkedIn Company': 'LinkedIn для компаній', 'White Label': 'White Label',
+  'SEO Audit': 'SEO-аудит', 'Guest Posting': 'Гостьові публікації', 'Link Insertions': 'Розміщення посилань у готових статтях', 'Crowd Marketing': 'Крауд-маркетинг', 'AI & LLM SEO': 'SEO для AI та LLM', 'Local SEO Links': 'Локальні SEO-посилання', 'LinkedIn Personal': 'Особистий LinkedIn', 'LinkedIn Company': 'LinkedIn для компаній', 'White Label': 'White Label',
   'Full technical & strategic audit': 'Повний технічний та стратегічний аудит', 'Editorial links on real traffic sites': 'Редакційні посилання на сайтах з реальним трафіком', 'Links inserted in aged, indexed content': 'Посилання в готових проіндексованих статтях', 'Forum & community link building': 'Лінкбілдинг на форумах і в спільнотах', 'Get cited by ChatGPT & Perplexity': 'Цитування в ChatGPT та Perplexity', 'Map pack & local organic rankings': 'Просування на картах і в локальній видачі', 'Personal brand & profile growth': 'Розвиток особистого бренду та профілю', 'Company page management & B2B leads': 'Ведення сторінки компанії та B2B-ліди', 'Silent fulfilment for agencies': 'Тиха реалізація для агенцій',
   Standard: 'Стандарт', Advanced: 'Розширений', Starter: 'Стартовий', Authority: 'Авторитетний', Premium: 'Преміум', Essential: 'Базовий', Growth: 'Розвиток', Power: 'Потужний', '30 Links': '30 посилань', '60 Links': '60 посилань', '120 Links': '120 посилань', 'GEO Starter': 'GEO Starter', 'GEO Pro': 'GEO Pro', Enterprise: 'Корпоративний', 'Local Starter': 'Локальний старт', 'Local Pro': 'Локальний Pro', 'Profile Boost': 'Покращення профілю', 'Authority Builder': 'Розвиток авторитету', 'Page Starter': 'Старт сторінки', 'B2B Growth': 'B2B-розвиток', Partner: 'Партнер', 'Agency Partner': 'Партнер агенції',
   'From $500': 'Від $500', 'From $1,200': 'Від $1 200', 'From $80': 'Від $80', 'From $180': 'Від $180', 'From $380': 'Від $380', 'From $1,500': 'Від $1 500', 'From $3,500': 'Від $3 500', 'From $600': 'Від $600', 'From $900': 'Від $900', 'From $700': 'Від $700', 'From $1K': 'Від $1K', 'From $3K': 'Від $3K', Custom: 'Індивідуально',

@@ -46,8 +46,8 @@ const content = {
     },
     linkTypes: [
       { name: 'Guest Post Placements', desc: 'Original, publication-ready articles on niche-relevant sites with naturally embedded backlinks.', dr: 'DR 30–90+', time: '10–21 days' },
-      { name: 'Niche Edits', desc: 'Contextual links inserted into existing indexed content on authoritative domains — fast and powerful.', dr: 'DR 40–80+', time: '7–14 days' },
-      { name: 'Crowd Links', desc: 'Organic mentions across forums, Q&A platforms, and communities that build natural link diversity.', dr: 'Varied', time: '5–10 days' },
+      { name: 'Link Insertions', desc: 'Contextual links inserted into existing indexed content on authoritative domains — fast and powerful.', dr: 'DR 40–80+', time: '7–14 days' },
+      { name: 'Crowd Marketing', desc: 'Organic mentions across forums, Q&A platforms, and communities that build natural link diversity.', dr: 'Varied', time: '5–10 days' },
       { name: 'Editorial Outreach', desc: 'Personalised outreach to publishers and editors for genuine placements on high-authority publications.', dr: 'DR 60–90+', time: '14–28 days' },
     ],
     linkTypesSection: {

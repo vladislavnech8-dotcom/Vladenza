@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import OrderModal, { Package } from './OrderModal';
+import { useLocale } from '../context/LocaleContext';
 
 interface Props {
   children: ReactNode;
@@ -9,13 +10,16 @@ interface Props {
 }
 
 export default function ServicePageLayout({ children, defaultService }: Props) {
+  const { locale } = useLocale();
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
+
+  const quoteLabel = locale === 'uk' ? 'Запит ціни' : 'Get a quote';
 
   function openModal() {
     setSelectedPkg({
       name: defaultService || 'Custom Package',
       price: 'Custom',
-      links: 'Get a quote',
+      links: quoteLabel,
       service: defaultService || 'General Inquiry',
     });
   }
