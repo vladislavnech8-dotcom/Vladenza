@@ -6,6 +6,8 @@ import App from './App';
 import { lastRenderedSEO, type SEOProps } from './hooks/useSEO';
 import { lastRenderedFaqSchema, resetFaqSchemaCapture, type Faq } from './components/ServiceSeoBlock';
 import { blogPosts } from './data/blogPosts';
+import { blogPostsUk } from './data/blogPostsUk';
+import { casesUk } from './data/cases';
 import { supabase } from './lib/supabase';
 
 export function render(
@@ -54,4 +56,4 @@ export function getStaticBlogSlugs(): string[] {
   return blogPosts.map((p) => p.slug);
 }
 
-export { supabase };
+export { supabase, blogPostsUk, casesUk };

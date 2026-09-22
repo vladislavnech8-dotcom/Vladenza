@@ -191,7 +191,25 @@ export default function BlogPostPage() {
   const postSlug = post ? ((post as DbPost).slug ?? (post as NonNullable<ReturnType<typeof blogPosts.find>>).slug) : undefined;
   const ukTranslation = uk && postSlug ? blogPostsUk[postSlug] : undefined;
   const postUk = ukTranslation
-    ? { ...post, ...(ukTranslation as Partial<DbPost>) } as typeof post
+    ? (() => {
+        const merged = { ...post } as typeof post;
+        const tr = ukTranslation as Record<string, unknown>;
+        if (tr.title) (merged as DbPost).title = tr.title as string;
+        if (tr.excerpt) (merged as DbPost).excerpt = tr.excerpt as string;
+        if (tr.category) (merged as DbPost).category = tr.category as string;
+        if (tr.readTime) (merged as DbPost).read_time = tr.readTime as string;
+        if (tr.tags) (merged as DbPost).tags = tr.tags as string[];
+        if (tr.content) (merged as DbPost).content_json = tr.content as Section[];
+        // Also handle static post field names
+        const staticMerged = merged as Record<string, unknown>;
+        if (tr.title) staticMerged.title = tr.title;
+        if (tr.excerpt) staticMerged.excerpt = tr.excerpt;
+        if (tr.category) staticMerged.category = tr.category;
+        if (tr.readTime) staticMerged.readTime = tr.readTime;
+        if (tr.tags) staticMerged.tags = tr.tags;
+        if (tr.content) staticMerged.content = tr.content;
+        return merged;
+      })()
     : post;
 
   const articleTitle = postUk ? ((postUk as DbPost).title ?? staticPost?.title) : (uk ? 'Стаття блогу' : 'Blog Post');

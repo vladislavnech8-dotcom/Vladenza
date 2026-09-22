@@ -4,6 +4,7 @@ import ServicePageLayout from '../components/ServicePageLayout';
 import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
 import { blogPosts } from '../data/blogPosts';
+import { blogPostsUk } from '../data/blogPostsUk';
 import { cases } from '../data/cases';
 
 interface SitemapSection {
@@ -64,7 +65,7 @@ const sections: SitemapSection[] = [
     color: 'text-sky-600 bg-sky-50 border-sky-200',
     links: [
       { label: 'All Articles', href: '/blog', desc: 'Link building strategies, GEO, and SEO playbooks' },
-      ...blogPosts.map((p) => ({ label: p.title, href: `/blog/${p.slug}`, desc: `${p.category} · ${p.readTime}` })),
+      ...blogPosts.map((p) => ({ label: p.title, href: `/blog/${p.slug}`, desc: `${p.category} · ${p.readTime}`, slug: p.slug })),
     ],
   },
 ];
@@ -152,10 +153,12 @@ export default function SitemapPage() {
                       />
                       <div className="min-w-0">
                         <div className="text-sm font-semibold text-gray-900 group-hover:text-[#F97316] transition-colors leading-snug truncate">
-                          {st(link.label, locale)}
+                          {locale === 'uk' && link.slug && blogPostsUk[link.slug]?.title ? blogPostsUk[link.slug].title : st(link.label, locale)}
                         </div>
                         {link.desc && (
-                          <div className="text-xs text-gray-400 mt-0.5 leading-snug line-clamp-2">{st(link.desc, locale)}</div>
+                          <div className="text-xs text-gray-400 mt-0.5 leading-snug line-clamp-2">
+                            {locale === 'uk' && link.slug && blogPostsUk[link.slug] ? `${blogPostsUk[link.slug].category ?? link.desc} · ${blogPostsUk[link.slug].readTime ?? ''}` : st(link.desc, locale)}
+                          </div>
                         )}
                         <div className="text-[10px] text-gray-300 mt-1 font-mono truncate">
                           vladenza.com{lp(link.href)}

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { render, getStaticBlogSlugs, supabase } from '../dist-ssr/entry-server.js';
+import { render, getStaticBlogSlugs, supabase, blogPostsUk, casesUk } from '../dist-ssr/entry-server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -77,6 +77,39 @@ function injectHreflang(html, enPath, ukPath) {
   return html.replace('</head>', `  ${tags}\n</head>`);
 }
 
+// Merge Ukrainian blog post translation (static field names) into a DB record (snake_case fields)
+function mergeUkPost(dbPost, uk) {
+  if (!uk) return dbPost;
+  return {
+    ...dbPost,
+    title: uk.title ?? dbPost.title,
+    excerpt: uk.excerpt ?? dbPost.excerpt,
+    category: uk.category ?? dbPost.category,
+    read_time: uk.readTime ?? dbPost.read_time,
+    tags: uk.tags ?? dbPost.tags,
+    content_json: uk.content ?? dbPost.content_json,
+  };
+}
+
+// Merge Ukrainian case study translation into a DB record
+function mergeUkCase(dbCase, uk) {
+  if (!uk) return dbCase;
+  return {
+    ...dbCase,
+    title: uk.title ?? dbCase.title,
+    niche: uk.niche ?? dbCase.niche,
+    service: uk.service ?? dbCase.service,
+    challenge: uk.challenge ?? dbCase.challenge,
+    solution: uk.solution ?? dbCase.solution,
+    result: uk.result ?? dbCase.result,
+    period: uk.period ?? dbCase.period,
+    metric_sub: uk.metricSub ?? dbCase.metric_sub,
+    tags: uk.tags ?? dbCase.tags,
+    stats: uk.stats ?? dbCase.stats,
+    body: uk.body ?? dbCase.body,
+  };
+}
+
 async function getDynamicData() {
   let dbPosts = [];
   let dbCases = [];
@@ -97,8 +130,21 @@ async function getDynamicData() {
   const dbPostsBySlug = new Map(dbPosts.map((p) => [p.slug, p]));
   const dbCasesBySlug = new Map(dbCases.map((c) => [c.slug, c]));
 
-  const blogSlugs = Array.from(new Set([...dbPostsBySlug.keys(), ...staticBlogSlugs]));
-  const caseSlugs = Array.from(dbCasesBySlug.keys());
+  // Build-time validation: every blog/case slug must have a UK translation
+  const allBlogSlugs = Array.from(new Set([...dbPostsBySlug.keys(), ...staticBlogSlugs]));
+  const allCaseSlugs = Array.from(dbCasesBySlug.keys());
+
+  const missingUkBlog = allBlogSlugs.filter((s) => !blogPostsUk[s]);
+  const missingUkCase = allCaseSlugs.filter((s) => !casesUk[s]);
+  if (missingUkBlog.length > 0) {
+    console.warn('⚠ Missing UK blog translations for slugs:', missingUkBlog.join(', '));
+  }
+  if (missingUkCase.length > 0) {
+    console.warn('⚠ Missing UK case study translations for slugs:', missingUkCase.join(', '));
+  }
+
+  const blogSlugs = allBlogSlugs;
+  const caseSlugs = allCaseSlugs;
 
   const nicheEditsCases = dbCases
     .filter((c) => c.service && c.service.toLowerCase().includes('niche edit'))
@@ -141,6 +187,10 @@ async function main() {
   caseSlugs_global = caseSlugs;
   blogSlugs_global = blogSlugs;
 
+  // Filter out blog/case-study routes that lack UK translations for the UK sitemap
+  const ukBlogSlugs = blogSlugs.filter((s) => blogPostsUk[s]);
+  const ukCaseSlugs = caseSlugs.filter((s) => casesUk[s]);
+
   const baseRoutes = [
     ...STATIC_ROUTES,
     ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
@@ -149,10 +199,19 @@ async function main() {
     ...blogSlugs.map((s) => `/blog/${s}`),
   ];
 
+  // UK routes: only include blog/case-study routes that have UK translations
+  const ukBaseRoutes = [
+    ...STATIC_ROUTES,
+    ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
+    ...CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`),
+    ...ukCaseSlugs.map((s) => `/case-studies/${s}`),
+    ...ukBlogSlugs.map((s) => `/blog/${s}`),
+  ];
+
   // Build both EN and UK route sets
   const allRoutes = [
     ...baseRoutes.map((r) => ({ route: r, locale: 'en' })),
-    ...baseRoutes.map((r) => ({ route: r === '/' ? '/uk' : '/uk' + r, locale: 'uk', enRoute: r })),
+    ...ukBaseRoutes.map((r) => ({ route: r === '/' ? '/uk' : '/uk' + r, locale: 'uk', enRoute: r })),
   ];
 
   let successCount = 0;
@@ -165,9 +224,29 @@ async function main() {
       const caseMatch = contentRoute.match(/^\/case-studies\/(.+)$/);
       const blogMatch = contentRoute.match(/^\/blog\/(.+)$/);
       if (caseMatch && dbCasesBySlug.has(caseMatch[1])) {
-        preload = { caseData: dbCasesBySlug.get(caseMatch[1]) };
+        const dbCase = dbCasesBySlug.get(caseMatch[1]);
+        if (locale === 'uk') {
+          const uk = casesUk[caseMatch[1]];
+          if (!uk) {
+            console.warn(`⚠ Missing UK translation for case study: ${caseMatch[1]} — skipping UK route`);
+            continue;
+          }
+          preload = { caseData: mergeUkCase(dbCase, uk) };
+        } else {
+          preload = { caseData: dbCase };
+        }
       } else if (blogMatch && dbPostsBySlug.has(blogMatch[1])) {
-        preload = { postData: dbPostsBySlug.get(blogMatch[1]) };
+        const dbPost = dbPostsBySlug.get(blogMatch[1]);
+        if (locale === 'uk') {
+          const uk = blogPostsUk[blogMatch[1]];
+          if (!uk) {
+            console.warn(`⚠ Missing UK translation for blog post: ${blogMatch[1]} — skipping UK route`);
+            continue;
+          }
+          preload = { postData: mergeUkPost(dbPost, uk) };
+        } else {
+          preload = { postData: dbPost };
+        }
       } else if (contentRoute === '/services/niche-edits') {
         preload = { relatedCases: nicheEditsCases };
       }
@@ -218,10 +297,13 @@ async function main() {
   }
 
   // Generate sitemap with hreflang annotations
+  // English URLs for all routes; UK URLs only for routes that have UK translations
   const sitemapEntries = baseRoutes.map((r) => {
     const enUrl = `https://vladenza.com${r === '/' ? '/' : r + '/'}`;
-    const ukUrl = `https://vladenza.com${r === '/' ? '/uk/' : '/uk' + r + '/'}`;
-    return `  <url>
+    const ukRoute = ukBaseRoutes.includes(r);
+    const ukUrl = ukRoute ? `https://vladenza.com${r === '/' ? '/uk/' : '/uk' + r + '/'}` : null;
+    if (ukUrl) {
+      return `  <url>
     <loc>${enUrl}</loc>
     <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>
     <xhtml:link rel="alternate" hreflang="uk" href="${ukUrl}"/>
@@ -233,13 +315,19 @@ async function main() {
     <xhtml:link rel="alternate" hreflang="uk" href="${ukUrl}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}"/>
   </url>`;
+    }
+    return `  <url>
+    <loc>${enUrl}</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}"/>
+  </url>`;
   }).join('\n');
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sitemapEntries}\n</urlset>\n`;
   fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
 
   console.log(`\n✓ Готово: ${successCount}/${allRoutes.length} страниц пререндерено.`);
-  console.log(`✓ sitemap.xml сгенерирован, ${baseRoutes.length * 2} URL`);
+  console.log(`✓ sitemap.xml сгенерирован, ${baseRoutes.length + ukBaseRoutes.length} URL`);
 
   if (successCount < allRoutes.length) {
     console.warn(`⚠ ${allRoutes.length - successCount} страниц не удалось пререндерить — см. ошибки выше.`);
