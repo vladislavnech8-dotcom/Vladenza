@@ -516,7 +516,7 @@ export default function SeoAuditSamplePage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   {group.items.slice(0, 6).map(item => (
-                    <div key={item} className="text-xs text-gray-500 font-mono bg-white border border-gray-100 rounded px-2 py-1">{item}</div>
+                    <div key={item} className="text-xs text-gray-500 font-mono bg-white border border-gray-100 rounded px-2 py-1 break-all">{item}</div>
                   ))}
                   {group.items.length > 6 && (
                     <div className="text-xs text-gray-400 px-2 pt-1">+{group.items.length - 6} more…</div>
@@ -589,7 +589,7 @@ export default function SeoAuditSamplePage() {
                     <p className="text-sm text-gray-600 mb-4">{tier.desc}</p>
                     <div className="flex flex-wrap gap-2">
                       {tier.keywords.map(kw => (
-                        <span key={kw} className="bg-white/80 border border-black/10 rounded-lg px-3 py-1.5 text-xs text-gray-700 font-mono">{kw}</span>
+                        <span key={kw} className="bg-white/80 border border-black/10 rounded-lg px-3 py-1.5 text-xs text-gray-700 font-mono break-all">{kw}</span>
                       ))}
                     </div>
                   </div>

@@ -122,6 +122,7 @@ const publicRoutes = (
     <Route path="/refund-policy" element={<RefundPolicyPage />} />
     <Route path="/cookie-policy" element={<CookiePolicyPage />} />
     <Route path="/placements" element={<PlacementsPage />} />
+    <Route path="/checkout" element={<CheckoutPage />} />
   </>
 );
 
@@ -167,13 +168,13 @@ export default function App() {
                   <Route path="refund-policy" element={<RefundPolicyPage />} />
                   <Route path="cookie-policy" element={<CookiePolicyPage />} />
                   <Route path="placements" element={<PlacementsPage />} />
+                  <Route path="checkout" element={<CheckoutPage />} />
                 </Route>
 
-                {/* Non-localized routes (admin, checkout, etc.) */}
+                {/* Non-localized routes (admin, etc.) */}
                 <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
                 <Route path="/admin/orders" element={<AuthProvider><AdminOrdersRoute /></AuthProvider>} />
                 <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
-                <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order/:token" element={<OrderRequirementsPage />} />
                 <Route path="/crm" element={<AuthProvider><CrmRoute /></AuthProvider>} />
               </Routes>

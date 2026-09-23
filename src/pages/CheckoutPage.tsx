@@ -242,6 +242,7 @@ export default function CheckoutPage() {
       ? 'Безпечне оформлення замовлення на послуги лінкбілдингу. Оплата через WayForPay.'
       : 'Secure checkout for link building services. Payment via WayForPay.',
     canonical: locale === 'uk' ? 'https://vladenza.com/uk/checkout/' : 'https://vladenza.com/checkout/',
+    noindex: true,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

@@ -204,9 +204,8 @@ async function main() {
   ];
 
   // UK routes: only include blog/case-study routes that have UK translations
-  // Exclude non-localized routes (checkout, admin, etc.)
   const ukBaseRoutes = [
-    ...STATIC_ROUTES.filter((r) => r !== '/checkout'),
+    ...STATIC_ROUTES,
     ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
     ...CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`),
     ...ukCaseSlugs.map((s) => `/case-studies/${s}`),
@@ -282,15 +281,20 @@ async function main() {
         html = injectMeta(html, meta);
       }
 
-      // Inject hreflang (skip UK alternate for non-localized routes)
-      const NON_LOCALIZED = ['/checkout', '/admin', '/admin/orders', '/app', '/crm'];
+      // Inject hreflang (skip for admin/app/crm routes only; checkout gets hreflang)
+      const NON_LOCALIZED = ['/admin', '/admin/orders', '/app', '/crm'];
       const enPath = locale === 'uk' ? (enRoute || '/') : route;
       const ukPath = locale === 'uk' ? route : (route === '/' ? '/uk' : '/uk' + route);
       if (NON_LOCALIZED.includes(enPath)) {
-        // Only add self-referencing canonical, no hreflang alternates
         html = html.replace(/<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/g, '');
       } else {
         html = injectHreflang(html, enPath, ukPath);
+      }
+
+      // Inject robots noindex for checkout pages
+      if (meta?.noindex) {
+        html = html.replace(/<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/g, '');
+        html = html.replace('</head>', '  <meta name="robots" content="noindex,follow">\n</head>');
       }
 
       if (faqSchema) html = injectFaqSchema(html, faqSchema);
@@ -309,6 +313,7 @@ async function main() {
 
   // Generate sitemap with hreflang annotations
   // English URLs for all routes; UK URLs only for localized routes
+  // Checkout is excluded from sitemap (noindex,follow)
   const NON_LOCALIZED_SITEMAP = ['/checkout'];
   const sitemapEntries = baseRoutes.filter((r) => !NON_LOCALIZED_SITEMAP.includes(r)).map((r) => {
     const enUrl = `https://vladenza.com${r === '/' ? '/' : r + '/'}`;

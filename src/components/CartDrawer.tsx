@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { X, Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useLocale } from '../context/LocaleContext';
 import { trackMetaEvent } from '../lib/analytics';
 
 export default function CartDrawer() {
   const { items, total, itemCount, isOpen, closeCart, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
+  const { t, localizePath: lp } = useLocale();
 
   if (!isOpen) return null;
 
@@ -22,7 +24,7 @@ export default function CartDrawer() {
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <ShoppingBag size={18} className="text-[#F97316]" />
-            <span className="font-bold text-gray-900">Cart</span>
+            <span className="font-bold text-gray-900">{t['nav.openCart']}</span>
             {itemCount > 0 && (
               <span className="text-xs font-semibold text-gray-400">({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
             )}
@@ -36,7 +38,7 @@ export default function CartDrawer() {
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
             <ShoppingBag size={32} className="text-gray-200" />
-            <p className="text-gray-400 text-sm">Your cart is empty.</p>
+            <p className="text-gray-400 text-sm">{t['common.noResults']}</p>
             <button
               onClick={closeCart}
               className="text-sm font-semibold text-[#F97316] hover:underline"
@@ -103,11 +105,11 @@ export default function CartDrawer() {
                     contents: items.map((i) => ({ id: i.productId, quantity: i.quantity, item_price: i.unitPrice })),
                   });
                   closeCart();
-                  navigate('/checkout');
+                  navigate(lp('/checkout'));
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
               >
-                Continue to Requirements <ArrowRight size={15} />
+                {lp('/checkout') === '/checkout' ? 'Continue to Requirements' : 'Продовжити до вимог'} <ArrowRight size={15} />
               </button>
             </div>
           </>

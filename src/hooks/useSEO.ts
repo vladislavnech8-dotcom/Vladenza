@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 const SITE_URL = 'https://vladenza.com';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.svg`;
 
@@ -8,6 +8,7 @@ export interface SEOProps {
   canonical?: string;
   ogImage?: string;
   schema?: object;
+  noindex?: boolean;
 }
 
 export let lastRenderedSEO: SEOProps | null = null;
@@ -48,14 +49,14 @@ function getHreflangPair(pathname: string): { en: string; uk: string } {
   };
 }
 
-export function useSEO({ title, description, canonical, ogImage, schema }: SEOProps) {
+export function useSEO({ title, description, canonical, ogImage, schema, noindex }: SEOProps) {
   const resolvedCanonical = normalizeTrailingSlash(canonical || buildCanonicalFromLocation());
 
   if (typeof window === 'undefined') {
-    lastRenderedSEO = { title, description, canonical: resolvedCanonical, ogImage, schema };
+    lastRenderedSEO = { title, description, canonical: resolvedCanonical, ogImage, schema, noindex };
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     document.title = title;
     const desc = clampDescription(description);
     const image = ogImage || DEFAULT_OG_IMAGE;
@@ -72,9 +73,18 @@ export function useSEO({ title, description, canonical, ogImage, schema }: SEOPr
     setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:image', image);
 
-    // Remove existing canonical + hreflang
+    // Remove existing canonical + hreflang + robots
     document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
     document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+    document.querySelectorAll('meta[name="robots"]').forEach((el) => el.remove());
+
+    // Robots meta (noindex for checkout pages)
+    if (noindex) {
+      const robotsEl = document.createElement('meta');
+      robotsEl.setAttribute('name', 'robots');
+      robotsEl.setAttribute('content', 'noindex,follow');
+      document.head.appendChild(robotsEl);
+    }
 
     // Canonical
     const canonicalEl = document.createElement('link');
@@ -111,7 +121,7 @@ export function useSEO({ title, description, canonical, ogImage, schema }: SEOPr
     } else if (schemaEl) {
       schemaEl.remove();
     }
-  }, [title, description, canonical, ogImage, schema]);
+  }, [title, description, canonical, ogImage, schema, noindex]);
 }
 
 function setMeta(attr: 'name' | 'property', key: string, value: string) {
