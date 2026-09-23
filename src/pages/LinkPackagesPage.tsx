@@ -163,6 +163,15 @@ const nicheData: Record<string, {
   },
 };
 
+const nicheLabelsUk: Record<string, string> = {
+  igaming: 'iGaming & Betting',
+  saas: 'SaaS & B2B Tech',
+  auto: 'Авто',
+  health: "Здоров'я & Велнес",
+  proxy: 'Proxy & VPN',
+  renovations: 'Ремонт & Сантехніка',
+};
+
 const otherNiches = [
   { key: 'igaming',     label: 'iGaming',            href: '/services/link-packages/igaming' },
   { key: 'saas',        label: 'SaaS',               href: '/services/link-packages/saas' },
@@ -176,11 +185,16 @@ export default function LinkPackagesPage() {
   const { niche = 'igaming' } = useParams<{ niche: string }>();
   const { locale, localizePath: lp } = useLocale();
   const data = nicheData[niche] ?? nicheData['igaming'];
+  const labelUk = nicheLabelsUk[niche] ?? data.label;
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
 
   useSEO({
-    title: `Buy ${data.label} Backlinks | Vladenza`,
-    description: `Buy ${data.label} backlinks — niche-specific link building packages. ${data.desc.slice(0, 60)}...`,
+    title: locale === 'uk'
+      ? `Купити backlinks ${labelUk} | Vladenza`
+      : `Buy ${data.label} Backlinks | Vladenza`,
+    description: locale === 'uk'
+      ? `Купіть backlinks ${labelUk} — нішеві пакети лінкбілдингу. ${data.desc.slice(0, 60)}...`
+      : `Buy ${data.label} backlinks — niche-specific link building packages. ${data.desc.slice(0, 60)}...`,
     canonical: locale === 'uk' ? `https://vladenza.com/uk/services/link-packages/${niche}` : `https://vladenza.com/services/link-packages/${niche}`,
   });
 
@@ -220,11 +234,11 @@ export default function LinkPackagesPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/20 bg-[#F97316]/8 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
               <Link2 size={12} />
-              Link Packages — {data.label}
+              {locale === 'uk' ? 'Пакети лінкбілдингу' : 'Link Packages'} — {locale === 'uk' ? labelUk : data.label}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-4">
-              {data.label} Link Building<br />
-              <span className="text-[#F97316]">Packages</span>
+              {locale === 'uk' ? `${labelUk} лінкбілдинг` : `${data.label} Link Building`}<br />
+              <span className="text-[#F97316]">{locale === 'uk' ? 'Пакети' : 'Packages'}</span>
             </h1>
             <p className="text-[#F97316] font-semibold text-lg mb-4">{data.tagline}</p>
             <p className="text-gray-500 leading-relaxed mb-8 max-w-xl">{data.desc}</p>
@@ -232,7 +246,7 @@ export default function LinkPackagesPage() {
               onClick={() => setSelectedPkg({ name: `${data.label} Package`, price: data.packages[1]?.price ?? 'Custom', links: data.packages[1]?.links ?? 'Custom', service: `Link Packages — ${data.label}` })}
               className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              Get a Custom Quote <ArrowRight size={14} />
+              {locale === 'uk' ? 'Отримати пропозицію' : 'Get a Custom Quote'} <ArrowRight size={14} />
             </button>
           </div>
         </div>
@@ -256,8 +270,8 @@ export default function LinkPackagesPage() {
       <section className="py-20 bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-white mb-3">{data.label} link packages</h2>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto">Flexible volumes built for different campaign phases — from foundation building to aggressive authority scaling.</p>
+            <h2 className="text-3xl font-bold text-white mb-3">{locale === 'uk' ? `${labelUk} — пакети` : `${data.label} link packages`}</h2>
+            <p className="text-gray-400 text-sm max-w-lg mx-auto">{locale === 'uk' ? 'Гнучкі обсяги для різних етапів кампанії — від базової побудови до агресивного масштабування авторитету.' : 'Flexible volumes built for different campaign phases — from foundation building to aggressive authority scaling.'}</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {data.packages.map((pkg) => (
@@ -278,7 +292,7 @@ export default function LinkPackagesPage() {
                   onClick={() => setSelectedPkg({ name: pkg.name, price: pkg.price, links: pkg.links, service: `${data.label} Link Package` })}
                   className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${pkg.highlight ? 'bg-white text-[#F97316] hover:bg-gray-100' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
                 >
-                  Order Package <ArrowRight size={13} />
+                  {locale === 'uk' ? 'Замовити пакет' : 'Order Package'} <ArrowRight size={13} />
                 </button>
               </div>
             ))}
@@ -292,10 +306,14 @@ export default function LinkPackagesPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-5">
-                Why Choose Us
+                {locale === 'uk' ? 'Чому обирають нас' : 'Why Choose Us'}
               </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-5 leading-tight">
-                Niche expertise that<br /><span className="text-[#F97316]">makes a difference</span>
+                {locale === 'uk' ? (
+                  <>Нішева експертиза, що<br /><span className="text-[#F97316]">дає результат</span></>
+                ) : (
+                  <>Niche expertise that<br /><span className="text-[#F97316]">makes a difference</span></>
+                )}
               </h2>
               <p className="text-gray-500 text-sm leading-relaxed mb-8">{data.challenge}</p>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -312,8 +330,8 @@ export default function LinkPackagesPage() {
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl p-7">
-              <h3 className="text-gray-900 font-bold text-base mb-2">Included source types</h3>
-              <p className="text-gray-400 text-sm mb-5">Domains are sourced exclusively from these {data.label} relevant site categories.</p>
+              <h3 className="text-gray-900 font-bold text-base mb-2">{locale === 'uk' ? 'Типи джерел, що включені' : 'Included source types'}</h3>
+              <p className="text-gray-400 text-sm mb-5">{locale === 'uk' ? `Домени підбираються виключно з категорій сайтів, релевантних ніші ${labelUk}.` : `Domains are sourced exclusively from these ${data.label} relevant site categories.`}</p>
               <div className="flex flex-col gap-2">
                 {data.includedSources.map((src) => (
                   <div key={src} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
@@ -327,7 +345,7 @@ export default function LinkPackagesPage() {
                   onClick={() => setSelectedPkg({ name: 'Custom Package', price: 'Custom', links: data.label, service: `${data.label} Link Package` })}
                   className="w-full flex items-center justify-center gap-2 bg-gray-950 hover:bg-gray-800 text-white py-3 rounded-lg text-sm font-semibold transition-all"
                 >
-                  Request Custom Package <ArrowRight size={13} />
+                  {locale === 'uk' ? 'Запросити індивідуальний пакет' : 'Request Custom Package'} <ArrowRight size={13} />
                 </button>
               </div>
             </div>
@@ -339,12 +357,12 @@ export default function LinkPackagesPage() {
       <section className="py-16 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Explore other niche packages</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{locale === 'uk' ? 'Інші нішеві пакети' : 'Explore other niche packages'}</h3>
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
             {otherNiches.filter((n) => n.key !== niche).map((n) => (
               <Link key={n.key} to={lp(n.href)} className="px-5 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-[#F97316]/40 hover:text-[#F97316] transition-all duration-200 flex items-center gap-2">
-                {n.label} Packages <ArrowRight size={13} />
+                {locale === 'uk' ? `${nicheLabelsUk[n.key] ?? n.label} — пакети` : `${n.label} Packages`} <ArrowRight size={13} />
               </Link>
             ))}
           </div>

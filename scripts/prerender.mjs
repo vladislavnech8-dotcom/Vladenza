@@ -32,16 +32,20 @@ function escapeHtml(str) {
 
 function injectMeta(html, meta) {
   const title = escapeHtml(meta.title);
-  const description = escapeHtml(meta.description || '');
+  const rawDesc = meta.description || '';
+  const description = rawDesc.length > 158
+    ? rawDesc.slice(0, 158).replace(/[\s,;.:.\u2013\u2014-]+$/, '')
+    : rawDesc;
+  const descriptionEscaped = escapeHtml(description);
   const canonical = meta.canonical || '';
 
   html = html.replace(/<title>.*?<\/title>/s, `<title>${title}</title>`);
-  html = html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${descriptionEscaped}$2`);
   html = html.replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/, `$1${title}$2`);
-  html = html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${descriptionEscaped}$2`);
   html = html.replace(/(<meta\s+property="og:url"\s+content=")[^"]*(")/, `$1${canonical}$2`);
   html = html.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${title}$2`);
-  html = html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${descriptionEscaped}$2`);
 
   if (/<link rel="canonical"/.test(html)) {
     html = html.replace(/(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${canonical}$2`);
@@ -200,8 +204,9 @@ async function main() {
   ];
 
   // UK routes: only include blog/case-study routes that have UK translations
+  // Exclude non-localized routes (checkout, admin, etc.)
   const ukBaseRoutes = [
-    ...STATIC_ROUTES,
+    ...STATIC_ROUTES.filter((r) => r !== '/checkout'),
     ...NICHE_SLUGS.map((s) => `/services/link-packages/${s}`),
     ...CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`),
     ...ukCaseSlugs.map((s) => `/case-studies/${s}`),
@@ -277,10 +282,16 @@ async function main() {
         html = injectMeta(html, meta);
       }
 
-      // Inject hreflang
+      // Inject hreflang (skip UK alternate for non-localized routes)
+      const NON_LOCALIZED = ['/checkout', '/admin', '/admin/orders', '/app', '/crm'];
       const enPath = locale === 'uk' ? (enRoute || '/') : route;
       const ukPath = locale === 'uk' ? route : (route === '/' ? '/uk' : '/uk' + route);
-      html = injectHreflang(html, enPath, ukPath);
+      if (NON_LOCALIZED.includes(enPath)) {
+        // Only add self-referencing canonical, no hreflang alternates
+        html = html.replace(/<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/g, '');
+      } else {
+        html = injectHreflang(html, enPath, ukPath);
+      }
 
       if (faqSchema) html = injectFaqSchema(html, faqSchema);
 
@@ -297,8 +308,9 @@ async function main() {
   }
 
   // Generate sitemap with hreflang annotations
-  // English URLs for all routes; UK URLs only for routes that have UK translations
-  const sitemapEntries = baseRoutes.map((r) => {
+  // English URLs for all routes; UK URLs only for localized routes
+  const NON_LOCALIZED_SITEMAP = ['/checkout'];
+  const sitemapEntries = baseRoutes.filter((r) => !NON_LOCALIZED_SITEMAP.includes(r)).map((r) => {
     const enUrl = `https://vladenza.com${r === '/' ? '/' : r + '/'}`;
     const ukRoute = ukBaseRoutes.includes(r);
     const ukUrl = ukRoute ? `https://vladenza.com${r === '/' ? '/uk/' : '/uk' + r + '/'}` : null;

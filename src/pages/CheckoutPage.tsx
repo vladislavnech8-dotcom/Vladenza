@@ -5,6 +5,7 @@ import Navigation from '../components/Navigation';
 import { useCart } from '../context/CartContext';
 import { useCheckout, type PlacementRequirement } from '../context/CheckoutContext';
 import { useLocale } from '../context/LocaleContext';
+import { useSEO } from '../hooks/useSEO';
 import { payWithWayForPay } from '../lib/wayforpay';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
 
@@ -234,6 +235,14 @@ export default function CheckoutPage() {
   const { locale, localizePath: lp } = useLocale();
   const c = content[locale];
   const [step, setStep] = useState<Step>(itemCount === 0 ? 1 : 2);
+
+  useSEO({
+    title: locale === 'uk' ? 'Оформлення замовлення | Vladenza' : 'Checkout | Vladenza',
+    description: locale === 'uk'
+      ? 'Безпечне оформлення замовлення на послуги лінкбілдингу. Оплата через WayForPay.'
+      : 'Secure checkout for link building services. Payment via WayForPay.',
+    canonical: locale === 'uk' ? 'https://vladenza.com/uk/checkout/' : 'https://vladenza.com/checkout/',
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [outcome, setOutcome] = useState<'approved' | 'declined' | 'pending' | null>(null);
