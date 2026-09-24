@@ -18,14 +18,14 @@ import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE, packageExamples, sampleRe
 const content = {
   en: {
     seo: {
-      title: 'Buy Niche Edits & Link Insertions | Vladenza',
-      description: 'Niche edits and link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3–7 day delivery.',
+      title: 'Buy Link Insertions | Vladenza',
+      description: 'Link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3–7 day delivery.',
     },
     hero: {
       badge: 'Link Building Service',
-      title: 'Niche Edit Link Building',
+      title: 'Link Insertion Link Building',
       subtitle: 'Backlinks inside existing, relevant content.',
-      desc: 'Niche edits place your backlink inside an existing article on a relevant website. Choose the DR and organic traffic level that fits your campaign, or let us recommend a mix based on your site and budget.',
+      desc: 'Link insertions place your backlink inside an existing article on a relevant website. Choose the DR and organic traffic level that fits your campaign, or let us recommend a mix based on your site and budget.',
       fromPrice: `From $${NICHE_EDIT_STARTING_PRICE}`,
       delivery: '3–7 day delivery',
       manualReview: 'Manual review',
@@ -44,8 +44,8 @@ const content = {
       manualValue: 'Manual',
     },
     whyUse: {
-      title: 'Why Use Niche Edits?',
-      desc: "Niche edits let you add links to already-published pages. They're useful on their own and can complement guest posts and other link types in a broader campaign.",
+      title: 'Why Use Link Insertions?',
+      desc: "Link insertions let you add links to already-published pages. They're useful on their own and can complement guest posts and other link types in a broader campaign.",
       benefits: [
         { icon: Link2, title: 'Existing Content', desc: 'Your backlink is added to an article that’s already published.' },
         { icon: Target, title: 'Contextual Placement', desc: 'The link sits inside content relevant to the target page.' },
@@ -54,7 +54,7 @@ const content = {
       ],
     },
     packages: {
-      title: 'Choose Your Niche Edit',
+      title: 'Choose Your Link Insertion',
       desc: "Choose a DR and traffic level based on your campaign and budget. We'll source a relevant opportunity within the selected range and manually review the placement before it goes live.",
     },
     notSure: {
@@ -69,9 +69,9 @@ const content = {
       p2: "That's why we offer several DR and traffic levels instead of one fixed package. Choose placements yourself or let us build the mix around your site and budget.",
     },
     placements: {
-      title: 'Real Niche Edit Placements',
+      title: 'Real Link Insertion Placements',
       desc: 'Examples from completed orders, with Ahrefs DR and organic traffic metrics.',
-      viewAll: 'View All Niche Edit Examples',
+      viewAll: 'View All Link Insertion Examples',
       sampleReport: 'See Sample Report',
     },
     howOrdering: {
@@ -89,7 +89,7 @@ const content = {
       viewAll: 'Explore All Case Studies',
     },
     vsGuestPosts: {
-      title: 'Niche Edits vs. Guest Posts',
+      title: 'Link Insertions vs. Guest Posts',
     },
     seoBlock: {
       heading: 'Link Insertions as Part of Your Link Building Strategy',
@@ -110,7 +110,7 @@ const content = {
       ],
     },
     finalCta: {
-      title: 'Ready to Add Niche Edits?',
+      title: 'Ready to Add Link Insertions?',
       desc: 'Choose your DR and traffic level and add the placements you need.',
       cta: 'View Packages',
       ctaSecondary: 'Get a Link Plan',
@@ -126,14 +126,14 @@ const content = {
   },
   uk: {
     seo: {
-      title: 'Купити нішеві едіти та вставки посилань | Vladenza',
-      description: 'Нішеві едити та вставки посилань у вже існуючий, релевантний контент. Вибирайте з варіантів DR та органічного трафіку. Ціни від $70 за розміщення. Доставка 3–7 днів.',
+      title: 'Купити розміщення посилань у готових статтях | Vladenza',
+      description: 'Розміщення посилань у вже існуючому, релевантному контенті. Вибирайте з варіантів DR та органічного трафіку. Ціни від $70 за розміщення. Доставка 3–7 днів.',
     },
     hero: {
       badge: 'Послуга лінкбілдингу',
-      title: 'Лінкбілдинг через нішеві едити',
+      title: 'Лінкбілдинг через розміщення посилань',
       subtitle: 'Беклінки всередині існуючого, релевантного контенту.',
-      desc: 'Нішеві едити розміщують ваше посилання всередині вже опублікованої статті на релевантному сайті. Оберіть рівень DR та органічного трафіку під вашу кампанію — або дозвольте нам підібрати мікс на основі вашого сайту та бюджету.',
+      desc: 'Розміщення посилань у готових статтях додає ваше посилання всередину вже опублікованої статті на релевантному сайті. Оберіть рівень DR та органічного трафіку під вашу кампанію — або дозвольте нам підібрати мікс на основі вашого сайту та бюджету.',
       fromPrice: `Від $${NICHE_EDIT_STARTING_PRICE}`,
       delivery: 'Доставка 3–7 днів',
       manualReview: 'Ручна перевірка',
@@ -152,8 +152,8 @@ const content = {
       manualValue: 'Ручна робота',
     },
     whyUse: {
-      title: 'Навіщо використовувати нішеві едити?',
-      desc: 'Нішеві едити дозволяють додавати посилання до вже опублікованих сторінок. Вони корисні самостійно та можуть доповнювати гостьові публікації й інші типи посилань у ширшій кампанії.',
+      title: 'Навіщо використовувати розміщення посилань?',
+      desc: 'Розміщення посилань у готових статтях дозволяє додавати посилання до вже опублікованих сторінок. Вони корисні самостійно та можуть доповнювати гостьові публікації й інші типи посилань у ширшій кампанії.',
       benefits: [
         { icon: Link2, title: 'Існуючий контент', desc: 'Ваше посилання додається до вже опублікованої статті.' },
         { icon: Target, title: 'Контекстне розміщення', desc: 'Посилання розміщується всередині контенту, релевантного цільовій сторінці.' },
@@ -162,7 +162,7 @@ const content = {
       ],
     },
     packages: {
-      title: 'Оберіть свій нішевий едит',
+      title: 'Оберіть розміщення посилання',
       desc: 'Оберіть рівень DR та трафіку залежно від вашої кампанії та бюджету. Ми підберемо релевантну можливість у межах обраного діапазону та вручну перевіримо розміщення перед публікацією.',
     },
     notSure: {
@@ -177,9 +177,9 @@ const content = {
       p2: 'Саме тому ми пропонуємо кілька рівнів DR та трафіку замість одного фіксованого пакета. Обирайте розміщення самостійно або довірте нам скласти мікс під ваш сайт та бюджет.',
     },
     placements: {
-      title: 'Реальні розміщення нішевих едитів',
+      title: 'Реальні розміщення посилань',
       desc: 'Приклади з виконаних замовлень, з метриками Ahrefs DR та органічним трафіком.',
-      viewAll: 'Усі приклади нішевих едитів',
+      viewAll: 'Усі приклади розміщень посилань',
       sampleReport: 'Зразок звіту',
     },
     howOrdering: {
@@ -193,32 +193,32 @@ const content = {
     },
     cases: {
       title: 'Реальні кампанії. Реальні результати.',
-      desc: 'Побачте, як нішеві едити вписуються у ширші лінкбілдинг-кампанії на конкурентних ринках.',
+      desc: 'Побачте, як розміщення посилань вписуються у ширші лінкбілдинг-кампанії на конкурентних ринках.',
       viewAll: 'Усі кейс-стаді',
     },
     vsGuestPosts: {
-      title: 'Нішеві едити vs. Гостьові публікації',
+      title: 'Розміщення посилань vs. Гостьові публікації',
     },
     seoBlock: {
-      heading: 'Нішеві едити у вашій стратегії лінкбілдингу',
-      intro: 'Нішеві едити, також звані вставками посилань, додають беклінки до вже опублікованих статей. Їх зазвичай використовують разом із гостьовими публікаціями, форумними посиланнями та іншими розміщеннями для різноманітності реферальних доменів та підтримки важливих сторінок.',
+      heading: 'Розміщення посилань у вашій стратегії лінкбілдингу',
+      intro: 'Розміщення посилань у готових статтях додають беклінки до вже опублікованих статей. Їх зазвичай використовують разом із гостьовими публікаціями, форумними посиланнями та іншими розміщеннями для різноманітності реферальних доменів та підтримки важливих сторінок.',
       body: [
         'Вибір має враховувати як вимірні критерії, так і релевантність. Ми дивимось на DR, органічний трафік, саму статтю, тему, цільову сторінку, анкор та існуючий беклінк-профіль — а не лише на поріг DR.',
         'Клієнти можуть замовляти окремі розміщення за рівнями DR та трафіку, але більші кампанії можуть використовувати мікс цінових рівнів. Не кожне посилання має бути преміальним. Посилання DR10+ має інше призначення, ніж DR50+, і обидва можуть бути доречними в одному профілі залежно від кампанії.',
-        'Для клієнтів, які ведуть тривалі лінкбілдинг-кампанії, ми можемо проаналізувати конкурентів та існуючий беклінк-профіль перед тим, як порадити мікс [нішевих едитів](/blog/niche-edits-vs-guest-posts), [гостьових публікацій](/services/guest-posting) та [крауд-посилань](/services/crowd-links). Дивіться реальні результати у наших [кейс-стаді](/case-studies) або дослідіть нішеві пакети у [пакетах лінкбілдингу](/services/link-packages/saas).',
+        'Для клієнтів, які ведуть тривалі лінкбілдинг-кампанії, ми можемо проаналізувати конкурентів та існуючий беклінк-профіль перед тим, як порадити мікс [розміщень посилань](/blog/niche-edits-vs-guest-posts), [гостьових публікацій](/services/guest-posting) та [крауд-маркетингу](/services/crowd-links). Дивіться реальні результати у наших [кейс-стаді](/case-studies) або дослідіть нішеві пакети у [пакетах лінкбілдингу](/services/link-packages/saas).',
       ],
       faqs: [
-        { q: 'Що таке нішевий едит?', a: 'Нішевий едит, також званий вставкою посилання, — це беклінк, доданий до існуючої статті. Посилання розміщується всередині релевантного контенту, а не через публікацію нової гостьової статті.' },
-        { q: 'Чи безпечні нішеві едити?', a: 'Жоден метод лінкбілдингу не є повністю безризиковим. Ми вручну перевіряємо потенційні розміщення та фокусуємось на релевантних сайтах і статтях, а не схвалюємо сайти лише за порогом DR.' },
-        { q: 'Чи нішеві едити швидші за гостьові публікації?', a: 'Зазвичай так, бо не потрібно писати та публікувати нову статтю. Типова доставка — 3–7 днів, хоча час відповіді паблішерів може варіюватися.' },
+        { q: 'Що таке розміщення посилання?', a: 'Розміщення посилання у готовій статті — це беклінк, доданий до існуючої статті. Посилання розміщується всередині релевантного контенту, а не через публікацію нової гостьової статті.' },
+        { q: 'Чи безпечні розміщення посилань?', a: 'Жоден метод лінкбілдингу не є повністю безризиковим. Ми вручну перевіряємо потенційні розміщення та фокусуємось на релевантних сайтах і статтях, а не схвалюємо сайти лише за порогом DR.' },
+        { q: 'Чи розміщення посилань швидші за гостьові публікації?', a: 'Зазвичай так, бо не потрібно писати та публікувати нову статтю. Типова доставка — 3–7 днів, хоча час відповіді паблішерів може варіюватися.' },
         { q: 'Чи можу я контролювати анкор-текст?', a: 'Так. Клієнти можуть надати бажані анкори. Для тривалих кампаній ми також можемо порадити анкори на основі поточного беклінк-профілю та цільових сторінок.' },
         { q: 'Який пакет DR мені обрати?', a: 'Це залежить від поточного беклінк-профілю, конкурентів, цільових сторінок та бюджету. Не кожне посилання має бути DR50–60+. Клієнти можуть замовити конкретний рівень або попросити нас підібрати мікс.' },
         { q: 'Чи гарантуєте ви індексацію?', a: 'Ні. Ми можемо перевірити, чи сторінка доступна та проіндексована під час оцінки, але індексація контролюється пошуковими системами і може змінюватися з часом.' },
-        { q: 'Чи нішеві едити постійні?', a: 'Розміщення плануються як постійні, але сторонні сайти не підконтрольні нам повністю. Якщо розміщення зникає протягом періоду покриття, зверніться до нас — ми замінимо його.' },
+        { q: 'Чи розміщення посилань постійні?', a: 'Розміщення плануються як постійні, але сторонні сайти не підконтрольні нам повністю. Якщо розміщення зникає протягом періоду покриття, зверніться до нас — ми замінимо його.' },
       ],
     },
     finalCta: {
-      title: 'Готові додати нішеві едити?',
+      title: 'Готові додати розміщення посилань?',
       desc: 'Оберіть рівень DR та трафіку і додайте потрібні вам розміщення.',
       cta: 'Переглянути пакети',
       ctaSecondary: 'Отримати план посилань',
@@ -256,7 +256,7 @@ function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
       {
         productId: `niche-edit-${pkg.id}`,
         service: 'Niche Edits',
-        name: `${locale === 'uk' ? 'Нішевий едит' : 'Niche Edit'} — ${pkg.label}`,
+        name: `${locale === 'uk' ? 'Розміщення посилань' : 'Link Insertion'} — ${pkg.label}`,
         description: localizedTraffic,
         unitPrice: pkg.price,
       },

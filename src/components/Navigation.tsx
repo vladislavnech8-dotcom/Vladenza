@@ -181,7 +181,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
                     style={{ animation: 'dropIn 0.18s cubic-bezier(0.16,1,0.3,1)' }}>
                     <div className="grid grid-cols-2 gap-px bg-gray-100">
                       <div className="bg-white p-4 flex flex-col gap-0.5">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-2 pb-2">Services</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-2 pb-2">{t['nav.services']}</p>
                         {services.map((s) => (
                           <button key={s.href} onClick={() => navigate(s.href)}
                             className="group flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-150 text-left w-full">
@@ -200,7 +200,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
                         ))}
                       </div>
                       <div className="bg-white p-4 flex flex-col">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-2 pb-2">Link Packages by Niche</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-2 pb-2">{t['nav.packages']}</p>
                         <div className="flex flex-col gap-0.5 flex-1">
                           {packages.map((p) => (
                             <button key={p.href} onClick={() => navigate(p.href)}

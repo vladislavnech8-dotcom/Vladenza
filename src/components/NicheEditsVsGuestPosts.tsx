@@ -3,7 +3,7 @@ import { useLocale } from '../context/LocaleContext';
 
 const content = {
   en: {
-    nicheEditsTitle: 'Niche Edits',
+    nicheEditsTitle: 'Link Insertions',
     nicheEditsSubtitle: 'Existing article',
     nicheEditPoints: [
       { emoji: '⚡', label: '3–7 day delivery' },
@@ -14,7 +14,7 @@ const content = {
     ],
     chooseThisWhen: 'Choose this when',
     nicheEditWhen: 'You already know the target page and want links from relevant existing content.',
-    viewNicheEditPackages: 'View Niche Edit Packages',
+    viewNicheEditPackages: 'View Link Insertion Packages',
     guestPostsTitle: 'Guest Posts',
     guestPostsSubtitle: 'New article',
     guestPostPoints: [
@@ -67,7 +67,7 @@ export default function NicheEditsVsGuestPosts({
   return (
     <div>
       <div className="grid md:grid-cols-2 gap-5">
-        {/* Niche Edits card */}
+        {/* Link Insertions card */}
         <div className="bg-white border-2 border-[#F97316]/20 rounded-2xl p-7 flex flex-col hover:border-[#F97316]/40 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-xl">

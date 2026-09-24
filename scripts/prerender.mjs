@@ -22,7 +22,7 @@ const CROWD_LINKS_LANGUAGES = ['english', 'spanish', 'german', 'french', 'portug
 
 const HOME_META = {
   title: 'Vladenza — SEO Link Building Agency & AI Visibility',
-  description: 'Results-driven SEO agency for high-authority link building, guest posting, niche edits, and AI/LLM visibility. Grow organic traffic — no lock-ins.',
+  description: 'Results-driven SEO agency for high-authority link building, guest posting, link insertions, and AI/LLM visibility. Grow organic traffic — no lock-ins.',
   canonical: 'https://vladenza.com/',
 };
 
@@ -271,7 +271,7 @@ async function main() {
         html = html.replace('"name": "SEO Audit"', '"name": "SEO-аудит"');
         html = html.replace('"name": "AI & LLM Visibility"', '"name": "Видимість в AI та LLM"');
         html = html.replace('"availableLanguage": ["English"]', '"availableLanguage": ["English", "Ukrainian"]');
-        html = html.replace('"description": "Vladenza is a results-driven SEO agency specializing in high-authority link building, guest posting, niche edits, and AI/LLM visibility."', '"description": "Vladenza — агенція SEO, що спеціалізується на лінкбілдингу з високим авторитетом, гостьових публікаціях, розміщенні посилань та видимості в AI/LLM."');
+        html = html.replace('"description": "Vladenza is a results-driven SEO agency specializing in high-authority link building, guest posting, link insertions, and AI/LLM visibility."', '"description": "Vladenza — агенція SEO, що спеціалізується на лінкбілдингу з високим авторитетом, гостьових публікаціях, розміщенні посилань та видимості в AI/LLM."');
       }
       // Adjust canonical for UK pages
       if (meta) {

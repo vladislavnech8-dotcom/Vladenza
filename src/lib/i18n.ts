@@ -206,7 +206,7 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.pkg.renovationsDesc': 'Plumbing, contractors, HVAC',
 
     // Footer
-    'footer.tagline': 'Link building for brands and agencies. Niche edits, guest posts and community links backed by manual review.',
+    'footer.tagline': 'Link building for brands and agencies. Link insertions, guest posts and community links backed by manual review.',
     'footer.linkBuilding': 'Link Building',
     'footer.company': 'Company',
     'footer.resources': 'Resources',

@@ -1,5 +1,5 @@
-import { lazy, Suspense, Component, ErrorInfo, ReactNode } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, Component, ErrorInfo, ReactNode, useState, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import CartDrawer from './components/CartDrawer';
 import CookieConsentBanner from './components/CookieConsentBanner';
@@ -71,10 +71,27 @@ const PlacementsPage = lazy(() => import('./pages/PlacementsPage'));
 const CrmPage = lazy(() => import('./pages/CrmPage'));
 
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-white">
-    <span className="w-6 h-6 border-2 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
+  <div className="min-h-[60vh] flex items-center justify-center bg-white">
+    <div className="flex flex-col items-center gap-3">
+      <span className="w-6 h-6 border-2 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
+      <span className="text-xs text-gray-400 font-medium">Loading…</span>
+    </div>
   </div>
 );
+
+function RouteTransition({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation();
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    setShowLoader(true);
+    const timer = setTimeout(() => setShowLoader(false), 50);
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  if (showLoader) return <PageLoader />;
+  return <>{children}</>;
+}
 
 function AdminRoute() {
   const { session, loading } = useAuth();
@@ -133,7 +150,7 @@ export default function App() {
         <CookieConsentProvider>
           <CartDrawer />
           <CookieConsentBanner />
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<RouteTransition><div /></RouteTransition>}>
             <ErrorBoundary>
               <Routes>
                 {/* English routes (no prefix) */}

@@ -131,7 +131,7 @@ export default function PricingPage() {
 
   useSEO({
     title: locale === 'uk' ? 'Ціни — вартість усіх послуг | Vladenza' : 'Pricing — All Service Prices | Vladenza',
-    description: locale === 'uk' ? 'Прозорі ціни на всі послуги Vladenza: SEO-аудити, гостьові публікації, розміщення посилань, крауд-маркетинг, AI/LLM SEO, локальне SEO, LinkedIn і white-label пакети.' : 'Transparent pricing for every Vladenza service: SEO audits, guest posting, niche edits, crowd links, AI/LLM SEO, local SEO, LinkedIn, and white-label packages.',
+    description: locale === 'uk' ? 'Прозорі ціни на всі послуги Vladenza: SEO-аудити, гостьові публікації, розміщення посилань, крауд-маркетинг, AI/LLM SEO, локальне SEO, LinkedIn і white-label пакети.' : 'Transparent pricing for every Vladenza service: SEO audits, guest posting, link insertions, crowd links, AI/LLM SEO, local SEO, LinkedIn, and white-label packages.',
     canonical: `https://vladenza.com${lp('/pricing')}`,
   });
 

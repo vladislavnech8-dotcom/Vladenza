@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import PlacementCard from './PlacementCard';
 import Pagination from './Pagination';
 import { fetchPlacements, type Placement, type PlacementServiceType, getPlacementNiches } from '../data/placements';
+import { useLocale } from '../context/LocaleContext';
 
 const DR_FILTERS = ['Any', 'DR20+', 'DR30+', 'DR40+', 'DR50+', 'DR60+'] as const;
 const TRAFFIC_FILTERS = [
@@ -13,9 +14,20 @@ const TRAFFIC_FILTERS = [
   { label: '50K+', min: 50000 },
 ];
 
+const NICHE_TRANSLATIONS: Record<string, string> = {
+  'Health': 'Здоров\'я',
+  'Insurance': 'Страхування',
+  'Marketing': 'Маркетинг',
+  'Proxy': 'Проксі',
+  'Tech': 'Технології',
+  'Traffic': 'Трафік',
+};
+
 const PAGE_SIZE = 6;
 
 export default function PlacementExplorer({ serviceType }: { serviceType?: PlacementServiceType }) {
+  const { locale } = useLocale();
+  const uk = locale === 'uk';
   const [placements, setPlacements] = useState<Placement[]>([]);
   const [loading, setLoading] = useState(true);
   const niches = useMemo(() => ['All', ...getPlacementNiches(placements)], [placements]);
@@ -24,6 +36,21 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
   const [activeTraffic, setActiveTraffic] = useState(0);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+
+  const t = {
+    niche: uk ? 'Ніша' : 'Niche',
+    all: uk ? 'Усі' : 'All',
+    searchPlaceholder: uk ? 'Пошук домену або ніші' : 'Search domain or niche',
+    noResults: uk ? 'Розміщень не знайдено.' : 'No placements match these filters.',
+    metricsNote: uk
+      ? 'Метрики з Ahrefs, можуть змінюватися з часом. DR = Domain Rating. Трафік = оцінка органічних відвідувань на місяць.'
+      : 'Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.',
+  };
+
+  const localizeNiche = (n: string) => {
+    if (n === 'All') return t.all;
+    return uk ? (NICHE_TRANSLATIONS[n] ?? n) : n;
+  };
 
   useEffect(() => {
     const filters: Parameters<typeof fetchPlacements>[0] = { status: 'active' };
@@ -61,7 +88,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
       {/* Filters — compact toolbar */}
       <div className="flex flex-col gap-3 mb-8">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Niche</span>
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.niche}</span>
           {niches.map((n) => (
             <button
               key={n}
@@ -72,7 +99,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
                   : 'border-gray-200 text-gray-500 hover:border-[#F97316]/40 hover:text-[#F97316]'
               }`}
             >
-              {n}
+              {localizeNiche(n)}
             </button>
           ))}
         </div>
@@ -118,7 +145,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search domain or niche"
+              placeholder={t.searchPlaceholder}
               className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all"
             />
           </div>
@@ -132,7 +159,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
         </div>
       ) : shown.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-gray-400 text-sm">No placements match these filters.</p>
+          <p className="text-gray-400 text-sm">{t.noResults}</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -145,7 +172,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
       <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
 
       <p className="text-center text-xs text-gray-400 mt-6">
-        Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.
+        {t.metricsNote}
       </p>
     </div>
   );

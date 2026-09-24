@@ -85,19 +85,33 @@ function useAllPosts(): { posts: Post[]; loading: boolean } {
   return { posts, loading };
 }
 
-const CATEGORY_LIST = [
-  'All Posts',
-  'Link Building',
-  'SEO Strategy',
-  'AI & LLM SEO',
-  'Crowd Marketing',
-  'SaaS SEO',
-  'iGaming SEO',
-  'White Label SEO',
-];
+const CATEGORY_LABELS_EN: Record<string, string> = {
+  'All Posts': 'All Posts',
+  'Link Building': 'Link Building',
+  'SEO Strategy': 'SEO Strategy',
+  'AI & LLM SEO': 'AI & LLM SEO',
+  'Crowd Marketing': 'Crowd Marketing',
+  'SaaS SEO': 'SaaS SEO',
+  'iGaming SEO': 'iGaming SEO',
+  'White Label SEO': 'White Label SEO',
+  'SEO Audit': 'SEO Audit',
+};
+
+const CATEGORY_LABELS_UK: Record<string, string> = {
+  'All Posts': 'Усі статті',
+  'Link Building': 'Лінкбілдинг',
+  'SEO Strategy': 'SEO-стратегія',
+  'AI & LLM SEO': 'SEO для AI та LLM',
+  'Crowd Marketing': 'Крауд-маркетинг',
+  'SaaS SEO': 'SEO для SaaS',
+  'iGaming SEO': 'SEO для iGaming',
+  'White Label SEO': 'White Label SEO',
+  'SEO Audit': 'SEO-аудит',
+};
 
 function CategoryBadge({ category, color, uk = false }: { category: string; color: string; uk?: boolean }) {
-  const categoryLabel = uk ? ({ 'All Posts': 'Усі статті', 'Link Building': 'Лінкбілдинг', 'SEO Strategy': 'SEO-стратегія', 'AI & LLM SEO': 'SEO для AI та LLM', 'Crowd Marketing': 'Крауд-маркетинг', 'SaaS SEO': 'SEO для SaaS', 'iGaming SEO': 'SEO для iGaming', 'White Label SEO': 'White Label SEO' }[category] ?? category) : category;
+  const labels = uk ? CATEGORY_LABELS_UK : CATEGORY_LABELS_EN;
+  const categoryLabel = labels[category] ?? category;
   return (
     <span className={`inline-flex items-center text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${color}`}>
       {categoryLabel}
@@ -174,14 +188,14 @@ export default function BlogPage() {
 
   useSEO({
     title: uk ? 'SEO-блог — лінкбілдинг та стратегії AI-пошуку | Vladenza' : 'SEO Blog — Link Building & AI Search Strategies | Vladenza',
-    description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, niche edits, GEO, видимість в AI/LLM та технічне SEO. Практичні поради від команди Vladenza.' : 'Expert articles on link building, guest posting, niche edits, GEO, AI/LLM visibility, and technical SEO. Practical playbooks from the Vladenza team.',
+    description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, розміщення посилань, GEO, видимість в AI/LLM та технічне SEO. Практичні поради від команди Vladenza.' : 'Expert articles on link building, guest posting, link insertions, GEO, AI/LLM visibility, and technical SEO. Practical playbooks from the Vladenza team.',
     canonical: `https://vladenza.com${lp('/blog')}`,
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Blog',
       inLanguage: uk ? 'uk' : 'en',
       name: uk ? 'Блог Vladenza' : 'Vladenza Blog',
-      description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, niche edits, GEO, видимість в AI/LLM та технічне SEO.' : 'Expert articles on link building, guest posting, niche edits, GEO, AI/LLM visibility, and technical SEO.',
+      description: uk ? 'Експертні статті про лінкбілдинг, гостьові публікації, розміщення посилань, GEO, видимість в AI/LLM та технічне SEO.' : 'Expert articles on link building, guest posting, link insertions, GEO, AI/LLM visibility, and technical SEO.',
       url: `https://vladenza.com${lp('/blog')}`,
       publisher: {
         '@type': 'Organization',
@@ -198,6 +212,11 @@ export default function BlogPage() {
     }
     return counts;
   }, [allPosts]);
+
+  const categoryList = useMemo(() => {
+    const cats = Object.keys(categoryCounts).filter(c => c !== 'All Posts');
+    return ['All Posts', ...cats];
+  }, [categoryCounts]);
 
   const filtered = useMemo(() => {
     let list = allPosts;
@@ -335,10 +354,11 @@ export default function BlogPage() {
                   {uk ? 'Категорії' : 'Categories'}
                 </h3>
                 <div className="flex flex-col gap-1">
-                  {CATEGORY_LIST.map((cat) => {
+                  {categoryList.map((cat) => {
                     const count = categoryCounts[cat] ?? 0;
                     if (count === 0 && cat !== 'All Posts') return null;
                     const isActive = activeCategory === cat;
+                    const labels = uk ? CATEGORY_LABELS_UK : CATEGORY_LABELS_EN;
                     return (
                       <button
                         key={cat}
@@ -349,7 +369,7 @@ export default function BlogPage() {
                             : 'text-gray-600 hover:bg-orange-50/60 hover:text-gray-900'
                         }`}
                       >
-                        <span>{uk ? ({ 'All Posts': 'Усі статті', 'Link Building': 'Лінкбілдинг', 'SEO Strategy': 'SEO-стратегія', 'AI & LLM SEO': 'SEO для AI та LLM', 'Crowd Marketing': 'Крауд-маркетинг', 'SaaS SEO': 'SEO для SaaS', 'iGaming SEO': 'SEO для iGaming', 'White Label SEO': 'White Label SEO' }[cat] ?? cat) : cat}</span>
+                        <span>{labels[cat] ?? cat}</span>
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
                           isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
                         }`}>{count}</span>
