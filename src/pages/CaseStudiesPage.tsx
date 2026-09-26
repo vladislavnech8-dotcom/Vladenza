@@ -24,14 +24,14 @@ export default function CaseStudiesPage() {
 
   useSEO({
     title: uk ? 'SEO-кейси — реальні результати лінкбілдингу | Vladenza' : 'SEO Case Studies — Real Results from Link Building Campaigns | Vladenza',
-    description: uk ? 'Перегляньте понад 840 кампаній клієнтів. Реальні результати Vladenza: зростання трафіку, позицій та ROI у нішах iGaming, SaaS, health, fintech та інших.' : 'Browse 840+ client campaigns. See how Vladenza delivers measurable SEO results — traffic growth, ranking improvements, and ROI across iGaming, SaaS, health, fintech, and more.',
+    description: uk ? 'Перегляньте реальні кейси клієнтів Vladenza: зростання трафіку, позицій та авторитету у нішах iGaming, SaaS, health, fintech та інших.' : 'Browse real client case studies. See how Vladenza delivers measurable SEO results — traffic growth, ranking improvements, and authority gains across iGaming, SaaS, health, fintech, and more.',
     canonical: `https://vladenza.com${lp('/case-studies')}`,
     schema: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       inLanguage: uk ? 'uk' : 'en',
       name: uk ? 'SEO-кейси Vladenza' : 'Vladenza SEO Case Studies',
-      description: uk ? 'Перегляньте понад 840 кампаній клієнтів. Реальні результати Vladenza: зростання трафіку, позицій та ROI.' : 'Browse 840+ client campaigns. See how Vladenza delivers measurable SEO results — traffic growth, ranking improvements, and ROI.',
+      description: uk ? 'Перегляньте реальні кейси клієнтів Vladenza: зростання трафіку, позицій та авторитету.' : 'Browse real client case studies. See how Vladenza delivers measurable SEO results — traffic growth, ranking improvements, and authority gains.',
       url: `https://vladenza.com${lp('/case-studies')}`,
       publisher: {
         '@type': 'Organization',
@@ -99,10 +99,10 @@ export default function CaseStudiesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { value: '840+', label: uk ? 'Клієнтських кампаній' : 'Client campaigns' },
-              { value: '4.8×', label: uk ? 'Середнє зростання трафіку' : 'Avg traffic growth' },
-              { value: '94%', label: uk ? 'Кампаній досягли KPI' : 'Campaigns hit KPIs' },
-              { value: '200+', label: uk ? 'Активних клієнтів' : 'Active clients' },
+              { value: '7', label: uk ? 'Опублікованих кейсів' : 'Case studies published' },
+              { value: '7', label: uk ? 'Індустрій' : 'Industries served' },
+              { value: '8+', label: uk ? 'Років досвіду' : 'Years experience' },
+              { value: '100%', label: uk ? 'Ручний аутріч' : 'Manual outreach' },
             ].map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-3xl font-black text-white mb-1">{s.value}</div>

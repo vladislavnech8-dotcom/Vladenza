@@ -21,7 +21,7 @@ const sections: SitemapSection[] = [
     color: 'text-gray-700 bg-gray-50 border-gray-200',
     links: [
       { label: 'Home', href: '/', desc: 'Overview of all services and agency overview' },
-      { label: 'Reviews', href: '/reviews', desc: 'Client reviews on Fiverr and Clutch — leave your own' },
+      { label: 'Case Studies', href: '/case-studies', desc: 'Real client campaigns with documented results' },
     ],
   },
   {
@@ -34,7 +34,7 @@ const sections: SitemapSection[] = [
       { label: 'Crowd Marketing', href: '/services/crowd-links', desc: 'Forum & community link building across 50+ platforms' },
       { label: 'SEO Audit', href: '/services/seo-audit', desc: 'Technical, on-page, and backlink profile analysis' },
       { label: 'AI & LLM Visibility', href: '/services/ai-llm', desc: 'Get cited by ChatGPT, Gemini, and Perplexity' },
-      { label: 'Local SEO Links', href: '/services/local-seo-links', desc: 'Geo-targeted links for local business rankings' },
+
     ],
   },
   {
@@ -42,12 +42,7 @@ const sections: SitemapSection[] = [
     title: 'Link Packages by Niche',
     color: 'text-blue-600 bg-blue-50 border-blue-200',
     links: [
-      { label: 'iGaming & Betting', href: '/services/link-packages/igaming', desc: 'Compliance-aware links for casino, poker & sports betting' },
-      { label: 'SaaS & B2B Tech', href: '/services/link-packages/saas', desc: 'Authority links for software, developer tools & MarTech' },
-      { label: 'Automotive', href: '/services/link-packages/auto', desc: 'Links for dealerships, parts retailers & auto reviews' },
-      { label: 'Health & Wellness', href: '/services/link-packages/health', desc: 'YMYL-safe links for health, nutrition & medical sites' },
-      { label: 'Proxy & VPN', href: '/services/link-packages/proxy', desc: 'High-DR links for proxy, VPN & cybersecurity brands' },
-      { label: 'Renovations & Home', href: '/services/link-packages/renovations', desc: 'Local & national links for construction & home services' },
+      { label: 'Niche Edits (all niches)', href: '/services/niche-edits', desc: 'Contextual link insertions for iGaming, SaaS, health, crypto & more' },
     ],
   },
   {
@@ -55,7 +50,7 @@ const sections: SitemapSection[] = [
     title: 'Case Studies',
     color: 'text-green-600 bg-green-50 border-green-200',
     links: [
-      { label: 'All Case Studies', href: '/case-studies', desc: 'Browse 840+ client campaigns with real results' },
+      { label: 'All Case Studies', href: '/case-studies', desc: 'Browse real client case studies with documented results' },
       ...cases.map((c) => ({ label: c.title, href: `/case-studies/${c.slug}`, desc: `${c.niche} · ${c.metric} ${c.metricSub}` })),
     ],
   },

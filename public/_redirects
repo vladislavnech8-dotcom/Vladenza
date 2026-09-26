@@ -1,6 +1,84 @@
-# ─── SPA fallbacks (must come before trailing-slash rule) ───
-/order/*  /spa-fallback.html  200
-/admin/*  /spa-fallback.html  200
+# ─── 301 Content Redirects (force) ───
+/services/link-packages/auto    /services/niche-edits/    301
+/services/link-packages/saas    /services/niche-edits/    301
+/services/link-packages/igaming    /services/niche-edits/    301
+/services/link-packages/health    /services/niche-edits/    301
+/services/link-packages/proxy    /services/niche-edits/    301
+/services/link-packages/renovations    /services/niche-edits/    301
+/services/local-seo-links    /services/niche-edits/    301
+/services/crowd-links/english    /services/crowd-links/    301
+/blog/backlink-quality-guide    /blog/5-facts-about-backlinks/    301
+/blog/dofollow-vs-nofollow-links    /blog/5-facts-about-backlinks/    301
+/blog/organic-seo-inbound-clients    /blog/link-building-services-guide/    301
+/reviews    /case-studies/    301
+
+# ─── UK 301 Content Redirects ───
+/uk/services/link-packages/auto    /uk/services/niche-edits/    301
+/uk/services/link-packages/saas    /uk/services/niche-edits/    301
+/uk/services/link-packages/igaming    /uk/services/niche-edits/    301
+/uk/services/link-packages/health    /uk/services/niche-edits/    301
+/uk/services/link-packages/proxy    /uk/services/niche-edits/    301
+/uk/services/link-packages/renovations    /uk/services/niche-edits/    301
+/uk/services/local-seo-links    /uk/services/niche-edits/    301
+/uk/services/crowd-links/english    /uk/services/crowd-links/    301
+/uk/blog/backlink-quality-guide    /uk/blog/5-facts-about-backlinks/    301
+/uk/blog/dofollow-vs-nofollow-links    /uk/blog/5-facts-about-backlinks/    301
+/uk/blog/organic-seo-inbound-clients    /uk/blog/link-building-services-guide/    301
+/uk/reviews    /uk/case-studies/    301
+
+# ─── 410 Gone ───
+/services/crowd-links/korean    /.410.html    410
+/services/crowd-links/portuguese    /.410.html    410
+/uk/services/crowd-links/korean    /.410.html    410
+/uk/services/crowd-links/portuguese    /.410.html    410
+
+# ─── Trailing-slash redirects for indexable routes ───
+/services/guest-posting    /services/guest-posting/    301
+/services/niche-edits    /services/niche-edits/    301
+/services/crowd-links    /services/crowd-links/    301
+/services/white-label    /services/white-label/    301
+/placements    /placements/    301
+/pricing    /pricing/    301
+/case-studies    /case-studies/    301
+/blog    /blog/    301
+
+# ─── Trailing-slash redirects for noindex routes ───
+/services/seo-audit    /services/seo-audit/    301
+/services/ai-llm    /services/ai-llm/    301
+/services/linkedin-personal    /services/linkedin-personal/    301
+/services/linkedin-company    /services/linkedin-company/    301
+/privacy-policy    /privacy-policy/    301
+/terms    /terms/    301
+/refund-policy    /refund-policy/    301
+/cookie-policy    /cookie-policy/    301
+/sitemap    /sitemap/    301
+/checkout    /checkout/    301
+/seo-audit-sample    /seo-audit-sample/    301
+
+# ─── UK trailing-slash redirects ───
+/uk/services/guest-posting    /uk/services/guest-posting/    301
+/uk/services/niche-edits    /uk/services/niche-edits/    301
+/uk/services/crowd-links    /uk/services/crowd-links/    301
+/uk/services/white-label    /uk/services/white-label/    301
+/uk/pricing    /uk/pricing/    301
+/uk/case-studies    /uk/case-studies/    301
+/uk/blog    /uk/blog/    301
+/uk/placements    /uk/placements/    301
+/uk/services/seo-audit    /uk/services/seo-audit/    301
+/uk/services/ai-llm    /uk/services/ai-llm/    301
+/uk/services/linkedin-personal    /uk/services/linkedin-personal/    301
+/uk/services/linkedin-company    /uk/services/linkedin-company/    301
+/uk/privacy-policy    /uk/privacy-policy/    301
+/uk/terms    /uk/terms/    301
+/uk/refund-policy    /uk/refund-policy/    301
+/uk/cookie-policy    /uk/cookie-policy/    301
+/uk/sitemap    /uk/sitemap/    301
+/uk/checkout    /uk/checkout/    301
+/uk/seo-audit-sample    /uk/seo-audit-sample/    301
+
+# ─── SPA fallbacks (must come after all redirects) ───
+/order/*    /spa-fallback.html    200
+/admin/*    /spa-fallback.html    200
 
 # ─── SPA catch-all ───
-/*  /index.html  200
+/*    /index.html    200

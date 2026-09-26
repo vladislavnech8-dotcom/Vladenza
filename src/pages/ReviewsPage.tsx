@@ -23,8 +23,6 @@ const platforms = [
   {
     name: 'Fiverr',
     favicon: 'fiverr.com',
-    score: '4.9',
-    reviews: '1.1K',
     tag: 'Freelance Platform',
     tagColor: 'text-green-600 bg-green-50 border-green-200',
     description: 'Reviews on Fiverr help us rank higher and reach more clients looking for SEO services.',
@@ -42,8 +40,6 @@ const platforms = [
   {
     name: 'Clutch',
     favicon: 'clutch.co',
-    score: '5.0',
-    reviews: '11',
     tag: 'B2B Reviews',
     tagColor: 'text-red-600 bg-red-50 border-red-200',
     description: 'Clutch is the leading B2B ratings & reviews platform. Your review helps other businesses find reliable SEO partners.',
@@ -92,10 +88,10 @@ const testimonials = [
 ];
 
 const stats = [
-  { value: '4.9', label: 'Average Rating', sub: 'across Fiverr and Clutch' },
-  { value: '1.1K+', label: 'Verified Reviews', sub: 'Fiverr and Clutch' },
-  { value: '840+', label: 'Campaigns', sub: 'delivered since 2018' },
-  { value: '97%', label: 'Repeat Rate', sub: 'clients who reorder' },
+  { value: '8+', label: 'Years', sub: 'delivering link building since 2018' },
+  { value: '100%', label: 'Manual', sub: 'no PBNs, no automation' },
+  { value: '2', label: 'Platforms', sub: 'Fiverr and Clutch verified' },
+  { value: '30+', label: 'Industries', sub: 'served globally' },
 ];
 
 const faviconMap: Record<string, string> = {
@@ -105,7 +101,7 @@ const faviconMap: Record<string, string> = {
 
 const reviewsUk: Record<string, string> = {
   'Freelance Platform': 'Фриланс-платформа', 'B2B Reviews': 'B2B-відгуки', 'Average Rating': 'Середня оцінка', 'across Fiverr and Clutch': 'на Fiverr і Clutch', 'Verified Reviews': 'Підтверджені відгуки', 'Fiverr and Clutch': 'Fiverr і Clutch', Campaigns: 'Кампанії', 'delivered since 2018': 'виконано з 2018 року', 'Repeat Rate': 'Частка повторних замовлень', 'clients who reorder': 'клієнтів замовляють знову',
-  'Client Reviews': 'Відгуки клієнтів', 'What Our Clients': 'Що кажуть наші', 'Say About Us': 'клієнти', "We've helped 840+ websites grow organic traffic in competitive niches. Here's what they say — and where you can share your experience too.": 'Ми допомогли понад 840 сайтам збільшити органічний трафік у конкурентних нішах. Ось що кажуть клієнти — і де ви теж можете поділитися своїм досвідом.', 'Worked with us?': 'Працювали з нами?', 'Leave a Review': 'Залиште відгук', 'Your feedback helps other businesses choose the right SEO partner and takes less than 2 minutes.': 'Ваш відгук допоможе іншим компаніям обрати правильного SEO-партнера і займе менш як 2 хвилини.', 'Recent Client Feedback': 'Останні відгуки клієнтів', 'Real results from real campaigns. Names and details shared with permission.': 'Реальні результати реальних кампаній. Імена та деталі опубліковано з дозволу клієнтів.', 'View Profile on Fiverr': 'Переглянути профіль на Fiverr', 'Leave a Review on Clutch': 'Залишити відгук на Clutch', 'Reviews on Fiverr help us rank higher and reach more clients looking for SEO services.': 'Відгуки на Fiverr допомагають нам підвищувати рейтинг і знаходити більше клієнтів, які шукають SEO-послуги.', 'Clutch is the leading B2B ratings & reviews platform. Your review helps other businesses find reliable SEO partners.': 'Clutch — провідна B2B-платформа оцінок і відгуків. Ваш відгук допоможе іншим компаніям знайти надійних SEO-партнерів.', 'Open our Fiverr profile via the button below': 'Відкрийте наш профіль Fiverr кнопкою нижче', 'Find the order you placed with us': 'Знайдіть замовлення, яке ви зробили у нас', 'Leave a star rating and written feedback': 'Залиште оцінку в зірках і письмовий відгук', 'Click the button below to open our Clutch profile': 'Натисніть кнопку нижче, щоб відкрити наш профіль на Clutch', 'Sign in with LinkedIn or email': 'Увійдіть через LinkedIn або email', 'Rate our cooperation and write a few sentences about the results': 'Оцініть нашу співпрацю та напишіть кілька речень про результати', 'reviews': 'відгуків',
+  'Client Reviews': 'Відгуки клієнтів', 'What Our Clients': 'Що кажуть наші', 'Say About Us': 'клієнти', "See what clients say about working with Vladenza — and where you can share your own experience.": 'Дізнайтеся, що клієнти кажуть про роботу з Vladenza — і де ви можете поділитися своїм досвідом.', 'Worked with us?': 'Працювали з нами?', 'Leave a Review': 'Залиште відгук', 'Your feedback helps other businesses choose the right SEO partner and takes less than 2 minutes.': 'Ваш відгук допоможе іншим компаніям обрати правильного SEO-партнера і займе менш як 2 хвилини.', 'Recent Client Feedback': 'Останні відгуки клієнтів', 'Real results from real campaigns. Names and details shared with permission.': 'Реальні результати реальних кампаній. Імена та деталі опубліковано з дозволу клієнтів.', 'View Profile on Fiverr': 'Переглянути профіль на Fiverr', 'Leave a Review on Clutch': 'Залишити відгук на Clutch', 'Reviews on Fiverr help us rank higher and reach more clients looking for SEO services.': 'Відгуки на Fiverr допомагають нам підвищувати рейтинг і знаходити більше клієнтів, які шукають SEO-послуги.', 'Clutch is the leading B2B ratings & reviews platform. Your review helps other businesses find reliable SEO partners.': 'Clutch — провідна B2B-платформа оцінок і відгуків. Ваш відгук допоможе іншим компаніям знайти надійних SEO-партнерів.', 'Open our Fiverr profile via the button below': 'Відкрийте наш профіль Fiverr кнопкою нижче', 'Find the order you placed with us': 'Знайдіть замовлення, яке ви зробили у нас', 'Leave a star rating and written feedback': 'Залиште оцінку в зірках і письмовий відгук', 'Click the button below to open our Clutch profile': 'Натисніть кнопку нижче, щоб відкрити наш профіль на Clutch', 'Sign in with LinkedIn or email': 'Увійдіть через LinkedIn або email', 'Rate our cooperation and write a few sentences about the results': 'Оцініть нашу співпрацю та напишіть кілька речень про результати', 'reviews': 'відгуків',
 };
 const rt = (value: string, locale: string) => locale === 'uk' ? (reviewsUk[value] ?? value) : value;
 
@@ -141,7 +137,7 @@ export default function ReviewsPage() {
               {locale === 'uk' ? <>Що кажуть наші<br /><span className="text-[#F97316]">клієнти</span></> : <>What Our Clients<br /><span className="text-[#F97316]">Say About Us</span></>}
             </h1>
             <p className="text-gray-500 text-base sm:text-lg leading-relaxed mb-8">
-              {rt("We've helped 840+ websites grow organic traffic in competitive niches. Here's what they say — and where you can share your experience too.", locale)}
+              {rt("See what clients say about working with Vladenza — and where you can share your own experience.", locale)}
             </p>
             {/* Platform badges */}
             <div className="flex flex-wrap gap-3">
@@ -159,7 +155,6 @@ export default function ReviewsPage() {
                       <Star key={i} size={9} className="fill-[#F97316] text-[#F97316]" />
                     ))}
                   </span>
-                  {p.score} на {p.name}
                   <ExternalLink size={11} className="text-gray-400" />
                 </a>
               ))}
@@ -216,8 +211,7 @@ export default function ReviewsPage() {
                     <span className="text-lg font-black text-gray-900">{p.name}</span>
                   </div>
                   <div className="flex items-baseline gap-1.5 mb-1">
-                    <span className="text-sm font-bold text-[#F97316]">{p.score}</span>
-                    <span className="text-xs text-gray-400">({p.reviews} {rt('reviews', locale)})</span>
+                    <span className="text-sm font-bold text-[#F97316]">{p.name}</span>
                   </div>
 
                   {/* Stars */}
