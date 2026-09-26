@@ -23,9 +23,9 @@ const row2 = [
 ];
 
 const stats = [
-  { value: 8,  suffix: '+', label: 'Years delivering SEO results globally', icon: Users,      note: 'Proven track record' },
-  { value: 4,  suffix: 'x', label: 'Avg. ROI within 12 months',             icon: TrendingUp, note: 'Return on investment' },
-  { value: 70, suffix: '%', label: 'Client retention rate',                  icon: Globe,      note: 'Long-term partnerships' },
+  { value: 8,  suffix: '+', label: 'Years delivering link building globally', icon: Users,      note: 'Since 2018' },
+  { value: 30, suffix: '+', label: 'Industries served across competitive niches', icon: Globe,      note: 'iGaming, SaaS, Crypto, Health' },
+  { value: 100, suffix: '%', label: 'Manual outreach — no PBNs, no automation',                  icon: TrendingUp, note: 'Quality first' },
 ];
 
 function useCountUp(target: number, duration = 1400, start = false) {
@@ -118,7 +118,7 @@ export default function LogosBar() {
 
         {/* Label */}
         <p className="text-center text-[11px] text-gray-400 font-semibold uppercase tracking-[0.18em] mb-8">
-          Trusted by industry leaders
+          Placement examples
         </p>
 
         {/* Marquee rows */}

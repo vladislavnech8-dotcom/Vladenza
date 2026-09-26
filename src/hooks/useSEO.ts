@@ -23,10 +23,9 @@ function clampDescription(text: string, max = 158): string {
 function buildCanonicalFromLocation(): string {
   if (typeof window === 'undefined') return SITE_URL;
   const { pathname } = window.location;
-  const normalized = pathname.endsWith('/') && pathname !== '/'
-    ? pathname.slice(0, -1)
-    : pathname;
-  return `${SITE_URL}${normalized || ''}`;
+  if (pathname === '/' || pathname === '') return `${SITE_URL}/`;
+  const normalized = pathname.endsWith('/') ? pathname : pathname + '/';
+  return `${SITE_URL}${normalized}`;
 }
 
 function normalizeTrailingSlash(url: string): string {
@@ -50,9 +49,23 @@ const RETAINED_BLOG_SLUGS = [
   'niche-edits-vs-guest-posts', 'how-to-analyze-competitor-backlinks',
 ];
 
+// UK indexable routes: compact commercial layer only (no blog/case-study mirrors)
+const UK_INDEXABLE_STATIC_ROUTES = [
+  '/', '/services/guest-posting', '/services/niche-edits', '/services/crowd-links',
+  '/services/white-label', '/pricing',
+];
+
 function isIndexableRoute(pathname: string): boolean {
-  const normalized = pathname.startsWith('/uk') ? pathname.slice(3) || '/' : pathname;
+  const isUk = pathname.startsWith('/uk');
+  const normalized = isUk ? pathname.slice(3) || '/' : pathname;
   const stripped = normalized.endsWith('/') && normalized !== '/' ? normalized.slice(0, -1) : normalized;
+
+  if (isUk) {
+    // UK: only compact commercial layer is indexable
+    return UK_INDEXABLE_STATIC_ROUTES.includes(stripped);
+  }
+
+  // EN: full indexable set
   if (INDEXABLE_STATIC_ROUTES.includes(stripped)) return true;
   const caseMatch = stripped.match(/^\/case-studies\/(.+)$/);
   if (caseMatch) return INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
@@ -120,10 +133,14 @@ export function useSEO({ title, description, canonical, ogImage, schema, noindex
     canonicalEl.href = pageUrl;
     document.head.appendChild(canonicalEl);
 
-    // Hreflang — only for indexable routes with reciprocal EN/UK pairs
+    // Hreflang — only when BOTH en and uk routes are indexable
     const { pathname } = window.location;
-    const isIndexable = isIndexableRoute(pathname);
-    if (isIndexable) {
+    const isEnIndexable = isIndexableRoute(pathname);
+    // Check if the reciprocal locale is also indexable
+    const enPath = pathname.startsWith('/uk') ? pathname.slice(3) || '/' : pathname;
+    const ukPath = pathname.startsWith('/uk') ? pathname : (pathname === '/' ? '/uk' : '/uk' + pathname);
+    const isUkIndexable = isIndexableRoute(ukPath);
+    if (isEnIndexable && isUkIndexable) {
       const pair = getHreflangPair(pathname);
       const hreflangs: Array<{ hreflang: string; href: string }> = [
         { hreflang: 'en', href: pair.en },

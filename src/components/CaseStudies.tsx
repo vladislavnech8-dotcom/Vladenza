@@ -93,23 +93,19 @@ export default function CaseStudies() {
         <div className="bg-gray-950 rounded-2xl px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex gap-6 sm:gap-8 text-center sm:text-left">
             <div>
-              <div className="text-2xl font-black text-white">840+</div>
-              <div className="text-gray-500 text-[11px] mt-0.5">campaigns delivered</div>
+              <div className="text-2xl font-black text-white">6</div>
+              <div className="text-gray-500 text-[11px] mt-0.5">case studies published</div>
             </div>
             <div>
-              <div className="text-2xl font-black text-[#F97316]">94%</div>
-              <div className="text-gray-500 text-[11px] mt-0.5">hit KPIs</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">4.8×</div>
-              <div className="text-gray-500 text-[11px] mt-0.5">avg traffic growth</div>
+              <div className="text-2xl font-black text-[#F97316]">7</div>
+              <div className="text-gray-500 text-[11px] mt-0.5">industries served</div>
             </div>
           </div>
           <a
             href="/case-studies"
             className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-orange-300/30 shrink-0"
           >
-            View all 6 case studies <ArrowRight size={13} />
+            View all case studies <ArrowRight size={13} />
           </a>
         </div>
 

@@ -80,7 +80,8 @@ export default function SitemapPage() {
   useSEO({
     title: locale === 'uk' ? 'Карта сайту — SEO-агенція Vladenza' : 'Sitemap — Vladenza SEO Agency',
     description: locale === 'uk' ? 'Повна карта сайту Vladenza: послуги лінкбілдингу, нішеві пакети, SEO-кейси та статті блогу.' : 'Full sitemap of Vladenza — link building services, niche packages, SEO case studies, and blog articles.',
-    canonical: `https://vladenza.com${lp('/sitemap')}`,
+    canonical: `https://vladenza.com${lp('/sitemap')}/`,
+    noindex: true,
   });
 
   const totalLinks = sections.reduce((acc, s) => acc + s.links.length, 0);

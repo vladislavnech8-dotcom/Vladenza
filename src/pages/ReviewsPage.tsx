@@ -114,7 +114,8 @@ export default function ReviewsPage() {
   useSEO({
     title: locale === 'uk' ? 'Відгуки та оцінки — SEO-агенція Vladenza' : 'Reviews & Ratings — Vladenza SEO Agency',
     description: locale === 'uk' ? 'Дізнайтеся, що клієнти говорять про Vladenza на Fiverr і Clutch. Залиште відгук та допоможіть іншим компаніям знайти надійних SEO-партнерів.' : 'See what clients say about Vladenza on Fiverr and Clutch. Leave a review and help other businesses find trusted SEO partners.',
-    canonical: `https://vladenza.com${lp('/reviews')}`,
+    canonical: `https://vladenza.com${lp('/reviews')}/`,
+    noindex: true,
   });
 
   return (

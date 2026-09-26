@@ -99,19 +99,19 @@ export default function WhyUs() {
             <div className="md:col-span-1">
               <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs text-gray-400 font-medium">Backlink Expansion</span>
-                  <span className="text-xs text-[#F97316] font-bold bg-orange-50 px-2 py-0.5 rounded-full">+300</span>
+                  <span className="text-xs text-gray-400 font-medium">Manual Process</span>
+                  <span className="text-xs text-[#F97316] font-bold bg-orange-50 px-2 py-0.5 rounded-full">100%</span>
                 </div>
-                <div className="flex items-end gap-1 h-16">
-                  {[2, 3, 4, 5, 6, 8, 10, 13, 16].map((h, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 bg-[#F97316] rounded-t opacity-80"
-                      style={{ height: `${h * 4}px` }}
-                    />
+                <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                  Every placement is manually sourced, negotiated, and verified — no PBNs, no automation.
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {['Manual outreach', 'Website approval', 'Quality verified'].map((tag) => (
+                    <span key={tag} className="text-[10px] text-gray-500 bg-gray-50 border border-gray-100 rounded px-2 py-0.5">
+                      {tag}
+                    </span>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-2">Last Month</p>
               </div>
             </div>
 

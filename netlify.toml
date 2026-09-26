@@ -300,6 +300,58 @@
   to = "/uk/checkout/"
   status = 301
   force = true
+[[redirects]]
+  from = "/uk/services/seo-audit"
+  to = "/uk/services/seo-audit/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/ai-llm"
+  to = "/uk/services/ai-llm/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/linkedin-personal"
+  to = "/uk/services/linkedin-personal/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/linkedin-company"
+  to = "/uk/services/linkedin-company/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/seo-audit-sample"
+  to = "/uk/seo-audit-sample/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/sitemap"
+  to = "/uk/sitemap/"
+  status = 301
+  force = true
+
+# ─── Trailing-slash redirects for noindex service pages ───
+[[redirects]]
+  from = "/services/seo-audit"
+  to = "/services/seo-audit/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/ai-llm"
+  to = "/services/ai-llm/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/linkedin-personal"
+  to = "/services/linkedin-personal/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/linkedin-company"
+  to = "/services/linkedin-company/"
+  status = 301
+  force = true
 
 # ─── SPA fallbacks (must come after all redirects) ───
 [[redirects]]

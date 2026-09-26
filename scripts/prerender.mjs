@@ -7,9 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const distDir = path.join(root, 'dist');
 
-// ─── Indexable route allowlist ───────────────────────────────────
-// Only these routes appear in the sitemap and get hreflang.
-const INDEXABLE_STATIC_ROUTES = [
+// ─── EN indexable routes ─────────────────────────────────────────
+const EN_INDEXABLE_STATIC = [
   '/',
   '/services/guest-posting',
   '/services/niche-edits',
@@ -21,8 +20,17 @@ const INDEXABLE_STATIC_ROUTES = [
   '/blog',
 ];
 
-// Retained blog articles (indexable)
-const RETAINED_BLOG_SLUGS = [
+const EN_INDEXABLE_CASE_SLUGS = [
+  'dating-5x-traffic',
+  'saas-non-brand-traffic',
+  'igaming-domain-authority',
+  'crypto-page1-ranking',
+  'health-google-update-recovery',
+  'igaming-20k-traffic',
+  'crypto-forum-x10-traffic',
+];
+
+const EN_INDEXABLE_BLOG_SLUGS = [
   '5-facts-about-backlinks',
   'crowd-marketing-website-promotion',
   'geo-get-cited-by-chatgpt-2025',
@@ -37,43 +45,22 @@ const RETAINED_BLOG_SLUGS = [
   'how-to-analyze-competitor-backlinks',
 ];
 
-// Blog articles that are noindex (accessible but excluded from sitemap)
-const NOINDEX_BLOG_SLUGS = [
-  'seo-redirects-guide',
-  'backlink-quality-guide',
-  'dofollow-vs-nofollow-links',
-  'organic-seo-inbound-clients',
+// ─── UK indexable routes (compact commercial layer only) ─────────
+const UK_INDEXABLE_STATIC = [
+  '/',
+  '/services/guest-posting',
+  '/services/niche-edits',
+  '/services/crowd-links',
+  '/services/white-label',
+  '/pricing',
 ];
 
-// Case studies with GSC signals (indexable)
-const INDEXABLE_CASE_SLUGS = [
-  'dating-5x-traffic',
-  'saas-non-brand-traffic',
-  'igaming-domain-authority',
-  'crypto-page1-ranking',
-  'health-google-update-recovery',
-  'igaming-20k-traffic',
-  'crypto-forum-x10-traffic',
-];
-
-// Case studies that need editorial verification (accessible but noindex)
-const UNVERIFIED_CASE_SLUGS = [
-  'automotive-keyword-rankings',
-  'fintech-lead-generation',
-  'health-organic-growth',
-  'software-263-traffic',
-];
-
-// Crowd Marketing language pages to keep accessible (noindex for now — check uniqueness)
-const CROWD_LINKS_LANGUAGES = ['german', 'french', 'spanish'];
-
-// Routes that are accessible but noindex,follow (not in sitemap)
-const NOINDEX_STATIC_ROUTES = [
+// ─── EN noindex routes (accessible but excluded from sitemap) ───
+const EN_NOINDEX_STATIC = [
   '/services/seo-audit',
   '/services/ai-llm',
   '/services/linkedin-personal',
   '/services/linkedin-company',
-  '/services/local-seo-links',
   '/seo-audit-sample',
   '/sitemap',
   '/checkout',
@@ -83,11 +70,61 @@ const NOINDEX_STATIC_ROUTES = [
   '/cookie-policy',
 ];
 
-// Niche package pages (301 redirect in netlify.toml, not prerendered)
-const RETIRED_NICHE_SLUGS = ['igaming', 'saas', 'auto', 'health', 'proxy', 'renovations'];
+const EN_NOINDEX_BLOG_SLUGS = [
+  'seo-redirects-guide',
+];
 
-// Case study slugs that are redirected (reviews → case-studies)
-const REDIRECTED_ROUTES = ['/reviews'];
+// Case studies pending editorial verification (noindex, not in sitemap)
+const UNVERIFIED_CASE_SLUGS = [
+  'automotive-keyword-rankings',
+  'fintech-lead-generation',
+  'health-organic-growth',
+  'software-263-traffic',
+];
+
+// Crowd Marketing language pages (noindex pending uniqueness review)
+const CROWD_LINKS_LANGUAGES = ['german', 'french', 'spanish'];
+
+// ─── UK noindex routes ───────────────────────────────────────────
+const UK_NOINDEX_STATIC = [
+  '/services/seo-audit',
+  '/services/ai-llm',
+  '/services/linkedin-personal',
+  '/services/linkedin-company',
+  '/seo-audit-sample',
+  '/sitemap',
+  '/checkout',
+  '/privacy-policy',
+  '/terms',
+  '/refund-policy',
+  '/cookie-policy',
+  '/placements',
+  '/case-studies',
+  '/blog',
+];
+
+// ─── Routes that are 301 redirects (NOT prerendered, NOT noindex) ──
+// These are handled entirely by netlify.toml
+const REDIRECTED_ROUTES = [
+  '/reviews',
+  '/services/local-seo-links',
+  '/services/link-packages/auto',
+  '/services/link-packages/saas',
+  '/services/link-packages/igaming',
+  '/services/link-packages/health',
+  '/services/link-packages/proxy',
+  '/services/link-packages/renovations',
+  '/services/crowd-links/english',
+  '/blog/backlink-quality-guide',
+  '/blog/dofollow-vs-nofollow-links',
+  '/blog/organic-seo-inbound-clients',
+];
+
+// ─── Routes that are 410 Gone (NOT prerendered, NOT noindex) ─────
+const GONE_ROUTES = [
+  '/services/crowd-links/korean',
+  '/services/crowd-links/portuguese',
+];
 
 const HOME_META = {
   title: 'Vladenza — Manual Link Building Services | Guest Posts, Link Insertions & Crowd Marketing',
@@ -139,23 +176,32 @@ function injectFaqSchema(html, faqs) {
   return html.replace('</head>', `  ${scriptTag}\n</head>`);
 }
 
-// Only inject hreflang if BOTH en and uk versions are indexable
-function shouldHaveHreflang(route, locale) {
-  // Check if this route is in the indexable allowlist
-  const isIndexable = (route) => {
-    if (INDEXABLE_STATIC_ROUTES.includes(route)) return true;
-    const caseMatch = route.match(/^\/case-studies\/(.+)$/);
-    if (caseMatch) return INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
-    const blogMatch = route.match(/^\/blog\/(.+)$/);
-    if (blogMatch) return RETAINED_BLOG_SLUGS.includes(blogMatch[1]);
-    return false;
-  };
-  return isIndexable(route);
+// Check if a content route is indexable in a given locale
+function isEnIndexable(route) {
+  if (EN_INDEXABLE_STATIC.includes(route)) return true;
+  const caseMatch = route.match(/^\/case-studies\/(.+)$/);
+  if (caseMatch) return EN_INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
+  const blogMatch = route.match(/^\/blog\/(.+)$/);
+  if (blogMatch) return EN_INDEXABLE_BLOG_SLUGS.includes(blogMatch[1]);
+  return false;
+}
+
+function isUkIndexable(route) {
+  return UK_INDEXABLE_STATIC.includes(route);
+}
+
+// Only emit hreflang if BOTH en and uk versions are indexable
+function shouldHaveHreflang(contentRoute, locale) {
+  if (locale === 'uk') {
+    return isUkIndexable(contentRoute) && isEnIndexable(contentRoute);
+  } else {
+    return isEnIndexable(contentRoute) && isUkIndexable(contentRoute);
+  }
 }
 
 function injectHreflang(html, enPath, ukPath) {
   const enUrl = `https://vladenza.com${enPath === '/' ? '/' : enPath + '/'}`;
-  const ukUrl = `https://vladenza.com${ukPath === '/' ? '/' : ukPath + '/'}`;
+  const ukUrl = `https://vladenza.com${ukPath === '/' ? '/uk/' : ukPath + '/'}`;
   const tags = [
     `<link rel="alternate" hreflang="en" href="${enUrl}">`,
     `<link rel="alternate" hreflang="uk" href="${ukUrl}">`,
@@ -170,7 +216,11 @@ function injectNoindex(html) {
   return html;
 }
 
-// Merge Ukrainian blog post translation into a DB record
+// Remove all hreflang tags (for non-indexable pages)
+function stripHreflang(html) {
+  return html.replace(/<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/g, '');
+}
+
 function mergeUkPost(dbPost, uk) {
   if (!uk) return dbPost;
   return {
@@ -222,9 +272,7 @@ async function getDynamicData() {
   const dbPostsBySlug = new Map(dbPosts.map((p) => [p.slug, p]));
   const dbCasesBySlug = new Map(dbCases.map((c) => [c.slug, c]));
 
-  // All blog slugs = DB + static, but only retained ones are indexable
   const allBlogSlugs = Array.from(new Set([...dbPostsBySlug.keys(), ...staticBlogSlugs]));
-  const allCaseSlugs = Array.from(dbCasesBySlug.keys());
 
   const nicheEditsCases = dbCases
     .filter((c) => c.service && c.service.toLowerCase().includes('niche edit'))
@@ -241,100 +289,69 @@ async function getDynamicData() {
       challenge: c.challenge,
     }));
 
-  return { allBlogSlugs, allCaseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases };
+  return { allBlogSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases };
 }
-
-let caseSlugs_global = [];
-let blogSlugs_global = [];
 
 async function main() {
   const template = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
   fs.writeFileSync(path.join(distDir, 'spa-fallback.html'), template);
 
-  const { allBlogSlugs, allCaseSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
-  caseSlugs_global = allCaseSlugs;
-  blogSlugs_global = allBlogSlugs;
+  const { allBlogSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
 
-  // ─── Build the complete route list for prerendering ─────────
-  // Indexable routes (EN + UK)
-  const indexableCaseRoutes = INDEXABLE_CASE_SLUGS
+  // ─── Build route lists ─────────────────────────────────────────
+  // EN indexable case/blog routes
+  const enIndexableCaseRoutes = EN_INDEXABLE_CASE_SLUGS
     .filter((s) => dbCasesBySlug.has(s))
     .map((s) => `/case-studies/${s}`);
-  const unverifiedCaseRoutes = UNVERIFIED_CASE_SLUGS
+  const enUnverifiedCaseRoutes = UNVERIFIED_CASE_SLUGS
     .filter((s) => dbCasesBySlug.has(s))
     .map((s) => `/case-studies/${s}`);
-  const retainedBlogRoutes = RETAINED_BLOG_SLUGS
+  const enIndexableBlogRoutes = EN_INDEXABLE_BLOG_SLUGS
     .filter((s) => dbPostsBySlug.has(s) || allBlogSlugs.includes(s))
     .map((s) => `/blog/${s}`);
-  const noindexBlogRoutes = NOINDEX_BLOG_SLUGS
+  const enNoindexBlogRoutes = EN_NOINDEX_BLOG_SLUGS
     .filter((s) => dbPostsBySlug.has(s) || allBlogSlugs.includes(s))
     .map((s) => `/blog/${s}`);
   const crowdLangRoutes = CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`);
 
-  // All routes to prerender (EN)
+  // EN routes to prerender
   const enRoutes = [
-    ...INDEXABLE_STATIC_ROUTES,
-    ...NOINDEX_STATIC_ROUTES,
-    ...indexableCaseRoutes,
-    ...unverifiedCaseRoutes,
-    ...retainedBlogRoutes,
-    ...noindexBlogRoutes,
+    // Indexable
+    ...EN_INDEXABLE_STATIC,
+    ...enIndexableCaseRoutes,
+    ...enIndexableBlogRoutes,
+    // Noindex
+    ...EN_NOINDEX_STATIC,
+    ...enUnverifiedCaseRoutes,
+    ...enNoindexBlogRoutes,
     ...crowdLangRoutes,
-    // Redirected routes (still prerender for SPA fallback, but will be redirected by netlify)
-    '/reviews',
   ];
 
-  // UK routes: only core pages (no full blog/case-study mirror)
-  const ukIndexableRoutes = [
-    '/', // becomes /uk/
-    '/services/guest-posting',
-    '/services/niche-edits',
-    '/services/crowd-links',
-    '/services/white-label',
-    '/placements',
-    '/pricing',
-    '/case-studies',
-    '/blog',
-  ];
-  const ukNoindexRoutes = [
-    '/services/seo-audit',
-    '/services/ai-llm',
-    '/services/linkedin-personal',
-    '/services/linkedin-company',
-    '/services/local-seo-links',
-    '/seo-audit-sample',
-    '/sitemap',
-    '/checkout',
-    '/privacy-policy',
-    '/terms',
-    '/refund-policy',
-    '/cookie-policy',
-  ];
-  // UK blog: only retained blog slugs that have UK translations
-  const ukRetainedBlogRoutes = RETAINED_BLOG_SLUGS
+  // UK routes to prerender
+  // Indexable: only compact commercial layer
+  const ukIndexableRoutes = UK_INDEXABLE_STATIC;
+  // Noindex: all other UK routes that exist (static noindex + blog/case mirrors)
+  const ukNoindexStatic = UK_NOINDEX_STATIC;
+  // UK blog: all retained blog slugs that have UK translations (noindex)
+  const ukBlogRoutes = EN_INDEXABLE_BLOG_SLUGS
     .filter((s) => blogPostsUk[s] && (dbPostsBySlug.has(s) || allBlogSlugs.includes(s)))
     .map((s) => `/blog/${s}`);
-  // UK case studies: only indexable ones with UK translations
-  const ukIndexableCaseRoutes = INDEXABLE_CASE_SLUGS
+  // UK case studies: all that have UK translations (noindex)
+  const ukCaseRoutes = [...EN_INDEXABLE_CASE_SLUGS, ...UNVERIFIED_CASE_SLUGS]
     .filter((s) => casesUk[s] && dbCasesBySlug.has(s))
     .map((s) => `/case-studies/${s}`);
-  const ukUnverifiedCaseRoutes = UNVERIFIED_CASE_SLUGS
-    .filter((s) => casesUk[s] && dbCasesBySlug.has(s))
-    .map((s) => `/case-studies/${s}`);
-  // UK crowd language pages
+  // UK crowd language pages (noindex)
   const ukCrowdLangRoutes = CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`);
 
   const ukRoutes = [
     ...ukIndexableRoutes,
-    ...ukNoindexRoutes,
-    ...ukIndexableCaseRoutes,
-    ...ukUnverifiedCaseRoutes,
-    ...ukRetainedBlogRoutes,
+    ...ukNoindexStatic,
+    ...ukBlogRoutes,
+    ...ukCaseRoutes,
     ...ukCrowdLangRoutes,
-    '/reviews',
   ];
 
-  // Combine all routes
+  // Combine: map UK routes to /uk prefix
   const allRoutes = [
     ...enRoutes.map((r) => ({ route: r, locale: 'en' })),
     ...ukRoutes.map((r) => ({ route: r === '/' ? '/uk' : '/uk' + r, locale: 'uk', enRoute: r })),
@@ -381,13 +398,11 @@ async function main() {
       const meta = seo || (renderRoute === '/' ? HOME_META : null);
       let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
 
-      // Set lang attribute
       html = html.replace(/<html\s+lang="[^"]*"/, `<html lang="${locale}"`);
 
-      // Localize Organization schema for UK pages
       if (locale === 'uk') {
         html = html.replace('"name": "SEO & Link Building Services"', '"name": "Послуги SEO та лінкбілдингу"');
-        html = html.replace('"name": "Guest Posting"', '"name": "Гостьові публікації"');
+        html = html.replace('"name": "Guest Posting"', '"name": "Гостові публікації"');
         html = html.replace('"name": "Link Insertions"', '"name": "Розміщення посилань"');
         html = html.replace('"name": "Crowd Marketing"', '"name": "Крауд-маркетинг"');
         html = html.replace('"name": "SEO Audit"', '"name": "SEO-аудит"');
@@ -401,7 +416,6 @@ async function main() {
         if (locale === 'uk') {
           meta.canonical = `https://vladenza.com${route === '/uk' ? '/uk/' : route + '/'}`;
         } else {
-          // Ensure trailing slash for all non-root routes
           if (route !== '/' && !meta.canonical) {
             meta.canonical = `https://vladenza.com${route}/`;
           } else if (route === '/' && !meta.canonical) {
@@ -411,28 +425,28 @@ async function main() {
         html = injectMeta(html, meta);
       }
 
-      // Determine if this route should have hreflang
-      const contentRouteForHreflang = enRoute || (locale === 'uk' ? route.replace(/^\/uk/, '') || '/' : route);
-      const isIndexable = shouldHaveHreflang(contentRouteForHreflang, locale);
-
-      if (isIndexable) {
-        const enPath = locale === 'uk' ? (enRoute || '/') : route;
+      // Hreflang: only if both EN and UK are indexable
+      if (shouldHaveHreflang(contentRoute, locale)) {
+        const enPath = locale === 'uk' ? contentRoute : route;
         const ukPath = locale === 'uk' ? route : (route === '/' ? '/uk' : '/uk' + route);
         html = injectHreflang(html, enPath, ukPath);
       } else {
-        // Remove any existing hreflang tags for non-indexable pages
-        html = html.replace(/<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/g, '');
+        html = stripHreflang(html);
       }
 
-      // Inject noindex for non-indexable routes
-      const isNoindex = NOINDEX_STATIC_ROUTES.includes(contentRouteForHreflang)
-        || unverifiedCaseRoutes.includes(contentRouteForHreflang)
-        || noindexBlogRoutes.includes(contentRouteForHreflang)
-        || crowdLangRoutes.includes(contentRouteForHreflang)
-        || contentRouteForHreflang === '/reviews'
-        || meta?.noindex;
+      // Determine noindex status (locale-aware)
+      const isNoindexRoute =
+        (locale === 'en' && EN_NOINDEX_STATIC.includes(contentRoute)) ||
+        (locale === 'uk' && UK_NOINDEX_STATIC.includes(contentRoute)) ||
+        (locale === 'en' && enUnverifiedCaseRoutes.includes(contentRoute)) ||
+        (locale === 'uk' && ukCaseRoutes.includes(contentRoute)) ||
+        (locale === 'en' && enNoindexBlogRoutes.includes(contentRoute)) ||
+        (locale === 'uk' && ukBlogRoutes.includes(contentRoute)) ||
+        (locale === 'en' && crowdLangRoutes.includes(contentRoute)) ||
+        (locale === 'uk' && ukCrowdLangRoutes.includes(contentRoute)) ||
+        meta?.noindex;
 
-      if (isNoindex) {
+      if (isNoindexRoute) {
         html = injectNoindex(html);
       }
 
@@ -450,27 +464,24 @@ async function main() {
     }
   }
 
-  // ─── Generate sitemap from indexable allowlist only ─────────
+  // ─── Generate sitemap ──────────────────────────────────────────
+  // EN indexable routes
   const sitemapEnRoutes = [
-    ...INDEXABLE_STATIC_ROUTES,
-    ...indexableCaseRoutes,
-    ...retainedBlogRoutes,
+    ...EN_INDEXABLE_STATIC,
+    ...enIndexableCaseRoutes,
+    ...enIndexableBlogRoutes,
   ];
 
-  // UK sitemap routes: only core pages + retained blog with UK translations + indexable cases with UK
-  const sitemapUkRoutes = [
-    ...ukIndexableRoutes,
-    ...ukIndexableCaseRoutes,
-    ...ukRetainedBlogRoutes,
-  ];
+  // UK indexable routes: compact commercial layer only
+  const sitemapUkRoutes = UK_INDEXABLE_STATIC;
 
   const sitemapEntries = [];
 
   for (const r of sitemapEnRoutes) {
     const enUrl = `https://vladenza.com${r === '/' ? '/' : r + '/'}`;
-    // Check if UK equivalent exists and is indexable
-    const ukRoute = sitemapUkRoutes.includes(r);
-    const ukUrl = ukRoute ? `https://vladenza.com${r === '/' ? '/uk/' : '/uk' + r + '/'}` : null;
+    // Check if UK equivalent is indexable
+    const ukIsIndexable = sitemapUkRoutes.includes(r);
+    const ukUrl = ukIsIndexable ? `https://vladenza.com${r === '/' ? '/uk/' : '/uk' + r + '/'}` : null;
     if (ukUrl) {
       sitemapEntries.push(`  <url>
     <loc>${enUrl}</loc>
@@ -496,8 +507,11 @@ async function main() {
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sitemapEntries.join('\n')}\n</urlset>\n`;
   fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
 
+  // Also copy sitemap.xml to public/ so it exists before build
+  fs.writeFileSync(path.join(root, 'public', 'sitemap.xml'), sitemapXml);
+
   console.log(`\n✓ Done: ${successCount}/${allRoutes.length} pages prerendered.`);
-  console.log(`✓ sitemap.xml generated, ${sitemapEntries.length} URLs (${sitemapEnRoutes.length} EN + ${sitemapUkRoutes.length} UK)`);
+  console.log(`✓ sitemap.xml: ${sitemapEntries.length} URLs (${sitemapEnRoutes.length} EN + ${sitemapUkRoutes.length} UK)`);
 }
 
 main().catch((err) => {
