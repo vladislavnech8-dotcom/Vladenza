@@ -252,7 +252,8 @@ export default function SeoAuditPage() {
   useSEO({
     title: c.seo.title,
     description: c.seo.description,
-    canonical: `https://vladenza.com${lp('/services/seo-audit')}`,
+    canonical: `https://vladenza.com${lp('/services/seo-audit')}/`,
+    noindex: true,
   });
 
   useEffect(() => {

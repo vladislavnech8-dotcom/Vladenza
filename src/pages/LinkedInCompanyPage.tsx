@@ -224,7 +224,8 @@ export default function LinkedInCompanyPage() {
   useSEO({
     title: c.seo.title,
     description: c.seo.description,
-    canonical: `https://vladenza.com${lp('/services/linkedin-company')}`,
+    canonical: `https://vladenza.com${lp('/services/linkedin-company')}/`,
+    noindex: true,
   });
 
   function openTier(tier: typeof c.tiers[number]) {

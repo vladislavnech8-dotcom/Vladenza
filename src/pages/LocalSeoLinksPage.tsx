@@ -239,7 +239,8 @@ export default function LocalSeoLinksPage() {
   useSEO({
     title: c.seo.title,
     description: c.seo.description,
-    canonical: `https://vladenza.com${lp('/services/local-seo-links')}`,
+    canonical: `https://vladenza.com${lp('/services/local-seo-links')}/`,
+    noindex: true,
   });
   return (
     <ServicePageLayout>

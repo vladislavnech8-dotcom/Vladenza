@@ -238,7 +238,8 @@ export default function SeoAuditSamplePage() {
   useSEO({
     title: uk ? 'Зразок SEO-аудиту — Аналіз сайту та план зростання | Vladenza' : 'SEO Audit Sample Report — Website Analysis & Growth Plan | Vladenza',
     description: uk ? 'Перегляньте приклад повного SEO-аудиту Vladenza: UX-огляд, технічні знахідки, структура сайту, стратегія ключових слів, аналіз конкурентів і 6-місячна дорожня карта лінкбілдингу.' : 'See what a full Vladenza SEO audit looks like: UX review, technical findings, site structure plan, keyword strategy, competitor analysis, and a 6-month link building roadmap.',
-    canonical: `https://vladenza.com${lp('/seo-audit-sample')}`,
+    canonical: `https://vladenza.com${lp('/seo-audit-sample')}/`,
+    noindex: true,
   });
 
   return (

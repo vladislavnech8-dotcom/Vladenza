@@ -244,7 +244,8 @@ export default function LinkedInPersonalPage() {
   useSEO({
     title: c.seo.title,
     description: c.seo.description,
-    canonical: `https://vladenza.com${lp('/services/linkedin-personal')}`,
+    canonical: `https://vladenza.com${lp('/services/linkedin-personal')}/`,
+    noindex: true,
   });
 
   function openTier(tier: typeof c.tiers[number]) {

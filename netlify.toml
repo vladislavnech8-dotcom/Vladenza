@@ -5,16 +5,311 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# ─── Retired service pages: 301 to niche-edits (force overrides static files) ───
+[[redirects]]
+  from = "/services/link-packages/auto"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/link-packages/saas"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/link-packages/igaming"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/link-packages/health"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/link-packages/proxy"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/link-packages/renovations"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/local-seo-links"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+
+# ─── Crowd Marketing: english → main page ───
+[[redirects]]
+  from = "/services/crowd-links/english"
+  to = "/services/crowd-links/"
+  status = 301
+  force = true
+
+# ─── Blog consolidation redirects ───
+[[redirects]]
+  from = "/blog/backlink-quality-guide"
+  to = "/blog/5-facts-about-backlinks/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/dofollow-vs-nofollow-links"
+  to = "/blog/5-facts-about-backlinks/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/organic-seo-inbound-clients"
+  to = "/blog/link-building-services-guide/"
+  status = 301
+  force = true
+
+# ─── Reviews → Case Studies ───
+[[redirects]]
+  from = "/reviews"
+  to = "/case-studies/"
+  status = 301
+  force = true
+
+# ─── UK variants of retired services ───
+[[redirects]]
+  from = "/uk/services/link-packages/auto"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/link-packages/saas"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/link-packages/igaming"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/link-packages/health"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/link-packages/proxy"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/link-packages/renovations"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/local-seo-links"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/crowd-links/english"
+  to = "/uk/services/crowd-links/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/blog/backlink-quality-guide"
+  to = "/uk/blog/5-facts-about-backlinks/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/blog/dofollow-vs-nofollow-links"
+  to = "/uk/blog/5-facts-about-backlinks/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/blog/organic-seo-inbound-clients"
+  to = "/uk/blog/link-building-services-guide/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/reviews"
+  to = "/uk/case-studies/"
+  status = 301
+  force = true
+
+# ─── 410 Gone for discontinued Crowd Marketing languages ───
+[[redirects]]
+  from = "/services/crowd-links/korean"
+  to = "/.410.html"
+  status = 410
+  force = true
+[[redirects]]
+  from = "/services/crowd-links/portuguese"
+  to = "/.410.html"
+  status = 410
+  force = true
+[[redirects]]
+  from = "/uk/services/crowd-links/korean"
+  to = "/.410.html"
+  status = 410
+  force = true
+[[redirects]]
+  from = "/uk/services/crowd-links/portuguese"
+  to = "/.410.html"
+  status = 410
+  force = true
+
+# ─── Trailing-slash redirects for all indexable content routes ───
+[[redirects]]
+  from = "/services/guest-posting"
+  to = "/services/guest-posting/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/niche-edits"
+  to = "/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/crowd-links"
+  to = "/services/crowd-links/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/services/white-label"
+  to = "/services/white-label/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/placements"
+  to = "/placements/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/pricing"
+  to = "/pricing/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/case-studies"
+  to = "/case-studies/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/privacy-policy"
+  to = "/privacy-policy/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/terms"
+  to = "/terms/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/refund-policy"
+  to = "/refund-policy/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/cookie-policy"
+  to = "/cookie-policy/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/sitemap"
+  to = "/sitemap/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/checkout"
+  to = "/checkout/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/seo-audit-sample"
+  to = "/seo-audit-sample/"
+  status = 301
+  force = true
+
+# ─── UK trailing-slash redirects ───
+[[redirects]]
+  from = "/uk/services/guest-posting"
+  to = "/uk/services/guest-posting/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/niche-edits"
+  to = "/uk/services/niche-edits/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/crowd-links"
+  to = "/uk/services/crowd-links/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/services/white-label"
+  to = "/uk/services/white-label/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/placements"
+  to = "/uk/placements/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/pricing"
+  to = "/uk/pricing/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/case-studies"
+  to = "/uk/case-studies/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/blog"
+  to = "/uk/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/privacy-policy"
+  to = "/uk/privacy-policy/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/terms"
+  to = "/uk/terms/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/refund-policy"
+  to = "/uk/refund-policy/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/cookie-policy"
+  to = "/uk/cookie-policy/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/uk/checkout"
+  to = "/uk/checkout/"
+  status = 301
+  force = true
+
+# ─── SPA fallbacks (must come after all redirects) ───
 [[redirects]]
   from = "/order/*"
   to = "/spa-fallback.html"
   status = 200
-
 [[redirects]]
   from = "/admin/*"
   to = "/spa-fallback.html"
   status = 200
-
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -1,3 +1,6 @@
+# ─── SPA fallbacks (must come before trailing-slash rule) ───
 /order/*  /spa-fallback.html  200
 /admin/*  /spa-fallback.html  200
+
+# ─── SPA catch-all ───
 /*  /index.html  200

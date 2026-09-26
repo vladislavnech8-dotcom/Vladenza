@@ -7,7 +7,7 @@ function buildCanonicalUrl(pathname: string): string {
   if (pathname === '/' || pathname === '') {
     return `${SITE_URL}/`;
   }
-  const normalized = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const normalized = pathname.endsWith('/') ? pathname : pathname + '/';
   return `${SITE_URL}${normalized}`;
 }
 

@@ -33,6 +33,34 @@ function normalizeTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`;
 }
 
+const INDEXABLE_STATIC_ROUTES = [
+  '/', '/services/guest-posting', '/services/niche-edits', '/services/crowd-links',
+  '/services/white-label', '/placements', '/pricing', '/case-studies', '/blog',
+];
+const INDEXABLE_CASE_SLUGS = [
+  'dating-5x-traffic', 'saas-non-brand-traffic', 'igaming-domain-authority',
+  'crypto-page1-ranking', 'health-google-update-recovery', 'igaming-20k-traffic',
+  'crypto-forum-x10-traffic',
+];
+const RETAINED_BLOG_SLUGS = [
+  '5-facts-about-backlinks', 'crowd-marketing-website-promotion',
+  'geo-get-cited-by-chatgpt-2025', 'igaming-seo-link-building-2025',
+  'link-building-2026', 'link-building-german-websites', 'link-building-services-guide',
+  'saas-link-building', 'white-label-seo', 'how-long-does-link-building-take',
+  'niche-edits-vs-guest-posts', 'how-to-analyze-competitor-backlinks',
+];
+
+function isIndexableRoute(pathname: string): boolean {
+  const normalized = pathname.startsWith('/uk') ? pathname.slice(3) || '/' : pathname;
+  const stripped = normalized.endsWith('/') && normalized !== '/' ? normalized.slice(0, -1) : normalized;
+  if (INDEXABLE_STATIC_ROUTES.includes(stripped)) return true;
+  const caseMatch = stripped.match(/^\/case-studies\/(.+)$/);
+  if (caseMatch) return INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
+  const blogMatch = stripped.match(/^\/blog\/(.+)$/);
+  if (blogMatch) return RETAINED_BLOG_SLUGS.includes(blogMatch[1]);
+  return false;
+}
+
 function getHreflangPair(pathname: string): { en: string; uk: string } {
   let enPath = pathname;
   let ukPath = pathname;
@@ -92,20 +120,23 @@ export function useSEO({ title, description, canonical, ogImage, schema, noindex
     canonicalEl.href = pageUrl;
     document.head.appendChild(canonicalEl);
 
-    // Hreflang
+    // Hreflang — only for indexable routes with reciprocal EN/UK pairs
     const { pathname } = window.location;
-    const pair = getHreflangPair(pathname);
-    const hreflangs: Array<{ hreflang: string; href: string }> = [
-      { hreflang: 'en', href: pair.en },
-      { hreflang: 'uk', href: pair.uk },
-      { hreflang: 'x-default', href: pair.en },
-    ];
-    for (const h of hreflangs) {
-      const link = document.createElement('link');
-      link.rel = 'alternate';
-      link.setAttribute('hreflang', h.hreflang);
-      link.href = h.href;
-      document.head.appendChild(link);
+    const isIndexable = isIndexableRoute(pathname);
+    if (isIndexable) {
+      const pair = getHreflangPair(pathname);
+      const hreflangs: Array<{ hreflang: string; href: string }> = [
+        { hreflang: 'en', href: pair.en },
+        { hreflang: 'uk', href: pair.uk },
+        { hreflang: 'x-default', href: pair.en },
+      ];
+      for (const h of hreflangs) {
+        const link = document.createElement('link');
+        link.rel = 'alternate';
+        link.setAttribute('hreflang', h.hreflang);
+        link.href = h.href;
+        document.head.appendChild(link);
+      }
     }
 
     const schemaId = 'ld-json-schema';

@@ -159,7 +159,8 @@ export default function AiLlmPage() {
   useSEO({
     title: c.seo.title,
     description: c.seo.description,
-    canonical: `https://vladenza.com${lp('/services/ai-llm')}`,
+    canonical: `https://vladenza.com${lp('/services/ai-llm')}/`,
+    noindex: true,
   });
   return (
     <ServicePageLayout>
