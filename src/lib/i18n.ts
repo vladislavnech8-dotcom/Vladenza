@@ -26,6 +26,13 @@ export interface TranslationKey {
   'nav.brand': string;
   'nav.agency': string;
   'nav.languageSwitch': string;
+  'nav.linkBuilding': string;
+  'nav.placements': string;
+  'nav.managedCampaigns': string;
+  'nav.managedCampaignsDesc': string;
+  'nav.whiteLabelLink': string;
+  'nav.whiteLabelLinkDesc': string;
+  'nav.getLinkPlan': string;
 
   // Services dropdown
   'nav.svc.seoAudit': string;
@@ -78,6 +85,11 @@ export interface TranslationKey {
   'footer.refund': string;
   'footer.cookiePolicy': string;
   'footer.rights': string;
+  'footer.proof': string;
+  'footer.reviewsFiverr': string;
+  'footer.reviewsClutch': string;
+  'footer.managedCampaigns': string;
+  'footer.whiteLabel': string;
   'footer.cookiePrefs': string;
 
   // Cookie banner
@@ -170,6 +182,13 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.brand': 'Vladen',
     'nav.agency': 'za',
     'nav.languageSwitch': 'Switch language',
+    'nav.linkBuilding': 'Link Building',
+    'nav.placements': 'Placements',
+    'nav.managedCampaigns': 'Managed Campaigns',
+    'nav.managedCampaignsDesc': 'Full backlink strategy & monthly plan',
+    'nav.whiteLabelLink': 'White-Label Link Building',
+    'nav.whiteLabelLinkDesc': 'Silent fulfilment for agencies',
+    'nav.getLinkPlan': 'Get a Link Plan',
 
     // Services dropdown
     'nav.svc.seoAudit': 'SEO Audit',
@@ -222,6 +241,11 @@ export const translations: Record<Locale, TranslationKey> = {
     'footer.refund': 'Refund Policy',
     'footer.cookiePolicy': 'Cookie Policy',
     'footer.rights': 'All rights reserved.',
+    'footer.proof': 'Proof',
+    'footer.reviewsFiverr': 'Reviews on Fiverr',
+    'footer.reviewsClutch': 'Reviews on Clutch',
+    'footer.managedCampaigns': 'Managed Campaigns',
+    'footer.whiteLabel': 'White Label',
     'footer.cookiePrefs': 'Cookies',
 
     // Cookie banner
@@ -313,6 +337,13 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.brand': 'Vladen',
     'nav.agency': 'za',
     'nav.languageSwitch': 'Змінити мову',
+    'nav.linkBuilding': 'Лінкбілдинг',
+    'nav.placements': 'Приклади розміщень',
+    'nav.managedCampaigns': 'Комплексні кампанії',
+    'nav.managedCampaignsDesc': 'Повна стратегія та щомісячний план',
+    'nav.whiteLabelLink': 'White Label для агенцій',
+    'nav.whiteLabelLinkDesc': 'Тиха реалізація для агенцій',
+    'nav.getLinkPlan': 'Отримати план',
 
     // Services dropdown
     'nav.svc.seoAudit': 'SEO-аудит',
@@ -365,6 +396,11 @@ export const translations: Record<Locale, TranslationKey> = {
     'footer.refund': 'Політика повернення',
     'footer.cookiePolicy': 'Політика cookie',
     'footer.rights': 'Усі права захищені.',
+    'footer.proof': 'Підтвердження',
+    'footer.reviewsFiverr': 'Відгуки на Fiverr',
+    'footer.reviewsClutch': 'Відгуки на Clutch',
+    'footer.managedCampaigns': 'Комплексні кампанії',
+    'footer.whiteLabel': 'White Label',
     'footer.cookiePrefs': 'Cookie',
 
     // Cookie banner
