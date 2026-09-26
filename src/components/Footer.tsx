@@ -22,7 +22,7 @@ export default function Footer(_: FooterProps) {
   const proofLinks = [
     { label: t['nav.placements'], href: lp('/placements') },
     { label: t['nav.caseStudies'], href: lp('/case-studies') },
-    { label: t['footer.reviewsFiverr'], href: 'https://www.fiverr.com/vladenza' },
+    { label: t['footer.reviewsFiverr'], href: 'https://www.fiverr.com/fittranslate?public_mode=true' },
     { label: t['footer.reviewsClutch'], href: 'https://clutch.co/profile/vladenza' },
   ];
 

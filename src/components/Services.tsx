@@ -3,7 +3,7 @@ import type { Package } from './OrderModal';
 
 const LINK_BUILDING = [
   { icon: Newspaper, title: 'Guest Posts',      desc: 'Editorial placements on real sites with organic traffic.', href: '/services/guest-posting',
-    pkg: { name: 'Starter', price: 'From $80', links: 'DR 30–50', service: 'Guest Posting' } as Package },
+    pkg: { name: 'Starter', price: 'From $100', links: 'DR 30–50', service: 'Guest Posting' } as Package },
   { icon: Scissors,  title: 'Link Insertions',  desc: 'Contextual backlinks in already-published articles.',       href: '/services/niche-edits',
     pkg: { name: 'Essential', price: 'From $80', links: 'DR 20–40+', service: 'Link Insertions' } as Package },
   { icon: Users2,    title: 'Crowd Marketing',  desc: 'Brand mentions placed in relevant forum discussions.',      href: '/services/crowd-links',
