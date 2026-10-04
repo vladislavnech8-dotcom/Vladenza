@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Check, Eye, Link2, Search, ClipboardCheck, ExternalLink } from 'lucide-react';
+import { ArrowRight, Check, Eye, Link2, Search, ClipboardCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -22,48 +22,7 @@ function DecorativeChart({ color }: { color: string }) {
   return <svg viewBox="0 0 320 100" className="h-24 w-full" aria-hidden="true" preserveAspectRatio="none"><path d="M0 80 C35 76 43 70 70 72 S110 55 138 62 S176 40 202 46 S240 30 270 34 S300 18 320 20" fill="none" stroke={color} strokeWidth="3" strokeLinecap="square" /><path d="M0 96H320" stroke={color} strokeOpacity=".2" strokeWidth="2" /></svg>;
 }
 
-function ClutchProofTile() {
-  const [badgeState, setBadgeState] = useState<'loading' | 'loaded' | 'fallback'>('loading');
 
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setBadgeState((current) => current === 'loading' ? 'fallback' : current), 4000);
-    return () => window.clearTimeout(timeout);
-  }, []);
-
-  return (
-    <div className="flex min-h-20 items-center gap-3 py-3 md:px-8 md:py-2 lg:last:pr-0">
-      <div className="min-w-0">
-        <p className="text-[11px] font-bold uppercase tracking-[.12em] text-signal">Recognized by Clutch</p>
-        <div className="relative mt-1 flex h-[104px] w-[104px] items-center justify-center sm:h-[128px] sm:w-[128px]">
-          <iframe
-            width="360"
-            height="360"
-            src="https://clutch.co/share/badges/2348413/34510?utm_source=clutch_top_company_badge&utm_medium=image_embed"
-            title="Top Clutch Ecommerce Marketing Agency Ukraine 2026"
-            loading="lazy"
-            onLoad={() => setBadgeState('loaded')}
-            onError={() => setBadgeState('fallback')}
-            className={`h-full w-full border-0 transition-opacity ${badgeState === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
-          />
-          {badgeState !== 'loaded' && (
-            <a
-              href="https://clutch.co/profile/vladenza"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="editorial-focus absolute inset-0 flex flex-col justify-center gap-2 bg-cream text-xs font-bold leading-tight text-ink transition-colors hover:text-signal"
-            >
-              <span>Recognized by Clutch</span>
-              <span className="text-signal">View profile on Clutch →</span>
-            </a>
-          )}
-        </div>
-      </div>
-      <a href="https://clutch.co/profile/vladenza" target="_blank" rel="noopener noreferrer" aria-label="View profile on Clutch" className="editorial-focus ml-auto shrink-0 text-signal transition-colors hover:text-ink">
-        <ExternalLink size={13} />
-      </a>
-    </div>
-  );
-}
 
 export default function HomePage() {
   const { locale, localizePath: lp } = useLocale();
@@ -85,9 +44,9 @@ export default function HomePage() {
 
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[72%_68%] brightness-[0.88] lg:block" />
+        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[72%_68%] brightness-[0.72] lg:block" />
         <div className="paper-grain absolute inset-0 opacity-15" />
-        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 60% 55% at 38% 44%, rgba(7,16,43,0.62) 0%, rgba(7,16,43,0.42) 34%, rgba(7,16,43,0.24) 58%, rgba(7,16,43,0.08) 78%, transparent 100%)' }} />
+        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 65% 60% at 38% 44%, rgba(7,16,43,0.78) 0%, rgba(7,16,43,0.58) 34%, rgba(7,16,43,0.36) 58%, rgba(7,16,43,0.14) 78%, transparent 100%)' }} />
         <div className="relative z-10 mx-auto flex min-h-0 w-full min-w-0 box-border flex-col lg:min-h-[calc(100svh-104px)] items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-16 lg:py-20">
           <div className="flex w-full min-w-0 max-w-[1500px] flex-col items-center">
             <h1 className="w-full min-w-0 font-display text-[clamp(36px,9vw,64px)] font-bold leading-[1.06] tracking-[-.035em] sm:text-[clamp(3.5rem,6vw,7.75rem)] sm:leading-[.94] sm:tracking-[-.055em]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
@@ -102,16 +61,44 @@ export default function HomePage() {
         </div>
         <div className="relative z-10 lg:hidden">
           <div className="absolute inset-x-0 top-0 h-24 -translate-y-full bg-gradient-to-b from-transparent to-navy" />
-          <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="block aspect-[16/10] w-full object-cover object-[72%_72%] brightness-[0.88]" />
+          <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="block aspect-[16/10] w-full object-cover object-[72%_72%] brightness-[0.72]" />
         </div>
       </section>
 
-      <section className="border-b-2 border-ink/10 bg-white" aria-label="Verified proof">
-        <div className="mx-auto grid max-w-[1440px] divide-y divide-ink/15 px-5 py-2 sm:px-8 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4 lg:px-16">
-          <div className="flex min-h-20 items-center py-5 text-xs font-bold uppercase tracking-[.12em] text-signal md:px-8 md:py-0 first:md:pl-0">{c.proof.label}</div>
-          <div className="flex min-h-20 items-center py-5 text-sm font-bold md:px-8 md:py-0">{c.proof.experience}</div>
-          <a className="editorial-focus flex min-h-20 items-center gap-3 py-5 text-sm font-bold text-ink transition-colors hover:text-signal md:px-8 md:py-0" href="https://www.fiverr.com/fittranslate?public_mode=true" target="_blank" rel="noopener noreferrer"><span>{c.proof.fiverr}</span><ExternalLink size={13} className="ml-auto shrink-0" /></a>
-          <ClutchProofTile />
+      <section className="border-b border-ink/10 bg-white" aria-label="Verified proof">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="grid grid-cols-1 divide-y divide-ink/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+
+            {/* Experience */}
+            <div className="flex min-h-[120px] flex-col justify-center py-7 sm:py-0 sm:pr-8 lg:pr-12">
+              <p className="font-display text-[32px] font-bold leading-none tracking-tight text-ink">8+</p>
+              <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Років досвіду в лінкбілдингу' : 'Years of link-building experience'}</p>
+            </div>
+
+            {/* Fiverr */}
+            <a
+              href="https://www.fiverr.com/fittranslate?public_mode=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="editorial-focus group flex min-h-[120px] flex-col justify-center py-7 transition-colors hover:text-signal sm:px-8 sm:py-0 lg:px-12"
+            >
+              <p className="font-display text-[32px] font-bold leading-none tracking-tight text-ink group-hover:text-signal">4.9 · 1,100+</p>
+              <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Рейтинг і відгуки на Fiverr' : 'Rating and reviews on Fiverr'}</p>
+            </a>
+
+            {/* Clutch */}
+            <a
+              href="https://clutch.co/profile/vladenza"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="editorial-focus group flex min-h-[120px] flex-col justify-center py-7 transition-colors sm:pl-8 sm:py-0 lg:pl-12"
+            >
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[.14em] text-signal">Recognized by Clutch</p>
+              <p className="font-display text-[22px] font-bold leading-tight tracking-tight text-ink group-hover:text-signal">Top Company · Ukraine · 2026</p>
+              <p className="mt-2 text-sm font-bold text-signal">{locale === 'uk' ? 'Переглянути профіль →' : 'View profile →'}</p>
+            </a>
+
+          </div>
         </div>
       </section>
 
