@@ -43,11 +43,12 @@ export default function HomePage() {
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[900px]">
         <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[center_right] lg:block" />
-        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 70% 60% at 30% 50%, rgba(8,16,40,0.82) 0%, rgba(10,20,48,0.55) 40%, rgba(15,28,60,0.15) 68%, transparent 100%)' }} />
         <div className="paper-grain absolute inset-0 opacity-15" />
+        {/* Readability overlay — broad elliptical navy gradient centered behind headline & CTAs */}
+        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 62% 52% at 50% 58%, rgba(7,16,43,0.60) 0%, rgba(7,16,43,0.42) 35%, rgba(7,16,43,0.30) 55%, rgba(7,16,43,0.10) 75%, transparent 100%)' }} />
         <div className="relative z-10 mx-auto flex min-h-[560px] flex-col items-center justify-center px-5 pt-32 pb-12 sm:px-8 lg:min-h-[900px] lg:px-16 lg:pt-40 lg:pb-20">
           <div className="flex w-full max-w-[1500px] flex-col items-center text-center">
-            <h1 className="font-display text-[clamp(3rem,14vw,4.125rem)] font-bold leading-[.9] tracking-[-.055em] sm:text-[clamp(3.5rem,6vw,7.75rem)]">
+            <h1 className="font-display text-[clamp(3rem,14vw,4.125rem)] font-bold leading-[.9] tracking-[-.055em] sm:text-[clamp(3.5rem,6vw,7.75rem)]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
               <span className="block whitespace-nowrap text-cream">{c.hero.h1First}</span>
               <span className="mt-1 block whitespace-nowrap text-signal">{c.hero.h1Second}</span>
             </h1>
@@ -57,7 +58,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="absolute inset-0 lg:hidden" style={{ background: 'linear-gradient(180deg, rgba(8,16,40,0.75) 0%, rgba(10,20,48,0.5) 40%, rgba(15,28,60,0.2) 100%)' }} />
+        <div className="absolute inset-0 lg:hidden" style={{ background: 'radial-gradient(ellipse 75% 60% at 50% 45%, rgba(7,16,43,0.65) 0%, rgba(7,16,43,0.40) 40%, rgba(7,16,43,0.20) 65%, transparent 100%)' }} />
         <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="relative block aspect-[16/9] w-full object-cover object-[72%_bottom] lg:hidden" />
       </section>
 
