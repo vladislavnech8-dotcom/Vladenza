@@ -58,9 +58,8 @@ export default function Footer({ onOpenModal }: FooterProps) {
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
-            <Link to={lp('/')} className="flex items-center gap-0 mb-3 select-none">
-              <span className="font-display text-[22px] font-bold text-white" style={{ letterSpacing: '-0.04em' }}>Vladen</span>
-              <span className="font-black text-[22px] text-[#F97316]" style={{ letterSpacing: '-0.04em', borderBottom: '2.5px solid #F97316', lineHeight: 1 }}>za</span>
+            <Link to={lp('/')} className="mb-3 flex select-none items-center">
+              <span className="font-display text-[22px] font-bold lowercase tracking-[-.04em] text-white">vladenza</span>
             </Link>
             <p className="mb-3 max-w-[220px] text-sm leading-6 text-white/70">{t['footer.tagline']}</p>
             <a href="mailto:sales@vladenza.com" className="mb-4 inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white">

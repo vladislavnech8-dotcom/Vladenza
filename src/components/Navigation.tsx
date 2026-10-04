@@ -109,9 +109,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
           {/* Logo */}
           <a href={lp('/')} className="flex select-none items-center flex-shrink-0"
             onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
-            <span className="font-display text-[24px] font-bold tracking-[-.05em] text-cream">Vladenza</span>
-            <span className="font-black text-[10px] text-signal uppercase ml-1.5 px-1.5 py-0.5 border-2 border-signal"
-              style={{ letterSpacing: '0.18em', lineHeight: 1, alignSelf: 'center', marginTop: '2px' }}>Agency</span>
+            <span className="font-display text-[24px] font-bold lowercase tracking-[-.05em] text-white">vladenza</span>
           </a>
 
           {/* Center nav */}
@@ -184,9 +182,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
         >
           <a href={lp('/')} className="flex select-none items-center"
             onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
-            <span className="font-display text-[20px] font-bold tracking-[-.05em] text-cream">Vladenza</span>
-            <span className="font-black text-[9px] text-signal uppercase ml-1 px-1.5 py-0.5 border-2 border-signal"
-              style={{ letterSpacing: '0.18em', lineHeight: 1, alignSelf: 'center', marginTop: '2px' }}>Agency</span>
+            <span className="font-display text-[20px] font-bold lowercase tracking-[-.05em] text-white">vladenza</span>
           </a>
           <div className="flex items-center gap-3">
             <CartButton />
