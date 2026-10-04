@@ -43,8 +43,8 @@ export default function HomePage() {
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[900px]">
         <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[center_right] lg:block" />
-        <div className="absolute inset-0 hidden bg-[radial-gradient(ellipse_at_center,rgba(11,16,32,0.72)_0%,rgba(23,40,95,0.35)_45%,rgba(23,40,95,0.1)_72%)] lg:block" />
-        <div className="paper-grain absolute inset-0 opacity-20" />
+        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 70% 60% at 30% 50%, rgba(8,16,40,0.82) 0%, rgba(10,20,48,0.55) 40%, rgba(15,28,60,0.15) 68%, transparent 100%)' }} />
+        <div className="paper-grain absolute inset-0 opacity-15" />
         <div className="relative z-10 mx-auto flex min-h-[560px] flex-col items-center justify-center px-5 pt-32 pb-12 sm:px-8 lg:min-h-[900px] lg:px-16 lg:pt-40 lg:pb-20">
           <div className="flex w-full max-w-[1500px] flex-col items-center text-center">
             <h1 className="font-display text-[clamp(3rem,14vw,4.125rem)] font-bold leading-[.9] tracking-[-.055em] sm:text-[clamp(3.5rem,6vw,7.75rem)]">
@@ -52,11 +52,12 @@ export default function HomePage() {
               <span className="mt-1 block whitespace-nowrap text-signal">{c.hero.h1Second}</span>
             </h1>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-[18px]">
-              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 bg-signal px-8 text-base font-bold text-white transition-transform hover:-translate-y-0.5 lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.pricing}<ArrowRight size={18} /></Link>
-              <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 border-2 border-white/40 bg-navy/30 px-8 text-base font-bold text-white backdrop-blur-sm transition-colors hover:border-white lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.placements}<ArrowRight size={18} /></Link>
+              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 bg-signal px-8 text-base font-bold text-white transition-colors hover:bg-[#EA580C] lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.pricing}<ArrowRight size={18} /></Link>
+              <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 bg-[rgba(10,20,48,0.5)] px-8 text-base font-bold text-cream transition-colors hover:bg-[rgba(10,20,48,0.8)] lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.placements}<ArrowRight size={18} /></Link>
             </div>
           </div>
         </div>
+        <div className="absolute inset-0 lg:hidden" style={{ background: 'linear-gradient(180deg, rgba(8,16,40,0.75) 0%, rgba(10,20,48,0.5) 40%, rgba(15,28,60,0.2) 100%)' }} />
         <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="relative block aspect-[16/9] w-full object-cover object-[72%_bottom] lg:hidden" />
       </section>
 
@@ -87,9 +88,7 @@ export default function HomePage() {
 
       <ReviewsSection />
 
-      <section id="faq" className="scroll-mt-20 bg-cream py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-signal">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-3 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact /><FAQ faqs={c.faq.items.slice(3)} compact /></div></div></section>
-
-      <section className="bg-signal py-[88px] md:min-h-[540px] md:py-28"><div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-10 px-5 sm:px-8 md:flex-row md:items-end lg:px-16"><div className="max-w-[800px] md:w-[65%]"><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/70">06 / Next step</p><h2 className="font-display text-[clamp(3.25rem,4vw,4.875rem)] font-bold leading-[.96] tracking-[-.045em] text-white">{c.finalCta.heading}</h2><p className="mt-6 max-w-xl text-[17px] leading-[1.6] text-white/85">{c.finalCta.body}</p></div><div className="flex shrink-0 flex-col items-start gap-3 pb-1 md:w-[30%]"><button onClick={openLinkPlan} className="editorial-focus inline-flex min-h-14 items-center gap-2 border-2 border-ink bg-ink px-6 text-sm font-bold text-white transition-transform hover:-translate-y-1">{c.finalCta.cta}<ArrowRight size={17} /></button><span className="text-xs font-semibold text-white/80">{c.finalCta.reassurance}</span></div></div></section>
+      <section id="faq" className="scroll-mt-20 bg-signal py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-ink/60">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-ink">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
     </main>
     <Footer />
     <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
