@@ -12,14 +12,14 @@ function LanguageSwitcher() {
   const { locale, switchLocale } = useLocale();
   const navigate = useNavigate();
   return (
-    <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5" role="group" aria-label="Switch language">
+    <div className="flex items-center gap-0.5 rounded-xl border border-white/15 bg-white/5 p-0.5" role="group" aria-label="Switch language">
       {(Object.keys(LOCALE_LABELS) as Locale[]).map((l) => {
         const isActive = l === locale;
         const targetPath = l === locale ? null : switchLocale();
         return (
           <button key={l} onClick={() => { if (targetPath) navigate(targetPath); }}
             aria-label={`${LOCALE_LABELS[l]} language`} aria-pressed={isActive}
-            className={`px-2 py-1 rounded-md text-[11px] font-bold transition-all ${isActive ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}>
+            className={`editorial-focus min-h-[36px] rounded-lg px-2.5 text-[11px] font-bold transition-all ${isActive ? 'bg-signal text-white' : 'text-white/60 hover:text-white'}`}>
             {LOCALE_LABELS[l]}
           </button>
         );
@@ -34,7 +34,6 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
   const { t, localizePath: lp } = useLocale();
   const routerNavigate = useNavigate();
   const { pathname: path } = useLocation();
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [lbOpen, setLbOpen] = useState(false);
   const lbRef = useRef<HTMLDivElement>(null);
@@ -53,12 +52,6 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
     { label: t['nav.pricing'], href: lp('/pricing') },
     { label: t['nav.blog'], href: lp('/blog') },
   ];
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => { if (lbRef.current && !lbRef.current.contains(e.target as Node)) setLbOpen(false); };
@@ -83,75 +76,87 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
     <>
       <style>{`
         @keyframes dropIn { from { opacity: 0; transform: translateY(-8px) translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      <header className="fixed left-0 right-0 top-0 z-50 transition-all duration-300">
-        <div className={`border-b-2 border-ink/10 bg-white/95 backdrop-blur-md transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
-            <a href={lp('/')} className="flex items-center select-none flex-shrink-0"
-              onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
-              <span className="font-display text-[24px] font-bold tracking-[-.06em] text-ink" style={{ letterSpacing: '-0.05em' }}>Vladenza</span>
-              <span className="font-black text-[10px] text-signal uppercase ml-1.5 px-1.5 py-0.5 border-2 border-signal"
-                style={{ letterSpacing: '0.18em', lineHeight: 1, alignSelf: 'center', marginTop: '2px' }}>Agency</span>
-            </a>
+      {/* Desktop floating dark nav */}
+      <header className="fixed left-1/2 top-4 z-50 hidden -translate-x-1/2 lg:block">
+        <div className="flex h-[74px] w-[calc(100vw-32px)] max-w-[1600px] items-center justify-between gap-8 rounded-[20px] border border-white/12 bg-[#0B1020] px-6 shadow-[0_8px_30px_rgba(0,0,0,0.25)] backdrop-blur-md">
+          {/* Logo */}
+          <a href={lp('/')} className="flex select-none items-center flex-shrink-0"
+            onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
+            <span className="font-display text-[24px] font-bold tracking-[-.05em] text-white">Vladenza</span>
+            <span className="font-black text-[10px] text-signal uppercase ml-1.5 px-1.5 py-0.5 border-2 border-signal"
+              style={{ letterSpacing: '0.18em', lineHeight: 1, alignSelf: 'center', marginTop: '2px' }}>Agency</span>
+          </a>
 
-            <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
-              <div ref={lbRef} className="relative">
-                <button onClick={() => setLbOpen(!lbOpen)}
-                  className={`editorial-focus flex items-center gap-1.5 px-3.5 py-2 text-sm font-bold transition-all duration-150 select-none ${lbOpen ? 'text-signal bg-cream' : 'text-ink/65 hover:text-ink'}`}>
-                  {t['nav.linkBuilding']}
-                  <ChevronDown size={12} className={`transition-transform duration-200 ${lbOpen ? 'rotate-180 text-[#F97316]' : 'text-gray-400'}`} />
-                </button>
-                {lbOpen && (
-                  <div className="absolute left-1/2 top-full z-50 mt-2 w-[320px] -translate-x-1/2 overflow-hidden border-2 border-ink bg-white shadow-xl shadow-ink/15"
-                    style={{ animation: 'dropIn 0.18s cubic-bezier(0.16,1,0.3,1)' }}>
-                    <div className="p-2 flex flex-col gap-0.5">
-                      {lbItems.map((s) => (
-                        <button key={s.href} onClick={() => navigate(s.href)}
-                          className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-all duration-150 hover:bg-cream">
-                          <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0 group-hover:bg-[#F97316] transition-colors duration-150">
-                            <s.icon size={14} className="text-[#F97316] group-hover:text-white transition-colors duration-150" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <span className="text-gray-900 text-sm font-medium leading-tight block">{s.label}</span>
-                            <span className="text-gray-400 text-xs mt-0.5 leading-tight block">{s.desc}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+          {/* Center nav */}
+          <nav className="flex items-center gap-1">
+            <div ref={lbRef} className="relative">
+              <button onClick={() => setLbOpen(!lbOpen)}
+                className={`editorial-focus flex min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 text-sm font-bold transition-colors duration-150 select-none ${lbOpen ? 'text-signal' : 'text-white/65 hover:text-white'}`}>
+                {t['nav.linkBuilding']}
+                <ChevronDown size={12} className={`transition-transform duration-200 ${lbOpen ? 'rotate-180 text-signal' : 'text-white/40'}`} />
+              </button>
+              {lbOpen && (
+                <div className="absolute left-1/2 top-full z-50 mt-3 w-[340px] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/12 bg-[#0B1020] shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+                  style={{ animation: 'dropIn 0.18s cubic-bezier(0.16,1,0.3,1)' }}>
+                  <div className="flex flex-col gap-0.5 p-2">
+                    {lbItems.map((s) => (
+                      <button key={s.href} onClick={() => navigate(s.href)}
+                        className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors duration-150 hover:bg-white/5">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                          <s.icon size={14} className="text-signal" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-sm font-medium leading-tight text-white/90 group-hover:text-signal">{s.label}</span>
+                          <span className="mt-0.5 block text-xs leading-tight text-white/40">{s.desc}</span>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
-
-              {navLinks.map((link) => {
-                const isActive = link.href === path || (link.href !== lp('/') && path.startsWith(link.href));
-                return (
-                  <button key={link.label} onClick={() => navigate(link.href)}
-                    className={`text-sm transition-colors duration-150 font-medium px-3 py-2 rounded-xl ${isActive ? 'text-[#F97316] bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>
-                    {link.label}
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
-              <LanguageSwitcher />
-              <CartButton />
-              <button onClick={() => (onOpenModal ? onOpenModal() : routerNavigate(lp('/#contact')))}
-                className="text-sm text-white font-semibold px-4 py-2 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shadow-sm hover:shadow-md hover:shadow-orange-200">
-                {t['nav.getLinkPlan']} <ArrowRight size={13} />
-              </button>
+                </div>
+              )}
             </div>
 
-            <div className="lg:hidden flex items-center gap-2">
-              <LanguageSwitcher />
-              <CartButton />
-              <button className="editorial-focus flex h-11 w-11 items-center justify-center border-2 border-ink/20 text-ink/70 transition-colors hover:border-signal hover:text-signal"
-                onClick={() => setMobileOpen(!mobileOpen)} aria-label={t['nav.toggleMenu']}>
-                {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-              </button>
-            </div>
+            {navLinks.map((link) => {
+              const isActive = link.href === path || (link.href !== lp('/') && path.startsWith(link.href));
+              return (
+                <button key={link.label} onClick={() => navigate(link.href)}
+                  className={`editorial-focus min-h-[44px] rounded-xl px-3.5 text-sm font-bold transition-colors duration-150 ${isActive ? 'text-signal' : 'text-white/65 hover:text-white'}`}>
+                  {link.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Right controls */}
+          <div className="flex flex-shrink-0 items-center gap-3">
+            <LanguageSwitcher />
+            <CartButton />
+            <button onClick={() => (onOpenModal ? onOpenModal() : routerNavigate(lp('/#contact')))}
+              className="editorial-focus flex min-h-[52px] items-center gap-1.5 whitespace-nowrap rounded-2xl bg-signal px-5 text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#EA580C]">
+              {t['nav.getLinkPlan']} <ArrowRight size={14} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile floating dark header */}
+      <header className="fixed left-1/2 top-3 z-50 block w-[calc(100vw-24px)] -translate-x-1/2 lg:hidden">
+        <div className="flex h-[60px] items-center justify-between rounded-2xl border border-white/12 bg-[#0B1020] px-4 shadow-[0_8px_30px_rgba(0,0,0,0.25)] backdrop-blur-md">
+          <a href={lp('/')} className="flex select-none items-center"
+            onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
+            <span className="font-display text-[20px] font-bold tracking-[-.05em] text-white">Vladenza</span>
+            <span className="font-black text-[9px] text-signal uppercase ml-1 px-1.5 py-0.5 border-2 border-signal"
+              style={{ letterSpacing: '0.18em', lineHeight: 1, alignSelf: 'center', marginTop: '2px' }}>Agency</span>
+          </a>
+          <div className="flex items-center gap-2">
+            <CartButton />
+            <button className="editorial-focus flex h-11 w-11 items-center justify-center border border-white/15 text-white/70 transition-colors hover:border-signal hover:text-signal"
+              onClick={() => setMobileOpen(!mobileOpen)} aria-label={t['nav.toggleMenu']}>
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </div>
       </header>
@@ -167,10 +172,10 @@ function CartButton() {
   const { t } = useLocale();
   return (
     <button onClick={openCart}
-      className="relative w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#F97316] transition-colors"
+      className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 text-white/70 transition-colors hover:border-signal hover:text-signal"
       aria-label={t['nav.openCart']}>
       <ShoppingCart size={17} />
-      {itemCount > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#F97316] text-white text-[10px] font-bold flex items-center justify-center">{itemCount}</span>}
+      {itemCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-signal px-1 text-[10px] font-bold text-white">{itemCount}</span>}
     </button>
   );
 }
@@ -187,44 +192,46 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal, lbItems, navLink
   if (!open) return null;
 
   return (
-    <div className="lg:hidden fixed inset-0 z-40" style={{ top: '56px' }}>
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white h-full overflow-y-auto shadow-2xl max-w-sm w-full"
-        style={{ animation: 'slideIn 0.22s cubic-bezier(0.16,1,0.3,1)' }}>
-        <div className="px-4 py-4 flex flex-col gap-1">
+    <div className="fixed inset-0 z-40 lg:hidden" style={{ top: '72px' }}>
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full overflow-y-auto rounded-b-2xl border border-white/12 bg-[#0B1020] shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+        style={{ animation: 'slideDown 0.22s cubic-bezier(0.16,1,0.3,1)' }}>
+        <div className="flex flex-col gap-1 p-4">
           <button onClick={() => setLbOpen(!lbOpen)}
-            className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors w-full min-h-[44px]">
-            <span className="text-sm font-semibold text-gray-900">{t['nav.linkBuilding']}</span>
-            <ChevronDown size={15} className={`text-gray-400 transition-transform duration-200 ${lbOpen ? 'rotate-180' : ''}`} />
+            className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-white/5">
+            <span className="text-sm font-bold text-white/90">{t['nav.linkBuilding']}</span>
+            <ChevronDown size={15} className={`text-white/40 transition-transform duration-200 ${lbOpen ? 'rotate-180' : ''}`} />
           </button>
           {lbOpen && (
-            <div className="flex flex-col gap-0.5 pl-2 mb-1">
+            <div className="mb-1 flex flex-col gap-0.5 pl-2">
               {lbItems.map((s) => (
                 <button key={s.href} onClick={() => onNavigate(s.href)}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left w-full min-h-[44px]">
-                  <div className="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
-                    <s.icon size={13} className="text-[#F97316]" />
+                  className="flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-white/5">
+                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                    <s.icon size={13} className="text-signal" />
                   </div>
-                  <span className="text-sm text-gray-800 font-medium">{s.label}</span>
+                  <span className="text-sm font-medium text-white/80">{s.label}</span>
                 </button>
               ))}
             </div>
           )}
 
-          <div className="h-px bg-gray-100 my-1" />
+          <div className="my-1 h-px bg-white/10" />
           {navLinks.map((link) => (
             <button key={link.label} onClick={() => onNavigate(link.href)}
-              className="flex items-center px-3 py-3 rounded-xl hover:bg-gray-50 text-sm text-gray-600 font-medium transition-colors text-left w-full min-h-[44px]">
+              className="flex min-h-[44px] w-full items-center rounded-xl px-3 py-3 text-left text-sm font-bold text-white/65 transition-colors hover:bg-white/5 hover:text-white">
               {link.label}
             </button>
           ))}
 
-          <div className="flex flex-col gap-2.5 pt-3 mt-1 border-t border-gray-100">
-            <button onClick={() => { onClose(); if (onOpenModal) onOpenModal(); else onNavigate(lp('/#contact')); }}
-              className="text-sm text-center text-white font-semibold px-4 py-3 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-colors flex items-center justify-center gap-2 min-h-[44px]">
-              {t['nav.getLinkPlan']} <ArrowRight size={13} />
-            </button>
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+            <LanguageSwitcher />
           </div>
+
+          <button onClick={() => { onClose(); if (onOpenModal) onOpenModal(); else onNavigate(lp('/#contact')); }}
+            className="mt-3 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-signal text-sm font-bold text-white transition-colors hover:bg-[#EA580C]">
+            {t['nav.getLinkPlan']} <ArrowRight size={14} />
+          </button>
         </div>
       </div>
     </div>

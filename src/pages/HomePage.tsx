@@ -41,17 +41,19 @@ export default function HomePage() {
     <Navigation onOpenModal={openLinkPlan} />
 
     <main>
-      <section className="relative overflow-hidden bg-navy text-white lg:min-h-[800px]">
+      <section className="relative overflow-hidden bg-navy text-white lg:min-h-[900px]">
         <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[center_right] lg:block" />
-        <div className="absolute inset-0 hidden bg-gradient-to-r from-navy/95 via-navy/75 to-transparent lg:block" />
-        <div className="paper-grain absolute inset-0 opacity-25" />
-        <div className="relative z-10 mx-auto flex max-w-[1440px] items-center px-5 pb-12 pt-28 sm:px-8 lg:min-h-[800px] lg:px-16 lg:py-24">
-          <div className="max-w-[56%] lg:max-w-[760px]">
-            <h1 className="font-display text-[clamp(3.75rem,4.5vw,5.5rem)] font-bold leading-[.94] tracking-[-.045em]"><span className="block whitespace-nowrap text-cream">{c.hero.h1First}</span><span className="mt-2 block whitespace-nowrap text-signal">{c.hero.h1Second}</span></h1>
-            <p className="mt-7 max-w-[650px] text-[17px] leading-[1.6] text-white/85 md:text-lg">{c.hero.body}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-signal px-6 text-sm font-bold text-white transition-transform hover:-translate-y-1">{c.hero.pricing}<ArrowRight size={16} /></Link>
-              <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 border-2 border-white/50 px-6 text-sm font-bold text-white transition-colors hover:border-white">{c.hero.placements}<ArrowRight size={16} /></Link>
+        <div className="absolute inset-0 hidden bg-[radial-gradient(ellipse_at_center,rgba(11,16,32,0.72)_0%,rgba(23,40,95,0.35)_45%,rgba(23,40,95,0.1)_72%)] lg:block" />
+        <div className="paper-grain absolute inset-0 opacity-20" />
+        <div className="relative z-10 mx-auto flex min-h-[560px] flex-col items-center justify-center px-5 pt-32 pb-12 sm:px-8 lg:min-h-[900px] lg:px-16 lg:pt-40 lg:pb-20">
+          <div className="flex w-full max-w-[1500px] flex-col items-center text-center">
+            <h1 className="font-display text-[clamp(3rem,14vw,4.125rem)] font-bold leading-[.9] tracking-[-.055em] sm:text-[clamp(3.5rem,6vw,7.75rem)]">
+              <span className="block whitespace-nowrap text-cream">{c.hero.h1First}</span>
+              <span className="mt-1 block whitespace-nowrap text-signal">{c.hero.h1Second}</span>
+            </h1>
+            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-[18px]">
+              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 bg-signal px-8 text-base font-bold text-white transition-transform hover:-translate-y-0.5 lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.pricing}<ArrowRight size={18} /></Link>
+              <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 border-2 border-white/40 bg-navy/30 px-8 text-base font-bold text-white backdrop-blur-sm transition-colors hover:border-white lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.placements}<ArrowRight size={18} /></Link>
             </div>
           </div>
         </div>
