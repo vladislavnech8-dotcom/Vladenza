@@ -13,7 +13,7 @@ interface VisualAssetProps {
 
 export default function VisualAsset({ src, alt = '', width, height, className = '', objectPosition = 'center', priority = false, tone = 'cream' }: VisualAssetProps) {
   const [missing, setMissing] = useState(false);
-  const toneClass = tone === 'navy' ? 'bg-navy border-white/15' : tone === 'white' ? 'bg-white border-ink/15' : 'bg-cream border-ink/15';
+  const toneClass = tone === 'navy' ? 'bg-navy' : tone === 'white' ? 'bg-white' : 'bg-cream';
 
   return (
     <div className={`relative overflow-hidden border-2 ${toneClass} ${className}`} style={{ aspectRatio: `${width} / ${height}` }}>
@@ -24,9 +24,10 @@ export default function VisualAsset({ src, alt = '', width, height, className = 
           width={width}
           height={height}
           loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
           fetchPriority={priority ? 'high' : 'auto'}
           onError={() => setMissing(true)}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
           style={{ objectPosition }}
         />
       ) : (
