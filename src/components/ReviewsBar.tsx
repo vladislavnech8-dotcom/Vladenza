@@ -1,4 +1,4 @@
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { REVIEW_PLATFORMS } from '../data/reviewPlatforms';
 import PlatformIcon from './PlatformIcon';
 

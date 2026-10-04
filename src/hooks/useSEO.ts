@@ -137,7 +137,6 @@ export function useSEO({ title, description, canonical, ogImage, schema, noindex
     const { pathname } = window.location;
     const isEnIndexable = isIndexableRoute(pathname);
     // Check if the reciprocal locale is also indexable
-    const enPath = pathname.startsWith('/uk') ? pathname.slice(3) || '/' : pathname;
     const ukPath = pathname.startsWith('/uk') ? pathname : (pathname === '/' ? '/uk' : '/uk' + pathname);
     const isUkIndexable = isIndexableRoute(ukPath);
     if (isEnIndexable && isUkIndexable) {

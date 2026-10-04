@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Shield, EyeOff, Users, TrendingUp, CheckCircle, ArrowRight,
+  Shield, EyeOff, TrendingUp, CheckCircle, ArrowRight,
   Star, Clock, Zap, FileText, Lock, BarChart2, RefreshCw, Award,
   ChevronDown, ChevronUp, ExternalLink,
 } from 'lucide-react';

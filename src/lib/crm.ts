@@ -343,7 +343,7 @@ export async function fetchContacts(opts: {
   q = q.order('created_at', { ascending: false }).range(from, to);
 
   const res = await q;
-  return { data: (res.data ?? []) as CrmContact[], total: res.count ?? 0 };
+  return { data: (res.data ?? []) as unknown as CrmContact[], total: res.count ?? 0 };
 }
 
 export async function fetchContactById(id: string): Promise<CrmContact | null> {
@@ -426,7 +426,7 @@ export async function fetchActivities(opts: {
   if (opts.limit) q = q.limit(opts.limit);
 
   const { data } = await q;
-  return (data ?? []) as CrmActivity[];
+  return (data ?? []) as unknown as CrmActivity[];
 }
 
 export async function createActivity(input: {
@@ -503,7 +503,7 @@ export async function fetchFollowUps(opts: {
   if (opts.companyId) q = q.eq('company_id', opts.companyId);
   if (opts.status && opts.status !== 'all') q = q.eq('status', opts.status);
   const { data } = await q;
-  return (data ?? []) as CrmFollowUp[];
+  return (data ?? []) as unknown as CrmFollowUp[];
 }
 
 export async function fetchFollowUpsByDateRange(fromDate: string, toDate: string): Promise<CrmFollowUp[]> {
@@ -514,7 +514,7 @@ export async function fetchFollowUpsByDateRange(fromDate: string, toDate: string
     .gte('due_date', fromDate)
     .lte('due_date', toDate)
     .order('due_date', { ascending: true });
-  return (data ?? []) as CrmFollowUp[];
+  return (data ?? []) as unknown as CrmFollowUp[];
 }
 
 export async function fetchOverdueFollowUps(): Promise<CrmFollowUp[]> {
@@ -525,7 +525,7 @@ export async function fetchOverdueFollowUps(): Promise<CrmFollowUp[]> {
     .eq('status', 'open')
     .lt('due_date', today)
     .order('due_date', { ascending: true });
-  return (data ?? []) as CrmFollowUp[];
+  return (data ?? []) as unknown as CrmFollowUp[];
 }
 
 export async function createFollowUp(input: {

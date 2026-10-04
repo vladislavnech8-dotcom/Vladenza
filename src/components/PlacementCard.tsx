@@ -43,17 +43,17 @@ export default function PlacementCard({ p }: { p: Placement }) {
 
   return (
     <>
-      <div className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#F97316]/30 hover:shadow-lg hover:shadow-gray-100 transition-all duration-300 flex flex-col">
+      <div className="group flex flex-col overflow-hidden border-2 border-ink/20 bg-white text-ink transition-transform hover:-translate-y-1 hover:border-signal">
         {/* Screenshot preview — only rendered when a screenshot exists */}
         {hasScreenshot && (
           <div
-            className="relative aspect-[16/10] w-full overflow-hidden bg-gray-50 cursor-pointer"
+            className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-ink"
             onClick={openLightbox}
           >
             <img
               src={primaryScreenshot}
               alt={`${SERVICE_TYPE_LABELS[p.service_type]} placement on ${p.domain}`}
-              className="w-full h-full object-cover object-top group-hover:scale-[1.02] transition-transform duration-300"
+              className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
               onError={() => setImgError(true)}
               loading="lazy"
             />
@@ -78,9 +78,9 @@ export default function PlacementCard({ p }: { p: Placement }) {
         )}
 
         {/* Info section */}
-        <div className="p-5 flex flex-col gap-3 flex-1">
+        <div className="flex flex-1 flex-col gap-3 p-5">
           {/* Type + niche */}
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-ink/50">
             <span>{SERVICE_TYPE_LABELS[p.service_type]}</span>
             <span className="text-gray-200">·</span>
             <span>{p.niche}</span>
@@ -88,19 +88,19 @@ export default function PlacementCard({ p }: { p: Placement }) {
 
           {/* Domain */}
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-gray-800 truncate">
+            <div className="truncate text-sm font-bold text-ink">
               {p.domain}
             </div>
             {p.title && (
-              <div className="text-xs text-gray-400 mt-0.5 line-clamp-1">{p.title}</div>
+              <div className="mt-0.5 line-clamp-1 text-xs text-ink/55">{p.title}</div>
             )}
           </div>
 
           {/* Metrics */}
-          <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-4 border-t-2 border-ink/10 pt-3">
             <div>
               <div className="text-[10px] text-gray-400 uppercase tracking-wide">DR</div>
-              <div className={`text-lg font-black ${p.dr >= 60 ? 'text-emerald-500' : p.dr >= 50 ? 'text-[#F97316]' : 'text-blue-500'}`}>{p.dr}</div>
+              <div className="bg-signal px-2 py-1 text-lg font-black text-white">{p.dr}</div>
             </div>
             <div>
               <div className="text-[10px] text-gray-400 uppercase tracking-wide">{c.traffic}</div>
@@ -120,7 +120,7 @@ export default function PlacementCard({ p }: { p: Placement }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent('view_placement', { domain: p.domain, service_type: p.service_type })}
-            className="text-sm font-semibold text-[#F97316] hover:text-[#EA580C] flex items-center gap-1.5 transition-colors mt-auto"
+            className="editorial-focus mt-auto flex items-center gap-1.5 text-sm font-bold text-signal transition-colors hover:text-ink"
           >
             {c.viewPlacement} <ArrowUpRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
           </a>

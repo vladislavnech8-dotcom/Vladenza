@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import {
   Eye, AlertTriangle, ArrowRight, CheckCircle, XCircle, ChevronDown, ChevronUp,
-  Monitor, Smartphone, BarChart2, Globe, Link2, FileText, Layers, Search, Zap,
-  TrendingUp, MapPin, Clock, Target, AlertCircle, Info
+  Monitor, Smartphone, BarChart2, Link2, FileText, Layers, Zap,
+  TrendingUp, Target, AlertCircle, Info
 } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
 import { useSEO } from '../hooks/useSEO';

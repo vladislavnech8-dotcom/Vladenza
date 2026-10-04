@@ -21,12 +21,12 @@ export default function ReviewsSection() {
   const c = content[locale];
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="bg-white py-20 md:py-28">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="grid lg:grid-cols-[1fr_1fr] gap-8 lg:gap-12 items-center">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{c.heading}</h2>
-            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-md">
+            <h2 className="font-display text-[clamp(2.4rem,5vw,5rem)] font-bold leading-[.92] tracking-[-.05em] text-ink">{c.heading}</h2>
+            <p className="mb-6 mt-5 max-w-md text-sm leading-6 text-ink/60">
               {c.subheading}
             </p>
           </div>
@@ -38,14 +38,14 @@ export default function ReviewsSection() {
                 href={platform.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col"
+                className="editorial-focus group flex flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1"
               >
-                <div className="flex items-center gap-2.5 mb-3">
+                <div className="mb-4 flex items-center gap-2.5">
                   <PlatformIcon domain={platform.domain} name={platform.name} size={24} />
-                  <span className="text-base font-bold text-gray-900">{platform.name}</span>
+                  <span className="font-display text-xl font-bold text-ink">{platform.name}</span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-auto pt-3 border-t border-gray-100">
-                  <span className="text-sm font-semibold text-gray-700">{c.viewProfile}</span>
+                <div className="mt-auto flex items-center gap-1.5 border-t-2 border-ink/10 pt-4">
+                  <span className="text-sm font-bold text-signal">{c.viewProfile}</span>
                   <ExternalLink size={12} className="text-gray-300 group-hover:text-[#F97316] transition-colors" />
                 </div>
               </a>

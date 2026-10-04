@@ -30,7 +30,7 @@ function StarterIllustration() {
       {/* Dotted trend line */}
       <polyline points="156,96 180,76 204,60 228,44 252,28 276,20" stroke="#F97316" strokeWidth="1.5" strokeOpacity="0.5" strokeDasharray="4 4" fill="none" />
       {/* Label */}
-      <text x="310" y="48" fill="white" fontSize="10" fontOpacity="0.5" fontFamily="Inter,sans-serif" fill-opacity="0.4">Referring</text>
+      <text x="310" y="48" fill="white" fontSize="10" fillOpacity="0.5" fontFamily="Inter,sans-serif" fill-opacity="0.4">Referring</text>
       <text x="310" y="62" fill="white" fontSize="10" fontFamily="Inter,sans-serif" fill-opacity="0.4">Domains</text>
       <text x="310" y="82" fill="#F97316" fontSize="20" fontWeight="800" fontFamily="Inter,sans-serif">+120</text>
       {/* Horizontal rule */}

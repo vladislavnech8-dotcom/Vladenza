@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { trackConversion } from '../lib/gtag';
@@ -43,7 +43,6 @@ export default function LeadForm({ defaultService }: LeadFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [honeypot, setHoneypot] = useState('');
-  const renderTime = useRef(Date.now());
 
   const serviceIds = ['guest-posting','niche-edits','crowd-links','link-packages','seo-audit','ai-llm','local-seo'] as const;
   const serviceLabels: Record<string, string> = {

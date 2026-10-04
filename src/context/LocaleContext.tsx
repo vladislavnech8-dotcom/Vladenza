@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useCallback, ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import {
   type Locale,
@@ -21,7 +21,7 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 const STORAGE_KEY = 'vladenza_locale';
 
-export function LocaleProvider({ children }: { children: ReactNode }) {
+export function LocaleProvider({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
   const locale = getLocaleFromPath(pathname);
 

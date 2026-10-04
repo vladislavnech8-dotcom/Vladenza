@@ -215,15 +215,15 @@ export default function CrowdLinksLanguagePage() {
   const data = language ? SOURCE[language] : undefined;
   const pkgs = locale === 'uk' ? packagesUK : packages;
 
+  useSEO({
+    title: data?.metaTitle ?? 'Crowd Marketing Service | Vladenza',
+    description: data?.metaDescription ?? 'Manual crowd marketing link building for relevant online communities.',
+    canonical: locale === 'uk' ? `https://vladenza.com/uk/services/crowd-links/${language ?? ''}` : `https://vladenza.com/services/crowd-links/${language ?? ''}`,
+  });
+
   if (!data) {
     return <Navigate to={lp('/services/crowd-links')} replace />;
   }
-
-  useSEO({
-    title: data.metaTitle,
-    description: data.metaDescription,
-    canonical: locale === 'uk' ? `https://vladenza.com/uk/services/crowd-links/${language}` : `https://vladenza.com/services/crowd-links/${language}`,
-  });
 
   const ui = locale === 'uk' ? {
     heroBadge: 'Крауд-маркетинг',

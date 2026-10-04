@@ -7,7 +7,8 @@ const year = new Date().getFullYear();
 
 interface FooterProps { onOpenModal?: () => void; }
 
-export default function Footer(_: FooterProps) {
+export default function Footer({ onOpenModal }: FooterProps) {
+  void onOpenModal;
   const { t, localizePath: lp } = useLocale();
   const { openPreferences } = useCookieConsent();
 
@@ -43,22 +44,22 @@ export default function Footer(_: FooterProps) {
     if (link.href.startsWith('mailto:') || link.href.startsWith('http')) {
       return (
         <a key={link.label} href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-          className="text-gray-400 text-sm hover:text-[#F97316] transition-colors">{link.label}</a>
+          className="text-sm text-white/60 transition-colors hover:text-signal">{link.label}</a>
       );
     }
     if (link.href.includes('/#')) {
-      return <a key={link.label} href={link.href} className="text-gray-400 text-sm hover:text-[#F97316] transition-colors">{link.label}</a>;
+      return <a key={link.label} href={link.href} className="text-sm text-white/60 transition-colors hover:text-signal">{link.label}</a>;
     }
-    return <Link key={link.label} to={link.href} className="text-gray-400 text-sm hover:text-[#F97316] transition-colors">{link.label}</Link>;
+    return <Link key={link.label} to={link.href} className="text-sm text-white/60 transition-colors hover:text-signal">{link.label}</Link>;
   };
 
   return (
-    <footer className="bg-gray-950 border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <footer className="bg-navy text-white">
+      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link to={lp('/')} className="flex items-center gap-0 mb-3 select-none">
-              <span className="font-black text-[22px] text-white" style={{ letterSpacing: '-0.04em' }}>Vladen</span>
+              <span className="font-display text-[22px] font-bold text-white" style={{ letterSpacing: '-0.04em' }}>Vladen</span>
               <span className="font-black text-[22px] text-[#F97316]" style={{ letterSpacing: '-0.04em', borderBottom: '2.5px solid #F97316', lineHeight: 1 }}>za</span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-3 max-w-[220px]">{t['footer.tagline']}</p>
@@ -96,7 +97,7 @@ export default function Footer(_: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-10 pt-5 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-5 sm:flex-row">
           <p className="text-gray-600 text-xs">&copy; {year} Vladenza Agency. {t['footer.rights']}</p>
           <div className="flex items-center gap-5">
             <Link to={lp('/privacy-policy')} className="text-gray-600 text-xs hover:text-gray-300 transition-colors">{t['footer.privacy']}</Link>

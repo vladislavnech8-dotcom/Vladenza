@@ -6,10 +6,10 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useLocale } from '../context/LocaleContext';
-import { LOCALE_LABELS, type Locale } from '../lib/i18n';
+import { LOCALE_LABELS, type Locale, type TranslationKey } from '../lib/i18n';
 
 function LanguageSwitcher() {
-  const { locale, switchLocale, otherLocale } = useLocale();
+  const { locale, switchLocale } = useLocale();
   const navigate = useNavigate();
   return (
     <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5" role="group" aria-label="Switch language">
@@ -68,7 +68,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
 
   const navigate = (href: string) => {
     if (href.startsWith('/#') || href.startsWith('#')) {
-      const id = href.replace(/^[\/#]+/, '');
+      const id = href.replace(/^[/#]+/, '');
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
       else routerNavigate(lp('/'));
@@ -86,30 +86,30 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
         @keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
       `}</style>
 
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-        <div className={`bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300 ${scrolled ? 'shadow-sm' : ''}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6">
+      <header className="fixed left-0 right-0 top-0 z-50 transition-all duration-300">
+        <div className={`border-b-2 border-ink/10 bg-white/95 backdrop-blur-md transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
             <a href={lp('/')} className="flex items-center select-none flex-shrink-0"
               onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
-              <span className="font-black text-[24px] text-gray-900" style={{ letterSpacing: '-0.05em' }}>Vladenza</span>
-              <span className="font-black text-[10px] text-[#F97316] uppercase ml-1.5 px-1.5 py-0.5 border border-[#F97316] rounded"
+              <span className="font-display text-[24px] font-bold tracking-[-.06em] text-ink" style={{ letterSpacing: '-0.05em' }}>Vladenza</span>
+              <span className="font-black text-[10px] text-signal uppercase ml-1.5 px-1.5 py-0.5 border-2 border-signal"
                 style={{ letterSpacing: '0.18em', lineHeight: 1, alignSelf: 'center', marginTop: '2px' }}>Agency</span>
             </a>
 
             <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
               <div ref={lbRef} className="relative">
                 <button onClick={() => setLbOpen(!lbOpen)}
-                  className={`flex items-center gap-1.5 text-sm px-3.5 py-2 rounded-xl transition-all duration-150 font-medium select-none ${lbOpen ? 'text-[#F97316] bg-orange-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}>
+                  className={`editorial-focus flex items-center gap-1.5 px-3.5 py-2 text-sm font-bold transition-all duration-150 select-none ${lbOpen ? 'text-signal bg-cream' : 'text-ink/65 hover:text-ink'}`}>
                   {t['nav.linkBuilding']}
                   <ChevronDown size={12} className={`transition-transform duration-200 ${lbOpen ? 'rotate-180 text-[#F97316]' : 'text-gray-400'}`} />
                 </button>
                 {lbOpen && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[320px] bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/80 z-50 overflow-hidden"
+                  <div className="absolute left-1/2 top-full z-50 mt-2 w-[320px] -translate-x-1/2 overflow-hidden border-2 border-ink bg-white shadow-xl shadow-ink/15"
                     style={{ animation: 'dropIn 0.18s cubic-bezier(0.16,1,0.3,1)' }}>
                     <div className="p-2 flex flex-col gap-0.5">
                       {lbItems.map((s) => (
                         <button key={s.href} onClick={() => navigate(s.href)}
-                          className="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-150 text-left w-full">
+                          className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-all duration-150 hover:bg-cream">
                           <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0 group-hover:bg-[#F97316] transition-colors duration-150">
                             <s.icon size={14} className="text-[#F97316] group-hover:text-white transition-colors duration-150" />
                           </div>
@@ -147,7 +147,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
             <div className="lg:hidden flex items-center gap-2">
               <LanguageSwitcher />
               <CartButton />
-              <button className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              <button className="editorial-focus flex h-11 w-11 items-center justify-center border-2 border-ink/20 text-ink/70 transition-colors hover:border-signal hover:text-signal"
                 onClick={() => setMobileOpen(!mobileOpen)} aria-label={t['nav.toggleMenu']}>
                 {mobileOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
@@ -177,9 +177,9 @@ function CartButton() {
 
 interface MobileDrawerProps {
   open: boolean; onNavigate: (href: string) => void; onClose: () => void; onOpenModal?: () => void;
-  lbItems: Array<{ label: string; href: string; icon: React.ComponentType<{ size?: number; className?: string }>; desc: string }>;
+  lbItems: Array<{ label: string; href: string; icon: React.ElementType; desc: string }>;
   navLinks: Array<{ label: string; href: string }>;
-  t: Record<string, string>; lp: (path: string) => string;
+  t: TranslationKey; lp: (path: string) => string;
 }
 
 function MobileDrawer({ open, onNavigate, onClose, onOpenModal, lbItems, navLinks, t, lp }: MobileDrawerProps) {
@@ -220,7 +220,7 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal, lbItems, navLink
           ))}
 
           <div className="flex flex-col gap-2.5 pt-3 mt-1 border-t border-gray-100">
-            <button onClick={() => { onClose(); onOpenModal ? onOpenModal() : onNavigate(lp('/#contact')); }}
+            <button onClick={() => { onClose(); if (onOpenModal) onOpenModal(); else onNavigate(lp('/#contact')); }}
               className="text-sm text-center text-white font-semibold px-4 py-3 rounded-xl bg-[#F97316] hover:bg-[#EA580C] transition-colors flex items-center justify-center gap-2 min-h-[44px]">
               {t['nav.getLinkPlan']} <ArrowRight size={13} />
             </button>
