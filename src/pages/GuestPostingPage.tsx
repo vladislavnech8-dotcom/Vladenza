@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, Globe, TrendingUp, CheckCircle, Star, ArrowRight, Clock, Shield, Search } from 'lucide-react';
+import { FileText, Globe, TrendingUp, CheckCircle, Star, ArrowRight, Shield, Search, Clock, ArrowDown, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ServicePageLayout from '../components/ServicePageLayout';
 import ServiceSeoBlock from '../components/ServiceSeoBlock';
@@ -23,10 +23,15 @@ const content = {
       delivery: '10–21 day delivery',
       manualReview: 'Manual review',
       cta: 'Start a Campaign',
-      ctaBox: 'From $100 per placement',
-      trafficLabel: 'traffic',
+      ctaSecondary: 'Explore Packages',
       serviceName: 'Guest Posting',
     },
+    trustBar: [
+      { value: '8+', label: 'Years Link-Building Experience' },
+      { value: '100%', label: 'Real Organic Traffic Sites' },
+      { value: 'DR 30–90+', label: 'Verified Placements' },
+      { value: '0%', label: 'PBNs / Private Networks Only' },
+    ],
     features: [
       { icon: Globe, title: 'Real Traffic Sites Only', desc: 'Every placement is on a verified, live website with genuine organic traffic — no PBNs, no link farms, no recycled placements.' },
       { icon: Shield, title: 'Manual Quality Review', desc: 'Our team manually checks every domain for traffic trends, niche relevance, spam score, and link profile health before outreach.' },
@@ -69,6 +74,7 @@ const content = {
       title: 'Guest Posting Packages & Pricing',
       desc: 'Mix tiers across your campaign for a natural, varied link profile.',
       cta: 'Get Started',
+      popular: 'Most Popular',
     },
     featuresSection: {
       badge: 'Why It Works',
@@ -82,10 +88,12 @@ const content = {
       { num: '04', title: 'Publication & Report', desc: 'Once live, you get the URL, DA/DR, traffic estimate, and anchor used — full transparency.' },
     ],
     processSection: {
+      badge: 'Process',
       title: 'How it works',
       desc: 'End-to-end managed. You approve domains, we handle everything else.',
     },
     placements: {
+      badge: 'Proof',
       title: 'Real Guest Post Examples',
       desc: 'Examples from completed orders, with Ahrefs DR and organic traffic metrics.',
       viewAll: 'View All Guest Post Examples',
@@ -122,10 +130,15 @@ const content = {
       delivery: 'Доставка 10–21 днів',
       manualReview: 'Ручна перевірка',
       cta: 'Почати кампанію',
-      ctaBox: 'Від $100 за розміщення',
-      trafficLabel: 'трафіку',
+      ctaSecondary: 'Пакети',
       serviceName: 'Гостьові публікації',
     },
+    trustBar: [
+      { value: '8+', label: 'Років досвіду в лінкбілдингу' },
+      { value: '100%', label: 'Сайти з реальним органічним трафіком' },
+      { value: 'DR 30–90+', label: 'Перевірені розміщення' },
+      { value: '0%', label: 'PBN / лише приватні мережі' },
+    ],
     features: [
       { icon: Globe, title: 'Лише сайти з реальним трафіком', desc: 'Кожне розміщення — на перевіреному, живому сайті зі справжнім органічним трафіком. Без PBN, без лінк-ферм, без перепроданих майданчиків.' },
       { icon: Shield, title: 'Ручна перевірка якості', desc: 'Наша команда вручну перевіряє кожен домен на тенденції трафіку, релевантність ніші, спам-скор та стан профілю посилань перед аутрічем.' },
@@ -168,6 +181,7 @@ const content = {
       title: 'Пакети та ціни на гостьові публікації',
       desc: 'Поєднуйте пакети в межах кампанії для натурального, різноманітного профілю посилань.',
       cta: 'Почати',
+      popular: 'Найпопулярніший',
     },
     featuresSection: {
       badge: 'Чому це працює',
@@ -181,10 +195,12 @@ const content = {
       { num: '04', title: 'Публікація та звіт', desc: 'Після публікації ви отримуєте URL, DA/DR, оцінку трафіку та використаний анкор — повна прозорість.' },
     ],
     processSection: {
+      badge: 'Процес',
       title: 'Як це працює',
       desc: 'Під ключ. Ви погоджуєте домени — ми беремо на себе все інше.',
     },
     placements: {
+      badge: 'Доказ',
       title: 'Реальні приклади гостьових публікацій',
       desc: 'Приклади з виконаних замовлень, з метриками Ahrefs DR та органічним трафіком.',
       viewAll: 'Усі приклади гостьових публікацій',
@@ -208,6 +224,30 @@ const content = {
     },
   },
 } as const;
+
+function AuthorityDiagram() {
+  return (
+    <div className="relative flex aspect-square w-full max-w-[420px] items-center justify-center">
+      <svg viewBox="0 0 400 400" className="absolute inset-0 h-full w-full" aria-hidden="true">
+        <circle cx="200" cy="200" r="180" fill="none" stroke="#FF5A1F" strokeOpacity="0.15" strokeWidth="1" />
+        <circle cx="200" cy="200" r="140" fill="none" stroke="#FF5A1F" strokeOpacity="0.2" strokeWidth="1" />
+        <circle cx="200" cy="200" r="100" fill="none" stroke="#FF5A1F" strokeOpacity="0.3" strokeWidth="1" />
+        <circle cx="200" cy="200" r="60" fill="none" stroke="#FF5A1F" strokeOpacity="0.5" strokeWidth="1.5" />
+        <circle cx="200" cy="200" r="36" fill="#FF5A1F" fillOpacity="0.08" stroke="#FF5A1F" strokeWidth="2" />
+        {[0, 60, 120, 180, 240, 300].map((deg) => {
+          const rad = (deg * Math.PI) / 180;
+          const x = 200 + Math.cos(rad) * 140;
+          const y = 200 + Math.sin(rad) * 140;
+          return <circle key={deg} cx={x} cy={y} r="6" fill="#FF5A1F" fillOpacity="0.7" />;
+        })}
+      </svg>
+      <div className="relative z-10 text-center">
+        <div className="font-display text-[clamp(2.5rem,6vw,3.5rem)] font-bold leading-none tracking-[-.055em] text-ink">DR 30–90+</div>
+        <div className="mt-2 text-xs font-bold uppercase tracking-[.14em] text-signal">Verified Authority</div>
+      </div>
+    </div>
+  );
+}
 
 export default function GuestPostingPage() {
   const { locale, localizePath: lp } = useLocale();
@@ -245,98 +285,110 @@ export default function GuestPostingPage() {
   return (
     <ServicePageLayout>
       <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-10 pb-10 lg:pt-12 lg:pb-12">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="max-w-2xl">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">{c.hero.badge}</p>
-            <h1 className="text-[28px] md:text-4xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
-              {c.hero.title}
-            </h1>
-            <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
-              {c.hero.subtitle}
-            </p>
-            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-lg">
-              {c.hero.desc}
-            </p>
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              <span className="text-sm font-bold text-gray-900">{c.hero.fromPrice}</span>
-              <span className="w-1 h-1 rounded-full bg-gray-300" />
-              <span className="text-sm text-gray-500">{c.hero.delivery}</span>
-              <span className="w-1 h-1 rounded-full bg-gray-300" />
-              <span className="text-sm text-gray-500">{c.hero.manualReview}</span>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedPkg({ name: c.hero.serviceName, price: c.hero.fromPrice, links: 'DR 30–90+', service: c.hero.serviceName })}
-                className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
-              >
-                {c.hero.cta} <ArrowRight size={14} />
-              </button>
-              <div className="flex items-center gap-2 border border-gray-200 px-5 py-3 rounded-lg text-sm text-gray-600">
-                <Clock size={14} className="text-[#F97316]" />
-                {c.hero.ctaBox}
+
+      {/* Hero — two-column split */}
+      <section className="relative overflow-hidden bg-cream py-16 lg:py-24">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr] lg:gap-16">
+            <div className="max-w-[640px]">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-[.18em] text-signal">{c.hero.badge}</p>
+              <h1 className="font-display text-[clamp(2.5rem,4.5vw,3.75rem)] font-bold leading-[.94] tracking-[-.05em] text-ink mb-5">{c.hero.title}</h1>
+              <p className="text-lg font-semibold leading-[1.5] text-ink/80 mb-2">{c.hero.subtitle}</p>
+              <p className="text-[17px] leading-[1.6] text-ink/60 mb-7 max-w-[560px]">{c.hero.desc}</p>
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                <span className="inline-flex items-center gap-2 rounded-xl border border-ink/15 bg-white px-3.5 py-2 text-sm font-bold text-ink">{c.hero.fromPrice}</span>
+                <span className="inline-flex items-center gap-2 rounded-xl border border-ink/15 bg-white px-3.5 py-2 text-sm font-medium text-ink/70"><Clock size={13} className="text-signal" />{c.hero.delivery}</span>
+                <span className="inline-flex items-center gap-2 rounded-xl border border-ink/15 bg-white px-3.5 py-2 text-sm font-medium text-ink/70"><CheckCircle size={13} className="text-signal" />{c.hero.manualReview}</span>
               </div>
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => setSelectedPkg({ name: c.hero.serviceName, price: c.hero.fromPrice, links: 'DR 30–90+', service: c.hero.serviceName })}
+                  className="editorial-focus inline-flex min-h-[52px] items-center gap-2 bg-signal px-7 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 lg:min-h-[56px]"
+                >
+                  {c.hero.cta} <ArrowRight size={16} />
+                </button>
+                <a
+                  href="#packages"
+                  className="editorial-focus inline-flex min-h-[52px] items-center gap-2 border-2 border-ink/20 bg-white px-7 text-sm font-bold text-ink transition-colors hover:border-signal hover:text-signal lg:min-h-[56px]"
+                >
+                  {c.hero.ctaSecondary} <ArrowDown size={15} />
+                </a>
+              </div>
+            </div>
+            <div className="flex items-center justify-center">
+              <AuthorityDiagram />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
-              {c.featuresSection.badge}
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{c.featuresSection.title}</h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">{c.featuresSection.desc}</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {c.features.map((f) => (
-              <div key={f.title} className="bg-gray-50 border border-gray-100 rounded-xl p-6 hover:border-[#F97316]/20 hover:shadow-sm transition-all duration-300 group">
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-4 group-hover:bg-orange-100 transition-colors">
-                  <f.icon size={18} className="text-[#F97316]" />
-                </div>
-                <h3 className="text-gray-900 font-semibold text-sm mb-2">{f.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+      {/* Trust / Metric Bar */}
+      <section className="bg-[#0B1020] py-10">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="grid grid-cols-2 divide-x divide-white/10 lg:grid-cols-4">
+            {c.trustBar.map((item) => (
+              <div key={item.label} className="flex flex-col items-center px-4 text-center lg:px-8">
+                <span className="font-display text-[clamp(2rem,3vw,3rem)] font-bold leading-none tracking-[-.045em] text-signal">{item.value}</span>
+                <span className="mt-2 text-xs font-medium leading-tight text-white/55 lg:text-sm">{item.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Tiers */}
-      <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-orange-300 text-xs font-semibold uppercase tracking-wide mb-4">
-              {c.tiersSection.badge}
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{c.tiersSection.title}</h2>
-            <p className="text-gray-400 max-w-xl mx-auto text-sm leading-relaxed">{c.tiersSection.desc}</p>
+      {/* Why It Works — 6 cards */}
+      <section className="bg-cream py-[88px] md:py-28">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="mb-12 max-w-[620px]">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[.16em] text-signal">{c.featuresSection.badge}</p>
+            <h2 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[.96] tracking-[-.045em] text-ink mb-4">{c.featuresSection.title}</h2>
+            <p className="text-[17px] leading-[1.6] text-ink/60">{c.featuresSection.desc}</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {c.features.map((f) => (
+              <div key={f.title} className="group rounded-2xl border border-ink/10 bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:border-signal/30 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-signal/20 bg-signal/5 transition-colors group-hover:bg-signal/10">
+                  <f.icon size={20} className="text-signal" />
+                </div>
+                <h3 className="font-display text-lg font-bold tracking-tight text-ink mb-2">{f.title}</h3>
+                <p className="text-[15px] leading-[1.6] text-ink/55">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Packages & Pricing */}
+      <section id="packages" className="scroll-mt-20 bg-white py-[88px] md:py-28">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[.16em] text-signal">{c.tiersSection.badge}</p>
+            <h2 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[.96] tracking-[-.045em] text-ink mb-4">{c.tiersSection.title}</h2>
+            <p className="mx-auto max-w-[520px] text-[17px] leading-[1.6] text-ink/60">{c.tiersSection.desc}</p>
+          </div>
+          <div className="grid items-stretch gap-6 md:grid-cols-3">
             {c.tiers.map((tier) => (
-              <div key={tier.name} className={`rounded-2xl p-7 border ${tier.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10'}`}>
-                <div className={`text-xs font-bold uppercase tracking-widest mb-1 ${tier.highlight ? 'text-white/80' : 'text-gray-400'}`}>{tier.dr}</div>
-                <h3 className={`text-2xl font-bold mb-1 ${tier.highlight ? 'text-white' : 'text-white'}`}>{tier.name}</h3>
-                <p className={`text-sm mb-1 ${tier.highlight ? 'text-white/80' : 'text-gray-400'}`}>{tier.traffic} {c.hero.trafficLabel}</p>
-                <div className={`text-2xl font-black mb-6 mt-4 ${tier.highlight ? 'text-white' : 'text-white'}`}>{tier.price}</div>
-                <div className="flex flex-col gap-2.5 mb-8">
+              <div key={tier.name} className={`relative flex flex-col rounded-3xl border-2 p-8 ${tier.highlight ? 'border-signal bg-white shadow-[0_12px_40px_rgba(255,90,31,0.12)]' : 'border-ink/10 bg-white'}`}>
+                {tier.highlight && (
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-signal px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-white">{c.tiersSection.popular}</span>
+                )}
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest text-signal">{tier.dr}</div>
+                <h3 className="font-display text-[26px] font-bold tracking-tight text-ink mb-1">{tier.name}</h3>
+                <p className="text-sm text-ink/50 mb-5">{tier.traffic} · {tier.turnaround}</p>
+                <div className="font-display text-[clamp(2rem,4vw,2.75rem)] font-bold leading-none tracking-[-.045em] text-ink mb-6">{tier.price}</div>
+                <div className="mb-8 flex flex-col gap-3">
                   {tier.features.map((f) => (
-                    <div key={f} className="flex items-center gap-2.5">
-                      <CheckCircle size={13} className={tier.highlight ? 'text-white' : 'text-[#F97316]'} />
-                      <span className={`text-sm ${tier.highlight ? 'text-white/90' : 'text-gray-300'}`}>{f}</span>
+                    <div key={f} className="flex items-start gap-2.5">
+                      <CheckCircle size={15} className="mt-0.5 flex-shrink-0 text-signal" />
+                      <span className="text-[15px] leading-[1.5] text-ink/70">{f}</span>
                     </div>
                   ))}
                 </div>
                 <button
                   onClick={() => setSelectedPkg({ name: tier.name, price: tier.price, links: tier.dr, service: c.hero.serviceName })}
-                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${tier.highlight ? 'bg-white text-[#F97316] hover:bg-gray-100' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
+                  className={`editorial-focus mt-auto flex min-h-[52px] w-full items-center justify-center gap-2 text-sm font-bold transition-all duration-200 ${tier.highlight ? 'bg-signal text-white hover:-translate-y-0.5' : 'border-2 border-ink text-ink hover:bg-ink hover:text-white'}`}
                 >
-                  {c.tiersSection.cta} <ArrowRight size={13} />
+                  {c.tiersSection.cta} <ArrowRight size={14} />
                 </button>
               </div>
             ))}
@@ -344,43 +396,47 @@ export default function GuestPostingPage() {
         </div>
       </section>
 
-      {/* Process */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">{c.processSection.title}</h2>
-            <p className="text-gray-500 text-sm max-w-lg mx-auto">{c.processSection.desc}</p>
+      {/* How It Works — process */}
+      <section className="bg-cream py-[88px] md:py-28">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[.16em] text-signal">{c.processSection.badge}</p>
+            <h2 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[.96] tracking-[-.045em] text-ink mb-4">{c.processSection.title}</h2>
+            <p className="mx-auto max-w-[520px] text-[17px] leading-[1.6] text-ink/60">{c.processSection.desc}</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="absolute left-[10%] right-[10%] top-12 hidden h-px bg-ink/15 lg:block" />
             {c.process.map((step) => (
-              <div key={step.num} className="text-center">
-                <div className="w-12 h-12 rounded-full bg-orange-50 border-2 border-orange-100 flex items-center justify-center mx-auto mb-4 text-[#F97316] font-black text-sm">
-                  {step.num}
+              <div key={step.num} className="relative z-10 flex min-h-[200px] flex-col rounded-2xl border border-ink/10 bg-white p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="flex h-12 w-14 items-center justify-center border-2 border-ink bg-signal font-display text-lg font-bold text-white shadow-[3px_3px_0_#111111]">{step.num}</span>
                 </div>
-                <h4 className="text-gray-900 font-semibold text-sm mb-2">{step.title}</h4>
-                <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
+                <h3 className="font-display text-xl font-bold tracking-tight text-ink mb-2">{step.title}</h3>
+                <p className="text-[15px] leading-[1.6] text-ink/60">{step.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Placement Examples */}
-      <section id="placements" className="py-16 bg-gray-50 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{c.placements.title}</h2>
-          <p className="text-gray-500 text-sm mb-8 max-w-lg">
-            {c.placements.desc}
-          </p>
-          <PlacementExplorer serviceType="guest_post" />
-          <div className="mt-8">
-            <Link to={lp('/placements')} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
-              {c.placements.viewAll} <ArrowRight size={14} />
+      {/* Real Guest Post Examples */}
+      <section id="placements" className="scroll-mt-20 bg-white py-[88px] md:py-28">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+          <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-[.16em] text-signal">{c.placements.badge}</p>
+              <h2 className="font-display text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[.96] tracking-[-.045em] text-ink mb-3">{c.placements.title}</h2>
+              <p className="max-w-[520px] text-[17px] leading-[1.6] text-ink/60">{c.placements.desc}</p>
+            </div>
+            <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-12 shrink-0 items-center gap-2 border-2 border-ink px-5 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-white">
+              {c.placements.viewAll} <ArrowRight size={15} />
             </Link>
           </div>
+          <PlacementExplorer serviceType="guest_post" />
         </div>
       </section>
 
+      {/* SEO Content & FAQ */}
       <ServiceSeoBlock
         heading={c.seoBlock.heading}
         intro={c.seoBlock.intro}

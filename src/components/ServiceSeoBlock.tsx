@@ -30,7 +30,7 @@ function renderInline(text: string, lp: (p: string) => string): React.ReactNode 
   while ((match = regex.exec(text)) !== null) {
     if (match.index > last) parts.push(text.slice(last, match.index));
     parts.push(
-      <Link key={key++} to={lp(match[2])} className="text-[#F97316] font-medium hover:underline underline-offset-2">
+      <Link key={key++} to={lp(match[2])} className="text-signal font-medium hover:underline underline-offset-2">
         {match[1]}
       </Link>
     );
@@ -74,55 +74,59 @@ export default function ServiceSeoBlock({ heading, intro, body, faqs }: Props) {
   }, [faqs, locale]);
 
   return (
-    <section className="py-16 bg-white border-t border-gray-100">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight tracking-tight mb-5">
-          {heading}
-        </h2>
-        <p className="text-gray-600 text-[17px] leading-[1.8] mb-6">{renderInline(intro, lp)}</p>
-        <div className="flex flex-col gap-5">
-          {body.map((p, i) => (
-            <p key={i} className="text-gray-500 text-[15px] leading-[1.85]">
-              {renderInline(p, lp)}
-            </p>
-          ))}
-        </div>
-
-        {faqs.length > 0 && (
-          <div className="mt-16">
-            <h3 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">{locale === 'uk' ? 'Поширені запитання' : 'Frequently asked questions'}</h3>
-            <div className="flex flex-col gap-3">
-              {faqs.map((f, i) => {
-                const isOpen = open === i;
-                return (
-                  <div
-                    key={i}
-                    className={`rounded-xl border transition-colors ${isOpen ? 'border-[#F97316]/30 bg-orange-50/40' : 'border-gray-200 bg-white'}`}
-                  >
-                    <button
-                      onClick={() => setOpen(isOpen ? null : i)}
-                      className="w-full flex items-center justify-between gap-4 text-left px-5 py-4"
-                      aria-expanded={isOpen}
-                    >
-                      <span className="text-[15px] font-semibold text-gray-900">{f.q}</span>
-                      <ChevronDown
-                        size={18}
-                        className={`flex-shrink-0 text-[#F97316] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-                      />
-                    </button>
-                    <div
-                      className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
-                    >
-                      <div className="overflow-hidden">
-                        <p className="px-5 pb-5 text-[14px] text-gray-500 leading-[1.8]">{renderInline(f.a, lp)}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+    <section className="bg-cream py-[88px] md:py-28">
+      <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <h2 className="font-display text-[clamp(2rem,3vw,3rem)] font-bold leading-[.96] tracking-[-.045em] text-ink mb-5">
+              {heading}
+            </h2>
+            <p className="text-[17px] leading-[1.65] text-ink/70 mb-6">{renderInline(intro, lp)}</p>
+            <div className="flex flex-col gap-5">
+              {body.map((p, i) => (
+                <p key={i} className="text-[15px] leading-[1.75] text-ink/60">
+                  {renderInline(p, lp)}
+                </p>
+              ))}
             </div>
           </div>
-        )}
+
+          {faqs.length > 0 && (
+            <div>
+              <h3 className="font-display text-[clamp(1.5rem,2.4vw,2rem)] font-bold tracking-[-.045em] text-ink mb-6">{locale === 'uk' ? 'Поширені запитання' : 'Frequently asked questions'}</h3>
+              <div className="flex flex-col gap-3">
+                {faqs.map((f, i) => {
+                  const isOpen = open === i;
+                  return (
+                    <div
+                      key={i}
+                      className={`rounded-2xl border transition-colors ${isOpen ? 'border-signal/30 bg-white' : 'border-ink/10 bg-white'}`}
+                    >
+                      <button
+                        onClick={() => setOpen(isOpen ? null : i)}
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                        aria-expanded={isOpen}
+                      >
+                        <span className="text-[15px] font-bold text-ink">{f.q}</span>
+                        <ChevronDown
+                          size={18}
+                          className={`flex-shrink-0 text-signal transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                      <div
+                        className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                      >
+                        <div className="overflow-hidden">
+                          <p className="px-5 pb-5 text-[15px] leading-[1.7] text-ink/60">{renderInline(f.a, lp)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
