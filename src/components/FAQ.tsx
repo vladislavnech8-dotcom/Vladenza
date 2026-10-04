@@ -16,15 +16,15 @@ function FAQItem({ faq, index, openId, onToggle, orange }: { faq: FaqItem; index
 
   if (orange) {
     return (
-      <div className={`border-b border-ink/15 ${index.endsWith('-0') || index.endsWith('-3') ? '' : 'md:border-b-0'}`}>
+      <div className={`border-b border-white/25 ${index.endsWith('-0') || index.endsWith('-3') ? '' : 'md:border-b-0'}`}>
         <button type="button" onClick={() => onToggle(index)} aria-expanded={isOpen} aria-controls={panelId}
           className="editorial-focus flex min-h-14 w-full items-center justify-between gap-4 px-1 py-4 text-left sm:px-2">
-          <span className="text-[15px] font-bold text-ink">{faq.q}</span>
-          <ChevronDown size={18} className={`shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-ink' : 'text-ink/50'}`} />
+          <span className="text-[15px] font-bold text-[#FFFDF8]">{faq.q}</span>
+          <ChevronDown size={18} className={`shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#FFFDF8]' : 'text-[#FFFDF8]/75'}`} />
         </button>
         <div id={panelId} role="region" hidden={!isOpen} className="overflow-hidden transition-all duration-300"
           style={isOpen ? { maxHeight: '300px' } : { maxHeight: '0px' }}>
-          <p className="max-w-xl pb-5 pr-6 text-[15px] leading-[1.7] text-ink/70">{faq.a}</p>
+          <p className="max-w-xl pb-5 pr-6 text-[15px] leading-[1.7] text-[#FFFDF8]">{faq.a}</p>
         </div>
       </div>
     );

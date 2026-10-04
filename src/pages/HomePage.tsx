@@ -41,29 +41,30 @@ export default function HomePage() {
     <Navigation onOpenModal={openLinkPlan} />
 
     <main>
-      <section className="relative overflow-hidden bg-navy text-white lg:min-h-[900px]">
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[center_right] lg:block" />
+      <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
+        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[72%_68%] lg:block" />
         <div className="paper-grain absolute inset-0 opacity-15" />
-        {/* Readability overlay — broad elliptical navy gradient centered behind headline & CTAs */}
-        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 62% 52% at 50% 58%, rgba(7,16,43,0.60) 0%, rgba(7,16,43,0.42) 35%, rgba(7,16,43,0.30) 55%, rgba(7,16,43,0.10) 75%, transparent 100%)' }} />
-        <div className="relative z-10 mx-auto flex min-h-[560px] flex-col items-center justify-center px-5 pt-32 pb-12 sm:px-8 lg:min-h-[900px] lg:px-16 lg:pt-40 lg:pb-20">
-          <div className="flex w-full max-w-[1500px] flex-col items-center text-center">
-            <h1 className="font-display text-[clamp(3rem,14vw,4.125rem)] font-bold leading-[.9] tracking-[-.055em] sm:text-[clamp(3.5rem,6vw,7.75rem)]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
-              <span className="block whitespace-nowrap text-cream">{c.hero.h1First}</span>
-              <span className="mt-1 block whitespace-nowrap text-signal">{c.hero.h1Second}</span>
+        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 60% 55% at 38% 44%, rgba(7,16,43,0.62) 0%, rgba(7,16,43,0.42) 34%, rgba(7,16,43,0.24) 58%, rgba(7,16,43,0.08) 78%, transparent 100%)' }} />
+        <div className="relative z-10 mx-auto flex min-h-0 w-full min-w-0 box-border flex-col lg:min-h-[calc(100svh-104px)] items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-16 lg:py-20">
+          <div className="flex w-full min-w-0 max-w-[1500px] flex-col items-center">
+            <h1 className="w-full min-w-0 font-display text-[clamp(36px,9vw,64px)] font-bold leading-[1.06] tracking-[-.035em] sm:text-[clamp(3.5rem,6vw,7.75rem)] sm:leading-[.94] sm:tracking-[-.055em]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
+              <span className="block w-full text-cream">{c.hero.h1First}</span>
+              <span className="mt-2 block w-full text-signal sm:mt-1">{c.hero.h1Second}</span>
             </h1>
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-[18px]">
-              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 bg-signal px-8 text-base font-bold text-white transition-colors hover:bg-[#EA580C] lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.pricing}<ArrowRight size={18} /></Link>
-              <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[56px] items-center justify-center gap-2 bg-[rgba(10,20,48,0.5)] px-8 text-base font-bold text-cream transition-colors hover:bg-[rgba(10,20,48,0.8)] lg:min-h-[60px] lg:px-10 lg:text-lg">{c.hero.placements}<ArrowRight size={18} /></Link>
+            <div className="mt-8 flex w-full max-w-[360px] flex-col items-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
+              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-signal px-6 text-base font-bold text-white transition-colors hover:bg-[#EA580C] sm:w-auto sm:min-w-[170px] lg:min-h-[56px] lg:px-8">{c.hero.pricing}<ArrowRight size={18} /></Link>
+              <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-[#FFFDF8] px-6 text-base font-bold text-navy transition-colors hover:bg-white sm:w-auto sm:min-w-[230px] lg:min-h-[56px] lg:px-8">{c.hero.placements}<ArrowRight size={18} /></Link>
             </div>
           </div>
         </div>
-        <div className="absolute inset-0 lg:hidden" style={{ background: 'radial-gradient(ellipse 75% 60% at 50% 45%, rgba(7,16,43,0.65) 0%, rgba(7,16,43,0.40) 40%, rgba(7,16,43,0.20) 65%, transparent 100%)' }} />
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="relative block aspect-[16/9] w-full object-cover object-[72%_bottom] lg:hidden" />
+        <div className="relative z-10 lg:hidden">
+          <div className="absolute inset-x-0 top-0 h-24 -translate-y-full bg-gradient-to-b from-transparent to-navy" />
+          <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="block aspect-[16/10] w-full object-cover object-[72%_72%]" />
+        </div>
       </section>
 
       <section className="border-b-2 border-ink/10 bg-white" aria-label="Verified proof">
-        <div className="mx-auto grid max-w-[1440px] divide-y divide-ink/15 px-5 py-3 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-16">
+        <div className="mx-auto grid max-w-[1440px] divide-y divide-ink/15 px-5 py-2 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-16">
           <div className="flex min-h-20 items-center py-5 text-sm font-bold md:px-8 md:py-0 first:md:pl-0">{c.proof.experience}</div>
           <a className="editorial-focus flex min-h-20 items-center gap-3 py-5 text-sm font-bold text-ink transition-colors hover:text-signal md:px-8 md:py-0" href="https://www.fiverr.com/fittranslate?public_mode=true" target="_blank" rel="noopener noreferrer"><span>{c.proof.fiverr}</span><ExternalLink size={13} className="ml-auto shrink-0" /></a>
           <a className="editorial-focus flex min-h-20 items-center gap-3 py-5 text-sm font-bold text-signal transition-colors hover:text-ink md:px-8 md:py-0 md:last:pr-0" href="https://clutch.co/profile/vladenza" target="_blank" rel="noopener noreferrer"><span>{c.proof.clutch}</span><ExternalLink size={13} className="ml-auto shrink-0" /></a>
@@ -89,7 +90,7 @@ export default function HomePage() {
 
       <ReviewsSection />
 
-      <section id="faq" className="scroll-mt-20 bg-signal py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-ink/60">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-ink">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
+      <section id="faq" className="scroll-mt-20 bg-[#B83A0A] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
     </main>
     <Footer />
     <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
