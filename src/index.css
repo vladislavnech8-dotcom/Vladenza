@@ -18,6 +18,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: var(--color-cream);
   color: var(--color-ink);
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 ::selection { background: var(--color-signal); color: #fff; }
@@ -51,5 +53,10 @@ body {
   }
   .editorial-focus {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-2;
+  }
+  .font-display {
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: .96;
   }
 }

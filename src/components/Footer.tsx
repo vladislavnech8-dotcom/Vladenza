@@ -62,48 +62,48 @@ export default function Footer({ onOpenModal }: FooterProps) {
               <span className="font-display text-[22px] font-bold text-white" style={{ letterSpacing: '-0.04em' }}>Vladen</span>
               <span className="font-black text-[22px] text-[#F97316]" style={{ letterSpacing: '-0.04em', borderBottom: '2.5px solid #F97316', lineHeight: 1 }}>za</span>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed mb-3 max-w-[220px]">{t['footer.tagline']}</p>
-            <a href="mailto:sales@vladenza.com" className="inline-flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors mb-4">
+            <p className="mb-3 max-w-[220px] text-sm leading-6 text-white/70">{t['footer.tagline']}</p>
+            <a href="mailto:sales@vladenza.com" className="mb-4 inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white">
               <Mail size={13} className="text-[#F97316]" />sales@vladenza.com
             </a>
             <div className="flex items-center gap-3">
-              <a href="https://www.linkedin.com/company/vladenza" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#F97316]/40 transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/vladenza" target="_blank" rel="noopener noreferrer" className="editorial-focus flex h-10 w-10 items-center justify-center border border-white/20 text-white/65 transition-colors hover:border-signal hover:text-white" aria-label="LinkedIn">
                 <Linkedin size={14} />
               </a>
-              <a href="https://www.youtube.com/@vladenza" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#F97316]/40 transition-colors" aria-label="YouTube">
+              <a href="https://www.youtube.com/@vladenza" target="_blank" rel="noopener noreferrer" className="editorial-focus flex h-10 w-10 items-center justify-center border border-white/20 text-white/65 transition-colors hover:border-signal hover:text-white" aria-label="YouTube">
                 <Youtube size={14} />
               </a>
             </div>
           </div>
 
           <div>
-            <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-3">{t['footer.linkBuilding']}</p>
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/55">{t['footer.linkBuilding']}</p>
             <ul className="flex flex-col gap-2">{linkBuildingLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
 
           <div>
-            <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-3">{t['footer.proof']}</p>
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/55">{t['footer.proof']}</p>
             <ul className="flex flex-col gap-2">{proofLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
 
           <div>
-            <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-3">{t['footer.resources']}</p>
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/55">{t['footer.resources']}</p>
             <ul className="flex flex-col gap-2">{resourceLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
 
           <div>
-            <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-3">{t['footer.legal']}</p>
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/55">{t['footer.legal']}</p>
             <ul className="flex flex-col gap-2">{legalLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-5 sm:flex-row">
-          <p className="text-gray-600 text-xs">&copy; {year} Vladenza Agency. {t['footer.rights']}</p>
+          <p className="text-xs text-white/55">&copy; {year} Vladenza Agency. {t['footer.rights']}</p>
           <div className="flex items-center gap-5">
-            <Link to={lp('/privacy-policy')} className="text-gray-600 text-xs hover:text-gray-300 transition-colors">{t['footer.privacy']}</Link>
-            <Link to={lp('/terms')} className="text-gray-600 text-xs hover:text-gray-300 transition-colors">{t['footer.terms']}</Link>
-            <Link to={lp('/refund-policy')} className="text-gray-600 text-xs hover:text-gray-300 transition-colors">{t['footer.refund']}</Link>
-            <button onClick={openPreferences} className="text-gray-600 text-xs hover:text-gray-300 transition-colors">{t['footer.cookiePrefs']}</button>
+            <Link to={lp('/privacy-policy')} className="text-xs text-white/55 transition-colors hover:text-white">{t['footer.privacy']}</Link>
+            <Link to={lp('/terms')} className="text-xs text-white/55 transition-colors hover:text-white">{t['footer.terms']}</Link>
+            <Link to={lp('/refund-policy')} className="text-xs text-white/55 transition-colors hover:text-white">{t['footer.refund']}</Link>
+            <button onClick={openPreferences} className="text-xs text-white/55 transition-colors hover:text-white">{t['footer.cookiePrefs']}</button>
           </div>
         </div>
       </div>

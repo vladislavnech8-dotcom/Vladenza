@@ -11,7 +11,7 @@ export default {
         cool: '#D8D8D8',
       },
       fontFamily: {
-        display: ['Bricolage Grotesque', 'Inter', 'sans-serif'],
+        display: ['Manrope', 'Inter', 'sans-serif'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       boxShadow: {
