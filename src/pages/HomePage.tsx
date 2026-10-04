@@ -85,7 +85,7 @@ export default function HomePage() {
 
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[72%_68%] lg:block" />
+        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[72%_68%] brightness-[0.88] lg:block" />
         <div className="paper-grain absolute inset-0 opacity-15" />
         <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 60% 55% at 38% 44%, rgba(7,16,43,0.62) 0%, rgba(7,16,43,0.42) 34%, rgba(7,16,43,0.24) 58%, rgba(7,16,43,0.08) 78%, transparent 100%)' }} />
         <div className="relative z-10 mx-auto flex min-h-0 w-full min-w-0 box-border flex-col lg:min-h-[calc(100svh-104px)] items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-16 lg:py-20">
@@ -102,7 +102,7 @@ export default function HomePage() {
         </div>
         <div className="relative z-10 lg:hidden">
           <div className="absolute inset-x-0 top-0 h-24 -translate-y-full bg-gradient-to-b from-transparent to-navy" />
-          <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="block aspect-[16/10] w-full object-cover object-[72%_72%]" />
+          <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="block aspect-[16/10] w-full object-cover object-[72%_72%] brightness-[0.88]" />
         </div>
       </section>
 
@@ -134,7 +134,7 @@ export default function HomePage() {
 
       <ReviewsSection />
 
-      <section id="faq" className="scroll-mt-20 bg-[#B83A0A] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
+      <section id="faq" className="scroll-mt-20 bg-[#D94712] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
     </main>
     <Footer />
     <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
