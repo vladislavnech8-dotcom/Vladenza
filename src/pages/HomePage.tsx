@@ -22,6 +22,49 @@ function DecorativeChart({ color }: { color: string }) {
   return <svg viewBox="0 0 320 100" className="h-24 w-full" aria-hidden="true" preserveAspectRatio="none"><path d="M0 80 C35 76 43 70 70 72 S110 55 138 62 S176 40 202 46 S240 30 270 34 S300 18 320 20" fill="none" stroke={color} strokeWidth="3" strokeLinecap="square" /><path d="M0 96H320" stroke={color} strokeOpacity=".2" strokeWidth="2" /></svg>;
 }
 
+function ClutchProofTile() {
+  const [badgeState, setBadgeState] = useState<'loading' | 'loaded' | 'fallback'>('loading');
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setBadgeState((current) => current === 'loading' ? 'fallback' : current), 4000);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  return (
+    <div className="flex min-h-20 items-center gap-3 py-3 md:px-8 md:py-2 lg:last:pr-0">
+      <div className="min-w-0">
+        <p className="text-[11px] font-bold uppercase tracking-[.12em] text-signal">Recognized by Clutch</p>
+        <div className="relative mt-1 flex h-[104px] w-[104px] items-center justify-center sm:h-[128px] sm:w-[128px]">
+          <iframe
+            width="360"
+            height="360"
+            src="https://clutch.co/share/badges/2348413/34510?utm_source=clutch_top_company_badge&utm_medium=image_embed"
+            title="Top Clutch Ecommerce Marketing Agency Ukraine 2026"
+            loading="lazy"
+            onLoad={() => setBadgeState('loaded')}
+            onError={() => setBadgeState('fallback')}
+            className={`h-full w-full border-0 transition-opacity ${badgeState === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
+          />
+          {badgeState !== 'loaded' && (
+            <a
+              href="https://clutch.co/profile/vladenza"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="editorial-focus absolute inset-0 flex flex-col justify-center gap-2 bg-cream text-xs font-bold leading-tight text-ink transition-colors hover:text-signal"
+            >
+              <span>Recognized by Clutch</span>
+              <span className="text-signal">View profile on Clutch →</span>
+            </a>
+          )}
+        </div>
+      </div>
+      <a href="https://clutch.co/profile/vladenza" target="_blank" rel="noopener noreferrer" aria-label="View profile on Clutch" className="editorial-focus ml-auto shrink-0 text-signal transition-colors hover:text-ink">
+        <ExternalLink size={13} />
+      </a>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { locale, localizePath: lp } = useLocale();
   const c = homePageContent[locale];
@@ -64,10 +107,11 @@ export default function HomePage() {
       </section>
 
       <section className="border-b-2 border-ink/10 bg-white" aria-label="Verified proof">
-        <div className="mx-auto grid max-w-[1440px] divide-y divide-ink/15 px-5 py-2 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-16">
-          <div className="flex min-h-20 items-center py-5 text-sm font-bold md:px-8 md:py-0 first:md:pl-0">{c.proof.experience}</div>
+        <div className="mx-auto grid max-w-[1440px] divide-y divide-ink/15 px-5 py-2 sm:px-8 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4 lg:px-16">
+          <div className="flex min-h-20 items-center py-5 text-xs font-bold uppercase tracking-[.12em] text-signal md:px-8 md:py-0 first:md:pl-0">{c.proof.label}</div>
+          <div className="flex min-h-20 items-center py-5 text-sm font-bold md:px-8 md:py-0">{c.proof.experience}</div>
           <a className="editorial-focus flex min-h-20 items-center gap-3 py-5 text-sm font-bold text-ink transition-colors hover:text-signal md:px-8 md:py-0" href="https://www.fiverr.com/fittranslate?public_mode=true" target="_blank" rel="noopener noreferrer"><span>{c.proof.fiverr}</span><ExternalLink size={13} className="ml-auto shrink-0" /></a>
-          <a className="editorial-focus flex min-h-20 items-center gap-3 py-5 text-sm font-bold text-signal transition-colors hover:text-ink md:px-8 md:py-0 md:last:pr-0" href="https://clutch.co/profile/vladenza" target="_blank" rel="noopener noreferrer"><span>{c.proof.clutch}</span><ExternalLink size={13} className="ml-auto shrink-0" /></a>
+          <ClutchProofTile />
         </div>
       </section>
 
