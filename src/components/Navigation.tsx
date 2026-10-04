@@ -109,7 +109,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
           {/* Logo */}
           <a href={lp('/')} className="flex select-none items-center flex-shrink-0"
             onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
-            <img src="/logo.svg?v=3" alt="Vladenza" className="h-9 w-auto" />
+            <span className="flex items-center gap-2"><img src="/assets/visuals/vladenza-symbol-transparent.png" alt="" className="h-8 w-[52px] object-contain" /><span className="font-display text-[24px] font-bold tracking-[-.05em] text-[#FFFDF8]">Vladenza</span></span>
           </a>
 
           {/* Center nav */}
@@ -182,7 +182,7 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
         >
           <a href={lp('/')} className="flex select-none items-center"
             onClick={(e) => { e.preventDefault(); navigate(lp('/')); }}>
-            <img src="/logo.svg?v=3" alt="Vladenza" className="h-8 w-auto" />
+            <span className="flex items-center gap-1.5"><img src="/assets/visuals/vladenza-symbol-transparent.png" alt="" className="h-7 w-[46px] object-contain" /><span className="font-display text-[20px] font-bold tracking-[-.05em] text-[#FFFDF8]">Vladenza</span></span>
           </a>
           <div className="flex items-center gap-3">
             <CartButton />
