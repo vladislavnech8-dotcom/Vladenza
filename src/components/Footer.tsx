@@ -59,7 +59,7 @@ export default function Footer({ onOpenModal }: FooterProps) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link to={lp('/')} className="mb-3 flex select-none items-center">
-              <img src="/Vladenza_Logo.png?v=5" alt="Vladenza" className="h-9 w-auto object-contain" />
+              <img src="/Vladenza_Logo.png?v=5" alt="Vladenza" className="h-11 w-auto object-contain" />
             </Link>
             <p className="mb-3 max-w-[220px] text-sm leading-6 text-white/70">{t['footer.tagline']}</p>
             <a href="mailto:sales@vladenza.com" className="mb-4 inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white">
