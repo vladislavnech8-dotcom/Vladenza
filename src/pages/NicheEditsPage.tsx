@@ -1,682 +1,130 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { ArrowRight, Check, Info, Minus, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus, Check, ArrowRight, ArrowDown, ExternalLink, Link2, Target, TrendingUp, Zap, ShoppingCart, Trophy, Package, Sparkles } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
-import ServiceSeoBlock from '../components/ServiceSeoBlock';
 import PlacementExplorer from '../components/PlacementExplorer';
-import CaseStudyCards, { type RelatedCase } from '../components/CaseStudyCards';
-import NicheEditsVsGuestPosts from '../components/NicheEditsVsGuestPosts';
-import ReviewsSection from '../components/ReviewsSection';
+import FAQ from '../components/FAQ';
 import LinkPlanModal from '../components/LinkPlanModal';
 import { useCart } from '../context/CartContext';
-import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
-import { supabase } from '../lib/supabase';
+import { useSEO } from '../hooks/useSEO';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
-import { nicheEditPackages, NICHE_EDIT_STARTING_PRICE, packageExamples, sampleReportUrl } from '../data/nicheEditPackages';
 
-const content = {
-  en: {
-    seo: {
-      title: 'Buy Link Insertions | Vladenza',
-      description: 'Link insertions inside existing, relevant content. Choose from DR and organic traffic options. Pricing from $70 per placement. 3–7 day delivery.',
-    },
-    hero: {
-      badge: 'Link Building Service',
-      title: 'Link Insertion Link Building',
-      subtitle: 'Backlinks inside existing, relevant content.',
-      desc: 'Link insertions place your backlink inside an existing article on a relevant website. Choose the DR and organic traffic level that fits your campaign, or let us recommend a mix based on your site and budget.',
-      fromPrice: `From $${NICHE_EDIT_STARTING_PRICE}`,
-      delivery: '3–7 day delivery',
-      manualReview: 'Manual review',
-      cta: 'View Packages',
-      ctaSecondary: 'See Real Placements',
-      exampleLabel: 'Example Package',
-      exampleDr: 'DR40+',
-      exampleTraffic: '1,000–20,000 traffic',
-      exampleFeatures: ['DR 40+ domain', 'Contextual placement', '3–7 day delivery', 'Manual review'],
-      sampleReport: 'See Sample Report',
-    },
-    trust: {
-      years: 'Years in Link Building',
-      orders: 'Completed Orders',
-      manual: 'Link Building',
-      manualValue: 'Manual',
-    },
-    whyUse: {
-      title: 'Why Use Link Insertions?',
-      desc: "Link insertions let you add links to already-published pages. They're useful on their own and can complement guest posts and other link types in a broader campaign.",
-      benefits: [
-        { icon: Link2, title: 'Existing Content', desc: 'Your backlink is added to an article that’s already published.' },
-        { icon: Target, title: 'Contextual Placement', desc: 'The link sits inside content relevant to the target page.' },
-        { icon: TrendingUp, title: 'DR & Traffic Options', desc: 'Choose the level that matches the campaign and budget.' },
-        { icon: Zap, title: 'Faster Fulfilment', desc: 'No new article needs to be written. Typical delivery is 3–7 days.' },
-      ],
-    },
-    packages: {
-      title: 'Choose Your Link Insertion',
-      desc: "Choose a DR and traffic level based on your campaign and budget. We'll source a relevant opportunity within the selected range and manually review the placement before it goes live.",
-    },
-    notSure: {
-      title: 'Not sure which links you need?',
-      desc: "Send us your site and budget. We'll compare your backlink profile with competitors and suggest how we'd split the budget.",
-      features: ['Profile review', 'Budget split', 'Suggested link mix'],
-      cta: 'Get a Link Plan',
-    },
-    differentLinks: {
-      title: 'Different Links for Different Campaigns',
-      p1: "Not every campaign needs the same backlink mix. Some sites need more referring domains. Others need stronger placements pointing to important commercial pages. Competitive niches may need a larger share of higher-DR, higher-traffic websites.",
-      p2: "That's why we offer several DR and traffic levels instead of one fixed package. Choose placements yourself or let us build the mix around your site and budget.",
-    },
-    placements: {
-      title: 'Real Link Insertion Placements',
-      desc: 'Examples from completed orders, with Ahrefs DR and organic traffic metrics.',
-      viewAll: 'View All Link Insertion Examples',
-      sampleReport: 'See Sample Report',
-    },
-    howOrdering: {
-      title: 'How Ordering Works',
-      steps: [
-        { icon: ShoppingCart, title: 'Choose', desc: 'Select DR, traffic level and quantity.' },
-        { icon: Link2, title: 'Requirements', desc: 'Add URLs, anchors and notes — or send them later.' },
-        { icon: Check, title: 'Review', desc: 'We review the requirements and available placements.' },
-        { icon: Zap, title: 'Placement', desc: 'The approved link is delivered in your report.' },
-      ],
-    },
-    cases: {
-      title: 'Real Campaigns. Real Outcomes.',
-      desc: 'See how niche edits fit into broader link-building campaigns across competitive markets.',
-      viewAll: 'Explore All Case Studies',
-    },
-    vsGuestPosts: {
-      title: 'Link Insertions vs. Guest Posts',
-    },
-    seoBlock: {
-      heading: 'Link Insertions as Part of Your Link Building Strategy',
-      intro: 'Link insertions, also called niche edits, add backlinks to articles that are already published. They are commonly used alongside guest posts, forum links, and other placements to build referring domain diversity and support important pages.',
-      body: [
-        'Selection should consider both measurable criteria and relevance. We look at DR, organic traffic, the actual article, topic, target page, anchor, and the existing backlink profile — not just a DR threshold.',
-        'Clients can order individual placements by DR and traffic level, but larger campaigns may use a mix of price levels. Not every backlink needs to be a premium placement. A DR10+ link serves a different purpose than a DR50+ link, and both can have a place in the same profile depending on the campaign.',
-        'For clients running ongoing link-building campaigns, we can analyze competitors and the existing backlink profile before recommending the mix of [niche edits](/blog/niche-edits-vs-guest-posts), [guest posts](/services/guest-posting), and [community links](/services/crowd-links). See real outcomes in our [case studies](/case-studies), or explore niche-specific bundles in our [link building packages](/services/link-packages/saas).',
-      ],
-      faqs: [
-        { q: 'What is a link insertion?', a: 'A link insertion, also called a niche edit, is a backlink added to an existing article. The link is placed inside relevant content rather than publishing a completely new guest post.' },
-        { q: 'Are link insertions safe?', a: 'No link-building method is completely risk-free. We manually review potential placements and focus on relevant websites and articles rather than approving sites only because they meet a DR threshold.' },
-        { q: 'Are link insertions faster than guest posts?', a: "Usually yes, because a new article doesn't need to be written and published. Typical delivery is 3–7 days, although publisher response times can vary." },
-        { q: 'Can I control the anchor text?', a: 'Yes. Clients can provide preferred anchors. For ongoing campaigns, we can also recommend anchors based on the current backlink profile and target pages.' },
-        { q: 'Which DR package should I choose?', a: 'It depends on the current backlink profile, competitors, target pages, and budget. Not every link needs to be DR50–60+. Clients can order a specific level or ask us to recommend a mix.' },
-        { q: 'Do you guarantee indexing?', a: 'No. We can check whether a page is accessible and indexed when evaluating it, but indexing is controlled by search engines and can change over time.' },
-        { q: 'Are link insertions permanent?', a: "Placements are intended to remain live, but third-party websites are outside our permanent control. If a placement is removed within the coverage period, contact us and we'll replace it." },
-      ],
-    },
-    finalCta: {
-      title: 'Ready to Add Link Insertions?',
-      desc: 'Choose your DR and traffic level and add the placements you need.',
-      cta: 'View Packages',
-      ctaSecondary: 'Get a Link Plan',
-    },
-    cart: {
-      perPlacement: '/ placement',
-      example: 'Example',
-      alreadyInCart: 'already in cart',
-      added: 'Added',
-      addMore: 'Add {qty} More',
-      addToCart: 'Add {qty} to Cart',
-    },
-  },
-  uk: {
-    seo: {
-      title: 'Купити розміщення посилань у готових статтях | Vladenza',
-      description: 'Розміщення посилань у вже існуючому, релевантному контенті. Вибирайте з варіантів DR та органічного трафіку. Ціни від $70 за розміщення. Доставка 3–7 днів.',
-    },
-    hero: {
-      badge: 'Послуга лінкбілдингу',
-      title: 'Лінкбілдинг через розміщення посилань',
-      subtitle: 'Беклінки всередині існуючого, релевантного контенту.',
-      desc: 'Розміщення посилань у готових статтях додає ваше посилання всередину вже опублікованої статті на релевантному сайті. Оберіть рівень DR та органічного трафіку під вашу кампанію — або дозвольте нам підібрати мікс на основі вашого сайту та бюджету.',
-      fromPrice: `Від $${NICHE_EDIT_STARTING_PRICE}`,
-      delivery: 'Доставка 3–7 днів',
-      manualReview: 'Ручна перевірка',
-      cta: 'Переглянути пакети',
-      ctaSecondary: 'Реальні розміщення',
-      exampleLabel: 'Приклад пакета',
-      exampleDr: 'DR40+',
-      exampleTraffic: '1,000–20,000 трафік',
-      exampleFeatures: ['Домен DR 40+', 'Контекстне розміщення', 'Доставка 3–7 днів', 'Ручна перевірка'],
-      sampleReport: 'Зразок звіту',
-    },
-    trust: {
-      years: 'Років у лінкбілдингу',
-      orders: 'Виконаних замовлень',
-      manual: 'Лінкбілдинг',
-      manualValue: 'Ручна робота',
-    },
-    whyUse: {
-      title: 'Навіщо використовувати розміщення посилань?',
-      desc: 'Розміщення посилань у готових статтях дозволяє додавати посилання до вже опублікованих сторінок. Вони корисні самостійно та можуть доповнювати гостьові публікації й інші типи посилань у ширшій кампанії.',
-      benefits: [
-        { icon: Link2, title: 'Існуючий контент', desc: 'Ваше посилання додається до вже опублікованої статті.' },
-        { icon: Target, title: 'Контекстне розміщення', desc: 'Посилання розміщується всередині контенту, релевантного цільовій сторінці.' },
-        { icon: TrendingUp, title: 'Варіанти DR та трафіку', desc: 'Оберіть рівень, що відповідає кампанії та бюджету.' },
-        { icon: Zap, title: 'Швидше виконання', desc: 'Не потрібно писати нову статтю. Типова доставка — 3–7 днів.' },
-      ],
-    },
-    packages: {
-      title: 'Оберіть розміщення посилання',
-      desc: 'Оберіть рівень DR та трафіку залежно від вашої кампанії та бюджету. Ми підберемо релевантну можливість у межах обраного діапазону та вручну перевіримо розміщення перед публікацією.',
-    },
-    notSure: {
-      title: 'Не впевнені, які посилання потрібні?',
-      desc: 'Надішліть нам свій сайт та бюджет. Ми порівняємо ваш беклінк-профіль із конкурентами та порадимо, як розподілити бюджет.',
-      features: ['Аналіз профілю', 'Розподіл бюджету', 'Рекомендований мікс посилань'],
-      cta: 'Отримати план посилань',
-    },
-    differentLinks: {
-      title: 'Різні посилання для різних кампаній',
-      p1: 'Не кожній кампанії потрібен однаковий мікс беклінків. Деяким сайтам потрібно більше реферальних доменів. Іншим — сильніші розміщення на важливі комерційні сторінки. Конкурентні ніші можуть вимагати більше високих DR-сайтів з великим трафіком.',
-      p2: 'Саме тому ми пропонуємо кілька рівнів DR та трафіку замість одного фіксованого пакета. Обирайте розміщення самостійно або довірте нам скласти мікс під ваш сайт та бюджет.',
-    },
-    placements: {
-      title: 'Реальні розміщення посилань',
-      desc: 'Приклади з виконаних замовлень, з метриками Ahrefs DR та органічним трафіком.',
-      viewAll: 'Усі приклади розміщень посилань',
-      sampleReport: 'Зразок звіту',
-    },
-    howOrdering: {
-      title: 'Як працює замовлення',
-      steps: [
-        { icon: ShoppingCart, title: 'Оберіть', desc: 'Оберіть DR, рівень трафіку та кількість.' },
-        { icon: Link2, title: 'Вимоги', desc: 'Додайте URL, анкори та нотатки — або надішліть пізніше.' },
-        { icon: Check, title: 'Перевірка', desc: 'Ми перевіряємо вимоги та доступні розміщення.' },
-        { icon: Zap, title: 'Розміщення', desc: 'Схвалене посилання з’являється у вашому звіті.' },
-      ],
-    },
-    cases: {
-      title: 'Реальні кампанії. Реальні результати.',
-      desc: 'Побачте, як розміщення посилань вписуються у ширші лінкбілдинг-кампанії на конкурентних ринках.',
-      viewAll: 'Усі кейс-стаді',
-    },
-    vsGuestPosts: {
-      title: 'Розміщення посилань vs. Гостьові публікації',
-    },
-    seoBlock: {
-      heading: 'Розміщення посилань у вашій стратегії лінкбілдингу',
-      intro: 'Розміщення посилань у готових статтях додають беклінки до вже опублікованих статей. Їх зазвичай використовують разом із гостьовими публікаціями, форумними посиланнями та іншими розміщеннями для різноманітності реферальних доменів та підтримки важливих сторінок.',
-      body: [
-        'Вибір має враховувати як вимірні критерії, так і релевантність. Ми дивимось на DR, органічний трафік, саму статтю, тему, цільову сторінку, анкор та існуючий беклінк-профіль — а не лише на поріг DR.',
-        'Клієнти можуть замовляти окремі розміщення за рівнями DR та трафіку, але більші кампанії можуть використовувати мікс цінових рівнів. Не кожне посилання має бути преміальним. Посилання DR10+ має інше призначення, ніж DR50+, і обидва можуть бути доречними в одному профілі залежно від кампанії.',
-        'Для клієнтів, які ведуть тривалі лінкбілдинг-кампанії, ми можемо проаналізувати конкурентів та існуючий беклінк-профіль перед тим, як порадити мікс [розміщень посилань](/blog/niche-edits-vs-guest-posts), [гостьових публікацій](/services/guest-posting) та [крауд-маркетингу](/services/crowd-links). Дивіться реальні результати у наших [кейс-стаді](/case-studies) або дослідіть нішеві пакети у [пакетах лінкбілдингу](/services/link-packages/saas).',
-      ],
-      faqs: [
-        { q: 'Що таке розміщення посилання?', a: 'Розміщення посилання у готовій статті — це беклінк, доданий до існуючої статті. Посилання розміщується всередині релевантного контенту, а не через публікацію нової гостьової статті.' },
-        { q: 'Чи безпечні розміщення посилань?', a: 'Жоден метод лінкбілдингу не є повністю безризиковим. Ми вручну перевіряємо потенційні розміщення та фокусуємось на релевантних сайтах і статтях, а не схвалюємо сайти лише за порогом DR.' },
-        { q: 'Чи розміщення посилань швидші за гостьові публікації?', a: 'Зазвичай так, бо не потрібно писати та публікувати нову статтю. Типова доставка — 3–7 днів, хоча час відповіді паблішерів може варіюватися.' },
-        { q: 'Чи можу я контролювати анкор-текст?', a: 'Так. Клієнти можуть надати бажані анкори. Для тривалих кампаній ми також можемо порадити анкори на основі поточного беклінк-профілю та цільових сторінок.' },
-        { q: 'Який пакет DR мені обрати?', a: 'Це залежить від поточного беклінк-профілю, конкурентів, цільових сторінок та бюджету. Не кожне посилання має бути DR50–60+. Клієнти можуть замовити конкретний рівень або попросити нас підібрати мікс.' },
-        { q: 'Чи гарантуєте ви індексацію?', a: 'Ні. Ми можемо перевірити, чи сторінка доступна та проіндексована під час оцінки, але індексація контролюється пошуковими системами і може змінюватися з часом.' },
-        { q: 'Чи розміщення посилань постійні?', a: 'Розміщення плануються як постійні, але сторонні сайти не підконтрольні нам повністю. Якщо розміщення зникає протягом періоду покриття, зверніться до нас — ми замінимо його.' },
-      ],
-    },
-    finalCta: {
-      title: 'Готові додати розміщення посилань?',
-      desc: 'Оберіть рівень DR та трафіку і додайте потрібні вам розміщення.',
-      cta: 'Переглянути пакети',
-      ctaSecondary: 'Отримати план посилань',
-    },
-    cart: {
-      perPlacement: '/ розміщення',
-      example: 'Приклад',
-      alreadyInCart: 'в кошику',
-      added: 'Додано',
-      addMore: 'Додати ще {qty}',
-      addToCart: 'Додати {qty} у кошик',
-    },
-  },
-} as const;
+type LinkPackage = {
+  id: string;
+  name: string;
+  requirements: string;
+  title: string;
+  items: string[];
+  price: number;
+  popular?: boolean;
+};
 
-function scrollToId(id: string) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+const packagesEn: LinkPackage[] = [
+  { id: 'good-place', name: 'GOOD PLACE', requirements: 'DR20+ · 1K+ organic traffic', title: "Good doesn't have to mean complicated.", price: 90, items: ['Relevant indexed article', 'Manual site & article check', 'Approval before placement', 'Anchor & target page matched to context', '1-Year Link Care'], },
+  { id: 'better-place', name: 'BETTER PLACE', requirements: 'DR40+ · 5K+ organic traffic', title: "A little harder to find. That's the point.", price: 200, popular: true, items: ['Relevant indexed article', 'Stronger authority & organic traffic', 'Manual site & article check', 'Approval before placement', 'Anchor & target page matched to context', '1-Year Link Care'], },
+  { id: 'picky-mode', name: 'PICKY MODE', requirements: 'DR50+ · 10K+ organic traffic', title: 'Go ahead. Make our job harder.', price: 280, items: ['Relevant indexed article', 'Higher authority & organic traffic', 'Tighter selection', 'Manual site & article check', 'Approval before placement', '1-Year Link Care'], },
+];
 
-function PackageCard({ pkg }: { pkg: typeof nicheEditPackages[number] }) {
-  const { locale } = useLocale();
-  const c = content[locale].cart;
-  const localizedTraffic = locale === 'uk'
-    ? pkg.traffic.replace(' monthly traffic', ' трафіку на місяць')
-    : pkg.traffic;
-  const { addItem, items } = useCart();
-  const [qty, setQty] = useState(1);
-  const [justAdded, setJustAdded] = useState(false);
-  const inCart = items.find((i) => i.productId === `niche-edit-${pkg.id}`);
-  const example = packageExamples[pkg.id];
+const packagesUk: LinkPackage[] = [
+  { id: 'good-place', name: 'GOOD PLACE', requirements: 'DR20+ · 1K+ органічного трафіку', title: 'Хороше не має бути складним.', price: 90, items: ['Релевантна проіндексована стаття', 'Ручна перевірка сайту та статті', 'Погодження до публікації', 'Анкор і цільова сторінка підібрані під контекст', 'Link Care на 1 рік'], },
+  { id: 'better-place', name: 'BETTER PLACE', requirements: 'DR40+ · 5K+ органічного трафіку', title: 'Трохи складніше знайти. У цьому й сенс.', price: 200, popular: true, items: ['Релевантна проіндексована стаття', 'Сильніший авторитет і органічний трафік', 'Ручна перевірка сайту та статті', 'Погодження до публікації', 'Анкор і цільова сторінка підібрані під контекст', 'Link Care на 1 рік'], },
+  { id: 'picky-mode', name: 'PICKY MODE', requirements: 'DR50+ · 10K+ органічного трафіку', title: 'Будь ласка. Ускладніть нам завдання.', price: 280, items: ['Релевантна проіндексована стаття', 'Вищий авторитет і органічний трафік', 'Жорсткіший відбір', 'Ручна перевірка сайту та статті', 'Погодження до публікації', 'Link Care на 1 рік'], },
+];
 
-  const handleAdd = () => {
-    addItem(
-      {
-        productId: `niche-edit-${pkg.id}`,
-        service: 'Niche Edits',
-        name: `${locale === 'uk' ? 'Розміщення посилань' : 'Link Insertion'} — ${pkg.label}`,
-        description: localizedTraffic,
-        unitPrice: pkg.price,
-      },
-      qty
-    );
-    setJustAdded(true);
-    trackEvent('add_to_cart', { product_id: pkg.id, quantity: qty, price: pkg.price });
-    trackMetaEvent('AddToCart', {
-      content_name: `Niche Edit ${pkg.label}`,
-      content_category: 'Niche Edits',
-      content_ids: [`niche-edit-${pkg.id}`],
-      content_type: 'product',
-      value: pkg.price * qty,
-      currency: 'USD',
-      contents: [{ id: `niche-edit-${pkg.id}`, quantity: qty, item_price: pkg.price }],
-    });
-    setTimeout(() => setJustAdded(false), 1500);
-    setQty(1);
-  };
+const detailsEn = [
+  ['01', 'Relevant article', 'The page itself matches the topic. Not just the domain.'],
+  ['02', 'Already indexed', "The article is already in Google's index before we place your link."],
+  ['03', 'Real organic visibility', "We check the website's organic traffic, authority and history — not just a single DR number."],
+  ['04', 'Right context', 'The anchor, surrounding content and target page have a natural reason to be there.'],
+];
 
-  return (
-    <div className={`rounded-2xl p-6 border flex flex-col transition-all duration-200 ${pkg.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>
-      <div className="text-xl font-bold text-white mb-1">{pkg.label}</div>
-      <div className={`text-xs mb-5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{localizedTraffic}</div>
-      <div className="text-3xl font-black text-white mb-4">
-        ${pkg.price}
-        <span className={`text-sm font-medium ml-1.5 ${pkg.highlight ? 'text-white/80' : 'text-gray-400'}`}>{c.perPlacement}</span>
-      </div>
+const detailsUk = [
+  ['01', 'Релевантна стаття', 'Сама сторінка відповідає темі. Не лише домен.'],
+  ['02', 'Вже проіндексована', 'Стаття вже є в індексі Google до того, як ми розміщуємо ваше посилання.'],
+  ['03', 'Реальна органічна видимість', 'Ми перевіряємо органічний трафік, авторитет і історію сайту — не лише один показник DR.'],
+  ['04', 'Правильний контекст', 'Анкор, оточуючий контент і цільова сторінка мають природну причину бути разом.'],
+];
 
-      {example && example.url && (
-        <a
-          href={example.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`flex items-center gap-1.5 text-xs mb-4 transition-colors ${pkg.highlight ? 'text-white/70 hover:text-white' : 'text-gray-500 hover:text-[#F97316]'}`}
-        >
-          <ExternalLink size={11} className="flex-shrink-0" />
-          {c.example}: {example.domain} · DR{example.dr} · {example.traffic}
-        </a>
-      )}
+const faqEn = [
+  { q: 'Can I approve every website before placement?', a: 'Yes. Every package includes approval before placement, so you can review the proposed article and website before anything goes live.' },
+  { q: 'Is the article already indexed in Google?', a: 'Yes. We look for relevant articles that are already indexed before we send them for approval.' },
+  { q: 'Can I choose my target page and anchor?', a: 'Yes. You can provide the target page and preferred anchor. We match both to the context so the link reads naturally.' },
+  { q: 'Can I request a specific niche or country?', a: 'Yes. Include the niche, country, language or other requirements in your brief. More specific requirements may need a custom search.' },
+  { q: 'What does 1-Year Link Care cover?', a: 'For 12 months after placement, we keep an eye on delivered placements. Eligible removals are reviewed and handled according to our Link Care policy.' },
+  { q: 'What if I need 10, 50 or 100+ placements?', a: 'We can build a larger campaign around your target pages, anchors, markets and backlink profile. Use the harder brief form and we will plan the search.' },
+];
 
-      {inCart && (
-        <div className={`text-xs font-semibold mb-3 ${pkg.highlight ? 'text-white/90' : 'text-[#F97316]'}`}>
-          {inCart.quantity} {c.alreadyInCart}
-        </div>
-      )}
-
-      <div className="flex items-center gap-3 mb-4 mt-auto">
-        <button
-          onClick={() => setQty(Math.max(1, qty - 1))}
-          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${pkg.highlight ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-        >
-          <Minus size={14} />
-        </button>
-        <span className="text-lg font-bold text-white w-8 text-center">{qty}</span>
-        <button
-          onClick={() => setQty(qty + 1)}
-          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${pkg.highlight ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-        >
-          <Plus size={14} />
-        </button>
-      </div>
-
-      <button
-        onClick={handleAdd}
-        disabled={justAdded}
-        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
-          justAdded
-            ? 'bg-green-500 text-white'
-            : pkg.highlight
-              ? 'bg-white text-[#F97316] hover:bg-gray-100'
-              : 'bg-[#F97316] hover:bg-[#EA580C] text-white'
-        }`}
-      >
-        {justAdded ? (
-          <><Check size={15} /> {c.added}</>
-        ) : inCart ? (
-          <>{c.addMore.replace('{qty}', String(qty))}</>
-        ) : (
-          <>{c.addToCart.replace('{qty}', String(qty))}</>
-        )}
-      </button>
-    </div>
-  );
-}
+const faqUk = [
+  { q: 'Чи можу я погодити кожен сайт до розміщення?', a: 'Так. Кожен пакет включає погодження до публікації, щоб ви могли переглянути статтю та сайт.' },
+  { q: 'Стаття вже проіндексована в Google?', a: 'Так. Ми шукаємо релевантні статті, які вже проіндексовані до погодження.' },
+  { q: 'Чи можу я обрати цільову сторінку та анкор?', a: 'Так. Ви можете надати цільову сторінку та бажаний анкор. Ми підбираємо їх під контекст.' },
+  { q: 'Чи можу я попросити конкретну нішу або країну?', a: 'Так. Додайте нішу, країну, мову та інші вимоги у бриф. Специфічні вимоги можуть потребувати індивідуального пошуку.' },
+  { q: 'Що покриває Link Care на 1 рік?', a: 'Протягом 12 місяців після розміщення ми стежимо за результатами. Видалення розглядаються відповідно до політики Link Care.' },
+  { q: 'Що, якщо мені потрібно 10, 50 або 100+ розміщень?', a: 'Ми можемо побудувати більшу кампанію під ваші сторінки, анкори, ринки та беклінк-профіль.' },
+];
 
 export default function NicheEditsPage() {
   const { locale, localizePath: lp } = useLocale();
-  const c = content[locale];
-  const localizeLinks = (text: string) => text.replace(/]\((\/[^)]+)\)/g, (_, path) => `](${lp(path)})`);
+  const uk = locale === 'uk';
+  const packages = uk ? packagesUk : packagesEn;
+  const details = uk ? detailsUk : detailsEn;
+  const faqs = uk ? faqUk : faqEn;
+  const { addItem, items } = useCart();
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [careOpen, setCareOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
+
   useSEO({
-    title: c.seo.title,
-    description: c.seo.description,
-    canonical: locale === 'uk' ? 'https://vladenza.com/uk/services/niche-edits' : 'https://vladenza.com/services/niche-edits',
+    title: uk ? 'Розміщення посилань у готових статтях — Vladenza' : 'Link Insertions — Vladenza',
+    description: uk ? 'Релевантні посилання у вже проіндексованих статтях із ручною перевіркою.' : 'Relevant backlinks inside already indexed articles, manually checked before placement.',
+    canonical: `https://vladenza.com${lp('/services/niche-edits')}`,
   });
 
-  const [relatedCases, setRelatedCases] = useState<RelatedCase[]>([]);
-  const [linkPlanOpen, setLinkPlanOpen] = useState(false);
-  const viewContentFired = useRef(false);
-
-  useEffect(() => {
-    if (viewContentFired.current) return;
-    viewContentFired.current = true;
-    trackMetaEvent('ViewContent', {
-      content_name: 'Niche Edit Link Building',
-      content_category: 'Niche Edits',
-      content_ids: ['niche-edits'],
-      content_type: 'product',
-    });
-  }, []);
-
-  useEffect(() => {
-    const preloaded = typeof window === 'undefined'
-      ? (globalThis as Record<string, unknown>).__SSR_RELATED_CASES__ as RelatedCase[] | undefined
-      : undefined;
-    if (preloaded && preloaded.length > 0) {
-      setRelatedCases(preloaded);
-      return;
-    }
-    supabase
-      .from('case_studies')
-      .select('slug,title,niche,service,period,metric,metric_sub,color,challenge')
-      .eq('published', true)
-      .ilike('service', '%niche edit%')
-      .limit(3)
-      .then(({ data }) => {
-        if (data) setRelatedCases(data as RelatedCase[]);
-      });
-  }, []);
-
-  const openLinkPlan = () => {
-    trackEvent('get_link_plan');
-    setLinkPlanOpen(true);
+  const getQuantity = (id: string) => quantities[id] ?? 1;
+  const changeQuantity = (id: string, delta: number) => setQuantities((current) => ({ ...current, [id]: Math.max(1, (current[id] ?? 1) + delta) }));
+  const addToCampaign = (pkg: LinkPackage) => {
+    const quantity = getQuantity(pkg.id);
+    const productId = `niche-edit-${pkg.id}`;
+    addItem({ productId, service: 'Niche Edits', name: `${uk ? 'Розміщення посилань' : 'Link Insertion'} — ${pkg.name}`, description: pkg.requirements, unitPrice: pkg.price }, quantity);
+    trackEvent('add_to_cart', { product_id: productId, quantity, price: pkg.price });
+    trackMetaEvent('AddToCart', { content_name: `Niche Edit ${pkg.name}`, content_category: 'Niche Edits', content_ids: [productId], content_type: 'product', value: pkg.price * quantity, currency: 'USD', contents: [{ id: productId, quantity, item_price: pkg.price }] });
+    setQuantities((current) => ({ ...current, [pkg.id]: 1 }));
   };
 
   return (
-    <ServicePageLayout>
-      {/* Hero — compact */}
-      <section className="relative overflow-hidden pt-10 pb-10 lg:pt-12 lg:pb-12">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(170deg, #fff8f1 0%, #ffffff 55%)' }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-[1fr_320px] gap-10 lg:gap-12 items-start">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C2410C] mb-4">{c.hero.badge}</p>
-              <h1 className="text-[28px] md:text-4xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] tracking-tight mb-4">
-                {c.hero.title}
-              </h1>
-              <p className="text-gray-600 text-base leading-relaxed mb-2 font-semibold">
-                {c.hero.subtitle}
-              </p>
-              <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-lg">
-                {c.hero.desc}
-              </p>
-              <div className="flex flex-wrap items-center gap-4 mb-6">
-                <span className="text-sm font-bold text-gray-900">{c.hero.fromPrice}</span>
-                <span className="w-1 h-1 rounded-full bg-gray-300" />
-                <span className="text-sm text-gray-500">{c.hero.delivery}</span>
-                <span className="w-1 h-1 rounded-full bg-gray-300" />
-                <span className="text-sm text-gray-500">{c.hero.manualReview}</span>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => { scrollToId('packages'); trackEvent('view_packages'); }}
-                  className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
-                >
-                  {c.hero.cta} <ArrowDown size={14} />
-                </button>
-                <button
-                  onClick={() => scrollToId('placements')}
-                  className="border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200 hover:bg-gray-50"
-                >
-                  {c.hero.ctaSecondary}
-                </button>
-              </div>
-            </div>
-
-            {/* Product visual — desktop only */}
-            <div className="hidden lg:block">
-              <button
-                onClick={() => scrollToId('packages')}
-                className="block w-full text-left bg-white border border-gray-200 rounded-2xl p-5 shadow-sm shadow-gray-200/60 hover:border-[#F97316]/30 hover:shadow-md transition-all duration-200"
-              >
-                <div className="rounded-xl p-3 bg-orange-50/60 border border-orange-100/60 mb-4">
-                  <div className="text-xs font-semibold text-gray-400 mb-2">{c.hero.exampleLabel}</div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-lg font-bold text-gray-900">{c.hero.exampleDr}</div>
-                      <div className="text-xs text-gray-400">{c.hero.exampleTraffic}</div>
-                    </div>
-                    <div className="text-2xl font-black text-[#F97316]">$200</div>
-                  </div>
-                </div>
-                <div className="space-y-2 pt-3 border-t border-gray-100">
-                  {c.hero.exampleFeatures.map((f) => (
-                    <div key={f} className="flex items-center gap-2 text-xs text-gray-500">
-                      <Check size={12} className="text-[#F97316] flex-shrink-0" />
-                      {f}
-                    </div>
-                  ))}
-                </div>
-                {sampleReportUrl && (
-                  <a href={sampleReportUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors mt-3 pt-3 border-t border-gray-100">
-                    {c.hero.sampleReport} <ArrowRight size={12} />
-                  </a>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust strip — compact */}
-      <section className="bg-gray-950 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
-            <div className="flex items-center justify-center gap-3">
-              <Trophy size={20} className="text-[#F97316]" />
-              <div>
-                <div className="text-xl font-black text-white leading-none">8+</div>
-                <div className="text-[11px] text-gray-400 mt-1">{c.trust.years}</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 sm:border-x sm:border-white/10 sm:px-6">
-              <Package size={20} className="text-[#F97316]" />
-              <div>
-                <div className="text-xl font-black text-white leading-none">3,000+</div>
-                <div className="text-[11px] text-gray-400 mt-1">{c.trust.orders}</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <Sparkles size={20} className="text-[#F97316]" />
-              <div>
-                <div className="text-xl font-black text-white leading-none">{c.trust.manualValue}</div>
-                <div className="text-[11px] text-gray-400 mt-1">{c.trust.manual}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Reviews / Social proof */}
-      <ReviewsSection />
-
-      {/* Why Use Niche Edits — 4 cards */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{c.whyUse.title}</h2>
-          <p className="text-gray-500 text-sm mb-10 max-w-xl">
-            {c.whyUse.desc}
-          </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {c.whyUse.benefits.map((b) => (
-              <div key={b.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300">
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-3">
-                  <b.icon size={18} className="text-[#F97316]" />
-                </div>
-                <h3 className="text-gray-900 font-semibold text-sm mb-2">{b.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{b.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Packages */}
-      <section id="packages" className="py-16 bg-gray-950 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{c.packages.title}</h2>
-          <p className="text-gray-400 text-sm max-w-lg mb-10">
-            {c.packages.desc}
-          </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {nicheEditPackages.map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Not sure what to choose? — compact recommendation card */}
-      <section className="py-10 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row items-center gap-6 bg-orange-50/50 border border-orange-100 rounded-2xl p-6">
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="text-lg font-bold text-gray-900 mb-2">{c.notSure.title}</h2>
-              <p className="text-gray-500 text-sm leading-relaxed mb-3">
-                {c.notSure.desc}
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                {c.notSure.features.map((f) => (
-                  <span key={f} className="text-xs text-gray-500 bg-white border border-gray-200 rounded-lg px-2.5 py-1">{f}</span>
-                ))}
-              </div>
-            </div>
-            <button
-              onClick={openLinkPlan}
-              className="flex-shrink-0 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200 hover:shadow-md flex items-center gap-2 whitespace-nowrap"
-            >
-              {c.notSure.cta} <ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Different Links for Different Campaigns */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">{c.differentLinks.title}</h2>
-          <p className="text-gray-500 text-sm leading-relaxed mb-3">
-            {c.differentLinks.p1}
-          </p>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            {c.differentLinks.p2}
-          </p>
-        </div>
-      </section>
-
-      {/* Real Placement Explorer */}
-      <section id="placements" className="py-16 bg-white scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{c.placements.title}</h2>
-          <p className="text-gray-500 text-sm mb-8 max-w-lg">
-            {c.placements.desc}
-          </p>
-          <PlacementExplorer serviceType="niche_edit" />
-          <div className="mt-6">
-            <Link to={lp('/placements')} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
-              {c.placements.viewAll} <ArrowRight size={14} />
-            </Link>
-          </div>
-          {sampleReportUrl && (
-            <div className="mt-6">
-              <a href={sampleReportUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
-                {c.placements.sampleReport} <ArrowRight size={14} />
-              </a>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* How Ordering Works */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10 text-center">{c.howOrdering.title}</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {c.howOrdering.steps.map((step, i) => (
-              <div key={i} className="text-center">
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mx-auto mb-3">
-                  <step.icon size={18} className="text-[#F97316]" />
-                </div>
-                <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center mx-auto mb-3 text-gray-400 font-bold text-xs">
-                  {i + 1}
-                </div>
-                <h4 className="text-gray-900 font-semibold text-sm mb-2">{step.title}</h4>
-                <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Real Campaign Cases */}
-      {relatedCases.length > 0 && (
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{c.cases.title}</h2>
-            <p className="text-gray-500 text-sm mb-8 max-w-lg">
-              {c.cases.desc}
-            </p>
-            <CaseStudyCards cases={relatedCases} />
-            <div className="mt-8">
-              <a href={lp('/case-studies')} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
-                {c.cases.viewAll} <ArrowRight size={14} />
-              </a>
-            </div>
+    <ServicePageLayout defaultService="Niche Edits" flushTop>
+      <main>
+        <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+          <img src="/assets/visuals/Niche_edits_main_page.png" alt="" className="absolute inset-0 h-full w-full object-cover object-center opacity-55 saturate-[.75] brightness-[.42]" />
+          <div className="absolute inset-0 bg-[#07102B]/65" />
+          <div className="paper-grain absolute inset-0 opacity-20" />
+          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-signal">{uk ? 'РОЗМІЩЕННЯ ПОСИЛАНЬ' : 'LINK INSERTIONS'}</p>
+            <h1 className="max-w-4xl font-display text-[clamp(2.75rem,7vw,6.75rem)] font-bold leading-[.95] tracking-[-.05em] text-cream">{uk ? <>Хороший контент уже є.<br /><span className="text-signal">Ваше посилання має бути в ньому.</span></> : <>Good Content Already Exists.<br /><span className="text-signal">Your Link Should Be In It.</span></>}</h1>
+            <div className="mt-8 flex w-full max-w-[360px] flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center"><a href="#packages" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-signal px-7 text-base font-bold text-white transition-colors hover:bg-[#EA580C]">{uk ? 'Обрати розміщення' : 'Choose Your Placement'} <ArrowRight size={18} /></a><a href="#placements" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-[#FFFDF8] px-7 text-base font-bold text-navy transition-colors hover:bg-white">{uk ? 'Наші роботи' : 'See Our Work'} <ArrowRight size={18} /></a></div>
           </div>
         </section>
-      )}
 
-      {/* Niche Edits vs Guest Posts */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 text-center">{c.vsGuestPosts.title}</h2>
-          <div className="mb-10" />
-          <NicheEditsVsGuestPosts onScrollToPackages={() => scrollToId('packages')} />
-        </div>
-      </section>
+        <section id="packages" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><div className="mb-8 max-w-3xl"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">01 / {uk ? 'Розміщення посилань' : 'LINK PLACEMENTS'}</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Наскільки прискіпливими нам бути?' : 'How picky should we be?'}</h2><p className="mt-3 text-[17px] leading-7 text-ink/65">{uk ? 'Чим вищі вимоги, тим ретельніше ми шукаємо.' : 'The higher the requirements, the harder we search.'}</p><p className="mt-3 max-w-2xl text-[16px] leading-7 text-ink/65">{uk ? 'Кожне розміщення походить із релевантної статті, вже проіндексованої в Google та перевіреної вручну до того, як ми покажемо її вам.' : 'Every placement comes from a relevant article already indexed in Google, manually checked before we send it your way.'}</p></div><div className="grid items-stretch gap-5 lg:grid-cols-3">{packages.map((pkg) => { const quantity = getQuantity(pkg.id); const productId = `niche-edit-${pkg.id}`; const inCart = items.find((item) => item.productId === productId); return <article key={pkg.id} className={`relative flex h-full flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1 sm:p-6 ${pkg.popular ? 'shadow-[6px_6px_0_#FF5A1F]' : ''}`}>
+          {pkg.popular && <span className="absolute right-5 top-0 -translate-y-1/2 bg-signal px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">{uk ? 'Найпопулярніший' : 'Most popular'}</span>}
+          <p className="text-xs font-bold uppercase tracking-[.16em] text-signal">{pkg.name}</p><p className="mt-2 text-sm font-bold text-ink/55">{pkg.requirements}</p><h3 className="mt-6 max-w-sm font-display text-[25px] font-bold leading-[1.05]">{pkg.title}</h3>
+          <ul className="mt-6 flex flex-col gap-3 border-t-2 border-ink/10 pt-5">{pkg.items.map((item) => <li key={item} className="flex gap-3 text-[15px] leading-6 text-ink/75"><Check size={16} className="mt-1 shrink-0 text-signal" />{item === '1-Year Link Care' || item === 'Link Care на 1 рік' ? <><span>{item}</span><button type="button" onClick={() => setCareOpen(true)} aria-label="Link Care details" className="editorial-focus inline-flex text-ink/55 hover:text-signal"><Info size={14} /></button></> : item}</li>)}</ul>
+          <div className="mt-auto pt-6"><div className="flex items-center justify-between border-t-2 border-ink/10 pt-5"><span className="font-display text-3xl font-bold text-ink">${pkg.price}<span className="ml-1 text-sm font-semibold text-ink/50">/ placement</span></span><div className="flex items-center border-2 border-ink"><button type="button" onClick={() => changeQuantity(pkg.id, -1)} className="editorial-focus flex h-9 w-9 items-center justify-center text-ink/60 hover:bg-ink/5" aria-label="Decrease quantity"><Minus size={15} /></button><span className="flex h-9 min-w-8 items-center justify-center border-x-2 border-ink text-sm font-bold">{quantity}</span><button type="button" onClick={() => changeQuantity(pkg.id, 1)} className="editorial-focus flex h-9 w-9 items-center justify-center text-ink/60 hover:bg-ink/5" aria-label="Increase quantity"><Plus size={15} /></button></div></div><button type="button" onClick={() => addToCampaign(pkg)} className={`editorial-focus mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 text-sm font-bold transition-colors ${pkg.popular ? 'bg-signal text-white hover:bg-[#EA580C]' : 'bg-navy text-white hover:bg-[#101F52]'}`}>{inCart ? (uk ? 'Додати ще' : 'Add More') : (uk ? 'Додати до кампанії' : 'Add to Campaign')} <ArrowRight size={16} /></button></div>
+        </article>; })}</div><div className="mt-10 flex flex-col items-start justify-between gap-5 border-t-2 border-ink pt-6 sm:flex-row sm:items-center"><div><h3 className="font-display text-2xl font-bold">{uk ? 'Занадто просто?' : 'Still too easy?'}</h3><p className="mt-1 text-[16px] leading-7 text-ink/65">{uk ? 'Потрібні DR60+, 50K+ трафіку, конкретна GEO, ніша або щось особливо специфічне?' : 'Need DR60+, 50K+ traffic, a specific GEO, niche or something oddly specific?'}</p></div><button type="button" onClick={() => setBriefOpen(true)} className="editorial-focus inline-flex shrink-0 items-center gap-2 text-sm font-bold text-signal hover:text-[#EA580C]">{uk ? 'Дайте нам складніший бриф' : 'Give Us a Harder Brief'} <ArrowRight size={16} /></button></div></div></section>
 
-      <ServiceSeoBlock
-        heading={c.seoBlock.heading}
-        intro={c.seoBlock.intro}
-        body={c.seoBlock.body.map(localizeLinks)}
-        faqs={c.seoBlock.faqs}
-      />
+        <section className="bg-white py-14 md:py-20"><div className="mx-auto grid max-w-[1240px] items-center gap-10 px-5 sm:px-8 md:grid-cols-[.8fr_1.2fr] md:gap-16 lg:px-16"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">02 / {uk ? 'Поза метриками' : 'BEYOND THE METRICS'}</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? <>DR гарно виглядає в таблиці.<br />Ваше посилання все одно має бути доречним.</> : <>DR looks nice in a spreadsheet.<br />Your link still has to make sense.</>}</h2><div className="mt-10">{details.map(([number, title, body]) => <div key={number} className="border-t border-ink/20 py-5 last:border-b"><div className="flex gap-5"><span className="font-display text-2xl text-signal">{number}</span><div><h3 className="font-display text-xl font-bold">{title}</h3><p className="mt-2 text-[15px] leading-6 text-ink/65">{body}</p></div></div></div>)}</div></div><div className="relative"><img src="/assets/visuals/Nicheedits_3d_block.png" alt="Relevant indexed article with an orange link" className="w-full object-contain" /></div><div className="border-t-2 border-ink pt-5 md:col-span-2"><p className="max-w-4xl font-display text-2xl font-bold leading-tight"><span className="text-signal">{uk ? 'Домен допомагає потрапити до короткого списку.' : 'The domain gets you on the shortlist.'}</span> {uk ? 'Стаття вирішує, чи справді ми захочемо це розміщення.' : 'The article decides whether we actually want the placement.'}</p></div></div></section>
 
-      {/* Final CTA */}
-      <section className="py-16 bg-gray-950">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{c.finalCta.title}</h2>
-          <p className="text-gray-400 text-sm mb-6">
-            {c.finalCta.desc}
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <button
-              onClick={() => { scrollToId('packages'); trackEvent('view_packages'); }}
-              className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-400/20 flex items-center gap-2"
-            >
-              {c.finalCta.cta} <ArrowRight size={14} />
-            </button>
-            <button
-              onClick={openLinkPlan}
-              className="border border-white/20 hover:border-white/30 text-gray-300 hover:text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200"
-            >
-              {c.finalCta.ctaSecondary}
-            </button>
-          </div>
-        </div>
-      </section>
+        <section id="placements" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">03 / {uk ? 'Докази' : 'THE RECEIPTS'}</p><h2 className="font-display max-w-3xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? <>Менше розмов.<br />Більше посилань, які ми справді розмістили.</> : <>Less talk.<br />More links we've actually placed.</>}</h2><p className="mt-4 mb-8 max-w-xl text-[16px] leading-7 text-ink/65">{uk ? 'Перегляньте реальні приклади з виконаних замовлень.' : 'Browse real examples from completed link insertion orders.'}</p><PlacementExplorer serviceType="niche_edit" /><div className="mt-6"><Link to={lp('/placements')} className="inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-[#EA580C]">{uk ? 'Усі розміщення' : 'See All Placements'} <ArrowRight size={15} /></Link></div></div></section>
 
-      <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
+        <section className="bg-navy py-14 text-white md:py-20"><div className="mx-auto max-w-[1000px] px-5 sm:px-8 lg:px-16"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">04 / 1-YEAR LINK CARE</p><h2 className="font-display max-w-3xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96] text-cream">{uk ? 'Публікація — не кінець нашої роботи.' : "Published isn't where our job ends."}</h2><p className="mt-5 max-w-xl text-[17px] leading-7 text-white/70">{uk ? 'Протягом 12 місяців після розміщення ми стежимо за тим, що доставили.' : "For 12 months after placement, we keep an eye on what we've delivered."}</p><div className="mt-9 grid gap-5 border-y border-white/20 py-6 md:grid-cols-3"><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">WE CHECK IT</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Розміщення все ще активне?' : 'Is the placement still live?'}</p></div><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">SOMETHING CHANGED?</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Ми перевіримо, що сталося.' : 'We review what happened.'}</p></div><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">SOMETHING DISAPPEARED?</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Видалення розглядаються за політикою Link Care.' : 'Eligible removals are handled according to our Link Care policy.'}</p></div></div><button type="button" onClick={() => setCareOpen(true)} className="editorial-focus mt-6 inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-white">{uk ? 'Що покривається?' : "What's covered?"} <Info size={15} /></button><p className="mt-10 font-display text-2xl font-bold text-cream">{uk ? 'Бо «воно було активним, коли ми надіслали звіт» — недостатньо.' : 'Because “it was live when we sent the report” isn’t good enough.'}</p></div></section>
+
+        <section className="bg-[#D94712] py-14 text-[#FFFDF8] md:py-20"><div className="mx-auto max-w-5xl px-5 sm:px-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-white/75">05 / {uk ? 'Перед запитаннями' : 'BEFORE YOU ASK'}</p><h2 className="font-display max-w-2xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Так, ми це вже чули.' : 'Yes, we’ve heard that one before.'}</h2><div className="mt-8"><FAQ faqs={faqs} compact orange /></div></div></section>
+
+        <section className="bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1000px] px-5 text-center sm:px-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">06 / YOUR CALL</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Наскільки прискіпливими ви хочете бути?' : 'How picky do you want to be?'}</h2><p className="mx-auto mt-4 max-w-xl text-[17px] leading-7 text-ink/65">{uk ? 'Good Place. Better Place. Або ускладніть нам життя.' : 'Good Place. Better Place. Or make our lives difficult.'}</p><div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><a href="#packages" className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-signal px-6 text-sm font-bold text-white hover:bg-[#EA580C]">{uk ? 'Обрати розміщення' : 'Choose Your Placement'} <ArrowRight size={16} /></a><button type="button" onClick={() => setBriefOpen(true)} className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-navy px-6 text-sm font-bold text-white hover:bg-[#101F52]">{uk ? 'Дайте складніший бриф' : 'Give Us a Harder Brief'} <ArrowRight size={16} /></button></div></div></section>
+      </main>
+      {careOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setCareOpen(false)}><div className="absolute inset-0 bg-black/60 backdrop-blur-sm" /><div className="relative max-w-md border-2 border-ink bg-[#FFFDF8] p-6 shadow-[6px_6px_0_#FF5A1F]" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between gap-5"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-signal">1-Year Link Care</p><h2 className="mt-2 font-display text-2xl">{uk ? 'Що покривається?' : "What's covered?"}</h2></div><button type="button" onClick={() => setCareOpen(false)} className="editorial-focus text-2xl leading-none text-ink/50 hover:text-ink" aria-label="Close">×</button></div><p className="mt-5 text-[15px] leading-7 text-ink/70">{uk ? 'Протягом 12 місяців після публікації ми стежимо за доставленими розміщеннями. Якщо відповідне розміщення зникає, ми перевіряємо ситуацію та діємо відповідно до політики Link Care.' : "For 12 months after publication, we keep an eye on delivered placements. If an eligible placement disappears, we review what happened and handle it according to our Link Care policy."}</p><button type="button" onClick={() => setCareOpen(false)} className="editorial-focus mt-5 min-h-11 w-full bg-navy text-sm font-bold text-white hover:bg-[#101F52]">{uk ? 'Зрозуміло' : 'Got it'}</button></div></div>}
+      <LinkPlanModal open={briefOpen} onClose={() => setBriefOpen(false)} />
     </ServicePageLayout>
   );
 }
