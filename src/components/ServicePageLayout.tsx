@@ -7,9 +7,10 @@ import { useLocale } from '../context/LocaleContext';
 interface Props {
   children: ReactNode;
   defaultService?: string;
+  flushTop?: boolean;
 }
 
-export default function ServicePageLayout({ children, defaultService }: Props) {
+export default function ServicePageLayout({ children, defaultService, flushTop = false }: Props) {
   const { locale } = useLocale();
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
 
@@ -27,7 +28,7 @@ export default function ServicePageLayout({ children, defaultService }: Props) {
   return (
     <div className="bg-white min-h-screen">
       <Navigation onOpenModal={openModal} />
-      <div className="pt-[88px]">
+      <div className={flushTop ? '' : 'pt-[88px]'}>
         {children}
       </div>
 
