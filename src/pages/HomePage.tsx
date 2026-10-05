@@ -44,8 +44,9 @@ export default function HomePage() {
 
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 hidden h-full w-full object-cover object-[72%_68%] brightness-[0.72] lg:block" />
+        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] brightness-[0.55] lg:object-[72%_68%] lg:brightness-[0.72]" />
         <div className="paper-grain absolute inset-0 opacity-15" />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy/95 via-navy/80 to-navy/45 lg:hidden" />
         <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 65% 60% at 38% 44%, rgba(7,16,43,0.78) 0%, rgba(7,16,43,0.58) 34%, rgba(7,16,43,0.36) 58%, rgba(7,16,43,0.14) 78%, transparent 100%)' }} />
         <div className="relative z-10 mx-auto flex min-h-0 w-full min-w-0 box-border flex-col lg:min-h-[calc(100svh-104px)] items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-16 lg:py-20">
           <div className="flex w-full min-w-0 max-w-[1500px] flex-col items-center">
@@ -58,10 +59,6 @@ export default function HomePage() {
               <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-[#FFFDF8] px-6 text-base font-bold text-navy transition-colors hover:bg-white sm:w-auto sm:min-w-[230px] lg:min-h-[56px] lg:px-8">{c.hero.placements}<ArrowRight size={18} /></Link>
             </div>
           </div>
-        </div>
-        <div className="relative z-10 lg:hidden">
-          <div className="absolute inset-x-0 top-0 h-24 -translate-y-full bg-gradient-to-b from-transparent to-navy" />
-          <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" loading="eager" className="block aspect-[16/10] w-full object-cover object-[72%_72%] brightness-[0.72]" />
         </div>
       </section>
 
