@@ -23,6 +23,12 @@ const NICHE_TRANSLATIONS: Record<string, string> = {
   'Traffic': 'Трафік',
 };
 
+const SERVICE_TYPE_UK: Record<string, string> = {
+  'Niche Edit': 'Розміщення посилань',
+  'Guest Post': 'Гостьова публікація',
+  'Crowd Link': 'Крауд-посилання',
+};
+
 const PAGE_SIZE = 6;
 
 export default function PlacementExplorer({ serviceType, showServiceTypeFilters = false }: { serviceType?: PlacementServiceType; showServiceTypeFilters?: boolean }) {
@@ -87,28 +93,28 @@ export default function PlacementExplorer({ serviceType, showServiceTypeFilters 
 
   return (
     <div>
-      {/* Filters — compact toolbar */}
-      <div className="mb-8 flex flex-col gap-3">
+      {/* Filter toolbar */}
+      <div className="mb-8 flex flex-col gap-4 border-b-2 border-ink/10 pb-6">
         {showServiceTypeFilters && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{uk ? 'Сервіс' : 'Service'}</span>
+            <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">{uk ? 'Сервіс' : 'Service'}</span>
             {(['all', 'guest_post', 'niche_edit', 'crowd_link'] as const).map((type) => (
-              <button key={type} type="button" onClick={() => { setActiveServiceType(type); setPage(1); }} className={`border px-3 py-1.5 text-xs font-semibold transition-all duration-150 ${activeServiceType === type ? 'border-[#F97316] bg-[#F97316] text-white' : 'border-gray-200 text-gray-500 hover:border-[#F97316]/40 hover:text-[#F97316]'}`}>
+              <button key={type} type="button" onClick={() => { setActiveServiceType(type); setPage(1); }} className={`border-2 px-3 py-1.5 text-xs font-bold transition-all duration-150 ${activeServiceType === type ? 'border-signal bg-signal text-white' : 'border-ink/15 bg-white text-ink/50 hover:border-ink/40 hover:text-ink'}`}>
                 {type === 'all' ? t.all : (uk ? ({ guest_post: 'Гостьові публікації', niche_edit: 'Розміщення посилань', crowd_link: 'Крауд-маркетинг' }[type]) : SERVICE_TYPE_LABELS[type])}
               </button>
             ))}
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.niche}</span>
+          <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">{t.niche}</span>
           {niches.map((n) => (
             <button
               key={n}
               onClick={() => { setActiveNiche(n); setPage(1); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
+              className={`border-2 px-3 py-1.5 text-xs font-bold transition-all duration-150 ${
                 activeNiche === n
-                  ? 'bg-[#F97316] border-[#F97316] text-white'
-                  : 'border-gray-200 text-gray-500 hover:border-[#F97316]/40 hover:text-[#F97316]'
+                  ? 'border-signal bg-signal text-white'
+                  : 'border-ink/15 bg-white text-ink/50 hover:border-ink/40 hover:text-ink'
               }`}
             >
               {localizeNiche(n)}
@@ -116,17 +122,17 @@ export default function PlacementExplorer({ serviceType, showServiceTypeFilters 
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">DR</span>
+            <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">DR</span>
             {DR_FILTERS.map((d) => (
               <button
                 key={d}
                 onClick={() => { setActiveDr(d); setPage(1); }}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
+                className={`border-2 px-2.5 py-1 text-xs font-bold transition-all duration-150 ${
                   activeDr === d
-                    ? 'bg-gray-900 border-gray-900 text-white'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
+                    ? 'border-ink bg-ink text-white'
+                    : 'border-ink/15 text-ink/50 hover:border-ink/40 hover:text-ink'
                 }`}
               >
                 {d}
@@ -135,30 +141,30 @@ export default function PlacementExplorer({ serviceType, showServiceTypeFilters 
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Traffic</span>
-            {TRAFFIC_FILTERS.map((t) => (
+            <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">{uk ? 'Трафік' : 'Traffic'}</span>
+            {TRAFFIC_FILTERS.map((tf) => (
               <button
-                key={t.label}
-                onClick={() => { setActiveTraffic(t.min); setPage(1); }}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
-                  activeTraffic === t.min
-                    ? 'bg-gray-900 border-gray-900 text-white'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
+                key={tf.label}
+                onClick={() => { setActiveTraffic(tf.min); setPage(1); }}
+                className={`border-2 px-2.5 py-1 text-xs font-bold transition-all duration-150 ${
+                  activeTraffic === tf.min
+                    ? 'border-ink bg-ink text-white'
+                    : 'border-ink/15 text-ink/50 hover:border-ink/40 hover:text-ink'
                 }`}
               >
-                {t.label}
+                {tf.label}
               </button>
             ))}
           </div>
 
-          <div className="relative flex-1 min-w-[160px] max-w-xs ml-auto">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
+          <div className="relative ml-auto min-w-[160px] flex-1 max-w-xs">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
             <input
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder={t.searchPlaceholder}
-              className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all"
+              className="w-full border-2 border-ink/15 bg-white py-2 pl-9 pr-3 text-sm text-ink placeholder-ink/35 focus:border-signal focus:outline-none"
             />
           </div>
         </div>
@@ -167,14 +173,14 @@ export default function PlacementExplorer({ serviceType, showServiceTypeFilters 
       {/* Grid */}
       {loading ? (
         <div className="flex justify-center py-16">
-          <span className="w-6 h-6 border-2 border-gray-200 border-t-[#F97316] rounded-full animate-spin" />
+          <span className="h-6 w-6 border-2 border-ink/15 border-t-signal animate-spin" />
         </div>
       ) : shown.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-gray-400 text-sm">{t.noResults}</p>
+          <p className="text-sm font-semibold text-ink/40">{t.noResults}</p>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((p) => (
             <PlacementCard key={p.id} p={p} />
           ))}
@@ -183,7 +189,7 @@ export default function PlacementExplorer({ serviceType, showServiceTypeFilters 
 
       <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
 
-      <p className="text-center text-xs text-gray-400 mt-6">
+      <p className="mt-6 text-center text-xs text-ink/35">
         {t.metricsNote}
       </p>
     </div>

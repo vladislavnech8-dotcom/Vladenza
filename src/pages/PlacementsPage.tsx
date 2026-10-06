@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, ArrowUpRight } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import PlacementCard from '../components/PlacementCard';
@@ -11,11 +11,11 @@ import { fetchPlacements, type Placement, type PlacementServiceType, getPlacemen
 type ServiceFilter = 'all' | PlacementServiceType;
 type SortKey = 'newest' | 'dr' | 'traffic' | 'sort_order';
 
-const SERVICE_FILTERS: { value: ServiceFilter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'niche_edit', label: 'Link Insertions' },
-  { value: 'guest_post', label: 'Guest Posts' },
-  { value: 'crowd_link', label: 'Crowd Marketing' },
+const SERVICE_FILTERS: { value: ServiceFilter; labelEn: string; labelUk: string }[] = [
+  { value: 'all', labelEn: 'All', labelUk: 'Усі' },
+  { value: 'niche_edit', labelEn: 'Link Insertions', labelUk: 'Розміщення посилань' },
+  { value: 'guest_post', labelEn: 'Guest Posts', labelUk: 'Гостьові публікації' },
+  { value: 'crowd_link', labelEn: 'Crowd Marketing', labelUk: 'Крауд-маркетинг' },
 ];
 
 const DR_FILTERS = ['Any', 'DR20+', 'DR30+', 'DR40+', 'DR50+', 'DR60+'] as const;
@@ -27,20 +27,18 @@ const TRAFFIC_FILTERS = [
   { label: '50K+', min: 50000 },
 ];
 
-const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: 'sort_order', label: 'Manual Order' },
-  { value: 'newest', label: 'Newest' },
-  { value: 'dr', label: 'Highest DR' },
-  { value: 'traffic', label: 'Highest Traffic' },
+const SORT_OPTIONS: { value: SortKey; labelEn: string; labelUk: string }[] = [
+  { value: 'sort_order', labelEn: 'Manual Order', labelUk: 'Вручну' },
+  { value: 'newest', labelEn: 'Newest', labelUk: 'Найновіші' },
+  { value: 'dr', labelEn: 'Highest DR', labelUk: 'Найвищий DR' },
+  { value: 'traffic', labelEn: 'Highest Traffic', labelUk: 'Найвищий трафік' },
 ];
 
 const PAGE_SIZE = 6;
 
-const placementsUk: Record<string, string> = { All: 'Усі', 'Link Insertions': 'Розміщення в готових статтях', 'Guest Posts': 'Гостьові публікації', 'Crowd Marketing': 'Крауд-посилання', Any: 'Будь-який', 'DR20+': 'DR20+', 'DR30+': 'DR30+', 'DR40+': 'DR40+', 'DR50+': 'DR50+', 'DR60+': 'DR60+', '1K+': '1 тис.+', '5K+': '5 тис.+', '10K+': '10 тис.+', '50K+': '50 тис.+', 'Manual Order': 'Вручну', Newest: 'Найновіші', 'Highest DR': 'Найвищий DR', 'Highest Traffic': 'Найвищий трафік', Niche: 'Ніша', Traffic: 'Трафік', Sort: 'Сортування', 'Search by domain, title or URL': 'Пошук за доменом, назвою або URL', 'No placements match these filters.': 'За цими фільтрами розміщень не знайдено.', 'Real Link Building Examples': 'Реальні приклади лінкбілдингу', "Browse real placements we've delivered across niche edits, guest posts and community links.": 'Перегляньте реальні розміщення, які ми виконали в готових статтях, гостьових публікаціях і спільнотах.', 'Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.': 'Метрики отримано з Ahrefs, вони можуть змінюватися. DR = рейтинг домену. Трафік = орієнтовна кількість органічних візитів на місяць.' };
-const pct = (value: string, locale: string) => locale === 'uk' ? (placementsUk[value] ?? value) : value;
-
 export default function PlacementsPage() {
   const { locale } = useLocale();
+  const uk = locale === 'uk';
   const [placements, setPlacements] = useState<Placement[]>([]);
   const [loading, setLoading] = useState(true);
   const [serviceFilter, setServiceFilter] = useState<ServiceFilter>('all');
@@ -52,9 +50,9 @@ export default function PlacementsPage() {
   const [page, setPage] = useState(1);
 
   useSEO({
-    title: locale === 'uk' ? 'Реальні розміщення посилань — готові статті, гостьові публікації та крауд-посилання | Vladenza' : 'Real Link Placements — Niche Edits, Guest Posts & Crowd Links | Vladenza',
-    description: locale === 'uk' ? 'Перегляньте реальні приклади готових статей, гостьових публікацій і крауд-посилань у різних нішах, з різними показниками авторитетності та трафіку.' : 'Browse real examples of niche edits, guest posts and community links we have delivered across different industries, authority levels and traffic ranges.',
-    canonical: `https://vladenza.com${locale === 'uk' ? '/uk/placements' : '/placements'}`,
+    title: uk ? 'Реальні розміщення посилань — готові статті, гостьові публікації та крауд-посилання | Vladenza' : 'Real Link Placements — Niche Edits, Guest Posts & Crowd Links | Vladenza',
+    description: uk ? 'Перегляньте реальні приклади готових статей, гостьових публікацій і крауд-посилань у різних нішах, з різними показниками авторитетності та трафіку.' : 'Browse real examples of niche edits, guest posts and community links we have delivered across different industries, authority levels and traffic ranges.',
+    canonical: `https://vladenza.com${uk ? '/uk/placements' : '/placements'}`,
   });
 
   useEffect(() => {
@@ -106,137 +104,157 @@ export default function PlacementsPage() {
   const goToPage = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const resetPage = () => setPage(1);
 
+  const t = {
+    niche: uk ? 'Ніша' : 'Niche',
+    sort: uk ? 'Сортування' : 'Sort',
+    searchPlaceholder: uk ? 'Пошук за доменом, назвою або URL' : 'Search by domain, title or URL',
+    noResults: uk ? 'За цими фільтрами розміщень не знайдено.' : 'No placements match these filters.',
+    metricsNote: uk ? 'Метрики отримано з Ahrefs, вони можуть змінюватися. DR = рейтинг домену. Трафік = орієнтовна кількість органічних візитів на місяць.' : 'Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.',
+    results: uk ? 'розміщень' : 'placements',
+  };
+
+  const nicheLabel = (n: string) => {
+    if (n === 'All') return uk ? 'Усі' : 'All';
+    return n;
+  };
+
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-cream min-h-screen">
       <Navigation onOpenModal={() => {}} />
 
       <div className="pt-[88px]">
-        {/* Header */}
-        <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">{pct('Real Link Building Examples', locale)}</h1>
-            <p className="text-gray-500 text-base max-w-2xl leading-relaxed">
-              {pct("Browse real placements we've delivered across niche edits, guest posts and community links.", locale)}
+        {/* Header — navy editorial */}
+        <section className="relative overflow-hidden bg-navy text-white">
+          <div className="paper-grain absolute inset-0 opacity-20" />
+          <div className="relative z-10 mx-auto max-w-[1440px] px-5 py-14 sm:px-8 md:py-20 lg:px-16">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-signal">
+              {uk ? 'РОЗМИЩЕННЯ' : 'PLACEMENTS'}
             </p>
+            <h1 className="font-display text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[.95] tracking-[-.04em] text-cream">
+              {uk ? <>Та частина, де ми <span className="text-signal">показуємо посилання.</span></> : <>The part where we <span className="text-signal">show the links.</span></>}
+            </h1>
           </div>
         </section>
 
-        {/* Filters */}
-        <section className="py-6 bg-gray-50 border-y border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col gap-4">
-              {/* Service filter tabs */}
+        {/* Filters + Results — single continuous section */}
+        <section className="bg-cream">
+          <div className="mx-auto max-w-[1440px] px-5 py-10 sm:px-8 md:py-14 lg:px-16">
+            {/* Filter toolbar */}
+            <div className="mb-8 flex flex-col gap-5 border-b-2 border-ink/10 pb-6">
+              {/* Service filter row */}
               <div className="flex flex-wrap items-center gap-2">
                 {SERVICE_FILTERS.map((f) => (
                   <button
                     key={f.value}
                     onClick={() => { setServiceFilter(f.value); resetPage(); }}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    className={`border-2 px-4 py-2 text-sm font-bold transition-all duration-150 ${
                       serviceFilter === f.value
-                        ? 'bg-[#F97316] text-white border border-[#F97316]'
-                        : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        ? 'border-signal bg-signal text-white'
+                        : 'border-ink/15 bg-white text-ink/55 hover:border-ink/40 hover:text-ink'
                     }`}
                   >
-                    {pct(f.label, locale)}
+                    {uk ? f.labelUk : f.labelEn}
                   </button>
                 ))}
               </div>
 
-              {/* Secondary filters */}
-              <div className="flex flex-wrap items-center gap-4">
-                {/* Niche */}
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{pct('Niche', locale)}</span>
-                  <div className="relative">
-                    <select
-                      value={nicheFilter}
-                      onChange={(e) => { setNicheFilter(e.target.value); resetPage(); }}
-                      className="appearance-none text-sm bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#F97316]/20 focus:border-[#F97316]/40 text-gray-600"
-                    >
-                      {niches.map((n) => <option key={n} value={n}>{pct(n, locale)}</option>)}
-                    </select>
-                    <Filter size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                  </div>
+              {/* Secondary filters row */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+                {/* Niche dropdown */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">{t.niche}</span>
+                  <select
+                    value={nicheFilter}
+                    onChange={(e) => { setNicheFilter(e.target.value); resetPage(); }}
+                    className="appearance-none border-2 border-ink/15 bg-white px-3 py-1.5 text-sm font-semibold text-ink focus:border-signal focus:outline-none"
+                  >
+                    {niches.map((n) => <option key={n} value={n}>{nicheLabel(n)}</option>)}
+                  </select>
                 </div>
 
-                {/* DR */}
+                {/* DR filter group */}
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">DR</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">DR</span>
                   {DR_FILTERS.map((d) => (
                     <button
                       key={d}
                       onClick={() => { setDrFilter(d); resetPage(); }}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
+                      className={`border-2 px-2.5 py-1 text-xs font-bold transition-all duration-150 ${
                         drFilter === d
-                          ? 'bg-gray-900 border-gray-900 text-white'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
+                          ? 'border-ink bg-ink text-white'
+                          : 'border-ink/15 text-ink/50 hover:border-ink/40 hover:text-ink'
                       }`}
                     >
-                      {pct(d, locale)}
+                      {d}
                     </button>
                   ))}
                 </div>
 
-                {/* Traffic */}
+                {/* Traffic filter group */}
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{pct('Traffic', locale)}</span>
-                  {TRAFFIC_FILTERS.map((t) => (
+                  <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">{uk ? 'Трафік' : 'Traffic'}</span>
+                  {TRAFFIC_FILTERS.map((tf) => (
                     <button
-                      key={t.label}
-                      onClick={() => { setTrafficFilter(t.min); resetPage(); }}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 ${
-                        trafficFilter === t.min
-                          ? 'bg-gray-900 border-gray-900 text-white'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700'
+                      key={tf.label}
+                      onClick={() => { setTrafficFilter(tf.min); resetPage(); }}
+                      className={`border-2 px-2.5 py-1 text-xs font-bold transition-all duration-150 ${
+                        trafficFilter === tf.min
+                          ? 'border-ink bg-ink text-white'
+                          : 'border-ink/15 text-ink/50 hover:border-ink/40 hover:text-ink'
                       }`}
                     >
-                      {pct(t.label, locale)}
+                      {tf.label}
                     </button>
                   ))}
                 </div>
 
-                {/* Sort */}
-                <div className="flex items-center gap-1.5 ml-auto">
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{pct('Sort', locale)}</span>
-                  <select
-                    value={sort}
-                    onChange={(e) => { setSort(e.target.value as SortKey); resetPage(); }}
-                    className="appearance-none text-sm bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#F97316]/20 focus:border-[#F97316]/40 text-gray-600"
-                  >
-                    {SORT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{pct(s.label, locale)}</option>)}
-                  </select>
+                {/* Sort + Search — right aligned */}
+                <div className="flex flex-wrap items-center gap-3 ml-auto">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink/40">{t.sort}</span>
+                    <select
+                      value={sort}
+                      onChange={(e) => { setSort(e.target.value as SortKey); resetPage(); }}
+                      className="appearance-none border-2 border-ink/15 bg-white px-3 py-1.5 text-sm font-semibold text-ink focus:border-signal focus:outline-none"
+                    >
+                      {SORT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{uk ? s.labelUk : s.labelEn}</option>)}
+                    </select>
+                  </div>
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" />
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => { setSearch(e.target.value); resetPage(); }}
+                      placeholder={t.searchPlaceholder}
+                      className="w-full border-2 border-ink/15 bg-white py-2 pl-9 pr-3 text-sm text-ink placeholder-ink/35 focus:border-signal focus:outline-none sm:w-64"
+                    />
+                  </div>
                 </div>
-              </div>
-
-              {/* Search */}
-              <div className="relative max-w-md">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => { setSearch(e.target.value); resetPage(); }}
-                  placeholder={pct('Search by domain, title or URL', locale)}
-                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all"
-                />
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Grid */}
-        <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            {/* Results count */}
+            {!loading && filtered.length > 0 && (
+              <div className="mb-5 flex items-center justify-between">
+                <p className="text-sm font-bold text-ink/50">
+                  {filtered.length} {t.results}
+                </p>
+              </div>
+            )}
+
+            {/* Grid */}
             {loading ? (
-              <div className="flex justify-center py-16">
-                <span className="w-6 h-6 border-2 border-gray-200 border-t-[#F97316] rounded-full animate-spin" />
+              <div className="flex justify-center py-20">
+                <span className="h-6 w-6 border-2 border-ink/15 border-t-signal animate-spin" />
               </div>
             ) : shown.length === 0 ? (
-              <div className="py-16 text-center">
-                <p className="text-gray-400 text-sm">{pct('No placements match these filters.', locale)}</p>
+              <div className="py-20 text-center">
+                <p className="text-sm font-semibold text-ink/40">{t.noResults}</p>
               </div>
             ) : (
               <>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {shown.map((p) => (
                     <PlacementCard key={p.id} p={p} />
                   ))}
@@ -244,8 +262,8 @@ export default function PlacementsPage() {
 
                 <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
 
-                <p className="text-center text-xs text-gray-400 mt-6">
-                  {pct('Metrics sourced from Ahrefs and may change over time. DR = Domain Rating. Traffic = estimated monthly organic visits.', locale)}
+                <p className="mt-6 text-center text-xs text-ink/35">
+                  {t.metricsNote}
                 </p>
               </>
             )}

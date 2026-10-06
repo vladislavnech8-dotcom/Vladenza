@@ -22,8 +22,15 @@ const content = {
   },
 };
 
+const SERVICE_TYPE_UK: Record<string, string> = {
+  'Niche Edit': 'Розміщення посилань',
+  'Guest Post': 'Гостьова публікація',
+  'Crowd Link': 'Крауд-посилання',
+};
+
 export default function PlacementCard({ p }: { p: Placement }) {
   const { locale } = useLocale();
+  const uk = locale === 'uk';
   const c = content[locale];
 
   const [imgError, setImgError] = useState(false);
@@ -41,36 +48,36 @@ export default function PlacementCard({ p }: { p: Placement }) {
     trackEvent('view_screenshot', { domain: p.domain, service_type: p.service_type, count: screenshots.length });
   };
 
+  const serviceLabel = uk ? (SERVICE_TYPE_UK[SERVICE_TYPE_LABELS[p.service_type]] ?? SERVICE_TYPE_LABELS[p.service_type]) : SERVICE_TYPE_LABELS[p.service_type];
+
   return (
     <>
-      <div className="group flex flex-col overflow-hidden border-2 border-ink/20 bg-white text-ink transition-transform hover:-translate-y-1 hover:border-signal">
-        {/* Screenshot preview — only rendered when a screenshot exists */}
+      <article className="group flex flex-col border-2 border-ink/15 bg-white transition-colors hover:border-signal">
+        {/* Screenshot preview */}
         {hasScreenshot && (
           <div
-            className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-ink"
+            className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-navy"
             onClick={openLightbox}
           >
             <img
               src={primaryScreenshot}
-              alt={`${SERVICE_TYPE_LABELS[p.service_type]} placement on ${p.domain}`}
+              alt={`${serviceLabel} placement on ${p.domain}`}
               className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
               onError={() => setImgError(true)}
               loading="lazy"
             />
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300 flex items-center justify-center">
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center gap-1.5">
-                <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center shadow-md">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/15">
+              <div className="flex flex-col items-center gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <div className="flex h-10 w-10 items-center justify-center bg-white/90">
                   <ZoomIn size={18} className="text-gray-800" />
                 </div>
-                <span className="text-white text-xs font-semibold bg-black/40 px-2.5 py-1 rounded-full whitespace-nowrap">
+                <span className="whitespace-nowrap bg-black/40 px-2.5 py-1 text-xs font-bold text-white">
                   {screenshots.length > 1 ? c.viewScreenshots(screenshots.length) : c.viewFullScreenshot}
                 </span>
               </div>
             </div>
-            {/* Extra screenshots badge */}
             {extraCount > 0 && (
-              <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold px-2 py-1 rounded-lg">
+              <div className="absolute right-2.5 top-2.5 bg-black/60 px-2 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
                 +{extraCount}
               </div>
             )}
@@ -78,38 +85,38 @@ export default function PlacementCard({ p }: { p: Placement }) {
         )}
 
         {/* Info section */}
-        <div className="flex flex-1 flex-col gap-3 p-5">
-          {/* Type + niche */}
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-ink/50">
-            <span>{SERVICE_TYPE_LABELS[p.service_type]}</span>
-            <span className="text-gray-200">·</span>
+        <div className="flex flex-1 flex-col p-5">
+          {/* Type + niche — editorial eyebrow */}
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.14em] text-ink/45">
+            <span>{serviceLabel}</span>
+            <span className="text-ink/20">·</span>
             <span>{p.niche}</span>
           </div>
 
-          {/* Domain */}
-          <div className="min-w-0">
-            <div className="truncate text-sm font-bold text-ink">
+          {/* Domain — strong typography focus */}
+          <div className="mt-3 min-w-0">
+            <div className="truncate font-display text-lg font-bold leading-tight text-ink">
               {p.domain}
             </div>
             {p.title && (
-              <div className="mt-0.5 line-clamp-1 text-xs text-ink/55">{p.title}</div>
+              <div className="mt-1 line-clamp-1 text-xs text-ink/50">{p.title}</div>
             )}
           </div>
 
-          {/* Metrics */}
-          <div className="flex items-center gap-4 border-t-2 border-ink/10 pt-3">
-            <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wide">DR</div>
-              <div className="bg-signal px-2 py-1 text-lg font-black text-white">{p.dr}</div>
+          {/* Metrics — thin divider, restrained */}
+          <div className="mt-4 flex items-center gap-5 border-t border-ink/10 pt-3.5">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-ink/35">DR</span>
+              <span className="font-display text-xl font-bold text-signal">{p.dr}</span>
             </div>
-            <div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wide">{c.traffic}</div>
-              <div className="text-sm font-bold text-gray-800">{formatTraffic(p.traffic)}</div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-ink/35">{c.traffic}</span>
+              <span className="text-sm font-bold text-ink/75">{formatTraffic(p.traffic)}</span>
             </div>
             {p.keywords != null && (
-              <div>
-                <div className="text-[10px] text-gray-400 uppercase tracking-wide">{c.keywords}</div>
-                <div className="text-sm font-bold text-gray-800">{p.keywords}</div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-ink/35">{c.keywords}</span>
+                <span className="text-sm font-bold text-ink/75">{p.keywords}</span>
               </div>
             )}
           </div>
@@ -120,12 +127,13 @@ export default function PlacementCard({ p }: { p: Placement }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent('view_placement', { domain: p.domain, service_type: p.service_type })}
-            className="editorial-focus mt-auto flex items-center gap-1.5 text-sm font-bold text-signal transition-colors hover:text-ink"
+            className="editorial-focus mt-4 flex items-center gap-1.5 text-sm font-bold text-signal transition-colors hover:text-ink"
           >
-            {c.viewPlacement} <ArrowUpRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            {c.viewPlacement}
+            <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5" />
           </a>
         </div>
-      </div>
+      </article>
 
       {/* Lightbox */}
       {lightboxOpen && hasScreenshot && (
