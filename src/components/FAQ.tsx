@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 const defaultFaqs = [
@@ -8,7 +8,7 @@ const defaultFaqs = [
   { q: 'Can I track campaign progress?', a: 'Yes. Reports include every link placed, anchor used, domain metrics and the live URL.' },
 ];
 
-interface FaqItem { q: string; a: string }
+interface FaqItem { q: string; a: ReactNode }
 
 function FAQItem({ faq, index, openId, onToggle, orange }: { faq: FaqItem; index: string; openId: string | null; onToggle: (id: string) => void; orange?: boolean }) {
   const isOpen = openId === index;
