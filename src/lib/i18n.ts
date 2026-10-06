@@ -28,8 +28,6 @@ export interface TranslationKey {
   'nav.languageSwitch': string;
   'nav.linkBuilding': string;
   'nav.placements': string;
-  'nav.managedCampaigns': string;
-  'nav.managedCampaignsDesc': string;
   'nav.whiteLabelLink': string;
   'nav.whiteLabelLinkDesc': string;
   'nav.getLinkPlan': string;
@@ -88,7 +86,6 @@ export interface TranslationKey {
   'footer.proof': string;
   'footer.reviewsFiverr': string;
   'footer.reviewsClutch': string;
-  'footer.managedCampaigns': string;
   'footer.whiteLabel': string;
   'footer.cookiePrefs': string;
 
@@ -184,8 +181,6 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.languageSwitch': 'Switch language',
     'nav.linkBuilding': 'Link Building',
     'nav.placements': 'Placements',
-    'nav.managedCampaigns': 'Managed Campaigns',
-    'nav.managedCampaignsDesc': 'Full backlink strategy & monthly plan',
     'nav.whiteLabelLink': 'White-Label Link Building',
     'nav.whiteLabelLinkDesc': 'Silent fulfilment for agencies',
     'nav.getLinkPlan': 'Get a Link Plan',
@@ -244,7 +239,6 @@ export const translations: Record<Locale, TranslationKey> = {
     'footer.proof': 'Proof',
     'footer.reviewsFiverr': 'Reviews on Fiverr',
     'footer.reviewsClutch': 'Reviews on Clutch',
-    'footer.managedCampaigns': 'Managed Campaigns',
     'footer.whiteLabel': 'White Label',
     'footer.cookiePrefs': 'Cookies',
 
@@ -339,8 +333,6 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.languageSwitch': 'Змінити мову',
     'nav.linkBuilding': 'Лінкбілдинг',
     'nav.placements': 'Приклади розміщень',
-    'nav.managedCampaigns': 'Комплексні кампанії',
-    'nav.managedCampaignsDesc': 'Повна стратегія та щомісячний план',
     'nav.whiteLabelLink': 'White Label для агенцій',
     'nav.whiteLabelLinkDesc': 'Тиха реалізація для агенцій',
     'nav.getLinkPlan': 'Отримати план',
@@ -399,7 +391,6 @@ export const translations: Record<Locale, TranslationKey> = {
     'footer.proof': 'Підтвердження',
     'footer.reviewsFiverr': 'Відгуки на Fiverr',
     'footer.reviewsClutch': 'Відгуки на Clutch',
-    'footer.managedCampaigns': 'Комплексні кампанії',
     'footer.whiteLabel': 'White Label',
     'footer.cookiePrefs': 'Cookie',
 

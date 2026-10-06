@@ -13,7 +13,6 @@ export default function Footer({ onOpenModal }: FooterProps) {
   const { openPreferences } = useCookieConsent();
 
   const linkBuildingLinks = [
-    { label: t['nav.managedCampaigns'], href: lp('/#managed-campaigns') },
     { label: t['nav.svc.guestPosting'], href: lp('/services/guest-posting') },
     { label: t['nav.svc.nicheEdits'], href: lp('/services/niche-edits') },
     { label: t['nav.svc.crowdLinks'], href: lp('/services/crowd-links') },

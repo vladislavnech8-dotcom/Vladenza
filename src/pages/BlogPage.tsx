@@ -113,7 +113,7 @@ function CategoryBadge({ category, color, uk = false }: { category: string; colo
   const labels = uk ? CATEGORY_LABELS_UK : CATEGORY_LABELS_EN;
   const categoryLabel = labels[category] ?? category;
   return (
-    <span className={`inline-flex items-center text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${color}`}>
+    <span className={`inline-flex items-center text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1  border ${color}`}>
       {categoryLabel}
     </span>
   );
@@ -123,14 +123,14 @@ function PostCard({ post, onNavigate, uk }: { post: Post; onNavigate: (slug: str
   return (
     <button
       onClick={() => onNavigate(post.slug)}
-      className="group bg-white border border-gray-200/80 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 flex flex-col text-left"
+      className="group bg-white border border-gray-200/80  overflow-hidden hover:border-gray-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 flex flex-col text-left"
     >
-      <div className="relative h-48 overflow-hidden bg-gray-100">
+      <div className="relative aspect-[4/3] overflow-hidden bg-ink">
         <img
           src={post.image}
           alt={post.title}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[600ms] ease-out"
+          className="h-full w-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="absolute top-3.5 left-3.5">
@@ -141,10 +141,10 @@ function PostCard({ post, onNavigate, uk }: { post: Post; onNavigate: (slug: str
         <div className="flex items-center gap-2 text-gray-400 text-[11px]">
           <Clock size={10} /> {post.readTime}
         </div>
-        <h3 className="text-gray-900 font-bold text-[15px] leading-snug group-hover:text-[#F97316] transition-colors duration-200 flex-1 line-clamp-2">
+        <h3 className="font-display flex-1 text-[20px] font-bold leading-tight text-ink transition-colors duration-200 group-hover:text-[#F97316] line-clamp-2">
           {post.title}
         </h3>
-        <p className="text-gray-400 text-[13px] leading-relaxed line-clamp-2">{post.excerpt}</p>
+        <p className="text-[15px] leading-6 text-ink/60 line-clamp-2">{post.excerpt}</p>
         <div className="flex items-center gap-1 text-[#F97316] text-xs font-semibold mt-auto pt-1">
           {uk ? 'Читати статтю' : 'Read article'} <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
         </div>
@@ -155,13 +155,13 @@ function PostCard({ post, onNavigate, uk }: { post: Post; onNavigate: (slug: str
 
 function SkeletonCard() {
   return (
-    <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden animate-pulse">
+    <div className="bg-white border border-gray-200/80  overflow-hidden animate-pulse">
       <div className="h-48 bg-gray-100" />
       <div className="p-5 flex flex-col gap-3">
-        <div className="h-3 w-16 bg-gray-100 rounded-full" />
+        <div className="h-3 w-16 bg-gray-100 " />
         <div className="h-4 w-full bg-gray-100 rounded" />
         <div className="h-3 w-3/4 bg-gray-100 rounded" />
-        <div className="h-3 w-20 bg-gray-100 rounded-full mt-2" />
+        <div className="h-3 w-20 bg-gray-100  mt-2" />
       </div>
     </div>
   );
@@ -242,20 +242,19 @@ export default function BlogPage() {
     <ServicePageLayout>
 
       {/* Hero */}
-      <section className="relative pt-16 pb-14 lg:pt-24 lg:pb-16 overflow-hidden bg-white">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg,#fff8f3 0%,#ffffff 40%)' }} />
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] pointer-events-none opacity-[0.04]" style={{ background: 'radial-gradient(ellipse at top right, #F97316, transparent 70%)' }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="relative overflow-hidden bg-navy py-16 text-white lg:py-24">
+        <div className="paper-grain absolute inset-0 opacity-20" />
+        <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-5 h-0.5 rounded-full bg-[#F97316]" />
+              <div className="w-5 h-0.5  bg-[#F97316]" />
               <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F97316]">{uk ? 'Блог і ресурси' : 'Blog & Resources'}</span>
             </div>
-            <h1 className="text-4xl md:text-[52px] font-bold text-gray-900 leading-[1.05] tracking-tight mb-5">
+            <h1 className="font-display text-[clamp(3rem,6vw,6rem)] font-bold leading-[.92] tracking-[-.05em] text-cream mb-5">
               {uk ? 'SEO-інсайти від' : 'SEO insights from'}<br />
               <span className="text-[#F97316]">{uk ? 'практиків' : 'practitioners'}</span>
             </h1>
-            <p className="text-gray-500 text-lg leading-relaxed max-w-lg">
+            <p className="max-w-2xl text-lg leading-8 text-white/70">
               {uk ? 'Практичні розбори, дослідження на основі даних і чесні погляди на лінкбілдинг, AI-пошук та органічне зростання.' : 'Tactical breakdowns, data-driven research, and honest takes on link building, AI search, and organic growth.'}
             </p>
           </div>
@@ -263,18 +262,18 @@ export default function BlogPage() {
       </section>
 
       {/* Content */}
-      <section className="py-12 lg:py-16 bg-gray-50/50 min-h-[60vh]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="min-h-[60vh] bg-cream py-12 lg:py-16">
+        <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <div className="grid lg:grid-cols-[1fr_280px] gap-10">
 
             {/* Posts */}
             <div>
               {loading ? (
                 <div className="flex flex-col gap-6">
-                  <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden flex flex-col md:flex-row animate-pulse">
+                  <div className="bg-white border border-gray-200/80  overflow-hidden flex flex-col md:flex-row animate-pulse">
                     <div className="md:w-[48%] h-64 md:h-72 bg-gray-100 flex-shrink-0" />
                     <div className="p-8 flex flex-col justify-center flex-1 gap-4">
-                      <div className="h-3 w-20 bg-gray-100 rounded-full" />
+                      <div className="h-3 w-20 bg-gray-100 " />
                       <div className="h-6 w-3/4 bg-gray-100 rounded" />
                       <div className="h-4 w-full bg-gray-100 rounded" />
                       <div className="h-4 w-2/3 bg-gray-100 rounded" />
@@ -289,7 +288,7 @@ export default function BlogPage() {
                   {/* Featured */}
                   <button
                     onClick={() => navigate(lp(`/blog/${featured.slug}`))}
-                    className="group w-full bg-white border border-gray-200/80 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] transition-all duration-300 text-left flex flex-col md:flex-row mb-8"
+                    className="group w-full bg-white border border-gray-200/80  overflow-hidden hover:border-gray-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] transition-all duration-300 text-left flex flex-col md:flex-row mb-8"
                   >
                     <div className="relative md:w-[48%] h-64 md:h-auto overflow-hidden flex-shrink-0 bg-gray-100">
                       <img
@@ -298,7 +297,7 @@ export default function BlogPage() {
                         className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-[600ms] ease-out"
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10 md:to-black/20" />
-                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-[0.12em] bg-[#F97316] text-white px-3 py-1 rounded-full shadow-sm">{uk ? 'Рекомендоване' : 'Featured'}</span>
+                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-[0.12em] bg-[#F97316] text-white px-3 py-1  shadow-sm">{uk ? 'Рекомендоване' : 'Featured'}</span>
                     </div>
                     <div className="p-8 lg:p-10 flex flex-col justify-center flex-1 gap-4">
                       <div className="flex items-center gap-3">
@@ -343,12 +342,12 @@ export default function BlogPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={uk ? 'Шукати статті...' : 'Search articles...'}
-                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/10 transition-all shadow-sm"
+                  className="w-full border-2 border-ink/15 bg-white py-3 pl-10 pr-4 text-sm text-ink placeholder-ink/40 focus:border-signal focus:outline-none transition-all"
                 />
               </div>
 
               {/* Categories */}
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm">
+              <div className="bg-white border border-gray-200/80  p-5 shadow-sm">
                 <h3 className="text-gray-900 font-bold text-sm mb-4 flex items-center gap-2">
                   <Tag size={13} className="text-[#F97316]" />
                   {uk ? 'Категорії' : 'Categories'}
@@ -363,14 +362,14 @@ export default function BlogPage() {
                       <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-200 text-left w-full ${
+                        className={`flex items-center justify-between px-3 py-2  text-sm transition-all duration-200 text-left w-full ${
                           isActive
                             ? 'bg-[#F97316] text-white font-semibold'
                             : 'text-gray-600 hover:bg-orange-50/60 hover:text-gray-900'
                         }`}
                       >
                         <span>{labels[cat] ?? cat}</span>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5  min-w-[20px] text-center ${
                           isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
                         }`}>{count}</span>
                       </button>
@@ -380,7 +379,7 @@ export default function BlogPage() {
               </div>
 
               {/* Most Read */}
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm">
+              <div className="bg-white border border-gray-200/80  p-5 shadow-sm">
                 <h3 className="text-gray-900 font-bold text-sm mb-4">{uk ? 'Найпопулярніше' : 'Most Read'}</h3>
                 <div className="flex flex-col gap-4">
                   {allPosts.slice(0, 4).map((post, i) => (
@@ -402,14 +401,14 @@ export default function BlogPage() {
               </div>
 
               {/* CTA */}
-              <div className="bg-gray-950 rounded-2xl p-5 relative overflow-hidden">
+              <div className="bg-gray-950  p-5 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'radial-gradient(circle at 70% 30%, #F97316, transparent 60%)' }} />
                 <div className="relative">
                   <p className="text-white font-bold text-sm mb-1.5">{uk ? 'Потрібен лінкбілдинг?' : 'Need link building?'}</p>
                   <p className="text-gray-400 text-xs leading-relaxed mb-4">{uk ? 'Отримайте безкоштовну стратегічну сесію з нашою командою.' : 'Get a free strategy session with our team.'}</p>
                   <a
                     href={lp('/#contact')}
-                    className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200"
+                    className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold px-4 py-2.5  transition-all duration-200"
                   >
                     {uk ? 'Почати' : 'Get Started'} <ArrowRight size={12} />
                   </a>

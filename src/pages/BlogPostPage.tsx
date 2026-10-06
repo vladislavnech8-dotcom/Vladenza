@@ -65,12 +65,12 @@ function RenderSection({ section, sectionIndex, lp }: { section: Section; sectio
     case 'h3':
       return <h3 className="text-[17px] font-bold text-gray-900 mt-9 mb-3 leading-snug">{section.text}</h3>;
     case 'p':
-      return <p className="text-gray-600 leading-[1.8] my-4 text-[15px]">{renderInline(section.text ?? '', lp)}</p>;
+      return <p className="my-5 text-[18px] leading-[1.8] text-ink/75">{renderInline(section.text ?? '', lp)}</p>;
     case 'ul':
       return (
         <ul className="my-5 flex flex-col gap-2.5">
           {(section.items ?? []).map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-gray-600 leading-relaxed text-[15px]">
+            <li key={i} className="flex items-start gap-3 text-[17px] leading-8 text-ink/75">
               <span className="mt-[9px] w-1.5 h-1.5 rounded-full bg-[#F97316] flex-shrink-0" />
               <span>{item}</span>
             </li>
@@ -81,7 +81,7 @@ function RenderSection({ section, sectionIndex, lp }: { section: Section; sectio
       return (
         <ol className="my-5 flex flex-col gap-2.5">
           {(section.items ?? []).map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-gray-600 leading-relaxed text-[15px]">
+            <li key={i} className="flex items-start gap-3 text-[17px] leading-8 text-ink/75">
               <span className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-[10px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
               <span>{item}</span>
             </li>
@@ -97,14 +97,14 @@ function RenderSection({ section, sectionIndex, lp }: { section: Section; sectio
       );
     case 'callout':
       return (
-        <div className="my-7 bg-orange-50/60 border border-orange-100/80 rounded-2xl p-5">
+        <div className="my-7 bg-orange-50/60 border border-orange-100/80  p-5">
           <div className="text-[10px] font-bold uppercase tracking-widest text-[#F97316] mb-2">{section.label}</div>
           <p className="text-gray-700 text-[14px] leading-relaxed">{section.text}</p>
         </div>
       );
     case 'table':
       return (
-        <div className="my-7 overflow-x-auto rounded-xl border border-gray-200">
+        <div className="my-7 overflow-x-auto  border border-gray-200">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-950 text-left">
@@ -127,7 +127,7 @@ function RenderSection({ section, sectionIndex, lp }: { section: Section; sectio
       );
     case 'cta':
       return (
-        <div className="my-12 rounded-2xl overflow-hidden">
+        <div className="my-12  overflow-hidden">
           <div className="bg-gradient-to-br from-gray-950 via-gray-900 to-[#1a1208] p-8 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative">
             <div className="absolute inset-0 opacity-5" style={{backgroundImage:'radial-gradient(circle at 80% 50%, #F97316 0%, transparent 60%)'}} />
             <div className="relative">
@@ -135,7 +135,7 @@ function RenderSection({ section, sectionIndex, lp }: { section: Section; sectio
               <p className="text-white text-xl sm:text-2xl font-bold leading-snug max-w-md">{section.text}</p>
               {section.subtext && <p className="text-gray-400 text-sm mt-2 max-w-sm leading-relaxed">{section.subtext}</p>}
             </div>
-            <Link to={lp(section.href ?? '/')}  className="relative flex-shrink-0 bg-[#F97316] hover:bg-[#EA580C] active:bg-[#C2410C] transition-colors text-white font-semibold px-7 py-3.5 rounded-xl text-sm whitespace-nowrap shadow-lg shadow-orange-900/30">
+            <Link to={lp(section.href ?? '/')}  className="relative flex-shrink-0 bg-[#F97316] hover:bg-[#EA580C] active:bg-[#C2410C] transition-colors text-white font-semibold px-7 py-3.5  text-sm whitespace-nowrap shadow-lg shadow-orange-900/30">
               {section.button}
             </Link>
           </div>
@@ -266,7 +266,7 @@ export default function BlogPostPage() {
           <p className="text-gray-500 mb-6">{uk ? 'Можливо, статтю переміщено або видалено.' : 'This article may have been moved or removed.'}</p>
           <button
             onClick={() => navigate(lp('/blog'))}
-            className="inline-flex items-center gap-2 bg-[#F97316] text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-[#EA580C] transition-colors"
+            className="inline-flex items-center gap-2 bg-[#F97316] text-white font-semibold px-5 py-2.5  text-sm hover:bg-[#EA580C] transition-colors"
           >
             <ArrowLeft size={14} /> {uk ? 'Назад до блогу' : 'Back to Blog'}
           </button>
@@ -293,8 +293,8 @@ export default function BlogPostPage() {
   return (
     <ServicePageLayout>
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400">
+      <div className="border-b-2 border-ink/10 bg-cream">
+        <div className="mx-auto max-w-[900px] px-5 py-3.5 sm:px-8 flex items-center gap-2 text-xs text-gray-400">
           <button onClick={() => navigate(lp('/'))} className="hover:text-gray-700 transition-colors">{uk ? 'Головна' : 'Home'}</button>
           <span className="text-gray-200">/</span>
           <button onClick={() => navigate(lp('/blog'))} className="hover:text-gray-700 transition-colors">{uk ? 'Блог' : 'Blog'}</button>
@@ -304,8 +304,8 @@ export default function BlogPostPage() {
       </div>
 
       {/* Article header */}
-      <div className="bg-white pt-12 pb-0">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="bg-cream pb-0 pt-12">
+        <div className="mx-auto max-w-[900px] px-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className={`text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${catColor}`}>
               {postUk!.category}
@@ -317,11 +317,11 @@ export default function BlogPostPage() {
             <span className="text-gray-400 text-xs">{postDate}</span>
           </div>
 
-          <h1 className="text-3xl md:text-[44px] font-bold text-gray-900 leading-[1.08] tracking-tight mb-5 max-w-3xl">
+          <h1 className="font-display max-w-3xl text-4xl font-bold leading-[1.02] tracking-[-.04em] text-ink md:text-[56px] mb-5">
             {postUk!.title}
           </h1>
 
-          <p className="text-gray-500 text-[17px] leading-[1.6] max-w-2xl mb-7">
+          <p className="max-w-2xl text-[18px] leading-8 text-ink/65 mb-7">
             {postUk!.excerpt}
           </p>
 
@@ -334,19 +334,19 @@ export default function BlogPostPage() {
           </div>
 
           {/* Cover image */}
-          <div className="rounded-2xl overflow-hidden mt-8 h-[280px] md:h-[400px] bg-gray-100">
+          <div className="mt-8 h-[280px] overflow-hidden border-2 border-ink bg-white md:h-[400px]">
             <img src={heroImage} alt={postUk!.title} className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
 
       {/* Body */}
-      <div className="py-14 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="bg-cream py-14 md:py-20">
+        <div className="mx-auto max-w-[900px] px-5 sm:px-8">
           <div className="grid lg:grid-cols-[1fr_220px] gap-14">
 
             {/* Article */}
-            <article className="min-w-0 max-w-[720px]">
+            <article className="min-w-0 max-w-[740px]">
               {(() => {
                 let h2Count = 0;
                 return sections.map((section, i) => {
@@ -365,7 +365,7 @@ export default function BlogPostPage() {
                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(postUk!.title)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200  text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
                   >
                     <Twitter size={12} /> X / Twitter
                   </a>
@@ -373,13 +373,13 @@ export default function BlogPostPage() {
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200  text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
                   >
                     <Linkedin size={12} /> LinkedIn
                   </a>
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200  text-xs text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
                   >
                     <Link2 size={12} /> {copied ? (uk ? 'Скопійовано!' : 'Copied!') : (uk ? 'Копіювати посилання' : 'Copy link')}
                   </button>
@@ -391,7 +391,7 @@ export default function BlogPostPage() {
                 {prevPost ? (
                   <button
                     onClick={() => navigate(lp(`/blog/${prevPost.slug}`))}
-                    className="group flex flex-col gap-1.5 border border-gray-200 rounded-2xl p-5 hover:border-[#F97316]/30 hover:bg-orange-50/30 transition-all text-left"
+                    className="group flex flex-col gap-1.5 border border-gray-200  p-5 hover:border-[#F97316]/30 hover:bg-orange-50/30 transition-all text-left"
                   >
                     <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-gray-400 tracking-widest">
                       <ArrowLeft size={10} /> {uk ? 'Попередня' : 'Previous'}
@@ -402,7 +402,7 @@ export default function BlogPostPage() {
                 {nextPost ? (
                   <button
                     onClick={() => navigate(lp(`/blog/${nextPost.slug}`))}
-                    className="group flex flex-col gap-1.5 border border-gray-200 rounded-2xl p-5 hover:border-[#F97316]/30 hover:bg-orange-50/30 transition-all text-left sm:items-end"
+                    className="group flex flex-col gap-1.5 border border-gray-200  p-5 hover:border-[#F97316]/30 hover:bg-orange-50/30 transition-all text-left sm:items-end"
                   >
                     <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-gray-400 tracking-widest">
                       {uk ? 'Наступна' : 'Next'} <ArrowRight size={10} />
@@ -439,7 +439,7 @@ export default function BlogPostPage() {
                     <div className="mt-6 pt-5 border-t border-gray-100">
                       <a
                         href={lp('/#contact')}
-                        className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-2.5 px-4 rounded-xl text-xs text-center transition-colors block"
+                        className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-2.5 px-4  text-xs text-center transition-colors block"
                       >
                         {uk ? 'Отримати безкоштовний аудит посилань' : 'Get a Free Link Audit'}
                       </a>
@@ -454,7 +454,7 @@ export default function BlogPostPage() {
 
       {/* Related posts */}
       <section className="py-14 bg-gray-50/50 border-t border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="mx-auto max-w-[900px] px-5 sm:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold text-gray-900">{uk ? 'Ще почитати' : 'More to read'}</h2>
             <button
@@ -471,7 +471,7 @@ export default function BlogPostPage() {
               <button
                 key={rp.id}
                 onClick={() => navigate(lp(`/blog/${rp.slug}`))}
-                className="group bg-white border border-gray-200/80 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 text-left"
+                className="group bg-white border border-gray-200/80  overflow-hidden hover:border-gray-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 text-left"
               >
                 <div className="h-40 overflow-hidden bg-gray-100">
                   <img

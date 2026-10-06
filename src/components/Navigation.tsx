@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  Menu, X, ChevronDown, Link2, FileText, Users, ShoppingCart,
-  ArrowRight, Layers, Lock,
+  Menu, X, ChevronDown, Link2, FileText, MessageCircle, ShoppingCart,
+  ArrowRight, FolderOpen,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -46,11 +46,10 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
   const lbRef = useRef<HTMLDivElement>(null);
 
   const lbItems = [
-    { label: t['nav.managedCampaigns'], href: lp('/#managed-campaigns'), icon: Layers, desc: t['nav.managedCampaignsDesc'] },
     { label: t['nav.svc.guestPosting'], href: lp('/services/guest-posting'), icon: FileText, desc: t['nav.svc.guestPostingDesc'] },
     { label: t['nav.svc.nicheEdits'], href: lp('/services/niche-edits'), icon: Link2, desc: t['nav.svc.nicheEditsDesc'] },
-    { label: t['nav.svc.crowdLinks'], href: lp('/services/crowd-links'), icon: Users, desc: t['nav.svc.crowdLinksDesc'] },
-    { label: t['nav.whiteLabelLink'], href: lp('/services/white-label'), icon: Lock, desc: t['nav.whiteLabelLinkDesc'] },
+    { label: t['nav.svc.crowdLinks'], href: lp('/services/crowd-links'), icon: MessageCircle, desc: t['nav.svc.crowdLinksDesc'] },
+    { label: t['nav.whiteLabelLink'], href: lp('/services/white-label'), icon: FolderOpen, desc: t['nav.whiteLabelLinkDesc'] },
   ];
 
   const navLinks = [
@@ -68,8 +67,10 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => { if (lbRef.current && !lbRef.current.contains(e.target as Node)) setLbOpen(false); };
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') { setLbOpen(false); setMobileOpen(false); } };
     document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKeyDown);
+    return () => { document.removeEventListener('mousedown', onClick); document.removeEventListener('keydown', onKeyDown); };
   }, []);
 
   const navigate = (href: string) => {
@@ -121,21 +122,19 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
                 <ChevronDown size={12} className={`transition-transform duration-200 ${lbOpen ? 'rotate-180 text-signal' : 'text-cream/40'}`} />
               </button>
               {lbOpen && (
-                <div className="absolute left-1/2 top-full z-50 mt-3 w-[340px] -translate-x-1/2 overflow-hidden"
+                <div className="absolute left-1/2 top-full z-50 mt-3 w-[340px] -translate-x-1/2 overflow-hidden border border-white/10"
                   style={{
-                    background: 'rgba(8,16,40,0.96)',
+                    background: 'rgba(8,16,40,0.995)',
                     backdropFilter: 'blur(8px)',
                     WebkitBackdropFilter: 'blur(8px)',
                     animation: 'dropIn 0.18s cubic-bezier(0.16,1,0.3,1)',
                   }}
                 >
-                  <div className="flex flex-col gap-0.5 p-2">
+                  <div className="flex flex-col gap-0.5 p-2.5">
                     {lbItems.map((s) => (
                       <button key={s.href} onClick={() => navigate(s.href)}
-                        className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors duration-150 hover:bg-white/5">
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center bg-white/5">
-                          <s.icon size={14} className="text-signal" />
-                        </div>
+                        className="group flex w-full items-center gap-3 border border-transparent px-3 py-2.5 text-left transition-colors duration-150 hover:border-white/10 hover:bg-white/5 focus-visible:border-signal">
+                        <s.icon size={21} strokeWidth={1.8} className="flex-shrink-0 text-signal" />
                         <div className="min-w-0 flex-1">
                           <span className="block text-sm font-medium leading-tight text-cream/90 group-hover:text-signal">{s.label}</span>
                           <span className="mt-0.5 block text-xs leading-tight text-cream/35">{s.desc}</span>
@@ -227,9 +226,9 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal, lbItems, navLink
   return (
     <div className="fixed inset-0 z-40 lg:hidden" style={{ top: '70px' }}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full overflow-y-auto"
+      <div className="relative w-full overflow-y-auto border-t border-white/10"
         style={{
-          background: 'rgba(8,16,40,0.96)',
+          background: 'rgba(8,16,40,0.995)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           animation: 'slideDown 0.22s cubic-bezier(0.16,1,0.3,1)',
@@ -245,10 +244,8 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal, lbItems, navLink
             <div className="mb-1 flex flex-col gap-0.5 pl-2">
               {lbItems.map((s) => (
                 <button key={s.href} onClick={() => onNavigate(s.href)}
-                  className="flex min-h-[44px] w-full items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-white/5">
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center bg-white/5">
-                    <s.icon size={13} className="text-signal" />
-                  </div>
+                  className="flex min-h-[44px] w-full items-center gap-3 border border-transparent px-3 py-3 text-left transition-colors hover:border-white/10 hover:bg-white/5 focus-visible:border-signal">
+                  <s.icon size={20} strokeWidth={1.8} className="flex-shrink-0 text-signal" />
                   <span className="text-sm font-medium text-cream/80">{s.label}</span>
                 </button>
               ))}

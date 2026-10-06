@@ -63,38 +63,33 @@ export default function HomePage() {
       </section>
 
       <section className="border-b border-ink/10 bg-white" aria-label="Verified proof">
-        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
-          <div className="grid grid-cols-1 divide-y divide-ink/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-
-            {/* Experience */}
-            <div className="flex min-h-[120px] flex-col justify-center py-7 sm:py-0 sm:pr-8 lg:pr-12">
-              <p className="font-display text-[32px] font-bold leading-none tracking-tight text-ink">8+</p>
-              <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Років досвіду в лінкбілдингу' : 'Years of link-building experience'}</p>
-            </div>
-
-            {/* Fiverr */}
+        <div className="mx-auto max-w-[1120px] px-5 sm:px-8 lg:px-16">
+          <div className="grid divide-y divide-ink/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
             <a
               href="https://www.fiverr.com/fittranslate?public_mode=true"
               target="_blank"
               rel="noopener noreferrer"
-              className="editorial-focus group flex min-h-[120px] flex-col justify-center py-7 transition-colors hover:text-signal sm:px-8 sm:py-0 lg:px-12"
+              className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pr-10"
             >
-              <p className="font-display text-[32px] font-bold leading-none tracking-tight text-ink group-hover:text-signal">4.9 · 1,100+</p>
-              <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Рейтинг і відгуки на Fiverr' : 'Rating and reviews on Fiverr'}</p>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center border-2 border-[#1DBF73] text-xl font-black text-[#1DBF73]">F</div>
+              <div>
+                <p className="font-display text-[30px] font-bold leading-none tracking-tight text-ink group-hover:text-signal">4.9 · 1,100+</p>
+                <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Рейтинг і відгуки на Fiverr' : 'Rating and reviews on Fiverr'}</p>
+              </div>
             </a>
-
-            {/* Clutch */}
             <a
-              href="https://clutch.co/profile/vladenza"
+              href="https://clutch.co/share/badges/2348413/34510?utm_source=clutch_top_company_badge&utm_medium=image_embed"
               target="_blank"
               rel="noopener noreferrer"
-              className="editorial-focus group flex min-h-[120px] flex-col justify-center py-7 transition-colors sm:pl-8 sm:py-0 lg:pl-12"
+              className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pl-10"
             >
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-[.14em] text-signal">Recognized by Clutch</p>
-              <p className="font-display text-[22px] font-bold leading-tight tracking-tight text-ink group-hover:text-signal">Top Company · Ukraine · 2026</p>
-              <p className="mt-2 text-sm font-bold text-signal">{locale === 'uk' ? 'Переглянути профіль →' : 'View profile →'}</p>
+              <img src="/assets/visuals/Top_Clutch_Ecommerce_Marketing_Agency_Ukraine_2026_(1).png" alt="Top Clutch Ecommerce Marketing Agency Ukraine 2026" width="800" height="800" className="h-24 w-24 shrink-0 object-contain sm:h-28 sm:w-28" />
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[.14em] text-signal">Clutch</p>
+                <p className="mt-1 max-w-[210px] font-display text-xl font-bold leading-tight text-ink group-hover:text-signal">Top Ecommerce Marketing Agency · Ukraine · 2026</p>
+                <p className="mt-2 text-sm font-bold text-signal">{locale === 'uk' ? 'Переглянути нагороду →' : 'View award →'}</p>
+              </div>
             </a>
-
           </div>
         </div>
       </section>

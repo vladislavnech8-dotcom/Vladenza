@@ -193,8 +193,8 @@ export default function CaseStudyDetailPage() {
     <ServicePageLayout>
 
       {/* Breadcrumb */}
-      <div className="border-b border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-2 text-xs text-gray-400 overflow-hidden">
+      <div className="border-b-2 border-ink/10 bg-cream">
+        <div className="mx-auto max-w-[1240px] px-5 py-3.5 sm:px-8 lg:px-16 flex items-center gap-2 text-xs text-gray-400 overflow-hidden">
           <a href={lp('/')} className="hover:text-gray-700 transition-colors whitespace-nowrap">{uk ? 'Головна' : 'Home'}</a>
           <span className="text-gray-300">/</span>
           <a href={lp('/case-studies')} className="hover:text-gray-700 transition-colors whitespace-nowrap">{uk ? 'Кейси' : 'Case Studies'}</a>
@@ -205,13 +205,9 @@ export default function CaseStudyDetailPage() {
 
       {/* Hero */}
       <section
-        className="relative pt-12 pb-14 overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${cUk!.color}08 0%, #ffffff 60%)` }}
+        className="relative overflow-hidden bg-cream py-14 md:py-20"
       >
-        <div className="absolute top-0 right-0 w-[480px] h-[280px] pointer-events-none opacity-[0.06]"
-          style={{ background: `radial-gradient(ellipse at top right, ${cUk!.color}, transparent 70%)` }}
-        />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <a href={lp('/case-studies')} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-6">
             <ArrowLeft size={12} /> {uk ? 'Усі кейси' : 'All cases'}
           </a>
@@ -235,8 +231,8 @@ export default function CaseStudyDetailPage() {
       </section>
 
       {/* Stats strip */}
-      <section className="border-y border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="border-y-2 border-ink/10 bg-white">
+        <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {cUk!.stats.map((s, i) => (
               <div key={s.label} className="py-7 px-4 sm:px-6 first:pl-0">
@@ -252,15 +248,15 @@ export default function CaseStudyDetailPage() {
       </section>
 
       {/* Body */}
-      <div className="py-14 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="bg-cream py-14 md:py-20">
+        <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <div className="grid lg:grid-cols-[1fr_280px] gap-14">
 
             {/* Article */}
             <article>
               {/* Summary cards */}
-              <div className="grid sm:grid-cols-3 gap-4 mb-10 pb-10 border-b border-gray-100">
-                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <div className="grid gap-4 mb-10 border-b-2 border-ink/10 pb-10 sm:grid-cols-3">
+                <div className="border-2 border-ink/10 bg-white p-5">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">{uk ? 'Виклик' : 'Challenge'}</div>
                   <p className="text-gray-700 text-sm leading-relaxed">{cUk!.challenge}</p>
                 </div>
@@ -268,7 +264,7 @@ export default function CaseStudyDetailPage() {
                   <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: cUk!.color }}>{uk ? 'Що ми зробили' : 'What We Did'}</div>
                   <p className="text-gray-700 text-sm leading-relaxed">{cUk!.solution}</p>
                 </div>
-                <div className="bg-gray-950 rounded-2xl p-5">
+                <div className="border-2 border-ink bg-navy p-5">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{uk ? 'Результати' : 'Results'}</div>
                   <p className="text-gray-300 text-sm leading-relaxed">{cUk!.result}</p>
                 </div>
@@ -287,7 +283,7 @@ export default function CaseStudyDetailPage() {
                   <h2 className="text-xl font-bold text-gray-900 mb-4">{uk ? 'Скріншоти результатів' : 'Results Screenshots'}</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {c.screenshots.map((src, i) => (
-                      <div key={i} className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
+                      <div key={i} className="border-2 border-ink bg-white">
                         <img src={src} alt={`${uk ? 'Скріншот' : 'Screenshot'} ${i + 1}`} className="w-full h-auto object-cover" loading="lazy" />
                       </div>
                     ))}
@@ -323,9 +319,9 @@ export default function CaseStudyDetailPage() {
               )}
 
               {/* Tags */}
-              <div className="mt-12 pt-8 border-t border-gray-100 flex flex-wrap gap-2">
+              <div className="mt-12 flex flex-wrap gap-2 border-t-2 border-ink/10 pt-8">
                 {cUk!.tags.map((t) => (
-                  <span key={t} className="px-3 py-1 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-md">
+                  <span key={t} className="border border-ink/20 bg-white px-3 py-1 text-xs text-gray-500">
                     {t}
                   </span>
                 ))}
@@ -337,7 +333,7 @@ export default function CaseStudyDetailPage() {
               <div className="sticky top-[104px] flex flex-col gap-4">
 
                 {/* Metrics */}
-                <div className="border border-gray-200 rounded-2xl p-5">
+                <div className="border-2 border-ink bg-white p-5">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">{uk ? 'Ключові показники' : 'Key metrics'}</div>
                   <div className="flex flex-col gap-3.5">
                     {cUk!.stats.map((s, i) => (
@@ -372,8 +368,8 @@ export default function CaseStudyDetailPage() {
       </div>
 
       {/* More cases */}
-      <section className="py-14 border-t border-gray-100 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="border-t-2 border-ink/10 bg-white py-14 md:py-20">
+        <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold text-gray-900">{uk ? 'Більше кейсів' : 'More case studies'}</h2>
             <a href={lp('/case-studies')} className="text-sm font-semibold text-[#F97316] flex items-center gap-1.5 hover:underline">
@@ -385,7 +381,7 @@ export default function CaseStudyDetailPage() {
               <a
                 key={oc.slug}
                 href={lp(`/case-studies/${oc.slug}`)}
-                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100 hover:-translate-y-0.5 transition-all duration-200"
+                className="group editorial-focus border-2 border-ink bg-cream transition-transform hover:-translate-y-1"
               >
                 <div className="h-[3px]" style={{ backgroundColor: oc.color }} />
                 <div className="p-5">
