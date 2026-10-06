@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import PlacementCard from './PlacementCard';
 import Pagination from './Pagination';
-import { fetchPlacements, type Placement, type PlacementServiceType, getPlacementNiches } from '../data/placements';
+import { fetchPlacements, SERVICE_TYPE_LABELS, type Placement, type PlacementServiceType, getPlacementNiches } from '../data/placements';
 import { useLocale } from '../context/LocaleContext';
 
 const DR_FILTERS = ['Any', 'DR20+', 'DR30+', 'DR40+', 'DR50+', 'DR60+'] as const;
@@ -25,13 +25,14 @@ const NICHE_TRANSLATIONS: Record<string, string> = {
 
 const PAGE_SIZE = 6;
 
-export default function PlacementExplorer({ serviceType }: { serviceType?: PlacementServiceType }) {
+export default function PlacementExplorer({ serviceType, showServiceTypeFilters = false }: { serviceType?: PlacementServiceType; showServiceTypeFilters?: boolean }) {
   const { locale } = useLocale();
   const uk = locale === 'uk';
   const [placements, setPlacements] = useState<Placement[]>([]);
   const [loading, setLoading] = useState(true);
   const niches = useMemo(() => ['All', ...getPlacementNiches(placements)], [placements]);
   const [activeNiche, setActiveNiche] = useState('All');
+  const [activeServiceType, setActiveServiceType] = useState<PlacementServiceType | 'all'>('all');
   const [activeDr, setActiveDr] = useState<string>('Any');
   const [activeTraffic, setActiveTraffic] = useState(0);
   const [search, setSearch] = useState('');
@@ -63,6 +64,7 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
 
   const filtered = useMemo(() => {
     return placements.filter((p) => {
+      if (activeServiceType !== 'all' && p.service_type !== activeServiceType) return false;
       if (activeNiche !== 'All' && p.niche !== activeNiche) return false;
       if (activeDr !== 'Any') {
         const minDr = parseInt(activeDr.replace('DR', '').replace('+', ''), 10);
@@ -86,7 +88,17 @@ export default function PlacementExplorer({ serviceType }: { serviceType?: Place
   return (
     <div>
       {/* Filters — compact toolbar */}
-      <div className="flex flex-col gap-3 mb-8">
+      <div className="mb-8 flex flex-col gap-3">
+        {showServiceTypeFilters && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{uk ? 'Сервіс' : 'Service'}</span>
+            {(['all', 'guest_post', 'niche_edit', 'crowd_link'] as const).map((type) => (
+              <button key={type} type="button" onClick={() => { setActiveServiceType(type); setPage(1); }} className={`border px-3 py-1.5 text-xs font-semibold transition-all duration-150 ${activeServiceType === type ? 'border-[#F97316] bg-[#F97316] text-white' : 'border-gray-200 text-gray-500 hover:border-[#F97316]/40 hover:text-[#F97316]'}`}>
+                {type === 'all' ? t.all : (uk ? ({ guest_post: 'Гостьові публікації', niche_edit: 'Розміщення посилань', crowd_link: 'Крауд-маркетинг' }[type]) : SERVICE_TYPE_LABELS[type])}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.niche}</span>
           {niches.map((n) => (

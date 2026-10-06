@@ -1,681 +1,132 @@
 import { useState } from 'react';
-import {
-  Shield, EyeOff, TrendingUp, CheckCircle, ArrowRight,
-  Star, Clock, Zap, FileText, Lock, BarChart2, RefreshCw, Award,
-  ChevronDown, ChevronUp, ExternalLink,
-} from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import ServicePageLayout from '../components/ServicePageLayout';
-import OrderModal, { type Package } from '../components/OrderModal';
-import { useSEO } from '../hooks/useSEO';
+import LinkPlanModal from '../components/LinkPlanModal';
+import FAQ from '../components/FAQ';
+import PlacementExplorer from '../components/PlacementExplorer';
 import { useLocale } from '../context/LocaleContext';
+import { useSEO } from '../hooks/useSEO';
 
-/* ── Data ─────────────────────────────────────────────────── */
+type Localized = { en: string; uk: string };
+type Plan = { name: Localized; label: Localized; title: Localized; description: Localized; features: Localized[]; rate: Localized; note: Localized; cta: Localized; line?: Localized; popular?: boolean };
 
-const content = {
-  en: {
-    seo: {
-      title: 'White Label Link Building Service | Vladenza',
-      description: 'White label link building service for SEO agencies. Guest posts, niche edits, crowd links — branded reports, NDA protected.',
-    },
-    hero: {
-      badge: 'Service — White Label',
-      title1: 'Link Building Your Clients',
-      title2: 'Will Never Know You Outsourced',
-      desc: 'Agency-grade link fulfilment under your brand. Guest posts, niche edits, crowd links — NDA-protected, white-label reported, and guaranteed for 12 months.',
-      cta: 'Become a Partner',
-      ctaSecondary: 'Get a Free Audit',
-    },
-    whyItMatters: [
-      { stat: '80+', label: 'active agency partners trust us with their clients' },
-      { stat: '9+', label: 'years delivering white-label link campaigns' },
-      { stat: '100%', label: 'NDA protection — clients never see our name' },
-      { stat: '12mo', label: 'link replacement guarantee on every placement' },
+const text = (en: string, uk: string): Localized => ({ en, uk });
+const getText = (value: Localized, uk: boolean) => uk ? value.uk : value.en;
+
+const plans: Plan[] = [
+  {
+    name: text('PARTNER', 'PARTNER'), label: text('$1,000+ MONTHLY SPEND', '$1,000+ МІСЯЧНИХ ВИТРАТ'),
+    title: text('Need extra hands? Borrow ours.', 'Потрібні додаткові руки? Позичте наші.'),
+    description: text('For agencies that need reliable delivery without introducing another Slack channel full of new employees.', 'Для агенцій, яким потрібна надійна доставка без ще одного Slack-каналу з новими співробітниками.'),
+    features: [
+      text('ALL 3 LINK BUILDING SERVICES — Crowd Marketing, Guest Posts and Link Insertions.', 'УСІ 3 ПОСЛУГИ — крауд-маркетинг, гостьові публікації та розміщення посилань.'),
+      text('RESEARCH INCLUDED — We find the opportunities instead of waiting for a shopping list.', 'ДОСЛІДЖЕННЯ ВКЛЮЧЕНО — ми знаходимо можливості, а не чекаємо список покупок.'),
+      text('HUMAN-WRITTEN CONTENT — Actual copywriters write it. Revolutionary, we know.', 'КОНТЕНТ ВІД ЛЮДЕЙ — пишуть справжні копірайтери. Революційно, ми знаємо.'),
+      text('APPROVAL YOUR WAY — Approve sites, topics and opportunities — or leave selection to us.', 'ПОГОДЖЕННЯ НА ВАШ РОЗСУД — погоджуйте сайти, теми й можливості або довірте вибір нам.'),
+      text("WHITE-LABEL REPORTING — Your client doesn't need to know who Vlad is.", 'WHITE-LABEL ЗВІТНІСТЬ — вашому клієнту не потрібно знати, хто такий Влад.'),
+      text('LINK CARE — Coverage follows the placement type and agreed terms.', 'LINK CARE — покриття відповідає типу розміщення та погодженим умовам.'),
     ],
-    benefits: [
-      { icon: EyeOff, title: 'Completely invisible', desc: 'We operate as your in-house team. Reports arrive in your branding, all communication goes through you — your clients never see our name.' },
-      { icon: Shield, title: 'NDA signed as standard', desc: 'Every partner signs an NDA before we start. Your client list, campaign details, and our working relationship stay confidential forever.' },
-      { icon: TrendingUp, title: 'Scale without hiring', desc: "Win five new clients tomorrow — we'll fulfil them. Scale up or down in days, not months. No recruiting, no training, no overhead." },
-      { icon: BarChart2, title: 'White-label reports', desc: 'Branded PDF and Google Doc reports you send straight to clients. Placement URL, DR, traffic, anchor — everything documented for you.' },
-      { icon: Award, title: '23-point quality review', desc: 'Every domain passes our checklist: organic traffic, spam score, niche relevance, outbound link ratio, indexing health, editorial legitimacy.' },
-      { icon: RefreshCw, title: '12-month link guarantee', desc: "If any link drops within 12 months, we replace it at zero cost. No arguments, no delays — your client's results are always protected." },
-    ],
-    benefitsSection: {
-      badge: 'Why Agencies Choose Us',
-      title: 'Everything your agency needs',
-      desc: 'From the first link to full campaign management — built to scale your agency without scaling headcount.',
-    },
-    linkTypes: [
-      { name: 'Guest Post Placements', desc: 'Original, publication-ready articles on niche-relevant sites with naturally embedded backlinks.', dr: 'DR 30–90+', time: '10–21 days' },
-      { name: 'Link Insertions', desc: 'Contextual links inserted into existing indexed content on authoritative domains — fast and powerful.', dr: 'DR 40–80+', time: '7–14 days' },
-      { name: 'Crowd Marketing', desc: 'Organic mentions across forums, Q&A platforms, and communities that build natural link diversity.', dr: 'Varied', time: '5–10 days' },
-      { name: 'Editorial Outreach', desc: 'Personalised outreach to publishers and editors for genuine placements on high-authority publications.', dr: 'DR 60–90+', time: '14–28 days' },
-    ],
-    linkTypesSection: {
-      title: 'Every link type. Every niche.',
-      desc: 'Mix and match to build a natural, diverse profile for each client — all under your brand.',
-    },
-    process: [
-      { num: '01', title: 'Free consultation', desc: "We align on quality benchmarks, anchor strategy, reporting format, and white-label framework. Zero commitment." },
-      { num: '02', title: 'NDA & onboarding', desc: "Sign the NDA, set up branded report templates, brief our team on your clients. Up and running within one week." },
-      { num: '03', title: 'We build & report', desc: "Outreach specialists and writers handle everything. Branded reports arrive on schedule — ready to forward to clients." },
-      { num: '04', title: 'Scale as you grow', desc: "Dedicated account manager maintains quality across all campaigns. Add clients whenever — we grow with you." },
-    ],
-    processSection: {
-      title: 'From first call to first links — in 1 week',
-      desc: 'No lengthy onboarding. No complicated integrations. A clean handoff and results you can show clients.',
-      cta: 'Start Partnership',
-    },
-    tiers: [
-      {
-        name: 'Agency Starter',
-        volume: '20–50 links/mo',
-        price: 'From $700/mo',
-        highlight: false,
-        features: [
-          'All link types included',
-          'DR 20–60+ placements',
-          'Branded Google Doc reports',
-          'NDA as standard',
-          'Dedicated TG / WhatsApp channel',
-          'Competitor link gap analysis',
-          'Anchor text strategy map',
-          'Monthly performance summary',
-        ],
-      },
-      {
-        name: 'Agency Growth',
-        volume: '70–100 links/mo',
-        price: 'From $1,500/mo',
-        highlight: true,
-        features: [
-          'All link types included',
-          'DR 30–80+ placements',
-          'Branded Google Doc reports',
-          'Priority turnaround',
-          'Dedicated account manager',
-          '12-month link guarantee',
-          'Full link-building strategy',
-          'Weekly progress updates',
-          'Anchor ratio monitoring',
-          'Competitor gap tracking',
-        ],
-      },
-      {
-        name: 'Agency Enterprise',
-        volume: '100+ links/mo',
-        price: 'Custom pricing',
-        highlight: false,
-        features: [
-          'Full campaign management',
-          'DR 60–90+ editorial options',
-          'Custom reporting dashboard',
-          'Multi-client portal',
-          'SLA agreement',
-          'Monthly strategy calls',
-          'Dedicated content team',
-          'Publisher network access',
-          'Priority niche coverage',
-          'Quarterly strategy review',
-        ],
-      },
-    ],
-    tiersSection: {
-      badge: 'Packages',
-      title: 'Partner pricing',
-      desc: 'Flexible volume tiers for agencies of every size. All plans include NDA, white-label reports, and a dedicated point of contact.',
-      cta: 'Get Started',
-    },
-    testimonials: [
-      { name: 'Marcus D.', role: 'Head of Growth, SaaS Platform', platform: 'Clutch', text: "Vladenza delivered exactly what was promised — DR 60+ links, natural anchors, and visible ranking improvements within 8 weeks. Our clients were impressed and we didn't have to lift a finger on fulfilment.", stars: 5 },
-      { name: 'Elena V.', role: 'SEO Manager, iGaming Portal', platform: 'Clutch', text: "We've tried 4 link building agencies before. This is the only one that actually moves the needle in competitive niches. The white-label setup is seamless — clients think we have a huge in-house team.", stars: 5 },
-      { name: 'James K.', role: 'Agency Director, UK', platform: 'Clutch', text: "We tripled our link building client base in 18 months. The quality is consistently exceptional and the branded reports are professional enough to go straight to clients without a single edit.", stars: 5 },
-      { name: 'Tom H.', role: 'Digital Agency Owner', platform: 'Fiverr', text: "I resell these services to my own clients. Quality is consistently high, reporting is clean, and links are always from domains with genuine traffic. The NDA means I never worry about client poaching.", stars: 5 },
-      { name: 'Andrei P.', role: 'CMO, Fintech Startup', platform: 'Fiverr', text: "Their 23-point quality review gives us complete confidence in every placement. Zero client complaints about link quality since switching, and our retention has improved significantly.", stars: 5 },
-    ],
-    testimonialsSection: {
-      title: 'What Agency Partners Say',
-      desc: '80+ agencies trust us to fulfil their link building — invisibly, reliably, at scale.',
-      ratingText: 'from 80+ agency partners',
-      allReviews: 'All reviews',
-    },
-    faqs: [
-      { q: 'What are White Label Link Building Services?', a: 'White label link building services allow your agency to offer high-quality backlinks we build on your behalf as your own. This enables you to provide comprehensive link-building solutions to clients without handling the work in-house — giving you a full service offering without the overhead of building an internal team.' },
-      { q: 'Can I have input into the link-building strategy?', a: 'Absolutely. As a trusted white label service provider, we collaborate closely with your agency to ensure the link-building strategy aligns with your preferences. Our approach is fully tailored to meet your specific client requirements and goals — from anchor text ratios to target DR ranges and niche focus.' },
-      { q: 'What kind of backlinks can I expect?', a: 'All backlinks we create are high-quality, do-follow links from reputable, niche-relevant sites. They are secured through manual outreach and content placement, ensuring they add genuine authority and ranking value to your clients\' websites. No PBNs, no link farms, no recycled placements.' },
-      { q: 'Are the link-building techniques white hat?', a: 'Yes, we use 100% white hat, ethical link-building methods. This guarantees the longevity and effectiveness of links while keeping your clients\' websites safe from Google penalties. Every placement passes our 23-point quality review before it goes live.' },
-      { q: 'How do White Label Link Building Services benefit SEO agencies?', a: null, list: [
-        'High-quality backlinks that boost client rankings and organic traffic',
-        'Cost efficiency — far more affordable than maintaining an in-house team',
-        'Timely delivery — meet client deadlines reliably, every time',
-        'Scalability — handle sudden spikes in demand without sacrificing quality',
-        'Expertise access — tap into experienced outreach specialists and established publisher networks',
-        'Do-follow links — maximise SEO impact with effective, lasting backlinks',
-        'Client satisfaction — retain clients by consistently delivering measurable results',
-        'Brand building — enhance your agency\'s reputation with detailed, branded reports',
-        'Long-term strategy — continuous improvement, not just one-off gains',
-        'Wide publisher network — access diverse, high-quality publishers across 40+ niches',
-      ] },
-      { q: 'How do you ensure the quality of the links?', a: 'Our outreach specialists rigorously vet all target sites based on domain authority, relevance, traffic, and editorial standards. In-house writers craft high-quality content, ensuring every backlink meets our stringent quality benchmarks. Every domain is manually reviewed — no automated tools make the final call.' },
-      { q: 'Will my clients know that I\'m outsourcing link building?', a: 'No. Our services are fully white-labelled — all deliverables, reports, and analyses are presented as your own work. An NDA ensures complete confidentiality throughout the process. We are your invisible partner.' },
-      { q: 'What happens if a link goes down or a client is unsatisfied?', a: 'We offer free link replacement if any links go down within 12 months, though this is rare. We also replace links that do not meet agreed expectations within the specified timeframe to ensure client satisfaction — no arguments, no delays.' },
-      { q: 'Is white label backlink tracking possible?', a: 'Yes. Your dedicated account manager provides weekly updates on all link-building orders. You can track every backlink we build through the white-label report, which includes live URLs, DR, traffic estimates, and anchor text used.' },
-      { q: 'How is pricing determined?', a: 'Pricing depends on factors such as the number of links per month, the authority of target sites, and niche complexity. We offer flexible volume tiers to suit different budgets, with full transparency and no hidden costs. Enterprise clients receive custom proposals.' },
-      { q: 'What is the typical turnaround time?', a: 'For guest posts and niche edits, first links typically go live within 10–21 days. Crowd links are faster — usually 5–10 days. Once onboarded (takes about one week), campaigns run on a continuous monthly cycle with consistent delivery.' },
-      { q: 'Why should I choose you as my white label link building partner?', a: '9+ years of link building experience, 80+ active agency partners, a 23-point quality review on every placement, NDA-protected partnerships, a 12-month replacement guarantee, and a dedicated account manager from day one. We don\'t just fulfil — we help your agency grow.' },
-    ],
-    faqSection: {
-      title: 'Common questions',
-      desc: 'Everything agencies ask before becoming a partner.',
-    },
+    rate: text('AGENCY RATES', 'АГЕНЦІЙНІ ТАРИФИ'), note: text('Starting from $1,000 monthly spend.', 'Від $1,000 місячних витрат.'), cta: text('Become a Partner', 'Стати партнером'),
   },
-  uk: {
-    seo: {
-      title: 'White Label лінкбілдинг послуга | Vladenza',
-      description: 'White label послуга лінкбілдингу для SEO-агенцій. Гостьові публікації, нішеві едити, крауд-посилання — брендовані звіти, захист NDA.',
-    },
-    hero: {
-      badge: 'Послуга — White Label',
-      title1: 'Лінкбілдинг, про який ваші клієнти',
-      title2: 'ніколи не дізнаються, що він аутсорсований',
-      desc: 'Агенційного рівня виконання лінкбілдингу під вашим брендом. Гостьові публікації, нішеві едити, крауд-посилання — під захистом NDA, зі white-label звітами та гарантією на 12 місяців.',
-      cta: 'Стати партнером',
-      ctaSecondary: 'Безкоштовний аудит',
-    },
-    whyItMatters: [
-      { stat: '80+', label: 'активних агенцій-партнерів довіряють нам своїх клієнтів' },
-      { stat: '9+', label: 'років постачаємо white-label лінк-кампанії' },
-      { stat: '100%', label: 'захист NDA — клієнти ніколи не бачать нашого імені' },
-      { stat: '12міс', label: 'гарантія заміни посилань на кожне розміщення' },
+  {
+    name: text('AGENCY', 'AGENCY'), label: text('$2,500+ MONTHLY SPEND', '$2,500+ МІСЯЧНИХ ВИТРАТ'),
+    title: text("More volume. Less “who's handling this?”", 'Більше обсягу. Менше «хто цим займається?»'),
+    description: text('For agencies where link building has become a recurring operation rather than the occasional order.', 'Для агенцій, де лінкбілдинг став регулярною операцією, а не випадковим замовленням.'), popular: true,
+    features: [
+      text('EVERYTHING IN PARTNER', 'УСЕ З PARTNER'),
+      text('BETTER VOLUME RATES — More consistent volume means better agency pricing.', 'КРАЩІ ТАРИФИ ЗА ОБСЯГ — стабільніший обсяг означає кращу ціну для агенції.'),
+      text('CAMPAIGN PLANNING — We help decide where each service actually makes sense.', 'ПЛАНУВАННЯ КАМПАНІЙ — допомагаємо визначити, де доречен кожен сервіс.'),
+      text('COMPETITOR OPPORTUNITIES — We look at what competitors forgot to do.', 'МОЖЛИВОСТІ КОНКУРЕНТІВ — дивимося, що конкуренти забули зробити.'),
+      text('ONE DELIVERY FLOW — Different services. Different projects. One place to manage the work.', 'ЄДИНИЙ ПОТІК ДОСТАВКИ — різні сервіси, різні проєкти, одне місце для роботи.'),
+      text('PRIORITY DELIVERY — Recurring campaigns do not start from zero every month.', 'ПРІОРИТЕТНА ДОСТАВКА — регулярні кампанії не стартують з нуля щомісяця.'),
+      text('MONTHLY REVIEW — What went live, what is coming and what we would change next.', 'ЩОМІСЯЧНИЙ ОГЛЯД — що вийшло, що далі та що ми змінили б наступного разу.'),
     ],
-    benefits: [
-      { icon: EyeOff, title: 'Повністю невидимі', desc: 'Ми працюємо як ваша in-house команда. Звіти приходять у вашому брендінгу, вся комунікація — через вас. Ваші клієнти ніколи не бачать нашого імені.' },
-      { icon: Shield, title: 'NDA як стандарт', desc: 'Кожен партнер підписує NDA до початку роботи. Ваш список клієнтів, деталі кампаній та наші робочі стосунки залишаються конфіденційними назавжди.' },
-      { icon: TrendingUp, title: 'Масштабуйтесь без найму', desc: 'Виграйте пʼять нових клієнтів завтра — ми виконаємо. Масштабуйтесь вгору чи вниз за дні, не місяці. Без рекрутингу, без тренування, без накладних.' },
-      { icon: BarChart2, title: 'White-label звіти', desc: 'Брендовані PDF та Google Doc звіти, які ви одразу надсилаєте клієнтам. URL розміщення, DR, трафік, анкор — усе задокументовано для вас.' },
-      { icon: Award, title: '23-точкова перевірка якості', desc: 'Кожен домен проходить наш чекліст: органічний трафік, спам-скор, релевантність ніші, відношення вихідних посилань, стан індексації, редакційна легітимність.' },
-      { icon: RefreshCw, title: '12-місячна гарантія посилань', desc: 'Якщо будь-яке посилання зникне протягом 12 місяців, ми замінимо його безкоштовно. Без суперечок, без затримок — результати ваших клієнтів завжди захищені.' },
-    ],
-    benefitsSection: {
-      badge: 'Чому агенції обирають нас',
-      title: 'Усе, що потрібно вашій агенції',
-      desc: 'Від першого посилання до повного управління кампаніями — створено для масштабування агенції без масштабування штату.',
-    },
-    linkTypes: [
-      { name: 'Гостьові публікації', desc: 'Оригінальні, готові до публікації статті на нішевих сайтах з органчно вбудованими беклінками.', dr: 'DR 30–90+', time: '10–21 днів' },
-      { name: 'Нішеві едити', desc: 'Контекстні посилання, вставлені в існуючий індексований контент на авторитетних доменах — швидко та потужно.', dr: 'DR 40–80+', time: '7–14 днів' },
-      { name: 'Крауд-посилання', desc: 'Органічні згадки на форумах, Q&A-платформах та спільнотах, що будують натуральну різноманітність посилань.', dr: 'Варіативно', time: '5–10 днів' },
-      { name: 'Редакційний аутріч', desc: 'Персоналізований аутріч до паблішерів та редакторів за справжні розміщення у високоповажних виданнях.', dr: 'DR 60–90+', time: '14–28 днів' },
-    ],
-    linkTypesSection: {
-      title: 'Кожен тип посилань. Кожна ніша.',
-      desc: 'Поєднуйте для побудови натурального, різноманітного профілю для кожного клієнта — під вашим брендом.',
-    },
-    process: [
-      { num: '01', title: 'Безкоштовна консультація', desc: "Ми узгоджуємо стандарти якості, анкор-стратегію, формат звітів та white-label рамку. Без зобов'язань." },
-      { num: '02', title: 'NDA та онбординг', desc: "Підпишіть NDA, налаштуйте брендовані шаблони звітів, проінструктуйте нашу команду про клієнтів. Запуск за тиждень." },
-      { num: '03', title: 'Ми будуємо та звітуємо', desc: "Аутріч-спеціалісти та автори роблять усе. Брендовані звіти надходять за графіком — готові переслати клієнтам." },
-      { num: '04', title: 'Масштабуйтесь разом', desc: "Персональний акаунт-менеджер підтримує якість на всіх кампаніях. Додавайте клієнтів будь-коли — ми ростемо разом." },
-    ],
-    processSection: {
-      title: 'Від першого дзвінка до перших посилань — за 1 тиждень',
-      desc: 'Без тривалого онбордингу. Без складних інтеграцій. Чиста передача та результати, які можна показати клієнтам.',
-      cta: 'Почати партнерство',
-    },
-    tiers: [
-      {
-        name: 'Agency Starter',
-        volume: '20–50 посилань/міс',
-        price: 'Від $700/міс',
-        highlight: false,
-        features: [
-          'Усі типи посилань включені',
-          'Розміщення DR 20–60+',
-          'Брендовані Google Doc звіти',
-          'NDA як стандарт',
-          'Виділений TG / WhatsApp канал',
-          'Аналіз розриву посилань конкурентів',
-          'Мапа анкор-стратегії',
-          'Щомісячний підсумок результатів',
-        ],
-      },
-      {
-        name: 'Agency Growth',
-        volume: '70–100 посилань/міс',
-        price: 'Від $1,500/міс',
-        highlight: true,
-        features: [
-          'Усі типи посилань включені',
-          'Розміщення DR 30–80+',
-          'Брендовані Google Doc звіти',
-          'Пріоритетний таймлайн',
-          'Виділений акаунт-менеджер',
-          '12-місячна гарантія посилань',
-          'Повна лінкбілдинг-стратегія',
-          'Щотижневі оновлення прогресу',
-          'Моніторинг анкор-співвідношення',
-          'Відстеження розриву конкурентів',
-        ],
-      },
-      {
-        name: 'Agency Enterprise',
-        volume: '100+ посилань/міс',
-        price: 'Кастомні ціни',
-        highlight: false,
-        features: [
-          'Повне управління кампаніями',
-          'Редакційні опції DR 60–90+',
-          'Кастомний дашборд звітності',
-          'Мульти-клієнт портал',
-          'SLA-угода',
-          'Щомісячні стратегічні дзвінки',
-          'Виділена контент-команда',
-          'Доступ до мережі паблішерів',
-          'Пріоритетне нішеве покриття',
-          'Щоквартальний огляд стратегії',
-        ],
-      },
-    ],
-    tiersSection: {
-      badge: 'Пакети',
-      title: 'Партнерські ціни',
-      desc: 'Гнучкі обʼємні рівні для агенцій будь-якого розміру. Усі плани включають NDA, white-label звіти та виділену контактну особу.',
-      cta: 'Почати',
-    },
-    testimonials: [
-      { name: 'Marcus D.', role: 'Head of Growth, SaaS-платформа', platform: 'Clutch', text: "Vladenza доставив саме те, що обіцяли — посилання DR 60+, натуральні анкори та видимі покращення ранжування за 8 тижнів. Клієнти вражені, а нам не довелося підняти пальця.", stars: 5 },
-      { name: 'Elena V.', role: 'SEO Manager, iGaming-портал', platform: 'Clutch', text: "Ми пробували 4 лінкбілдинг-агенції раніше. Ця — єдина, що реально рухає голку в конкурентних нішах. White-label налаштування безшовне — клієнти думають, що в нас велика in-house команда.", stars: 5 },
-      { name: 'James K.', role: 'Директор агенції, UK', platform: 'Clutch', text: "Ми потроїли базу лінкбілдинг-клієнтів за 18 місяців. Якість стабільно виняткова, а брендовані звіти достатньо професійні, щоб одразу йти клієнтам без жодного редагування.", stars: 5 },
-      { name: 'Tom H.', role: 'Власник digital-агенції', platform: 'Fiverr', text: "Я перепродаю ці послуги своїм клієнтам. Якість стабільно висока, звіти чисті, посилання завжди з доменів зі справжнім трафіком. NDA означає, що я не хвилююсь про перехоплення клієнтів.", stars: 5 },
-      { name: 'Andrei P.', role: 'CMO, Fintech-стартап', platform: 'Fiverr', text: "Їхня 23-точкова перевірка якості дає нам повну впевненість у кожному розміщенні. Жодних скарг клієнтів на якість посилань після переходу, а утримання клієнтів значно зросло.", stars: 5 },
-    ],
-    testimonialsSection: {
-      title: 'Що кажуть агенції-партнери',
-      desc: '80+ агенцій довіряють нам виконувати свій лінкбілдинг — невидимо, надійно, масштабно.',
-      ratingText: 'від 80+ агенцій-партнерів',
-      allReviews: 'Усі відгуки',
-    },
-    faqs: [
-      { q: 'Що таке White Label лінкбілдинг послуги?', a: 'White label лінкбілдинг послуги дозволяють вашій агенції пропонувати якісні беклінки, які ми будуємо від вашого імені як ваші власні. Це дає вам можливість надати клієнтам комплексні рішення лінкбілдингу без виконання роботи in-house — повний сервіс без накладних на побудову внутрішньої команди.' },
-      { q: 'Чи можу я впливати на стратегію лінкбілдингу?', a: 'Абсолютно. Як довірений white-label провайдер, ми тісно співпрацюємо з вашою агенцією, щоб стратегія відповідала вашим вподобанням. Наш підхід повністю адаптований під конкретні вимоги та цілі клієнтів — від співвідношення анкорів до цільових DR-діапазонів та нішевого фокусу.' },
-      { q: 'Які беклінки я можу очікувати?', a: 'Усі беклінки, які ми створюємо, — якісні do-follow посилання з репутабельних, нішево-релевантних сайтів. Вони здобуті через ручний аутріч та розміщення контенту, що забезпечує їм справжню авторитетність та цінність для ранжування сайтів ваших клієнтів. Без PBN, без лінк-ферм, без перепроданих розміщень.' },
-      { q: 'Чи є техніки лінкбілдингу white hat?', a: 'Так, ми використовуємо 100% white hat, етичні методи лінкбілдингу. Це гарантує довговічність та ефективність посилань, зберігаючи сайти клієнтів безпечними від штрафів Google. Кожне розміщення проходить нашу 23-точкову перевірку якості перед публікацією.' },
-      { q: 'Як White Label лінкбілдинг послуги допомагають SEO-агенціям?', a: null, list: [
-        'Якісні беклінки, що підвищують ранжування та органічний трафік клієнтів',
-        'Економія коштів — значно дешевше, ніж утримання in-house команди',
-        'Своєчасна доставка — надійно виконуйте дедлайни клієнтів щоразу',
-        'Масштабованість — обробляйте раптові сплески попиту без втрати якості',
-        'Доступ до експертизи — досвідчені аутріч-спеціалісти та мережі паблішерів',
-        'Do-follow посилання — максимізуйте SEO-вплив з ефективними, довговічними беклінками',
-        'Задоволеність клієнтів — утримуйте клієнтів, стабільно доставляючи вимірювані результати',
-        'Побудова бренду — підсилюйте репутацію агенції детальними брендованими звітами',
-        'Довгострокова стратегія — безперервне покращення, а не разові здобутки',
-        'Широка мережа паблішерів — доступ до різноманітних якісних паблішерів у 40+ нішах',
-      ] },
-      { q: 'Як ви забезпечуєте якість посилань?', a: 'Наші аутріч-спеціалісти ретельно відсіюють усі цільові сайти за авторитетністю домену, релевантністю, трафіком та редакційними стандартами. In-house автори створюють якісний контент, гарантуючи, що кожен беклінк відповідає нашим суворим стандартам якості. Кожен домен перевіряється вручну — жоден автоматизований інструмент не приймає фінальне рішення.' },
-      { q: 'Чи знатимуть мої клієнти, що я аутсорсю лінкбілдинг?', a: 'Ні. Наші послуги повністю white-label — усі результати, звіти та аналізи подаються як ваша власна робота. NDA забезпечує повну конфіденційність протягом усього процесу. Ми — ваш невидимий партнер.' },
-      { q: 'Що стається, якщо посилання зникне або клієнт буде незадоволений?', a: 'Ми пропонуємо безкоштовну заміну посилань, якщо будь-яке зникне протягом 12 місяців, хоча це рідкість. Ми також замінюємо посилання, що не відповідають погодженим очікуванням у визначений термін, для забезпечення задоволеності клієнта — без суперечок, без затримок.' },
-      { q: 'Чи можливий white-label трекінг беклінків?', a: 'Так. Ваш виділений акаунт-менеджер надає щотижневі оновлення по всіх замовленнях на лінкбілдинг. Ви можете відстежувати кожен беклінк через white-label звіт, який включає живі URL, DR, оцінки трафіку та використаний анкор-текст.' },
-      { q: 'Як визначається ціна?', a: 'Ціна залежить від таких факторів, як кількість посилань на місяць, авторитетність цільових сайтів та складність ніші. Ми пропонуємо гнучкі обʼємні рівні під різні бюджети, з повною прозорістю та без прихованих витрат. Enterprise-клієнти отримують кастомні пропозиції.' },
-      { q: 'Який типовий час виконання?', a: 'Для гостьових публікацій та нішевих едитів перші посилання зазвичай зʼявляються за 10–21 днів. Крауд-посилання швидші — зазвичай 5–10 днів. Після онбордингу (близько тижня) кампанії працюють у безперервному щомісячному циклі зі стабільною доставкою.' },
-      { q: 'Чому варто обрати вас як white-label лінкбілдинг партнера?', a: '9+ років досвіду лінкбілдингу, 80+ активних агенцій-партнерів, 23-точкова перевірка якості на кожне розміщення, партнерства під захистом NDA, 12-місячна гарантія заміни та виділений акаунт-менеджер з першого дня. Ми не просто виконуємо — ми допомагаємо вашій агенції рости.' },
-    ],
-    faqSection: {
-      title: 'Поширені питання',
-      desc: 'Усе, що агенції запитують перед тим, як стати партнером.',
-    },
+    line: text('Your sales team can keep saying yes. We’ll figure out the links.', 'Ваша команда продажів може й далі казати «так». Ми розберемося з посиланнями.'),
+    rate: text('BETTER AGENCY RATES', 'КРАЩІ АГЕНЦІЙНІ ТАРИФИ'), note: text('Starting from $2,500 monthly spend.', 'Від $2,500 місячних витрат.'), cta: text('Make Delivery Easier', 'Спростити доставку'),
   },
-} as const;
+  {
+    name: text('SCALE', 'SCALE'), label: text('$5,000+ MONTHLY SPEND', '$5,000+ МІСЯЧНИХ ВИТРАТ'),
+    title: text('Basically your link building department. Minus the department.', 'Фактично ваш відділ лінкбілдингу. Без самого відділу.'),
+    description: text('For agencies that want delivery infrastructure without building another internal operation.', 'Для агенцій, яким потрібна інфраструктура доставки без побудови ще однієї внутрішньої операції.'),
+    features: [
+      text('EVERYTHING IN AGENCY', 'УСЕ З AGENCY'),
+      text('BEST VOLUME RATES — Our strongest pricing level for ongoing volume.', 'НАЙКРАЩІ ТАРИФИ ЗА ОБСЯГ — найсильніший рівень ціни для постійного обсягу.'),
+      text('RESERVED CAPACITY — We plan team capacity around expected monthly delivery.', 'ЗАРЕЗЕРВОВАНА ЄМНІСТЬ — плануємо команду під очікувану щомісячну доставку.'),
+      text('DEDICATED COORDINATION — Briefs, approvals, changes and reports have an owner.', 'ВИДІЛЕНА КООРДИНАЦІЯ — брифи, погодження, зміни та звіти мають відповідального.'),
+      text('CUSTOM WORKFLOW — We adapt delivery and reporting around how your agency works.', 'КАСТОМНИЙ WORKFLOW — адаптуємо доставку й звітність під роботу вашої агенції.'),
+      text('BIGGER-PICTURE PLANNING — We look across the work instead of treating every placement separately.', 'ПЛАНУВАННЯ ШИРШОЇ КАРТИНИ — дивимося на весь потік, а не на окремі розміщення.'),
+      text('PRIORITY CAPACITY — When volume grows, you do not need to start recruiting on Monday.', 'ПРІОРИТЕТНА ЄМНІСТЬ — коли обсяг зростає, вам не потрібно починати найм у понеділок.'),
+    ],
+    line: text("Looks suspiciously like an in-house team. Except you don't pay for our coffee.", 'Схоже на in-house команду. Тільки за нашу каву не платите ви.'),
+    rate: text('BEST AGENCY RATES', 'НАЙКРАЩІ АГЕНЦІЙНІ ТАРИФИ'), note: text('Starting from $5,000 monthly spend.', 'Від $5,000 місячних витрат.'), cta: text('Build My Delivery Team', 'Побудувати мою delivery-команду'),
+  },
+];
 
-const faviconMap: Record<string, string> = {
-  Clutch: 'clutch.co',
-  Fiverr: 'fiverr.com',
-};
+const whyItems: Array<{ number: string; title: Localized; body: Localized }> = [
+  { number: '01', title: text('MORE WORK CAME IN.', 'ПРИЙШЛО БІЛЬШЕ РОБОТИ.'), body: text('Nice problem to have. Less nice when nobody has time to deliver it.', 'Хороша проблема. Не така хороша, коли нікому це доставляти.') },
+  { number: '02', title: text('HIRING TAKES TIME.', 'НАЙМ ЗАЙМАЄ ЧАС.'), body: text('Recruiting, training, managing, replacing. Or send us the brief.', 'Рекрутинг, навчання, менеджмент, заміни. Або надішліть нам бриф.') },
+  { number: '03', title: text('EVERY CAMPAIGN WANTS SOMETHING DIFFERENT.', 'КОЖНА КАМПАНІЯ ХОЧЕ ЧОГОСЬ ІНШОГО.'), body: text('Guest Posts here. Insertions there. Crowd somewhere else. That is normal.', 'Гостьові пости тут. Інсерти там. Crowd десь іще. Це нормально.') },
+  { number: '04', title: text('YOUR CLIENT BOUGHT FROM YOU.', 'ВАШ КЛІЄНТ КУПИВ У ВАС.'), body: text('And that is exactly who they should keep talking to.', 'І саме з вами вони мають продовжувати говорити.') },
+];
 
-function PlatformIcon({ favicon, alt }: { favicon: string; alt: string }) {
-  return (
-    <img
-      src={`https://www.google.com/s2/favicons?domain=${favicon}&sz=64`}
-      alt={alt}
-      width={14}
-      height={14}
-      style={{ borderRadius: 3, display: 'inline-block' }}
-    />
-  );
-}
+const deliverySteps: Array<{ number: string; title: Localized; body: Localized }> = [
+  { number: '01', title: text('FIND IT', 'ЗНАЙТИ'), body: text('Relevant conversations, publications and existing content. We research where the brand actually belongs.', 'Релевантні розмови, видання та готовий контент. Досліджуємо, де бренд справді доречний.') },
+  { number: '02', title: text('BUILD IT', 'ЗБУДУВАТИ'), body: text('Outreach, negotiation, content and placement. The glamorous part nobody puts on LinkedIn.', 'Аутріч, переговори, контент і розміщення. Та сама glamorous частина, про яку не пишуть у LinkedIn.') },
+  { number: '03', title: text('CHECK IT', 'ПЕРЕВІРИТИ'), body: text('Context, target page, anchor and placement reviewed before delivery. Because “it’s live” is a pretty low standard.', 'Контекст, цільова сторінка, анкор і розміщення перевірені до доставки. Бо «воно live» — досить низький стандарт.') },
+  { number: '04', title: text('HAND IT BACK', 'ПЕРЕДАТИ НАЗАД'), body: text('Clean reporting ready for your team. The work gets delivered. Your brand stays in front.', 'Чиста звітність, готова для вашої команди. Робота доставлена. Ваш бренд залишається попереду.') },
+];
 
-/* ── Sub-components ───────────────────────────────────────── */
-
-function FaqItem({ q, a, list }: { q: string; a: string | null; list?: string[] }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border border-gray-100 rounded-xl overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
-      >
-        <span>{q}</span>
-        {open
-          ? <ChevronUp size={15} className="text-gray-400 shrink-0 ml-4" />
-          : <ChevronDown size={15} className="text-gray-400 shrink-0 ml-4" />}
-      </button>
-      {open && (
-        <div className="px-6 pb-5 text-sm text-gray-500 leading-relaxed border-t border-gray-50">
-          {a && <div className="pt-4">{a}</div>}
-          {list && (
-            <ul className="pt-4 flex flex-col gap-2">
-              {list.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <CheckCircle size={13} className="text-[#F97316] shrink-0 mt-0.5" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Page ─────────────────────────────────────────────────── */
+const faqs = [
+  { q: 'Will my clients know Vladenza is involved?', a: 'Not unless you want them to. You own the client relationship. We stay on the delivery side.' },
+  { q: 'Can I use my own branding?', a: 'Yes. Client-facing reporting can stay under your agency’s brand. There is no reason your client needs a Vladenza introduction.' },
+  { q: 'What can I spend my monthly budget on?', a: 'Any mix of Crowd Marketing, Guest Posts and Link Insertions. Use everything on one campaign or distribute it across different projects.' },
+  { q: 'Why are the plans based on monthly spend?', a: 'Because 20 Crowd placements and 20 Guest Posts are not the same product or cost. Monthly spend gives you the freedom to build the mix your campaigns actually need.' },
+  { q: 'Can I approve placements before they go live?', a: "Yes. We can send opportunities for approval first, or you can leave selection to us. Set the workflow once and we'll follow it." },
+  { q: 'Is content included?', a: 'Where content is required, we handle it. Guest Post articles are written by human copywriters — not delivered as AI-generated articles.' },
+  { q: 'Do I get better rates with more volume?', a: 'Yes. Higher partnership levels are built around recurring volume, which allows us to offer better agency rates and reserve more delivery capacity.' },
+  { q: 'What happens if a placement disappears?', a: 'Eligible placements are covered by Link Care according to the placement type and agreed coverage period.' },
+  { q: 'Can you work directly with my client?', a: 'Only if you want us to. White Label is designed to keep your agency in front, but we can adapt the communication model when agreed beforehand.' },
+];
 
 export default function WhiteLabelPage() {
   const { locale, localizePath: lp } = useLocale();
-  const c = content[locale];
-  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
-
-  const WL_PKG: Package = {
-    name: locale === 'uk' ? 'White Label партнерство' : 'White Label Partnership',
-    price: locale === 'uk' ? 'Індивідуальна ціна' : 'Custom',
-    links: locale === 'uk' ? 'Виконання для агенції' : 'Agency fulfilment',
-    service: 'White Label Link Building',
-  };
+  const uk = locale === 'uk';
+  const [planOpen, setPlanOpen] = useState(false);
 
   useSEO({
-    title: c.seo.title,
-    description: c.seo.description,
-    canonical: `https://vladenza.com${lp('/services/white-label')}`, 
+    title: uk ? 'White Label лінкбілдинг для агенцій | Vladenza' : 'White Label Link Building for Agencies | Vladenza',
+    description: uk ? 'Ви зберігаєте клієнтів і бренд. Vladenza бере на себе доставку крауд-маркетингу, гостьових публікацій та розміщень посилань.' : 'Keep your clients and your brand. Vladenza handles the delivery of Crowd Marketing, Guest Posts and Link Insertions behind the scenes.',
+    canonical: `https://vladenza.com${lp('/services/white-label')}`,
   });
 
   return (
-    <ServicePageLayout defaultService="White Label Link Building">
-      <OrderModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
-
-      {/* ── Hero — dark like AI/LLM ───────────────────────── */}
-      <section className="relative overflow-hidden py-20 lg:py-28 bg-gray-950">
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <radialGradient id="wlGlow1" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#F97316" stopOpacity="0.18"/>
-              <stop offset="100%" stopColor="#F97316" stopOpacity="0"/>
-            </radialGradient>
-            <radialGradient id="wlGlow2" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#F97316" stopOpacity="0.08"/>
-              <stop offset="100%" stopColor="#F97316" stopOpacity="0"/>
-            </radialGradient>
-          </defs>
-          <ellipse cx="1300" cy="200" rx="500" ry="400" fill="url(#wlGlow1)"/>
-          <ellipse cx="150" cy="450" rx="380" ry="300" fill="url(#wlGlow2)"/>
-          <circle cx="1200" cy="150" r="320" fill="none" stroke="#F97316" strokeWidth="1" opacity="0.15"/>
-          <circle cx="1200" cy="150" r="220" fill="none" stroke="#F97316" strokeWidth="1.5" opacity="0.18"/>
-          <circle cx="1200" cy="150" r="120" fill="none" stroke="#F97316" strokeWidth="2" opacity="0.22"/>
-          {Array.from({ length: 8 }).map((_, row) =>
-            Array.from({ length: 8 }).map((_, col) => (
-              <circle key={`wl-${row}-${col}`} cx={col * 50 + 30} cy={row * 50 + 30} r="1.5" fill="#F97316" opacity={0.07} />
-            ))
-          )}
-          <line x1="0" y1="600" x2="500" y2="0" stroke="#F97316" strokeWidth="1" opacity="0.07"/>
-          <line x1="80" y1="600" x2="580" y2="0" stroke="#F97316" strokeWidth="0.8" opacity="0.05"/>
-        </svg>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#F97316]/30 bg-[#F97316]/10 text-[#F97316] text-xs font-semibold mb-6 tracking-wide uppercase">
-              <Lock size={11} />
-              {c.hero.badge}
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-[54px] font-bold text-white leading-[1.08] tracking-tight mb-6">
-              {c.hero.title1}<br />
-              <span className="text-[#F97316]">{c.hero.title2}</span>
-            </h1>
-
-            <p className="text-gray-400 text-lg leading-relaxed mb-8 max-w-xl">
-              {c.hero.desc}
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedPkg(WL_PKG)}
-                className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
-              >
-                {c.hero.cta} <ArrowRight size={14} />
-              </button>
-              <button
-                onClick={() => setSelectedPkg(WL_PKG)}
-                className="border border-white/20 hover:border-white/30 text-gray-300 hover:text-white px-5 py-3 rounded-lg text-sm transition-all duration-200 hover:bg-white/5 flex items-center gap-2"
-              >
-                <Zap size={13} className="text-[#F97316]" /> {c.hero.ctaSecondary}
-              </button>
+    <ServicePageLayout defaultService="White Label Link Building" flushTop>
+      <main className="bg-cream text-ink">
+        <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+          <img src="/assets/visuals/Whitelabel_linkbuilding.png" alt="" className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-65 saturate-[.8] brightness-[.52] sm:object-center" />
+          <div className="absolute inset-0 bg-[#07102B]/72" />
+          <div className="paper-grain absolute inset-0 opacity-20" />
+          <div className="relative z-10 mx-auto w-full max-w-[1440px] px-5 py-16 sm:px-8 sm:py-20 lg:px-16 lg:py-24">
+            <div className="max-w-3xl">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-signal">WHITE LABEL LINK BUILDING</p>
+              <h1 className="max-w-3xl font-display text-[clamp(2.75rem,6vw,6rem)] font-bold leading-[.94] tracking-[-.05em] text-cream">{uk ? <>Ваші клієнти. Ваш бренд.<br /><span className="text-signal">Наша команда лінкбілдингу.</span></> : <>Your clients. Your brand.<br /><span className="text-signal">Our link building team.</span></>}</h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-cream/85">{uk ? 'Ви продаєте лінкбілдинг. Ми беремо на себе складну частину — дослідження, аутріч, контент, розміщення та звітність.' : 'You sell the link building. We handle the messy part behind it — research, outreach, content, placements and reporting.'}</p>
+              <div className="mt-8 flex w-full max-w-[420px] flex-col gap-3 sm:flex-row sm:max-w-none"><button type="button" onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })} className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-signal px-7 text-base font-bold text-white hover:bg-[#EA580C]">{uk ? 'Переглянути плани агенції' : 'See Agency Plans'} <ArrowRight size={18} /></button><a href="#placements" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-[#FFFDF8] px-7 text-base font-bold text-navy hover:bg-white">{uk ? 'Переглянути роботи' : 'See Our Work'} <ArrowRight size={18} /></a></div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Stats strip ──────────────────────────────────── */}
-      <section className="py-16 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {c.whyItMatters.map((item) => (
-              <div key={item.stat} className="text-center">
-                <div className="text-3xl lg:text-4xl font-black text-[#F97316] mb-2">{item.stat}</div>
-                <p className="text-gray-500 text-xs leading-relaxed">{item.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <section id="plans" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><div className="mb-9 max-w-3xl"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">01 / {uk ? 'ПЛАНИ АГЕНЦІЇ' : 'AGENCY PLANS'}</p><h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[.94] tracking-[-.04em]">{uk ? <>Чим більше ви нам передаєте,<br /><span className="text-signal">тим більше знімаємо з вас.</span></> : <>The more you send us,<br /><span className="text-signal">the more we take off your plate.</span></>}</h2><p className="mt-4 max-w-2xl text-[17px] leading-7 text-ink/65">{uk ? 'Змішуйте сервіси, проєкти та кампанії як потрібно. Місячні витрати визначають рівень партнерства.' : 'Mix services, projects and campaigns however you need. Your monthly spend determines the partnership level.'}</p></div><div className="grid items-stretch gap-5 lg:grid-cols-3">{plans.map((plan) => <article key={plan.name.en} className={`relative flex h-full flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1 sm:p-6 ${plan.popular ? 'shadow-[6px_6px_0_#FF5A1F]' : ''}`}>{plan.popular && <span className="absolute right-5 top-0 -translate-y-1/2 bg-signal px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">{uk ? 'Найпопулярніший' : 'Most popular'}</span>}<p className="text-xs font-bold uppercase tracking-[.16em] text-signal">{getText(plan.name, uk)}</p><p className="mt-2 text-sm font-bold text-ink/55">{getText(plan.label, uk)}</p><h3 className="mt-6 max-w-sm font-display text-[26px] font-bold leading-[1.03]">{getText(plan.title, uk)}</h3><p className="mt-3 text-[15px] leading-6 text-ink/65">{getText(plan.description, uk)}</p><ul className="mt-6 flex flex-col gap-3 border-t-2 border-ink/10 pt-5">{plan.features.map((feature) => <li key={feature.en} className="flex gap-3 text-[14px] leading-6 text-ink/75"><Check size={16} className="mt-1 shrink-0 text-signal" />{getText(feature, uk)}</li>)}</ul>{plan.line && <p className="mt-6 border-y-2 border-ink/10 py-4 font-display text-lg font-bold leading-tight text-ink">{getText(plan.line, uk)}</p>}<div className="mt-auto pt-7"><div className="border-t-2 border-ink/10 pt-5"><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">{getText(plan.rate, uk)}</p><p className="mt-1 text-xs text-ink/50">{getText(plan.note, uk)}</p></div><button type="button" onClick={() => setPlanOpen(true)} className={`editorial-focus mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 text-sm font-bold ${plan.popular ? 'bg-signal text-white hover:bg-[#EA580C]' : 'bg-navy text-white hover:bg-[#101F52]'}`}>{getText(plan.cta, uk)} <ArrowRight size={16} /></button></div></article>)}</div><div className="mt-10 border-y-2 border-ink py-6"><p className="text-xs font-bold uppercase tracking-[.18em] text-signal">{uk ? 'ВИТРАЧАЙТЕ ТАМ, ДЕ Є СЕНС.' : 'SPEND IT WHERE IT MAKES SENSE.'}</p><p className="mt-2 font-display text-2xl font-bold">$2,500 {uk ? 'не означає фіксовану кількість посилань.' : "doesn't mean a fixed number of links."}</p><p className="mt-3 max-w-3xl text-[16px] leading-7 text-ink/65">{uk ? 'Вкладіть усе в одну кампанію. Розділіть між десятьма. Змішуйте Crowd, Guest Posts і Link Insertions. Ми побудуємо доставку навколо роботи, а не змушуватимемо роботу влізати в пакет.' : "Put it into one campaign. Split it across ten. Mix Crowd, Guest Posts and Link Insertions. We'll build the delivery around the work — not force the work into a package."}</p><p className="mt-3 text-xs text-ink/50">{uk ? 'Вартість паблішерів і вимоги до розміщень можуть відрізнятися. Ви дізнаєтеся ціну до публікації.' : "Publisher costs and placement requirements can vary. You'll know the pricing before anything goes live."}</p></div></div></section>
 
-      {/* ── Benefits ─────────────────────────────────────── */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
-              {c.benefitsSection.badge}
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{c.benefitsSection.title}</h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">
-              {c.benefitsSection.desc}
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {c.benefits.map((b) => (
-              <div key={b.title} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-[#F97316]/30 hover:shadow-sm transition-all duration-300 group">
-                <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mb-4 group-hover:bg-orange-100 transition-colors">
-                  <b.icon size={18} className="text-[#F97316]" />
-                </div>
-                <h3 className="text-gray-900 font-semibold text-sm mb-2">{b.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{b.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <section className="bg-white py-14 md:py-20"><div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16"><div className="max-w-3xl"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">02 / {uk ? 'ЧОМУ WHITE LABEL' : 'WHY WHITE LABEL'}</p><h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[.94] tracking-[-.04em]">{uk ? <>Ви виграли клієнта.<br />Вітаємо.<br /><span className="text-signal">Тепер хтось має виконати роботу.</span></> : <>You won the client.<br />Congratulations.<br /><span className="text-signal">Now someone has to do the work.</span></>}</h2></div><div className="mt-10 grid border-y-2 border-ink md:grid-cols-2">{whyItems.map((item, index) => <div key={item.number} className={`py-7 md:p-8 ${index % 2 === 0 ? 'md:border-r-2 md:border-ink' : ''} ${index < 2 ? 'border-b-2 border-ink' : ''}`}><p className="font-display text-4xl text-signal">{item.number}</p><h3 className="mt-5 font-display text-xl font-bold">{getText(item.title, uk)}</h3><p className="mt-2 max-w-sm text-[16px] leading-7 text-ink/65">{getText(item.body, uk)}</p></div>)}</div><p className="mt-8 font-display text-3xl font-bold">{uk ? <>Більше доставки.<br /><span className="text-signal">Менше людей під вашим управлінням.</span></> : <>More delivery.<br /><span className="text-signal">Fewer people to manage.</span></>}</p></div></section>
 
-      {/* ── What we build ────────────────────────────────── */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{c.linkTypesSection.title}</h2>
-            <p className="text-gray-400 text-sm">{c.linkTypesSection.desc}</p>
-          </div>
-          <div className="flex flex-wrap gap-3 justify-center">
-            {c.linkTypes.map((lt) => (
-              <div key={lt.name} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-full px-5 py-2.5 hover:border-[#F97316]/30 transition-all group">
-                <FileText size={13} className="text-[#F97316]" />
-                <span className="text-sm font-medium text-gray-800">{lt.name}</span>
-                <span className="text-xs text-gray-400">{lt.dr}</span>
-                <span className="flex items-center gap-1 text-xs text-gray-400">
-                  <Clock size={10} />{lt.time}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <section className="bg-navy py-14 text-white md:py-20"><div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16"><div className="grid gap-12 md:grid-cols-[.8fr_1.2fr] md:gap-16"><div><p className="mb-5 text-xs font-bold uppercase tracking-[.18em] text-signal">03 / {uk ? 'ЗА ЛАШТУНКАМИ' : 'BEHIND THE SCENES'}</p><h2 className="font-display text-[clamp(2.75rem,5vw,5rem)] font-bold leading-[.9] text-cream">{uk ? <>Ви керуєте стосунками.<br />Ми займаємося тим, що відбувається <span className="text-signal">після «так».</span></> : <>You manage the relationship.<br />We handle what happens <span className="text-signal">after “yes.”</span></>}</h2><p className="mt-6 max-w-md text-[16px] leading-7 text-white/65">{uk ? 'Дослідження, аутріч, контент, розміщення, перевірка та звітність — без ще однієї компанії між вами та клієнтом.' : 'Research, outreach, content, placement, checking and reporting — without putting another company between you and your client.'}</p></div><div>{deliverySteps.map((step, index) => <div key={step.number} className="relative flex gap-5 border-b border-white/20 py-5 first:pt-0 last:border-0"><div className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center border border-signal bg-navy text-sm font-bold text-signal">{step.number}</div><div><h3 className="font-display text-xl text-cream sm:text-2xl">{getText(step.title, uk)}</h3><p className="mt-1 text-[15px] leading-6 text-white/60">{getText(step.body, uk)}</p></div>{index < deliverySteps.length - 1 && <div className="absolute left-[18px] top-14 h-full w-px bg-signal/40" />}</div>)}</div></div><div className="mt-12 border-t border-white/20 pt-7"><p className="text-[10px] font-bold uppercase tracking-[.18em] text-signal">{uk ? 'ВАШ БРЕНД ЗАЛИШАЄТЬСЯ ПОПЕРЕДУ' : 'YOUR BRAND STAYS IN FRONT'}</p><h3 className="mt-2 font-display text-2xl text-cream sm:text-3xl">{uk ? 'Ваш клієнт найняв вас. Ми не прийшли забирати ваш обід.' : "Your client hired you. We're not here to steal your lunch."}</h3><p className="mt-3 text-[15px] text-white/60">{uk ? 'Жодного брендингу Vladenza у клієнтських звітах. Жодних листів Vladenza вашим клієнтам. Жодних незручних дзвінків «познайомтеся з нашим постачальником».' : 'No Vladenza branding in client-facing reports. No Vladenza emails to your clients. No awkward “meet our supplier” calls.'}</p><p className="mt-4 text-xs text-white/35">{uk ? 'У нас і так достатньо зустрічей.' : 'We have enough meetings already.'}</p></div></div></section>
 
-      {/* ── Process — dark ───────────────────────────────── */}
-      <section className="py-20 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-white mb-3">{c.processSection.title}</h2>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto">{c.processSection.desc}</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {c.process.map((step) => (
-              <div key={step.num} className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-[#F97316]/30 transition-all duration-300">
-                <div className="text-[#F97316] font-black text-sm mb-3">{step.num}</div>
-                <h4 className="text-white font-semibold text-sm mb-2">{step.title}</h4>
-                <p className="text-gray-400 text-xs leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => setSelectedPkg(WL_PKG)}
-              className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-8 py-3.5 rounded-lg text-sm transition-all duration-200 hover:shadow-lg"
-            >
-              {c.processSection.cta} <ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
-      </section>
+        <section id="placements" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><div className="mb-8 max-w-3xl"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">04 / {uk ? 'ЩО В КОРОБЦІ' : "WHAT'S IN THE BOX"}</p><h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[.94] tracking-[-.04em]">{uk ? <>Одна команда.<br /><span className="text-signal">Три способи будувати присутність.</span></> : <>One team.<br /><span className="text-signal">Three ways to build presence.</span></>}</h2><p className="mt-4 max-w-2xl text-[17px] leading-7 text-ink/65">{uk ? 'Використовуйте один, змішуйте всі три, змінюйте мікс наступного місяця. Ми не прив’язані емоційно до вашої таблиці.' : "Use one, mix all three, change the mix next month. We're not emotionally attached to your spreadsheet."}</p></div><div className="grid border-y-2 border-ink md:grid-cols-3">{[{ title: text('CROWD MARKETING', 'КРАУД-МАРКЕТИНГ'), body: text('Relevant conversations and brand mentions where your clients naturally fit.', 'Релевантні розмови та згадки бренду там, де ваші клієнти природно доречні.'), href: '/services/crowd-links' }, { title: text('GUEST POSTING', 'ГОСТЬОВІ ПУБЛІКАЦІЇ'), body: text('New human-written articles published on relevant websites.', 'Нові статті від людей, опубліковані на релевантних сайтах.'), href: '/services/guest-posting' }, { title: text('LINK INSERTIONS', 'РОЗМІЩЕННЯ ПОСИЛАНЬ'), body: text("Relevant placements inside content that's already live.", 'Релевантні розміщення всередині контенту, який уже опублікований.'), href: '/services/niche-edits' }].map((service, index) => <a key={service.href} href={lp(service.href)} className={`editorial-focus group p-6 transition-colors hover:bg-white md:p-8 ${index < 2 ? 'border-b-2 border-ink md:border-b-0 md:border-r-2' : ''}`}><p className="text-xs font-bold uppercase tracking-[.16em] text-signal">{getText(service.title, uk)}</p><p className="mt-4 max-w-sm font-display text-xl font-bold leading-tight">{getText(service.body, uk)}</p><span className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-signal">{uk ? 'Переглянути сервіс' : 'View service'} <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" /></span></a>)}</div><div className="mt-14"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">{uk ? 'РЕАЛЬНІ РОЗМІЩЕННЯ' : 'EXISTING PLACEMENTS'}</p><h3 className="font-display text-3xl font-bold">{uk ? 'Докази без зайвого шуму.' : 'The receipts, without the noise.'}</h3><p className="mt-3 mb-8 max-w-xl text-[16px] leading-7 text-ink/65">{uk ? 'Перегляньте приклади з виконаних замовлень і відфільтруйте тип сервісу.' : 'Browse completed placement examples and filter by service type.'}</p><PlacementExplorer showServiceTypeFilters /></div></div></section>
 
-      {/* ── Packages ─────────────────────────────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-[#F97316] text-xs font-semibold uppercase tracking-wide mb-4">
-              {c.tiersSection.badge}
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{c.tiersSection.title}</h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">
-              {c.tiersSection.desc}
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {c.tiers.map((tier) => (
-              <div
-                key={tier.name}
-                className={`rounded-2xl p-7 border transition-all ${tier.highlight ? 'bg-[#F97316] border-[#F97316]' : 'bg-gray-950 border-white/10 hover:border-white/20'}`}
-              >
-                <div className={`text-xs font-bold uppercase tracking-widest mb-1 ${tier.highlight ? 'text-white/80' : 'text-gray-400'}`}>
-                  {tier.volume}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
-                <div className={`text-2xl font-black mb-6 mt-4 text-white`}>{tier.price}</div>
-                <div className="flex flex-col gap-2.5 mb-8">
-                  {tier.features.map((f) => (
-                    <div key={f} className="flex items-center gap-2.5">
-                      <CheckCircle size={13} className={tier.highlight ? 'text-white' : 'text-[#F97316]'} />
-                      <span className={`text-sm ${tier.highlight ? 'text-white/90' : 'text-gray-300'}`}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setSelectedPkg({ name: tier.name, price: tier.price, links: tier.volume, service: 'White Label Link Building' })}
-                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${tier.highlight ? 'bg-white text-[#F97316] hover:bg-gray-100' : 'bg-[#F97316] hover:bg-[#EA580C] text-white'}`}
-                >
-                  {c.tiersSection.cta} <ArrowRight size={13} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Testimonials ─────────────────────────────────── */}
-      <section className="py-16 lg:py-20 bg-gray-50/50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-3">
-              {c.testimonialsSection.title}
-            </h2>
-            <p className="text-gray-500 text-sm max-w-md mx-auto">
-              {c.testimonialsSection.desc}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {c.testimonials.map((t) => {
-              const favicon = faviconMap[t.platform];
-              return (
-                <div
-                  key={t.name}
-                  className="bg-white border border-gray-100 rounded-2xl p-6 flex flex-col gap-4 hover:shadow-sm hover:border-gray-200 transition-all duration-200"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: t.stars }).map((_, i) => (
-                        <Star key={i} size={12} className="fill-[#F97316] text-[#F97316]" />
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {favicon && <PlatformIcon favicon={favicon} alt={t.platform} />}
-                      <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t.platform}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-600 text-sm leading-relaxed flex-1">"{t.text}"</p>
-
-                  <div className="flex items-center gap-3 pt-2 border-t border-gray-50">
-                    <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-[#F97316] font-bold text-xs">
-                      {t.name[0]}
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-gray-900">{t.name}</div>
-                      <div className="text-[10px] text-gray-400">{t.role}</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-10 flex justify-center">
-            <div className="inline-flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-6 py-4 shadow-sm">
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} size={16} className="fill-[#F97316] text-[#F97316]" />
-                ))}
-              </div>
-              <div className="text-sm">
-                <span className="font-bold text-gray-900">4.9 / 5.0</span>
-                <span className="text-gray-400 ml-1.5">{c.testimonialsSection.ratingText}</span>
-              </div>
-              <a
-                href={lp('/reviews')}
-                className="flex items-center gap-1 text-xs text-[#F97316] font-semibold hover:underline ml-2"
-              >
-                {c.testimonialsSection.allReviews} <ExternalLink size={10} />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ──────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">{c.faqSection.title}</h2>
-            <p className="text-gray-500 text-sm">{c.faqSection.desc}</p>
-          </div>
-          <div className="flex flex-col gap-3">
-            {c.faqs.map((f) => <FaqItem key={f.q} q={f.q} a={f.a} list={'list' in f ? f.list : undefined} />)}
-          </div>
-        </div>
-      </section>
+        <section className="bg-[#D94712] py-14 text-[#FFFDF8] md:py-20"><div className="mx-auto max-w-[1000px] px-5 sm:px-8 lg:px-16"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-white/75">05 / {uk ? 'ПЕРЕД ЗАПИТАННЯМИ' : 'BEFORE YOU ASK'}</p><h2 className="font-display max-w-3xl text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[.94]">{uk ? <>Так.<br />Ми справді залишаємося за лаштунками.</> : <>Yes.<br />We really do stay behind the scenes.</>}</h2><div className="mt-8"><FAQ faqs={faqs} compact orange /></div></div></section>
+      </main>
+      <LinkPlanModal open={planOpen} onClose={() => setPlanOpen(false)} />
     </ServicePageLayout>
   );
 }
