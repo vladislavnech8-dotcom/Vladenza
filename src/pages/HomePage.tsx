@@ -44,10 +44,9 @@ export default function HomePage() {
 
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] brightness-[0.55] lg:object-[72%_68%] lg:brightness-[0.72]" />
-        <div className="paper-grain absolute inset-0 opacity-15" />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/95 via-navy/80 to-navy/45 lg:hidden" />
-        <div className="absolute inset-0 hidden lg:block" style={{ background: 'radial-gradient(ellipse 65% 60% at 38% 44%, rgba(7,16,43,0.78) 0%, rgba(7,16,43,0.58) 34%, rgba(7,16,43,0.36) 58%, rgba(7,16,43,0.14) 78%, transparent 100%)' }} />
+        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] opacity-60 saturate-[.8] brightness-[.48] lg:object-[72%_68%]" />
+        <div className="absolute inset-0 bg-[#07102B]/72" />
+        <div className="paper-grain absolute inset-0 opacity-20" />
         <div className="relative z-10 mx-auto flex min-h-0 w-full min-w-0 box-border flex-col lg:min-h-[calc(100svh-104px)] items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-16 lg:py-20">
           <div className="flex w-full min-w-0 max-w-[1500px] flex-col items-center">
             <h1 className="w-full min-w-0 font-display text-[clamp(36px,9vw,64px)] font-bold leading-[1.06] tracking-[-.035em] sm:text-[clamp(3.5rem,6vw,7.75rem)] sm:leading-[.94] sm:tracking-[-.055em]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
@@ -71,7 +70,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pr-10"
             >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center border-2 border-[#1DBF73] text-xl font-black text-[#1DBF73]">F</div>
+              <img src="https://www.fiverr.com/favicon.ico" alt="Fiverr" width="56" height="56" className="h-14 w-14 shrink-0 object-contain" />
               <div>
                 <p className="font-display text-[30px] font-bold leading-none tracking-tight text-ink group-hover:text-signal">4.9 · 1,100+</p>
                 <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Рейтинг і відгуки на Fiverr' : 'Rating and reviews on Fiverr'}</p>
