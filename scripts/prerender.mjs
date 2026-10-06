@@ -139,8 +139,8 @@ function escapeHtml(str) {
 function injectMeta(html, meta) {
   const title = escapeHtml(meta.title);
   const rawDesc = meta.description || '';
-  const description = rawDesc.length > 158
-    ? rawDesc.slice(0, 158).replace(/[\s,;.:.\u2013\u2014-]+$/, '')
+  const description = rawDesc.length > 180
+    ? rawDesc.slice(0, 180).replace(/[\s,;.:.\u2013\u2014-]+$/, '')
     : rawDesc;
   const descriptionEscaped = escapeHtml(description);
   const canonical = meta.canonical || '';

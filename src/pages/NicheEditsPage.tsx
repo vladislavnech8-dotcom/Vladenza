@@ -76,8 +76,8 @@ export default function NicheEditsPage() {
   const [briefOpen, setBriefOpen] = useState(false);
 
   useSEO({
-    title: uk ? 'Розміщення посилань у готових статтях — Vladenza' : 'Link Insertions — Vladenza',
-    description: uk ? 'Релевантні посилання у вже проіндексованих статтях із ручною перевіркою.' : 'Relevant backlinks inside already indexed articles, manually checked before placement.',
+    title: uk ? 'Купити посилання у готових статтях | Vladenza' : 'Buy Link Insertions & Niche Edits | Vladenza',
+    description: uk ? 'Розміщуємо посилання у вже опублікованих релевантних статтях. Знаходимо сторінку, перевіряємо контекст і не пхаємо лінк туди, де йому не місце.' : "Get links placed inside relevant content that's already live. We find the page, check the context and make sure your link belongs there. No crowbar required.",
     canonical: `https://vladenza.com${lp('/services/niche-edits')}`,
   });
 

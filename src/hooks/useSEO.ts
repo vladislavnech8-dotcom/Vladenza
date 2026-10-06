@@ -13,7 +13,7 @@ export interface SEOProps {
 
 export let lastRenderedSEO: SEOProps | null = null;
 
-function clampDescription(text: string, max = 158): string {
+function clampDescription(text: string, max = 180): string {
   if (text.length <= max) return text;
   const slice = text.slice(0, max);
   const lastSpace = slice.lastIndexOf(' ');

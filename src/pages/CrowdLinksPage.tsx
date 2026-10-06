@@ -68,8 +68,8 @@ export default function CrowdLinksPage() {
   const [carePackage, setCarePackage] = useState<PackageData | null>(null);
 
   useSEO({
-    title: uk ? 'Крауд-маркетинг — Vladenza' : 'Crowd Marketing — Vladenza',
-    description: uk ? 'Релевантні згадки та посилання у справжніх онлайн-розмовах.' : 'Relevant brand mentions and links placed inside conversations where they make sense.',
+    title: uk ? 'Купити форумні посилання та крауд-лінки | Vladenza' : 'Buy Forum Backlinks That Actually Fit | Vladenza',
+    description: uk ? 'Розміщуємо форумні посилання вручну в релевантних обговореннях. Природний контекст, згадки бренду й жодного «класна стаття, ось наш сайт».' : "Buy forum backlinks placed manually in relevant discussions. Real conversations, natural mentions and context that makes sense. Because dropping a link isn't a strategy.",
     canonical: `https://vladenza.com${lp('/services/crowd-links')}`,
   });
 

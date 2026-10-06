@@ -95,7 +95,7 @@ export default function WhiteLabelPage() {
 
   useSEO({
     title: uk ? 'White Label лінкбілдинг для агенцій | Vladenza' : 'White Label Link Building for Agencies | Vladenza',
-    description: uk ? 'Ви зберігаєте клієнтів і бренд. Vladenza бере на себе доставку крауд-маркетингу, гостьових публікацій та розміщень посилань.' : 'Keep your clients and your brand. Vladenza handles the delivery of Crowd Marketing, Guest Posts and Link Insertions behind the scenes.',
+    description: uk ? 'Ви працюєте з клієнтом — ми закриваємо лінкбілдинг за лаштунками: крауд-маркетинг, гостьові публікації, link insertions і звітність. Ваш бренд залишається попереду.' : 'You handle the client. We handle link building behind the scenes: crowd, guest posts, link insertions and reporting. Your brand stays in front.',
     canonical: `https://vladenza.com${lp('/services/white-label')}`,
   });
 

@@ -95,8 +95,8 @@ export default function GuestPostingPage() {
   const [careOpen, setCareOpen] = useState(false);
 
   useSEO({
-    title: uk ? 'Гостьові публікації — Vladenza' : 'Guest Posting — Vladenza',
-    description: uk ? 'Оригінальні статті на виданнях, де ваш бренд справді має бути.' : 'Original articles on publications where your brand actually belongs.',
+    title: uk ? 'Купити гостьові публікації на реальних сайтах | Vladenza' : 'Buy Guest Posts on Real Websites | Vladenza',
+    description: uk ? 'Знаходимо релевантні сайти, створюємо тему та пишемо статтю з нуля. Живі копірайтери, реальний трафік. І ні, одного DR 50+ нам замало.' : "Get guest posts on relevant websites with real traffic. We find the publication, build the angle and include human-written content. DR 50+ alone doesn't impress us.",
     canonical: `https://vladenza.com${lp('/services/guest-posting')}`,
   });
 
