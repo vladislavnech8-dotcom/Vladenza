@@ -175,7 +175,7 @@ Deno.serve(async (req: Request) => {
     const type = typeof body.type === "string" ? body.type : "payment";
     const items = Array.isArray(body.items) ? body.items as CartItemInput[] : [];
 
-    if (!checkoutAttemptId || checkoutAttemptId.length > 20 || checkoutAttemptId.length > 100) return jsonResponse({ error: "Invalid checkout attempt" }, 400);
+    if (!checkoutAttemptId || checkoutAttemptId.length < 20 || checkoutAttemptId.length > 100) return jsonResponse({ error: "Invalid checkout attempt" }, 400);
     if (currency !== "USD") return jsonResponse({ error: "Unsupported currency" }, 400);
     if (!name.trim() || !email.trim()) return jsonResponse({ error: "Missing customer details" }, 400);
     if (type !== "payment") return jsonResponse({ error: "Unsupported checkout type" }, 400);
