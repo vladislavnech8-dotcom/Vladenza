@@ -103,7 +103,7 @@ export default function PrivacyPolicyPage() {
           <li>{tr('Withdraw consent for optional cookies and analytics at any time.', 'будь-коли відкликати згоду на необов’язкові cookie та аналітику.', isUk)}</li>
           <li>{tr('Request a copy of your data in a portable format.', 'запитувати копію ваших даних у машиночитному форматі.', isUk)}</li>
         </ul>
-        <p>{tr('To exercise any of these rights, contact us at', 'Щоб скористатися будь-яким із цих прав, напишіть нам на адресу', isUk)} <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>.</p>
+        <p>{tr('To exercise any of these rights, contact us at', 'Щоб скористатися будь-яким із цих прав, напишіть нам на адресу', isUk)} <a href="mailto:info@vladenza.com" className="text-[#F97316] hover:underline">info@vladenza.com</a>.</p>
       </LegalSection>
 
       <LegalSection id="international" title={tr('International Users', 'Користувачі з інших країн', isUk)}>
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
       </LegalSection>
 
       <LegalSection id="contact" title={tr('Contact', 'Контакти', isUk)}>
-        <p>{tr('If you have questions about this Privacy Policy or how we handle your data, contact us at', 'Якщо у вас є запитання щодо цієї Політики конфіденційності або обробки ваших даних, напишіть нам на адресу', isUk)} <a href="mailto:sales@vladenza.com" className="text-[#F97316] hover:underline">sales@vladenza.com</a>.</p>
+        <p>{tr('If you have questions about this Privacy Policy or how we handle your data, contact us at', 'Якщо у вас є запитання щодо цієї Політики конфіденційності або обробки ваших даних, напишіть нам на адресу', isUk)} <a href="mailto:info@vladenza.com" className="text-[#F97316] hover:underline">info@vladenza.com</a>.</p>
       </LegalSection>
     </LegalPageLayout>
   );

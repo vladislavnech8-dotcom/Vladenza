@@ -29,7 +29,7 @@ export default function Footer({ onOpenModal }: FooterProps) {
   const resourceLinks = [
     { label: t['nav.pricing'], href: lp('/pricing') },
     { label: t['nav.blog'], href: lp('/blog') },
-    { label: t['footer.contact'], href: 'mailto:sales@vladenza.com' },
+    { label: t['footer.contact'], href: 'mailto:info@vladenza.com' },
   ];
 
   const legalLinks = [
@@ -61,8 +61,8 @@ export default function Footer({ onOpenModal }: FooterProps) {
               <img src="/Vladenza_Logo.png?v=5" alt="Vladenza" className="h-11 w-auto object-contain" />
             </Link>
             <p className="mb-3 max-w-[220px] text-sm leading-6 text-white/70">{t['footer.tagline']}</p>
-            <a href="mailto:sales@vladenza.com" className="mb-4 inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white">
-              <Mail size={13} className="text-[#F97316]" />sales@vladenza.com
+            <a href="mailto:info@vladenza.com" className="mb-4 inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white">
+              <Mail size={13} className="text-[#F97316]" />info@vladenza.com
             </a>
             <div className="flex items-center gap-3">
               <a href="https://www.linkedin.com/company/vladenza" target="_blank" rel="noopener noreferrer" className="editorial-focus flex h-10 w-10 items-center justify-center border border-white/20 text-white/65 transition-colors hover:border-signal hover:text-white" aria-label="LinkedIn">

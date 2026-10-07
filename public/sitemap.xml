@@ -66,6 +66,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/placements/"/>
   </url>
   <url>
+    <loc>https://vladenza.com/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/contact/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/contact/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/contact/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/contact/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/contact/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/contact/"/>
+  </url>
+  <url>
     <loc>https://vladenza.com/pricing/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/pricing/"/>
     <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/pricing/"/>

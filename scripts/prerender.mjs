@@ -15,6 +15,7 @@ const EN_INDEXABLE_STATIC = [
   '/services/crowd-links',
   '/services/white-label',
   '/placements',
+  '/contact',
   '/pricing',
   '/case-studies',
   '/blog',
@@ -52,6 +53,7 @@ const UK_INDEXABLE_STATIC = [
   '/services/niche-edits',
   '/services/crowd-links',
   '/services/white-label',
+  '/contact',
   '/pricing',
 ];
 

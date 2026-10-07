@@ -68,6 +68,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
 const CookiePolicyPage = lazy(() => import('./pages/CookiePolicyPage'));
 const PlacementsPage = lazy(() => import('./pages/PlacementsPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const CrmPage = lazy(() => import('./pages/CrmPage'));
 
 const PageLoader = () => (
@@ -139,6 +140,7 @@ const publicRoutes = (
     <Route path="/refund-policy" element={<RefundPolicyPage />} />
     <Route path="/cookie-policy" element={<CookiePolicyPage />} />
     <Route path="/placements" element={<PlacementsPage />} />
+    <Route path="/contact" element={<ContactPage />} />
     <Route path="/checkout" element={<CheckoutPage />} />
   </>
 );
@@ -185,6 +187,7 @@ export default function App() {
                   <Route path="refund-policy" element={<RefundPolicyPage />} />
                   <Route path="cookie-policy" element={<CookiePolicyPage />} />
                   <Route path="placements" element={<PlacementsPage />} />
+                  <Route path="contact" element={<ContactPage />} />
                   <Route path="checkout" element={<CheckoutPage />} />
                 </Route>
 
