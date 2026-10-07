@@ -3,13 +3,11 @@ import { ArrowRight, Check, Eye, Link2, Search, ClipboardCheck } from 'lucide-re
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
-import LinkPlanModal from '../components/LinkPlanModal';
 import FAQ from '../components/FAQ';
 import ReviewsSection from '../components/ReviewsSection';
 import PlacementCard from '../components/PlacementCard';
 import VisualAsset from '../components/VisualAsset';
 import { useSEO } from '../hooks/useSEO';
-import { trackEvent } from '../lib/analytics';
 import { fetchPlacements, type Placement, type PlacementServiceType } from '../data/placements';
 import { cases, casesUk } from '../data/cases';
 import { useLocale } from '../context/LocaleContext';
@@ -27,20 +25,18 @@ function DecorativeChart({ color }: { color: string }) {
 export default function HomePage() {
   const { locale, localizePath: lp } = useLocale();
   const c = homePageContent[locale];
-  const [linkPlanOpen, setLinkPlanOpen] = useState(false);
   const [activeType, setActiveType] = useState<PlacementServiceType>('guest_post');
   const [placements, setPlacements] = useState<Placement[]>([]);
 
   useSEO({ title: c.seo.title, description: c.seo.description, canonical: locale === 'uk' ? 'https://vladenza.com/uk/' : 'https://vladenza.com/', schema: { '@context': 'https://schema.org', '@type': 'Organization', name: 'Vladenza', description: c.seo.description, url: 'https://vladenza.com', logo: 'https://vladenza.com/logo.svg' } });
 
   useEffect(() => { fetchPlacements({ status: 'active', homepage_featured: true }).then(setPlacements); }, []);
-  const openLinkPlan = () => { trackEvent('get_link_plan'); setLinkPlanOpen(true); };
   const featuredCases = (locale === 'uk' ? cases.slice(0, 3).map((item) => ({ ...item, ...(casesUk[item.slug] ?? {}) })) : cases.slice(0, 3));
   const tabs = c.services.items.slice(0, 3).map((item) => ({ label: item.name, type: serviceTypeMap[item.name] }));
   const visiblePlacements = placements.filter((item) => item.service_type === activeType).slice(0, 3);
 
   return <div className="min-h-screen bg-cream text-ink">
-    <Navigation onOpenModal={openLinkPlan} />
+    <Navigation />
 
     <main>
       <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
@@ -115,6 +111,5 @@ export default function HomePage() {
       <section id="faq" className="scroll-mt-20 bg-[#D94712] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
     </main>
     <Footer />
-    <LinkPlanModal open={linkPlanOpen} onClose={() => setLinkPlanOpen(false)} />
   </div>;
 }

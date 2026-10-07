@@ -161,9 +161,9 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
           <div className="flex flex-shrink-0 items-center gap-5">
             <LanguageSwitcher scrolled={scrolled} />
             <CartButton />
-            <button onClick={() => (onOpenModal ? onOpenModal() : routerNavigate(lp('/#contact')))}
+            <button onClick={() => routerNavigate(lp('/contact'))}
               className="editorial-focus flex min-h-[48px] items-center gap-1.5 whitespace-nowrap bg-signal px-5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#EA580C]">
-              {t['nav.getLinkPlan']} <ArrowRight size={14} />
+              {t['nav.contact']} <ArrowRight size={14} />
             </button>
           </div>
         </div>
@@ -264,9 +264,9 @@ function MobileDrawer({ open, onNavigate, onClose, onOpenModal, lbItems, navLink
             <LanguageSwitcher scrolled={scrolled} />
           </div>
 
-          <button onClick={() => { onClose(); if (onOpenModal) onOpenModal(); else onNavigate(lp('/#contact')); }}
+          <button onClick={() => { onClose(); onNavigate(lp('/contact')); }}
             className="mt-3 flex min-h-[52px] w-full items-center justify-center gap-2 bg-signal text-sm font-bold text-white transition-colors hover:bg-[#EA580C]">
-            {t['nav.getLinkPlan']} <ArrowRight size={14} />
+            {t['nav.contact']} <ArrowRight size={14} />
           </button>
         </div>
       </div>

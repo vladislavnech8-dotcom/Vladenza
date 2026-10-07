@@ -31,6 +31,7 @@ export interface TranslationKey {
   'nav.whiteLabelLink': string;
   'nav.whiteLabelLinkDesc': string;
   'nav.getLinkPlan': string;
+  'nav.contact': string;
 
   // Services dropdown
   'nav.svc.seoAudit': string;
@@ -184,6 +185,7 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.whiteLabelLink': 'White-Label Link Building',
     'nav.whiteLabelLinkDesc': 'Silent fulfilment for agencies',
     'nav.getLinkPlan': 'Get a Link Plan',
+    'nav.contact': 'Contact',
 
     // Services dropdown
     'nav.svc.seoAudit': 'SEO Audit',
@@ -336,6 +338,7 @@ export const translations: Record<Locale, TranslationKey> = {
     'nav.whiteLabelLink': 'White Label для агенцій',
     'nav.whiteLabelLinkDesc': 'Тиха реалізація для агенцій',
     'nav.getLinkPlan': 'Отримати план',
+    'nav.contact': 'Контакти',
 
     // Services dropdown
     'nav.svc.seoAudit': 'SEO-аудит',
