@@ -341,7 +341,9 @@ export default function CheckoutPage() {
 
   const handleContinueFromRequirements = () => {
     if (data.requirementsChoice === 'later') {
-      update({ placementRequirements: [] });
+      update({ placementRequirements: [], paymentAttemptId: '' });
+    } else {
+      update({ paymentAttemptId: '' });
     }
     trackEvent('requirements_completed', { status: data.requirementsChoice === 'later' ? 'pending' : 'provided', count: providedCount });
     setStep(3);
@@ -365,6 +367,8 @@ export default function CheckoutPage() {
     setLoading(true);
     setOutcome(null);
 
+    const checkoutAttemptId = data.paymentAttemptId || crypto.randomUUID();
+    if (!data.paymentAttemptId) update({ paymentAttemptId: checkoutAttemptId });
     const cartItems = items.map((i) => ({ productId: i.productId, name: i.name, unitPrice: i.unitPrice, quantity: i.quantity }));
     trackEvent('add_payment_info', { total, itemCount });
 
@@ -377,11 +381,15 @@ export default function CheckoutPage() {
         company: data.customerCompany,
         requirements: data.requirementsChoice === 'later' ? null : placementReqs,
         requirementsStatus: data.requirementsChoice === 'later' ? 'pending' : 'provided',
+        checkoutAttemptId,
       });
       setOutcome(result.outcome);
       setPaidOrderRef(result.orderRef);
       setPaidOrderNumber(result.orderNumber);
       setPaidRequirementsToken(result.requirementsToken);
+      if (result.outcome === 'declined') {
+        update({ paymentAttemptId: '' });
+      }
       if (result.outcome === 'approved') {
         trackEvent('purchase', { value: total, currency: 'USD', transaction_id: result.orderNumber, items: items.length });
         trackMetaEvent('Purchase', {
@@ -392,6 +400,7 @@ export default function CheckoutPage() {
           num_items: itemCount,
           contents: items.map((i) => ({ id: i.productId, quantity: i.quantity, item_price: i.unitPrice })),
         });
+        update({ paymentAttemptId: '' });
         clear();
       }
     } catch {
@@ -481,7 +490,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-[calc(7rem+env(safe-area-inset-bottom)+env(keyboard-inset-height))] lg:pb-10">
           <div className="grid lg:grid-cols-[1fr_320px] gap-8">
             {/* LEFT: current step */}
             <div className="min-w-0">
@@ -497,17 +506,17 @@ export default function CheckoutPage() {
                             <div className="text-sm font-bold text-ink">{item.name}</div>
                             {getItemSubtitle(item, c) && <div className="text-xs text-ink/40 mt-0.5">{getItemSubtitle(item, c)}</div>}
                           </div>
-                          <button onClick={() => { removeItem(item.productId); trackEvent('remove_from_cart', { product_id: item.productId }); }} className="text-ink/30 hover:text-red-500 transition-colors flex-shrink-0">
+                          <button onClick={() => { removeItem(item.productId); update({ paymentAttemptId: '' }); trackEvent('remove_from_cart', { product_id: item.productId }); }} className="text-ink/30 hover:text-red-500 transition-colors flex-shrink-0">
                             <Trash2 size={16} />
                           </button>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="w-8 h-8 border-2 border-ink/15 flex items-center justify-center text-ink/60 hover:border-signal hover:text-signal transition-colors">
+                            <button onClick={() => { updateQuantity(item.productId, item.quantity - 1); update({ paymentAttemptId: '' }); }} className="w-8 h-8 border-2 border-ink/15 flex items-center justify-center text-ink/60 hover:border-signal hover:text-signal transition-colors">
                               <Minus size={14} />
                             </button>
                             <span className="text-sm font-bold text-ink w-8 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="w-8 h-8 border-2 border-ink/15 flex items-center justify-center text-ink/60 hover:border-signal hover:text-signal transition-colors">
+                            <button onClick={() => { updateQuantity(item.productId, item.quantity + 1); update({ paymentAttemptId: '' }); }} className="w-8 h-8 border-2 border-ink/15 flex items-center justify-center text-ink/60 hover:border-signal hover:text-signal transition-colors">
                               <Plus size={14} />
                             </button>
                           </div>
@@ -782,7 +791,7 @@ export default function CheckoutPage() {
               )}
               {/* Always-visible total bar at bottom on mobile */}
               {!mobileSummaryOpen && (
-                <div className="fixed bottom-0 left-0 right-0 z-30 bg-navy text-white px-4 py-3 flex items-center justify-between lg:hidden">
+                <div className="fixed bottom-0 left-0 right-0 z-30 bg-navy text-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between lg:hidden" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px) + env(keyboard-inset-height, 0px))' }}>
                   <span className="text-sm font-bold text-cream/70">{c.total}</span>
                   <span className="font-display text-xl font-bold">{formatMoney(total, currency)}</span>
                 </div>

@@ -18,6 +18,7 @@ export interface CheckoutData {
   customerCompany: string;
   customerWebsite: string;
   orderRef: string;
+  paymentAttemptId: string;
 }
 
 const DEFAULT_CHECKOUT: CheckoutData = {
@@ -29,6 +30,7 @@ const DEFAULT_CHECKOUT: CheckoutData = {
   customerCompany: '',
   customerWebsite: '',
   orderRef: '',
+  paymentAttemptId: '',
 };
 
 const STORAGE_KEY = 'vladenza_checkout';

@@ -8,60 +8,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-function hmacMd5(key: string, data: string): string {
-  return createHmac("md5", key).update(data).digest("hex");
-}
-
-function generateToken(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-
-function hashToken(token: string): string {
-  return createHash("sha256").update(token).digest("hex");
-}
-
-// AES-256-GCM authenticated encryption using Web Crypto API
-// Output format: "ivHex:tagHex:ciphertextHex"
-async function encryptToken(token: string, keyHex: string): Promise<string> {
-  const keyBytes = new Uint8Array(keyHex.match(/.{2}/g)!.map(h => parseInt(h, 16)));
-  const iv = new Uint8Array(12);
-  crypto.getRandomValues(iv);
-  const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
-  const encoded = new TextEncoder().encode(token);
-  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoded);
-  const encryptedBytes = new Uint8Array(encrypted);
-  // Web Crypto AES-GCM appends the 16-byte tag to the ciphertext
-  const ciphertext = encryptedBytes.slice(0, encryptedBytes.length - 16);
-  const tag = encryptedBytes.slice(encryptedBytes.length - 16);
-  const toHex = (arr: Uint8Array) => Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
-  return `${toHex(iv)}:${toHex(tag)}:${toHex(ciphertext)}`;
-}
-
-// Fetch the encryption key from env or database fallback
-async function getEncryptionKey(supabase: ReturnType<typeof createClient>): Promise<string> {
-  const envKey = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY");
-  if (envKey) return envKey;
-
-  const { data, error } = await supabase
-    .from("app_secrets")
-    .select("value")
-    .eq("name", "REQUIREMENTS_TOKEN_ENCRYPTION_KEY")
-    .single();
-
-  if (error || !data) throw new Error("Encryption key not configured");
-  return data.value as string;
-}
-
-// Server-side canonical pricing — the only source of truth for prices
 const VALID_PRICES: Record<string, number> = {
-  "niche-edit-dr10": 70,
-  "niche-edit-dr20": 90,
-  "niche-edit-dr30": 110,
-  "niche-edit-dr40": 200,
-  "niche-edit-dr50": 280,
-  "niche-edit-dr60": 400,
+  "niche-edit-good-place": 90,
+  "niche-edit-better-place": 200,
+  "niche-edit-picky-mode": 280,
   "guest-post-start": 510,
   "guest-post-grow": 825,
   "guest-post-scale": 1600,
@@ -77,187 +27,239 @@ interface CartItemInput {
   quantity: number;
 }
 
-Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
+interface StoredOrder {
+  order_ref: string;
+  order_number: string;
+  order_status: string;
+  amount: number;
+  currency: string;
+  name: string;
+  email: string;
+  order_items: CartItemInput[];
+  requirements_token_encrypted: string;
+}
 
-  try {
-    const body = await req.json();
-    const { currency, name, email, phone, website, company, message, type, items, requirements, requirementsStatus } = body as {
-      currency?: string;
-      name?: string;
-      email?: string;
-      phone?: string;
-      website?: string;
-      company?: string;
-      message?: string;
-      type?: string;
-      items?: CartItemInput[];
-      requirements?: unknown;
-      requirementsStatus?: string;
-    };
+function hmacMd5(key: string, data: string): string {
+  return createHmac("md5", key).update(data).digest("hex");
+}
 
-    let amount: number;
-    let productNames: string[];
-    let productCounts: number[];
-    let productPrices: number[];
-    let packageName: string;
+function generateToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
-    if (items && Array.isArray(items) && items.length > 0) {
-      let computedTotal = 0;
-      productNames = [];
-      productCounts = [];
-      productPrices = [];
+function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
 
-      for (const item of items) {
-        const qty = Number(item.quantity);
-        if (!Number.isFinite(qty) || qty < 1 || !Number.isInteger(qty)) {
-          return new Response(JSON.stringify({ error: "Invalid item quantity" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
+function toHex(bytes: Uint8Array): string {
+  return Array.from(bytes).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
 
-        const canonicalPrice = VALID_PRICES[item.productId];
-        if (canonicalPrice === undefined) {
-          return new Response(JSON.stringify({ error: `Unknown product: ${item.productId}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
+function fromHex(value: string): Uint8Array {
+  if (!/^[0-9a-f]+$/i.test(value) || value.length % 2 !== 0) throw new Error("Invalid encryption value");
+  return new Uint8Array(value.match(/.{2}/g)!.map((part) => parseInt(part, 16)));
+}
 
-        productPrices.push(canonicalPrice);
-        productCounts.push(qty);
-        productNames.push(item.name || item.productId);
-        computedTotal += canonicalPrice * qty;
-      }
+async function encryptToken(token: string, keyHex: string): Promise<string> {
+  const keyBytes = fromHex(keyHex);
+  if (keyBytes.length !== 32) throw new Error("Invalid encryption key");
+  const iv = new Uint8Array(12);
+  crypto.getRandomValues(iv);
+  const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+  const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, new TextEncoder().encode(token)));
+  return `${toHex(iv)}:${toHex(encrypted.slice(encrypted.length - 16))}:${toHex(encrypted.slice(0, encrypted.length - 16))}`;
+}
 
-      amount = Math.round(computedTotal * 100) / 100;
-      if (amount <= 0) {
-        return new Response(JSON.stringify({ error: "Cart total must be greater than zero" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-      packageName = productNames.join("; ");
-    } else {
-      packageName = body.packageName || "Custom Package";
-      amount = Number(body.amount);
-      productNames = [packageName];
-      productCounts = [1];
-      productPrices = [amount];
-    }
+async function decryptToken(encryptedValue: string, keyHex: string): Promise<string> {
+  const [ivHex, tagHex, ciphertextHex] = encryptedValue.split(":");
+  if (!ivHex || !tagHex || !ciphertextHex) throw new Error("Invalid encrypted token");
+  const keyBytes = fromHex(keyHex);
+  if (keyBytes.length !== 32) throw new Error("Invalid encryption key");
+  const iv = fromHex(ivHex);
+  const tag = fromHex(tagHex);
+  const ciphertext = fromHex(ciphertextHex);
+  const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const combined = new Uint8Array(ciphertext.length + tag.length);
+  combined.set(ciphertext);
+  combined.set(tag, ciphertext.length);
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKey, combined);
+  return new TextDecoder().decode(decrypted);
+}
 
-    const safeWebsite = website || "";
-    const safePhone = (phone && phone.trim().length >= 7) ? phone : "000000000000";
+async function getEncryptionKey(supabase: ReturnType<typeof createClient>): Promise<string> {
+  const envKey = Deno.env.get("REQUIREMENTS_TOKEN_ENCRYPTION_KEY");
+  if (envKey) return envKey;
+  const { data, error } = await supabase.from("app_secrets").select("value").eq("name", "REQUIREMENTS_TOKEN_ENCRYPTION_KEY").maybeSingle();
+  if (error || !data) throw new Error("Encryption key not configured");
+  return data.value as string;
+}
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+function jsonResponse(body: Record<string, unknown>, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+}
 
-    const orderRef = `vladenza-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    const orderDate = Math.floor(Date.now() / 1000);
+function buildCheckoutData(order: StoredOrder, merchantLogin: string, merchantSecret: string, requirementsToken: string) {
+  const items = Array.isArray(order.order_items) ? order.order_items : [];
+  const productNames = items.map((item) => item.name || item.productId);
+  const productCounts = items.map((item) => Number(item.quantity));
+  const productPrices = items.map((item) => VALID_PRICES[item.productId]);
+  const orderDate = Math.floor(Number(order.order_ref.split("-")[1]) / 1000);
+  const signature = hmacMd5(merchantSecret, [
+    merchantLogin,
+    "vladenza.com",
+    order.order_ref,
+    orderDate.toString(),
+    Number(order.amount).toString(),
+    order.currency,
+    ...productNames,
+    ...productCounts.map(String),
+    ...productPrices.map(String),
+  ].join(";"));
+  const nameParts = (order.name || "").trim().split(/\s+/);
 
-    // Generate cryptographically random requirements access token
-    const requirementsToken = generateToken();
-    const requirementsTokenHash = hashToken(requirementsToken);
-
-    // Encrypt the token for server-side storage (decryptable by email function)
-    const encryptionKey = await getEncryptionKey(supabase);
-    const requirementsTokenEncrypted = await encryptToken(requirementsToken, encryptionKey);
-
-    const { data: numData } = await supabase.rpc("generate_order_number");
-    const orderNumber = numData as string || `NE-${Date.now()}`;
-
-    // Store order items as a proper JSON array of objects (never stringified)
-    const storedItems: CartItemInput[] = items && Array.isArray(items) ? items.map((item) => ({
-      productId: item.productId,
-      name: item.name || item.productId,
-      unitPrice: VALID_PRICES[item.productId] || item.unitPrice,
-      quantity: item.quantity,
-    })) : [];
-
-    const reqStatus = requirementsStatus === "provided" ? "received" : "pending";
-
-    const insertPayload: Record<string, unknown> = {
-      order_ref: orderRef,
-      order_number: orderNumber,
-      package_name: packageName,
-      amount: amount,
-      currency: currency || "USD",
-      type: type || "payment",
-      name: name || "",
-      email: email || "",
-      website: safeWebsite,
-      company: company || "",
-      message: message || "",
-      status: type === "consultation" ? "consultation" : "pending_payment",
-      order_status: type === "consultation" ? "pending_payment" : "pending_payment",
-      order_items: storedItems,
-      requirements: Array.isArray(requirements) ? requirements : [],
-      requirements_status: reqStatus,
-      requirements_token_hash: requirementsTokenHash,
-    };
-
-    if (requirementsTokenEncrypted) {
-      insertPayload.requirements_token_encrypted = requirementsTokenEncrypted;
-    }
-
-    const { error: dbError } = await supabase.from("orders").insert(insertPayload);
-
-    if (dbError) throw new Error(dbError.message);
-
-    if (type === "consultation") {
-      return new Response(JSON.stringify({ success: true, orderRef }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-
-    const merchantLogin = Deno.env.get("WFP_MERCHANT_LOGIN")!;
-    const merchantSecret = Deno.env.get("WFP_MERCHANT_SECRET")!;
-
-    if (!merchantLogin || !merchantSecret) {
-      throw new Error("WayForPay credentials not configured");
-    }
-
-    const cur = currency || "USD";
-    if (!Number.isFinite(amount) || amount <= 0) {
-      throw new Error("Invalid payment amount");
-    }
-
-    const secureType = "AUTO";
-    const signString = [
-      merchantLogin,
-      "vladenza.com",
-      orderRef,
-      orderDate.toString(),
-      amount.toString(),
-      cur,
-      ...productNames,
-      ...productCounts.map(String),
-      ...productPrices.map(String),
-    ].join(";");
-
-    const signature = hmacMd5(merchantSecret, signString);
-
-    const nameParts = (name || "").trim().split(/\s+/);
-    const firstName = nameParts[0] || "";
-    const lastName = nameParts.slice(1).join(" ") || "-";
-
-    const checkoutData = {
+  return {
+    success: true,
+    orderRef: order.order_ref,
+    orderNumber: order.order_number,
+    requirementsToken,
+    checkoutData: {
       merchantAccount: merchantLogin,
       merchantDomainName: "vladenza.com",
-      merchantTransactionSecureType: secureType,
+      merchantTransactionSecureType: "AUTO",
       authorizationType: "SimpleSignature",
       merchantSignature: signature,
-      orderReference: orderRef,
-      orderDate: orderDate,
-      amount: amount,
-      currency: cur,
+      orderReference: order.order_ref,
+      orderDate,
+      amount: Number(order.amount),
+      currency: order.currency,
       productName: productNames,
       productCount: productCounts,
       productPrice: productPrices,
-      clientFirstName: firstName,
-      clientLastName: lastName,
-      clientEmail: email,
-      clientPhone: safePhone,
+      clientFirstName: nameParts[0] || "",
+      clientLastName: nameParts.slice(1).join(" ") || "-",
+      clientEmail: order.email,
+      clientPhone: "000000000000",
       language: "EN",
       serviceUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/wayforpay-webhook`,
+    },
+  };
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 200, headers: corsHeaders });
+
+  try {
+    const body = await req.json() as Record<string, unknown>;
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    if (body.action === "status") {
+      const orderRef = typeof body.orderRef === "string" ? body.orderRef : "";
+      const checkoutAttemptId = typeof body.checkoutAttemptId === "string" ? body.checkoutAttemptId : "";
+      if (!orderRef || !checkoutAttemptId) return jsonResponse({ error: "Invalid status request" }, 400);
+      const { data: order, error } = await supabase.from("orders").select("order_status").eq("order_ref", orderRef).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
+      if (error || !order) return jsonResponse({ success: true, status: "pending" });
+      const status = order.order_status === "paid" || order.order_status === "ready_for_review" || order.order_status === "requirements_pending"
+        ? "paid"
+        : order.order_status === "payment_failed" ? "failed" : "pending";
+      return jsonResponse({ success: true, status });
+    }
+
+    const currency = typeof body.currency === "string" ? body.currency.toUpperCase() : "USD";
+    const checkoutAttemptId = typeof body.checkoutAttemptId === "string" ? body.checkoutAttemptId : "";
+    const name = typeof body.name === "string" ? body.name : "";
+    const email = typeof body.email === "string" ? body.email : "";
+    const website = typeof body.website === "string" ? body.website : "";
+    const company = typeof body.company === "string" ? body.company : "";
+    const type = typeof body.type === "string" ? body.type : "payment";
+    const items = Array.isArray(body.items) ? body.items as CartItemInput[] : [];
+
+    if (!checkoutAttemptId || checkoutAttemptId.length > 20 || checkoutAttemptId.length > 100) return jsonResponse({ error: "Invalid checkout attempt" }, 400);
+    if (currency !== "USD") return jsonResponse({ error: "Unsupported currency" }, 400);
+    if (!name.trim() || !email.trim()) return jsonResponse({ error: "Missing customer details" }, 400);
+    if (type !== "payment") return jsonResponse({ error: "Unsupported checkout type" }, 400);
+    if (items.length === 0) return jsonResponse({ error: "Cart is empty" }, 400);
+
+    const merchantLogin = Deno.env.get("WFP_MERCHANT_LOGIN");
+    const merchantSecret = Deno.env.get("WFP_MERCHANT_SECRET");
+    if (!merchantLogin || !merchantSecret) return jsonResponse({ error: "Payment configuration unavailable" }, 503);
+
+    let amount = 0;
+    const normalizedItems: CartItemInput[] = [];
+    for (const item of items) {
+      const quantity = Number(item.quantity);
+      const canonicalPrice = VALID_PRICES[item.productId];
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100 || canonicalPrice === undefined) return jsonResponse({ error: "Invalid cart item" }, 400);
+      amount += canonicalPrice * quantity;
+      normalizedItems.push({ productId: item.productId, name: typeof item.name === "string" && item.name ? item.name : item.productId, unitPrice: canonicalPrice, quantity });
+    }
+    amount = Math.round(amount * 100) / 100;
+
+    const orderFields = "order_ref, order_number, order_status, amount, currency, name, email, order_items, requirements_token_encrypted";
+    const { data: existingOrder } = await supabase.from("orders").select(orderFields).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
+    if (existingOrder) {
+      if (existingOrder.order_status !== "pending_payment") return jsonResponse({ error: "Checkout attempt already completed" }, 409);
+      if (Number(existingOrder.amount) !== amount || String(existingOrder.currency).toUpperCase() !== currency) return jsonResponse({ error: "Checkout attempt does not match cart" }, 409);
+      const requirementsToken = await decryptToken(existingOrder.requirements_token_encrypted, await getEncryptionKey(supabase));
+      return jsonResponse(buildCheckoutData({ ...existingOrder, order_items: existingOrder.order_items as CartItemInput[] }, merchantLogin, merchantSecret, requirementsToken));
+    }
+
+    const requirementsToken = generateToken();
+    const requirementsTokenEncrypted = await encryptToken(requirementsToken, await getEncryptionKey(supabase));
+    const orderRef = `vladenza-${Date.now()}-${crypto.randomUUID().slice(0, 5)}`;
+    const orderNumberResult = await supabase.rpc("generate_order_number");
+    const orderNumber = orderNumberResult.data as string || `NE-${Date.now()}`;
+    const requirementsStatus = body.requirementsStatus === "provided" ? "received" : "pending";
+
+    const insertPayload = {
+      order_ref: orderRef,
+      order_number: orderNumber,
+      checkout_attempt_id: checkoutAttemptId,
+      package_name: normalizedItems.map((item) => item.name).join("; "),
+      amount,
+      currency,
+      type: "payment",
+      name,
+      email,
+      website,
+      company,
+      message: typeof body.message === "string" ? body.message : "",
+      status: "pending_payment",
+      order_status: "pending_payment",
+      order_items: normalizedItems,
+      requirements: Array.isArray(body.requirements) ? body.requirements : [],
+      requirements_status: requirementsStatus,
+      requirements_token_hash: hashToken(requirementsToken),
+      requirements_token_encrypted: requirementsTokenEncrypted,
     };
 
-    return new Response(JSON.stringify({ success: true, orderRef, orderNumber, requirementsToken, checkoutData }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { error: insertError } = await supabase.from("orders").insert(insertPayload);
+    if (insertError) {
+      if (insertError.code === "23505") {
+        const { data: racedOrder } = await supabase.from("orders").select(orderFields).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
+        if (racedOrder && racedOrder.order_status === "pending_payment" && Number(racedOrder.amount) === amount) {
+          const racedToken = await decryptToken(racedOrder.requirements_token_encrypted, await getEncryptionKey(supabase));
+          return jsonResponse(buildCheckoutData({ ...racedOrder, order_items: racedOrder.order_items as CartItemInput[] }, merchantLogin, merchantSecret, racedToken));
+        }
+      }
+      console.error("wayforpay-checkout insert failed", insertError);
+      return jsonResponse({ error: "Could not create checkout" }, 500);
+    }
+
+    return jsonResponse(buildCheckoutData({
+      order_ref: orderRef,
+      order_number: orderNumber,
+      order_status: "pending_payment",
+      amount,
+      currency,
+      name,
+      email,
+      order_items: normalizedItems,
+      requirements_token_encrypted: requirementsTokenEncrypted,
+    }, merchantLogin, merchantSecret, requirementsToken));
   } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    console.error("wayforpay-checkout error", err);
+    return jsonResponse({ error: "Could not start checkout" }, 500);
   }
 });

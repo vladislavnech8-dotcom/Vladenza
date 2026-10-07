@@ -70,6 +70,26 @@ export interface CartItemInput {
   quantity: number;
 }
 
+async function getPaymentStatus(orderRef: string, checkoutAttemptId: string): Promise<'paid' | 'failed' | 'pending'> {
+  const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
+    body: { action: 'status', orderRef, checkoutAttemptId },
+  });
+
+  if (error || !data?.success) return 'pending';
+  if (data.status === 'paid') return 'paid';
+  if (data.status === 'failed') return 'failed';
+  return 'pending';
+}
+
+async function waitForPaymentConfirmation(orderRef: string, checkoutAttemptId: string): Promise<'paid' | 'failed' | 'pending'> {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const status = await getPaymentStatus(orderRef, checkoutAttemptId);
+    if (status !== 'pending') return status;
+    await new Promise((resolve) => window.setTimeout(resolve, 1000));
+  }
+  return 'pending';
+}
+
 export async function payWithWayForPay(params: {
   items?: CartItemInput[];
   packageName?: string;
@@ -82,6 +102,7 @@ export async function payWithWayForPay(params: {
   company?: string;
   requirements?: unknown;
   requirementsStatus?: string;
+  checkoutAttemptId: string;
 }): Promise<PayResult> {
   const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
     body: {
@@ -97,11 +118,12 @@ export async function payWithWayForPay(params: {
       type: 'payment',
       requirements: params.requirements,
       requirementsStatus: params.requirementsStatus,
+      checkoutAttemptId: params.checkoutAttemptId,
     },
   });
 
-  if (error || !data?.success) {
-    throw new Error(error?.message || data?.error || 'Could not start checkout');
+  if (error || !data?.success || !data.checkoutData || !data.orderRef || !data.orderNumber || !data.requirementsToken) {
+    throw new Error('Could not start checkout');
   }
 
   const orderRef = data.orderRef as string;
@@ -112,11 +134,26 @@ export async function payWithWayForPay(params: {
 
   return new Promise((resolve) => {
     const wfp = new window.Wayforpay!();
+    const resolveWithStatus = async (fallback: WfpOutcome) => {
+      if (fallback === 'declined') {
+        resolve({ outcome: fallback, orderRef, orderNumber, requirementsToken });
+        return;
+      }
+
+      const status = await waitForPaymentConfirmation(orderRef, params.checkoutAttemptId);
+      resolve({
+        outcome: status === 'paid' ? 'approved' : status === 'failed' ? 'declined' : 'pending',
+        orderRef,
+        orderNumber,
+        requirementsToken,
+      });
+    };
+
     wfp.run(
-      data.checkoutData,
-      () => resolve({ outcome: 'approved', orderRef, orderNumber, requirementsToken }),
-      () => resolve({ outcome: 'declined', orderRef, orderNumber, requirementsToken }),
-      () => resolve({ outcome: 'pending', orderRef, orderNumber, requirementsToken })
+      data.checkoutData as WfpCheckoutData,
+      () => { void resolveWithStatus('approved'); },
+      () => { void resolveWithStatus('declined'); },
+      () => { void resolveWithStatus('pending'); }
     );
   });
 }

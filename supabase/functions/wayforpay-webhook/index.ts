@@ -92,7 +92,7 @@ Deno.serve(async (req: Request) => {
         "id, status, order_status, order_number, name, email, website, amount, currency, order_items, requirements, requirements_status, wfp_transaction_id"
       )
       .eq("order_ref", orderReference)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !existingOrder) {
       return new Response(JSON.stringify({ error: "Order not found" }), {
@@ -148,8 +148,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Mark as paid ONLY when transactionStatus is exactly "Approved"
+    // Mark as paid only after an exact approved callback. Intermediate provider states stay pending.
     const isApproved = transactionStatus === "Approved";
+    const isFailed = ["Declined", "Expired", "Voided", "Cancelled", "Canceled"].includes(transactionStatus);
+
+    if (!isApproved && !isFailed) {
+      const ackTime = Math.floor(Date.now() / 1000);
+      const responseSig = merchantSecret
+        ? hmacMd5(merchantSecret, [orderReference, "accept", String(ackTime)].join(";"))
+        : "demo";
+      return new Response(JSON.stringify({ orderReference, status: "accept", time: ackTime, signature: responseSig }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Store a sanitized payment result — no merchant secrets, no full card data
     // Explicitly build a plain object to ensure JSONB serialization (never "[object Object]")
@@ -196,12 +207,24 @@ Deno.serve(async (req: Request) => {
       cart_snapshot: cartSnapshot,
     };
 
-    const { error: updateError } = await supabase
+    const { data: updatedRows, error: updateError } = await supabase
       .from("orders")
       .update(update)
-      .eq("order_ref", orderReference);
+      .eq("order_ref", orderReference)
+      .eq("order_status", "pending_payment")
+      .select("order_status");
 
     if (updateError) throw new Error(updateError.message);
+
+    if (!updatedRows || updatedRows.length === 0) {
+      const ackTime = Math.floor(Date.now() / 1000);
+      const responseSig = merchantSecret
+        ? hmacMd5(merchantSecret, [orderReference, "accept", String(ackTime)].join(";"))
+        : "demo";
+      return new Response(JSON.stringify({ orderReference, status: "accept", time: ackTime, signature: responseSig }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Send Telegram notification ONLY for confirmed payments
     if (isApproved) {
