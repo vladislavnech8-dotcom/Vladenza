@@ -62,6 +62,12 @@ const VALID_PRICES: Record<string, number> = {
   "niche-edit-dr40": 200,
   "niche-edit-dr50": 280,
   "niche-edit-dr60": 400,
+  "guest-post-start": 510,
+  "guest-post-grow": 825,
+  "guest-post-scale": 1600,
+  "crowd-marketing-start": 199,
+  "crowd-marketing-grow": 399,
+  "crowd-marketing-scale": 749,
 };
 
 interface CartItemInput {

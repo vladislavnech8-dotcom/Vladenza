@@ -1,13 +1,19 @@
 import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, Check, Loader2, CheckCircle, AlertCircle, CreditCard, ClipboardPaste, Lock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, Check, Loader2, CheckCircle, AlertCircle, CreditCard, ClipboardPaste, Lock, ChevronDown, Mail } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
 import { useCheckout, type PlacementRequirement } from '../context/CheckoutContext';
 import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
 import { payWithWayForPay } from '../lib/wayforpay';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
+
+function formatMoney(amount: number, currency = 'USD'): string {
+  const symbol = currency === 'USD' ? '$' : '';
+  return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+}
 
 const content = {
   en: {
@@ -16,7 +22,7 @@ const content = {
     total: 'Total',
     securePayment: 'Secure payment',
     cartEmpty: 'Your cart is empty.',
-    browsePackages: 'Browse Niche Edit Packages',
+    browseServices: 'Browse Services',
     orderConfirmed: 'Order Confirmed',
     orderPrefix: 'Order #',
     receivedOrder: "We've received your order.",
@@ -28,7 +34,7 @@ const content = {
     next3: 'Placements are manually checked before delivery',
     next4: "You'll receive the completed links in your order report",
     addRequirements: 'Add Requirements',
-    backToLinkInsertions: 'Back to Link Insertions',
+    backToHome: 'Back to Home',
     paymentDeclined: 'Payment declined',
     paymentProcessing: 'Payment processing',
     declinedMsg: "Your card wasn't charged. You can try again.",
@@ -70,11 +76,7 @@ const content = {
     backBtn: 'Back',
     continueToPayment: 'Continue to Payment',
     payment: 'Payment',
-    next1Payment: 'Complete payment',
-    next2Payment: 'We review your requirements',
-    next3Payment: 'Website selection / approval where applicable',
-    next4Payment: 'Placements go live',
-    next5Payment: 'Receive your final report',
+    nextStepsShort: 'After payment: we review your requirements, source placements, and deliver your report.',
     name: 'Name *',
     email: 'Email *',
     company: 'Company',
@@ -84,14 +86,17 @@ const content = {
     terms: 'Terms & Conditions',
     privacyPolicy: 'Privacy Policy',
     refundPolicy: 'Refund Policy',
-    processing: 'Processing...',
-    paySecurely: (total: string) => `Pay ${total} Securely`,
+    openingPayment: 'Opening secure payment…',
+    paySecurely: (total: string) => `Pay ${total} securely`,
     secureCheckout: 'Secure checkout via WayForPay',
     backToReview: 'Back to Review',
     noValidRows: 'No valid rows found. Use: URL | Anchor',
     nameEmailRequired: 'Name and email are required.',
     agreeRequired: 'Please agree to the Terms & Conditions, Privacy Policy and Refund Policy to continue.',
-    paymentError: 'Payment could not be started. Please try again.',
+    paymentError: "We couldn't start your payment. Please try again or contact info@vladenza.com.",
+    perPost: 'includes',
+    posts: 'publications',
+    placements: 'placements',
   },
   uk: {
     steps: ['Кошик', 'Вимоги', 'Перевірка', 'Оплата'] as const,
@@ -99,7 +104,7 @@ const content = {
     total: 'Разом',
     securePayment: 'Безпечна оплата',
     cartEmpty: 'Ваш кошик порожній.',
-    browsePackages: 'Переглянути пакети Link Insertions',
+    browseServices: 'Переглянути послуги',
     orderConfirmed: 'Замовлення підтверджено',
     orderPrefix: 'Замовлення №',
     receivedOrder: 'Ми отримали ваше замовлення.',
@@ -111,7 +116,7 @@ const content = {
     next3: 'Розміщення перевіряються вручну перед доставкою',
     next4: 'Ви отримаєте готові посилання у звіті про замовлення',
     addRequirements: 'Додати вимоги',
-    backToLinkInsertions: 'Назад до Link Insertions',
+    backToHome: 'На головну',
     paymentDeclined: 'Платіж відхилено',
     paymentProcessing: 'Платіж обробляється',
     declinedMsg: 'Вашу картку не було списано. Ви можете спробувати знову.',
@@ -153,11 +158,7 @@ const content = {
     backBtn: 'Назад',
     continueToPayment: 'Продовжити до оплати',
     payment: 'Оплата',
-    next1Payment: 'Завершіть оплату',
-    next2Payment: 'Ми переглядаємо ваші вимоги',
-    next3Payment: 'Вибір сайту / погодження, де застосовно',
-    next4Payment: 'Розміщення публікуються',
-    next5Payment: 'Ви отримуєте фінальний звіт',
+    nextStepsShort: 'Після оплати: ми переглядаємо вимоги, підбираємо розміщення та надсилаємо звіт.',
     name: 'Ім\u2019я *',
     email: 'Email *',
     company: 'Компанія',
@@ -167,40 +168,53 @@ const content = {
     terms: 'Умовами використання',
     privacyPolicy: 'Політикою конфіденційності',
     refundPolicy: 'Політикою повернення',
-    processing: 'Обробка...',
+    openingPayment: 'Відкриваємо безпечну оплату…',
     paySecurely: (total: string) => `Сплатити ${total} безпечно`,
     secureCheckout: 'Безпечна оплата через WayForPay',
     backToReview: 'Назад до перевірки',
     noValidRows: 'Не знайдено дійсних рядків. Використовуйте: URL | Якір',
     nameEmailRequired: 'Ім\u2019я та email обов\u2019язкові.',
     agreeRequired: 'Будь ласка, погодьтеся з Умовами використання, Політикою конфіденційності та Політикою повернення, щоб продовжити.',
-    paymentError: 'Не вдалося ініціювати платіж. Спробуйте ще раз.',
+    paymentError: 'Не вдалося ініціювати платіж. Спробуйте ще раз або напишіть на info@vladenza.com.',
+    perPost: 'включає',
+    posts: 'публікацій',
+    placements: 'розміщень',
   },
 } as const;
 
 type Step = 1 | 2 | 3 | 4;
 
-const inputCls = 'w-full bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all';
-const labelCls = 'block text-xs font-semibold text-gray-500 mb-1.5';
+const inputCls = 'w-full bg-cream border border-ink/15 px-3.5 py-2.5 text-ink text-sm placeholder-ink/35 focus:outline-none focus:border-signal focus:ring-1 focus:ring-signal/30 transition-all';
+const labelCls = 'block text-xs font-bold uppercase tracking-wider text-ink/50 mb-1.5';
 
-function OrderSummary({ c }: { c: typeof content.en }) {
+function getItemSubtitle(item: { productId: string; description: string }, c: typeof content.en): string {
+  if (item.productId.startsWith('guest-post-') && item.description) {
+    return `${c.perPost} ${item.description.toLowerCase()}`;
+  }
+  return item.description;
+}
+
+function OrderSummary({ c, currency = 'USD' }: { c: typeof content.en; currency?: string }) {
   const { items, total } = useCart();
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{c.orderSummary}</h3>
-      <div className="flex flex-col gap-2 mb-4">
+    <div className="border-2 border-ink/15 bg-white p-5">
+      <h3 className="text-xs font-bold uppercase tracking-widest text-ink/40 mb-4">{c.orderSummary}</h3>
+      <div className="flex flex-col gap-2.5 mb-4">
         {items.map((item) => (
-          <div key={item.productId} className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{item.quantity} × {item.name}</span>
-            <span className="font-semibold text-gray-900">${(item.unitPrice * item.quantity).toLocaleString()}</span>
+          <div key={item.productId} className="flex items-start justify-between gap-3 text-sm">
+            <div className="min-w-0">
+              <span className="text-ink/70">{item.quantity} × {item.name}</span>
+              {getItemSubtitle(item, c) && <p className="text-[11px] text-ink/40 mt-0.5">{getItemSubtitle(item, c)}</p>}
+            </div>
+            <span className="font-bold text-ink whitespace-nowrap">{formatMoney(item.unitPrice * item.quantity, currency)}</span>
           </div>
         ))}
       </div>
-      <div className="flex items-center justify-between border-t border-gray-100 pt-3">
-        <span className="text-sm font-semibold text-gray-500">{c.total}</span>
-        <span className="text-xl font-black text-gray-900">${total.toLocaleString()}</span>
+      <div className="flex items-center justify-between border-t-2 border-ink/10 pt-3">
+        <span className="text-sm font-bold text-ink/50">{c.total}</span>
+        <span className="font-display text-2xl font-bold text-ink">{formatMoney(total, currency)}</span>
       </div>
-      <div className="flex items-center gap-1.5 mt-3 text-xs text-gray-400">
+      <div className="flex items-center gap-1.5 mt-3 text-xs text-ink/40">
         <Lock size={11} /> {c.securePayment}
       </div>
     </div>
@@ -217,11 +231,11 @@ function Stepper({ step, c }: { step: Step; c: typeof content.en }) {
         const done = stepNum < step;
         return (
           <div key={label} className="flex items-center gap-2">
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${active ? 'bg-[#F97316] text-white' : done ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-400'}`}>
-              {done ? <Check size={11} /> : stepNum}
+            <div className={`w-7 h-7 flex items-center justify-center text-xs font-bold border-2 transition-colors ${active ? 'border-signal bg-signal text-white' : done ? 'border-ink bg-ink text-white' : 'border-ink/20 bg-transparent text-ink/40'}`}>
+              {done ? <Check size={12} /> : stepNum}
             </div>
-            <span className={`text-xs font-semibold hidden sm:inline ${active ? 'text-gray-900' : 'text-gray-400'}`}>{label}</span>
-            {i < steps.length - 1 && <div className="w-6 h-px bg-gray-200 mx-1" />}
+            <span className={`text-xs font-bold hidden sm:inline ${active ? 'text-ink' : 'text-ink/40'}`}>{label}</span>
+            {i < steps.length - 1 && <div className="w-5 h-px bg-ink/20 mx-0.5" />}
           </div>
         );
       })}
@@ -234,6 +248,7 @@ export default function CheckoutPage() {
   const { data, update } = useCheckout();
   const { locale, localizePath: lp } = useLocale();
   const c = content[locale];
+  const currency = 'USD';
   const [step, setStep] = useState<Step>(itemCount === 0 ? 1 : 2);
 
   useSEO({
@@ -253,9 +268,9 @@ export default function CheckoutPage() {
   const [bulkText, setBulkText] = useState('');
   const [showBulk, setShowBulk] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
   const initiateCheckoutFired = useRef(false);
 
-  // Generate placement requirements from cart items
   const placementReqs = useMemo<PlacementRequirement[]>(() => {
     if (data.placementRequirements.length > 0) return data.placementRequirements;
     const reqs: PlacementRequirement[] = [];
@@ -276,17 +291,26 @@ export default function CheckoutPage() {
 
   const providedCount = placementReqs.filter((r) => r.targetUrl.trim()).length;
 
-  // Step 1: Cart
-  if (itemCount === 0 && step !== 4) {
+  // Empty cart screen
+  if (itemCount === 0 && step !== 4 && outcome !== 'approved') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
-        <div className="pt-[88px] max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <p className="text-gray-400 text-sm mb-4">{c.cartEmpty}</p>
-          <Link to={lp('/services/niche-edits#packages')} className="text-sm font-semibold text-[#F97316] hover:underline">
-            {c.browsePackages}
-          </Link>
+        <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
+          <p className="text-ink/40 text-sm mb-5">{c.cartEmpty}</p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link to={lp('/services/niche-edits')} className="inline-flex items-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold px-5 py-3 text-sm transition-colors">
+              Link Insertions <ArrowRight size={15} />
+            </Link>
+            <Link to={lp('/services/guest-posting')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
+              Guest Posting
+            </Link>
+            <Link to={lp('/services/crowd-links')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
+              Crowd Marketing
+            </Link>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -370,8 +394,8 @@ export default function CheckoutPage() {
         });
         clear();
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : c.paymentError);
+    } catch {
+      setError(c.paymentError);
     } finally {
       setLoading(false);
     }
@@ -380,40 +404,41 @@ export default function CheckoutPage() {
   // Success screen
   if (outcome === 'approved') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
-            <CheckCircle size={32} className="text-green-500" />
+          <div className="w-16 h-16 border-2 border-green-600 bg-green-50 flex items-center justify-center mx-auto mb-5">
+            <CheckCircle size={32} className="text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.orderConfirmed}</h1>
-          <p className="text-gray-400 text-sm mb-1">{c.orderPrefix}{paidOrderNumber || paidOrderRef}</p>
-          <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
+          <h1 className="font-display text-3xl font-bold text-ink mb-2">{c.orderConfirmed}</h1>
+          <p className="text-ink/40 text-sm mb-1">{c.orderPrefix}{paidOrderNumber || paidOrderRef}</p>
+          <p className="text-ink/60 text-sm max-w-md mx-auto mb-8">
             {c.receivedOrder} {data.requirementsChoice === 'later'
               ? c.needReqsLater
               : c.receivedReqs}
           </p>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 max-w-md mx-auto mb-6 text-left">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{c.whatHappensNext}</h3>
+          <div className="border-2 border-ink/15 bg-white p-5 max-w-md mx-auto mb-6 text-left">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">{c.whatHappensNext}</h3>
             <ul className="flex flex-col gap-2">
               {[c.next1, c.next2, c.next3, c.next4].map((t) => (
-                <li key={t} className="flex items-center gap-2 text-sm text-gray-600">
-                  <Check size={14} className="text-green-500 flex-shrink-0" /> {t}
+                <li key={t} className="flex items-center gap-2 text-sm text-ink/70">
+                  <Check size={14} className="text-green-600 flex-shrink-0" /> {t}
                 </li>
               ))}
             </ul>
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
             {data.requirementsChoice === 'later' && paidRequirementsToken && (
-              <Link to={`/order/${paidRequirementsToken}`} className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-colors">
+              <Link to={`/order/${paidRequirementsToken}`} className="inline-flex items-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold px-5 py-3 text-sm transition-colors">
                 {c.addRequirements}
               </Link>
             )}
-            <Link to={lp('/services/niche-edits')} className="border border-gray-200 hover:border-gray-300 text-gray-600 font-semibold px-5 py-3 rounded-lg text-sm transition-colors">
-              {c.backToLinkInsertions}
+            <Link to={lp('/')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
+              {c.backToHome}
             </Link>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -421,34 +446,35 @@ export default function CheckoutPage() {
   // Declined / pending screens
   if (outcome === 'declined' || outcome === 'pending') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 ${outcome === 'declined' ? 'bg-red-50' : 'bg-orange-50'}`}>
-            {outcome === 'declined' ? <AlertCircle size={32} className="text-red-500" /> : <Loader2 size={32} className="text-[#F97316] animate-spin" />}
+          <div className={`w-16 h-16 border-2 flex items-center justify-center mx-auto mb-5 ${outcome === 'declined' ? 'border-red-500 bg-red-50' : 'border-signal bg-orange-50'}`}>
+            {outcome === 'declined' ? <AlertCircle size={32} className="text-red-500" /> : <Loader2 size={32} className="text-signal animate-spin" />}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{outcome === 'declined' ? c.paymentDeclined : c.paymentProcessing}</h1>
-          <p className="text-gray-400 text-sm max-w-sm mx-auto mb-6">
+          <h1 className="font-display text-2xl font-bold text-ink mb-2">{outcome === 'declined' ? c.paymentDeclined : c.paymentProcessing}</h1>
+          <p className="text-ink/50 text-sm max-w-sm mx-auto mb-6">
             {outcome === 'declined' ? c.declinedMsg : c.processingMsg(data.customerEmail)}
           </p>
           {outcome === 'declined' && (
-            <button onClick={() => setOutcome(null)} className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors">
+            <button onClick={() => setOutcome(null)} className="inline-flex items-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold px-6 py-3 text-sm transition-colors">
               {c.tryAgain}
             </button>
           )}
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-cream min-h-screen">
       <Navigation />
       <div className="pt-[88px]">
-        {/* Header with stepper */}
-        <div className="border-b border-gray-100 bg-gray-50">
+        {/* Header with stepper — solid navy bar */}
+        <div className="bg-navy text-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
-            <Link to={lp('/services/niche-edits')} className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mr-4">
+            <Link to={lp('/')} className="flex items-center gap-1.5 text-xs text-cream/50 hover:text-white transition-colors mr-2">
               <ArrowLeft size={12} /> {c.back}
             </Link>
             <Stepper step={step} c={c} />
@@ -456,36 +482,36 @@ export default function CheckoutPage() {
         </div>
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-          <div className="grid lg:grid-cols-[1fr_300px] gap-8">
+          <div className="grid lg:grid-cols-[1fr_320px] gap-8">
             {/* LEFT: current step */}
-            <div>
+            <div className="min-w-0">
               {/* Step 1: Cart */}
               {step === 1 && (
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-6">{c.yourCart}</h1>
+                  <h1 className="font-display text-3xl font-bold text-ink mb-6">{c.yourCart}</h1>
                   <div className="flex flex-col gap-3 mb-8">
                     {items.map((item) => (
-                      <div key={item.productId} className="border border-gray-200 rounded-xl p-4">
+                      <div key={item.productId} className="border-2 border-ink/15 bg-white p-4">
                         <div className="flex items-start justify-between gap-2 mb-3">
-                          <div>
-                            <div className="text-sm font-semibold text-gray-900">{item.name}</div>
-                            <div className="text-xs text-gray-400">{item.description}</div>
+                          <div className="min-w-0">
+                            <div className="text-sm font-bold text-ink">{item.name}</div>
+                            {getItemSubtitle(item, c) && <div className="text-xs text-ink/40 mt-0.5">{getItemSubtitle(item, c)}</div>}
                           </div>
-                          <button onClick={() => { removeItem(item.productId); trackEvent('remove_from_cart', { product_id: item.productId }); }} className="text-gray-300 hover:text-red-500 transition-colors">
+                          <button onClick={() => { removeItem(item.productId); trackEvent('remove_from_cart', { product_id: item.productId }); }} className="text-ink/30 hover:text-red-500 transition-colors flex-shrink-0">
                             <Trash2 size={16} />
                           </button>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#F97316] hover:text-[#F97316] transition-colors">
+                            <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="w-8 h-8 border-2 border-ink/15 flex items-center justify-center text-ink/60 hover:border-signal hover:text-signal transition-colors">
                               <Minus size={14} />
                             </button>
-                            <span className="text-sm font-semibold text-gray-900 w-8 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#F97316] hover:text-[#F97316] transition-colors">
+                            <span className="text-sm font-bold text-ink w-8 text-center">{item.quantity}</span>
+                            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="w-8 h-8 border-2 border-ink/15 flex items-center justify-center text-ink/60 hover:border-signal hover:text-signal transition-colors">
                               <Plus size={14} />
                             </button>
                           </div>
-                          <div className="text-sm font-bold text-gray-900">${(item.unitPrice * item.quantity).toLocaleString()}</div>
+                          <div className="text-sm font-bold text-ink">{formatMoney(item.unitPrice * item.quantity, currency)}</div>
                         </div>
                       </div>
                     ))}
@@ -504,7 +530,7 @@ export default function CheckoutPage() {
                     }
                     setStep(2);
                     trackEvent('begin_checkout', { total, itemCount });
-                  }} className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200">
+                  }} className="w-full flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold py-3.5 text-sm transition-all duration-200">
                     {c.continueToReqs} <ArrowRight size={15} />
                   </button>
                 </div>
@@ -513,65 +539,61 @@ export default function CheckoutPage() {
               {/* Step 2: Requirements */}
               {step === 2 && (
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.tellUsWhere}</h1>
-                  <p className="text-gray-500 text-sm mb-6">{c.tellUsBody}</p>
+                  <h1 className="font-display text-3xl font-bold text-ink mb-2">{c.tellUsWhere}</h1>
+                  <p className="text-ink/50 text-sm mb-6">{c.tellUsBody}</p>
 
-                  {/* Two choices */}
                   <div className="grid sm:grid-cols-2 gap-3 mb-6">
                     <button
                       onClick={() => update({ requirementsChoice: 'now' })}
-                      className={`border-2 rounded-xl p-4 text-left transition-all ${data.requirementsChoice === 'now' ? 'border-[#F97316] bg-orange-50/50' : 'border-gray-200 hover:border-gray-300'}`}
+                      className={`border-2 p-4 text-left transition-all ${data.requirementsChoice === 'now' ? 'border-signal bg-orange-50/30' : 'border-ink/15 hover:border-ink/30 bg-white'}`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.requirementsChoice === 'now' ? 'border-[#F97316] bg-[#F97316]' : 'border-gray-300'}`}>
+                        <div className={`w-5 h-5 border-2 flex items-center justify-center ${data.requirementsChoice === 'now' ? 'border-signal bg-signal' : 'border-ink/25'}`}>
                           {data.requirementsChoice === 'now' && <Check size={11} className="text-white" />}
                         </div>
-                        <span className="text-sm font-bold text-gray-900">{c.addNow}</span>
+                        <span className="text-sm font-bold text-ink">{c.addNow}</span>
                       </div>
-                      <p className="text-xs text-gray-400 ml-7">{c.addNowBody}</p>
+                      <p className="text-xs text-ink/40 ml-7">{c.addNowBody}</p>
                     </button>
                     <button
                       onClick={() => update({ requirementsChoice: 'later' })}
-                      className={`border-2 rounded-xl p-4 text-left transition-all ${data.requirementsChoice === 'later' ? 'border-[#F97316] bg-orange-50/50' : 'border-gray-200 hover:border-gray-300'}`}
+                      className={`border-2 p-4 text-left transition-all ${data.requirementsChoice === 'later' ? 'border-signal bg-orange-50/30' : 'border-ink/15 hover:border-ink/30 bg-white'}`}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.requirementsChoice === 'later' ? 'border-[#F97316] bg-[#F97316]' : 'border-gray-300'}`}>
+                        <div className={`w-5 h-5 border-2 flex items-center justify-center ${data.requirementsChoice === 'later' ? 'border-signal bg-signal' : 'border-ink/25'}`}>
                           {data.requirementsChoice === 'later' && <Check size={11} className="text-white" />}
                         </div>
-                        <span className="text-sm font-bold text-gray-900">{c.sendLater}</span>
+                        <span className="text-sm font-bold text-ink">{c.sendLater}</span>
                       </div>
-                      <p className="text-xs text-gray-400 ml-7">{c.sendLaterBody}</p>
+                      <p className="text-xs text-ink/40 ml-7">{c.sendLaterBody}</p>
                     </button>
                   </div>
 
-                  {/* Requirements form */}
                   {data.requirementsChoice === 'now' && (
                     <>
-                      {/* Bulk paste */}
                       <div className="mb-4">
                         {!showBulk ? (
-                          <button onClick={() => setShowBulk(true)} className="inline-flex items-center gap-2 text-sm font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
+                          <button onClick={() => setShowBulk(true)} className="inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-[#EA580C] transition-colors">
                             <ClipboardPaste size={14} /> {c.bulkPaste}
                           </button>
                         ) : (
-                          <div className="border border-gray-200 rounded-xl p-4">
+                          <div className="border-2 border-ink/15 bg-white p-4">
                             <label className={labelCls}>{c.pasteRows}</label>
                             <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={5} placeholder="https://site.com/page1 | CRM software&#10;https://site.com/page2 | marketing automation" className={inputCls} />
                             <div className="flex gap-2 mt-2">
-                              <button onClick={parseBulk} className="text-xs font-semibold bg-[#F97316] hover:bg-[#EA580C] text-white px-3 py-2 rounded-lg transition-colors">{c.apply}</button>
-                              <button onClick={() => setShowBulk(false)} className="text-xs font-semibold text-gray-400 hover:text-gray-600 px-3 py-2">{c.cancel}</button>
+                              <button onClick={parseBulk} className="text-xs font-bold bg-signal hover:bg-[#EA580C] text-white px-3 py-2 transition-colors">{c.apply}</button>
+                              <button onClick={() => setShowBulk(false)} className="text-xs font-bold text-ink/40 hover:text-ink/60 px-3 py-2">{c.cancel}</button>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      {/* Per-placement compact rows */}
                       <div className="flex flex-col gap-2 mb-4">
                         {placementReqs.map((req, idx) => (
-                          <div key={idx} className="border border-gray-200 rounded-lg p-3.5">
+                          <div key={idx} className="border-2 border-ink/15 bg-white p-3.5">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{c.link(idx + 1)}</span>
-                              <span className="text-[10px] font-semibold text-gray-300">{req.packageLabel}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-ink/40">{c.link(idx + 1)}</span>
+                              <span className="text-[10px] font-bold text-ink/30">{req.packageLabel}</span>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-2.5">
                               <div>
@@ -581,8 +603,8 @@ export default function CheckoutPage() {
                               <div>
                                 <label className={labelCls}>{c.preferredAnchor}</label>
                                 <input type="text" value={req.anchor} onChange={(e) => updatePlacementReq(idx, { anchor: e.target.value, letVladenzaRecommend: false })} placeholder="best crm software" disabled={req.letVladenzaRecommend} className={`${inputCls} ${req.letVladenzaRecommend ? 'opacity-50' : ''}`} />
-                                <label className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-400 cursor-pointer">
-                                  <input type="checkbox" checked={req.letVladenzaRecommend} onChange={(e) => updatePlacementReq(idx, { letVladenzaRecommend: e.target.checked })} className="accent-[#F97316]" />
+                                <label className="flex items-center gap-1.5 mt-1.5 text-xs text-ink/40 cursor-pointer">
+                                  <input type="checkbox" checked={req.letVladenzaRecommend} onChange={(e) => updatePlacementReq(idx, { letVladenzaRecommend: e.target.checked })} className="accent-signal" />
                                   {c.letRecommend}
                                 </label>
                               </div>
@@ -594,7 +616,6 @@ export default function CheckoutPage() {
                         ))}
                       </div>
 
-                      {/* Campaign notes */}
                       <div className="mb-6">
                         <label className={labelCls}>{c.campaignNotes}</label>
                         <textarea value={data.campaignNotes} onChange={(e) => update({ campaignNotes: e.target.value })} rows={2} placeholder={c.campaignPlaceholder} className={inputCls} />
@@ -603,18 +624,18 @@ export default function CheckoutPage() {
                   )}
 
                   {data.requirementsChoice === 'later' && (
-                    <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-4 mb-6">
-                      <p className="text-sm text-gray-500">{c.laterInfo}</p>
+                    <div className="border-2 border-signal/30 bg-orange-50/20 p-4 mb-6">
+                      <p className="text-sm text-ink/60">{c.laterInfo}</p>
                     </div>
                   )}
 
-                  {error && <p className="text-red-500 text-xs bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">{error}</p>}
+                  {error && <p className="text-red-600 text-xs bg-red-50 border-2 border-red-200 px-3 py-2 mb-4">{error}</p>}
 
                   <div className="flex gap-3">
-                    <button onClick={() => setStep(1)} className="border border-gray-200 hover:border-gray-300 text-gray-600 font-semibold px-5 py-3 rounded-lg text-sm transition-colors">
+                    <button onClick={() => setStep(1)} className="border-2 border-ink/15 hover:border-ink/30 text-ink/60 font-bold px-5 py-3 text-sm transition-colors bg-white">
                       <span className="inline-flex items-center gap-1.5"><ArrowLeft size={14} /> {c.editCart}</span>
                     </button>
-                    <button onClick={handleContinueFromRequirements} disabled={!data.requirementsChoice} className="flex-1 flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-50 text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                    <button onClick={handleContinueFromRequirements} disabled={!data.requirementsChoice} className="flex-1 flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 text-sm transition-all">
                       {c.continueToReview} <ArrowRight size={15} />
                     </button>
                   </div>
@@ -624,55 +645,55 @@ export default function CheckoutPage() {
               {/* Step 3: Review */}
               {step === 3 && (
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-6">{c.reviewOrder}</h1>
+                  <h1 className="font-display text-3xl font-bold text-ink mb-6">{c.reviewOrder}</h1>
 
-                  {/* Items */}
-                  <div className="border border-gray-200 rounded-xl p-5 mb-4">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{c.orderItems}</h2>
-                    <div className="flex flex-col gap-2 mb-4">
+                  <div className="border-2 border-ink/15 bg-white p-5 mb-4">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">{c.orderItems}</h2>
+                    <div className="flex flex-col gap-2.5 mb-4">
                       {items.map((item) => (
-                        <div key={item.productId} className="flex items-center justify-between text-sm">
-                          <span className="text-gray-700">{item.name}<br /><span className="text-xs text-gray-400">{item.description}</span></span>
-                          <div className="text-right">
-                            <div className="text-xs text-gray-400">{c.qty}: {item.quantity}</div>
-                            <div className="font-semibold text-gray-900">${(item.unitPrice * item.quantity).toLocaleString()}</div>
+                        <div key={item.productId} className="flex items-start justify-between gap-3 text-sm">
+                          <div className="min-w-0">
+                            <span className="text-ink/80">{item.name}</span>
+                            {getItemSubtitle(item, c) && <span className="text-xs text-ink/40 block mt-0.5">{getItemSubtitle(item, c)}</span>}
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-xs text-ink/40">{c.qty}: {item.quantity}</div>
+                            <div className="font-bold text-ink">{formatMoney(item.unitPrice * item.quantity, currency)}</div>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="flex items-center justify-between border-t border-gray-100 pt-3">
-                      <span className="text-sm font-semibold text-gray-500">{c.total}</span>
-                      <span className="text-xl font-black text-gray-900">${total.toLocaleString()}</span>
+                    <div className="flex items-center justify-between border-t-2 border-ink/10 pt-3">
+                      <span className="text-sm font-bold text-ink/50">{c.total}</span>
+                      <span className="font-display text-2xl font-bold text-ink">{formatMoney(total, currency)}</span>
                     </div>
                   </div>
 
-                  {/* Requirements summary */}
-                  <div className="border border-gray-200 rounded-xl p-5 mb-4">
+                  <div className="border-2 border-ink/15 bg-white p-5 mb-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">{c.requirements}</h2>
-                      <button onClick={() => setStep(2)} className="text-xs font-semibold text-[#F97316] hover:underline">{c.edit}</button>
+                      <h2 className="text-xs font-bold uppercase tracking-widest text-ink/40">{c.requirements}</h2>
+                      <button onClick={() => setStep(2)} className="text-xs font-bold text-signal hover:underline">{c.edit}</button>
                     </div>
                     {data.requirementsChoice === 'later' ? (
-                      <p className="text-sm text-gray-500">{c.willBeProvided}</p>
+                      <p className="text-sm text-ink/60">{c.willBeProvided}</p>
                     ) : (
-                      <p className="text-sm text-gray-500">{c.reqsProvided(providedCount)}{data.campaignNotes ? c.campaignNotesIncluded : ''}</p>
+                      <p className="text-sm text-ink/60">{c.reqsProvided(providedCount)}{data.campaignNotes ? c.campaignNotesIncluded : ''}</p>
                     )}
                   </div>
 
-                  {/* Customer info */}
-                  <div className="border border-gray-200 rounded-xl p-5 mb-4">
+                  <div className="border-2 border-ink/15 bg-white p-5 mb-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">{c.contactDetails}</h2>
-                      <button onClick={() => setStep(2)} className="text-xs font-semibold text-[#F97316] hover:underline">{c.edit}</button>
+                      <h2 className="text-xs font-bold uppercase tracking-widest text-ink/40">{c.contactDetails}</h2>
+                      <button onClick={() => setStep(4)} className="text-xs font-bold text-signal hover:underline">{c.edit}</button>
                     </div>
-                    <p className="text-sm text-gray-600">{data.customerName || c.notSet}<br />{data.customerEmail}</p>
+                    <p className="text-sm text-ink/70">{data.customerName || c.notSet}<br />{data.customerEmail || c.notSet}</p>
                   </div>
 
                   <div className="flex gap-3">
-                    <button onClick={() => setStep(2)} className="border border-gray-200 hover:border-gray-300 text-gray-600 font-semibold px-5 py-3 rounded-lg text-sm transition-colors">
+                    <button onClick={() => setStep(2)} className="border-2 border-ink/15 hover:border-ink/30 text-ink/60 font-bold px-5 py-3 text-sm transition-colors bg-white">
                       <span className="inline-flex items-center gap-1.5"><ArrowLeft size={14} /> {c.backBtn}</span>
                     </button>
-                    <button onClick={handleContinueFromReview} className="flex-1 flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                    <button onClick={handleContinueFromReview} className="flex-1 flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold py-3 text-sm transition-all">
                       {c.continueToPayment} <ArrowRight size={15} />
                     </button>
                   </div>
@@ -682,20 +703,8 @@ export default function CheckoutPage() {
               {/* Step 4: Payment */}
               {step === 4 && (
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.payment}</h1>
-
-                  {/* What happens next */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{c.whatHappensNext}</h3>
-                    <ol className="flex flex-col gap-2">
-                      {[c.next1Payment, c.next2Payment, c.next3Payment, c.next4Payment, c.next5Payment].map((t, i) => (
-                        <li key={t} className="flex items-center gap-2.5 text-sm text-gray-600">
-                          <span className="w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">{i + 1}</span>
-                          {t}
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                  <h1 className="font-display text-3xl font-bold text-ink mb-1">{c.payment}</h1>
+                  <p className="text-sm text-ink/45 mb-6">{c.nextStepsShort}</p>
 
                   <form onSubmit={handlePay} className="flex flex-col gap-4">
                     <div>
@@ -715,31 +724,34 @@ export default function CheckoutPage() {
                       <input type="url" value={data.customerWebsite} onChange={(e) => update({ customerWebsite: e.target.value })} placeholder="https://yoursite.com" className={inputCls} />
                     </div>
 
-                    {error && <p className="text-red-500 text-xs bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>}
+                    {error && (
+                      <p className="text-red-600 text-xs bg-red-50 border-2 border-red-200 px-3 py-2.5 flex items-start gap-2">
+                        <AlertCircle size={14} className="flex-shrink-0 mt-0.5" /> {error}
+                      </p>
+                    )}
 
-                    {/* Consent checkbox */}
                     <label className="flex items-start gap-2.5 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={agreedToTerms}
                         onChange={(e) => setAgreedToTerms(e.target.checked)}
-                        className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#F97316] flex-shrink-0"
+                        className="mt-0.5 w-4 h-4 border-ink/20 accent-signal flex-shrink-0"
                       />
-                      <span className="text-xs text-gray-500 leading-relaxed">
+                      <span className="text-xs text-ink/55 leading-relaxed">
                         {c.agreeTo}{' '}
-                        <Link to={lp('/terms')} className="text-[#F97316] hover:underline font-semibold">{c.terms}</Link>,{' '}
-                        <Link to={lp('/privacy-policy')} className="text-[#F97316] hover:underline font-semibold">{c.privacyPolicy}</Link>, {c.and}{' '}
-                        <Link to={lp('/refund-policy')} className="text-[#F97316] hover:underline font-semibold">{c.refundPolicy}</Link>.
+                        <Link to={lp('/terms')} className="text-signal hover:underline font-bold">{c.terms}</Link>,{' '}
+                        <Link to={lp('/privacy-policy')} className="text-signal hover:underline font-bold">{c.privacyPolicy}</Link>, {c.and}{' '}
+                        <Link to={lp('/refund-policy')} className="text-signal hover:underline font-bold">{c.refundPolicy}</Link>.
                       </span>
                     </label>
 
-                    <button type="submit" disabled={loading || !agreedToTerms} className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200">
-                      {loading ? <><Loader2 size={15} className="animate-spin" /> {c.processing}</> : <><CreditCard size={15} /> {c.paySecurely(total.toLocaleString())}</>}
+                    <button type="submit" disabled={loading || !agreedToTerms} className="w-full flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 text-sm transition-all duration-200">
+                      {loading ? <><Loader2 size={16} className="animate-spin" /> {c.openingPayment}</> : <><CreditCard size={16} /> {c.paySecurely(formatMoney(total, currency))}</>}
                     </button>
-                    <p className="text-center text-xs text-gray-400">{c.secureCheckout}</p>
+                    <p className="text-center text-xs text-ink/40">{c.secureCheckout}</p>
                   </form>
 
-                  <button onClick={() => setStep(3)} className="mt-4 inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors">
+                  <button onClick={() => setStep(3)} className="mt-4 inline-flex items-center gap-1.5 text-xs text-ink/40 hover:text-ink/70 transition-colors">
                     <ArrowLeft size={12} /> {c.backToReview}
                   </button>
                 </div>
@@ -749,18 +761,37 @@ export default function CheckoutPage() {
             {/* RIGHT: sticky order summary (desktop) */}
             <div className="hidden lg:block">
               <div className="sticky top-28">
-                <OrderSummary c={c} />
+                <OrderSummary c={c} currency={currency} />
               </div>
             </div>
 
             {/* Mobile order summary (collapsible) */}
-            <details className="lg:hidden border border-gray-200 rounded-xl">
-              <summary className="px-4 py-3 text-sm font-semibold text-gray-700 cursor-pointer">{c.orderSummary} — ${total.toLocaleString()}</summary>
-              <div className="px-4 pb-4"><OrderSummary c={c} /></div>
-            </details>
+            <div className="lg:hidden">
+              <button
+                onClick={() => setMobileSummaryOpen(!mobileSummaryOpen)}
+                className="w-full flex items-center justify-between border-2 border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink"
+              >
+                <span>{c.orderSummary}</span>
+                <span className="flex items-center gap-2">
+                  {formatMoney(total, currency)}
+                  <ChevronDown size={16} className={`transition-transform ${mobileSummaryOpen ? 'rotate-180' : ''}`} />
+                </span>
+              </button>
+              {mobileSummaryOpen && (
+                <div className="mt-2"><OrderSummary c={c} currency={currency} /></div>
+              )}
+              {/* Always-visible total bar at bottom on mobile */}
+              {!mobileSummaryOpen && (
+                <div className="fixed bottom-0 left-0 right-0 z-30 bg-navy text-white px-4 py-3 flex items-center justify-between lg:hidden">
+                  <span className="text-sm font-bold text-cream/70">{c.total}</span>
+                  <span className="font-display text-xl font-bold">{formatMoney(total, currency)}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
