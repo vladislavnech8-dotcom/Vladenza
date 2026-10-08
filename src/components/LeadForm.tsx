@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
-import { trackConversion } from '../lib/gtag';
+import { trackLeadConversion } from '../lib/gtag';
 import { useLocale } from '../context/LocaleContext';
 
 const defaultInputCls = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all';
@@ -97,7 +97,7 @@ export default function LeadForm({ defaultService, variant = 'default' }: LeadFo
 
     setLoading(false);
     setSent(true);
-    trackConversion();
+    trackLeadConversion();
   };
 
   const successTitle = contact ? (locale === 'uk' ? 'ОТРИМАЛИ' : 'GOT IT') : t['form.successTitle'];

@@ -9,6 +9,7 @@ import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
 import { payWithWayForPay } from '../lib/wayforpay';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
+import { trackPurchaseConversion } from '../lib/gtag';
 
 function formatMoney(amount: number, currency = 'USD'): string {
   const symbol = currency === 'USD' ? '$' : '';

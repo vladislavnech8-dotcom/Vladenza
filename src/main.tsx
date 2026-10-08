@@ -13,6 +13,25 @@ function ScrollToTop() {
   return null;
 }
 
+const UA_BLOCKED = ['Googlebot','Bingbot','Slurp','DuckDuckBot','Baiduspider','YandexBot','Sogou','Exabot','ia_archiver','SemrushBot','AhrefsBot','MJ12bot'];
+
+function maybeRedirectToUkianian() {
+  if (window.location.pathname !== '/') return;
+  try {
+    const stored = localStorage.getItem('vladenza_locale');
+    if (stored) return; // respect manual choice
+  } catch { return; }
+  const ua = navigator.userAgent;
+  if (UA_BLOCKED.some((b) => ua.includes(b))) return;
+  const langs = navigator.languages ?? [navigator.language ?? ''];
+  const hasUk = langs.some((l) => l.toLowerCase().startsWith('uk'));
+  if (hasUk) {
+    const dest = new URL('/uk/', window.location.origin);
+    dest.search = window.location.search; // preserve gclid, utm params
+    window.location.replace(dest.toString());
+  }
+}
+
 function MetaPixelRouteTracker() {
   const { pathname } = useLocation();
   const firstRender = useRef(true);
@@ -28,6 +47,8 @@ function MetaPixelRouteTracker() {
 }
 
 const rootEl = document.getElementById('root')!;
+
+maybeRedirectToUkianian();
 
 const app = (
   <StrictMode>

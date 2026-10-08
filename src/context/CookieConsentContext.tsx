@@ -24,6 +24,23 @@ const CookieConsentContext = createContext<CookieConsentContextValue>({
   closePreferences: () => {},
 });
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+function updateGtagConsent(consent: CookieConsentState) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
+  const granted = consent === 'accepted';
+  window.gtag('consent', 'update', {
+    ad_storage: granted ? 'granted' : 'denied',
+    ad_user_data: granted ? 'granted' : 'denied',
+    ad_personalization: granted ? 'granted' : 'denied',
+    analytics_storage: granted ? 'granted' : 'denied',
+  });
+}
+
 const STORAGE_KEY = 'vladenza-cookie-consent';
 
 export function CookieConsentProvider({ children }: { children: ReactNode }) {
@@ -36,6 +53,7 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY) as CookieConsentState | null;
       if (stored === 'accepted' || stored === 'rejected') {
         setConsentState(stored);
+        updateGtagConsent(stored);
       } else {
         setShowBanner(true);
       }
@@ -48,6 +66,7 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     setConsentState(state);
     setShowBanner(false);
     setShowPreferences(false);
+    updateGtagConsent(state);
     try {
       if (state) {
         localStorage.setItem(STORAGE_KEY, state);

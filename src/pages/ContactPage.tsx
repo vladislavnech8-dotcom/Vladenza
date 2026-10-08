@@ -4,11 +4,8 @@ import Footer from '../components/Footer';
 import LeadForm from '../components/LeadForm';
 import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
+import { CONTACT_CONFIG, getBookingUrl, getWhatsappUrl } from '../lib/contactConfig';
 
-const BOOKING_URL = '#booking-url-pending';
-const WHATSAPP_URL = '#whatsapp-url-pending';
-const LINKEDIN_URL = 'https://www.linkedin.com/company/vladenza';
-const TELEGRAM_URL = 'https://t.me/vladenza';
 const PORTRAIT_SRC = '/assets/visuals/photovladenza.png';
 
 export default function ContactPage() {
@@ -43,14 +40,14 @@ export default function ContactPage() {
                 </div>
                 <figcaption className="flex items-center justify-between gap-4 pt-3">
                   <p className="text-xs font-bold uppercase tracking-[.14em] text-ink/60">VLAD <span className="text-ink/30">·</span> <span className="normal-case tracking-normal text-ink/50">Founder, Vladenza</span></p>
-                  <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="editorial-focus inline-flex items-center gap-1 text-xs font-bold text-ink/55 transition-colors hover:text-signal">
+                  <a href={CONTACT_CONFIG.LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="editorial-focus inline-flex items-center gap-1 text-xs font-bold text-ink/55 transition-colors hover:text-signal">
                     <Linkedin size={13} /> LinkedIn <ArrowUpRight size={12} />
                   </a>
                 </figcaption>
               </figure>
             </div>
 
-            <div className="md:pt-4 lg:pt-8">
+            <div className="md:pt-4 lg:pt-8" id="contact-form">
               <LeadForm variant="contact" />
             </div>
           </div>
@@ -62,19 +59,19 @@ export default function ContactPage() {
             <h2 className="font-display text-[clamp(2.25rem,4vw,3.75rem)] font-bold leading-[.95] text-cream">{uk ? 'Розуміємо.' : 'Fair enough.'}</h2>
 
             <div className="mt-7 grid border-y border-white/20 sm:grid-cols-2">
-              <a href={BOOKING_URL} className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 pr-5 transition-colors hover:bg-white/5 sm:border-r sm:pr-6">
+              <a href={getBookingUrl()} className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 pr-5 transition-colors hover:bg-white/5 sm:border-r sm:pr-6">
                 <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">{uk ? 'ЗАПЛАНУВАТИ ДЗВІНОК' : 'BOOK A CALL'}</p><p className="mt-1.5 font-display text-xl text-cream">Google Meet</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Оберіть зручний час' : 'Pick a time that works'} <ArrowUpRight size={14} /></span>
               </a>
-              <a href="mailto:info@vladenza.com" className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 sm:pl-6">
-                <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">EMAIL</p><p className="mt-1.5 text-base font-semibold text-cream">info@vladenza.com</p></div>
+              <a href={`mailto:${CONTACT_CONFIG.EMAIL}`} className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 sm:pl-6">
+                <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">EMAIL</p><p className="mt-1.5 text-base font-semibold text-cream">{CONTACT_CONFIG.EMAIL}</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Написати нам' : 'Email us'} <ArrowUpRight size={14} /></span>
               </a>
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="group editorial-focus flex min-h-[120px] flex-col justify-between py-5 pr-5 transition-colors hover:bg-white/5 sm:border-r sm:pr-6">
-                <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">TELEGRAM</p><p className="mt-1.5 text-base font-semibold text-cream">@vladenza</p></div>
+              <a href={CONTACT_CONFIG.TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="group editorial-focus flex min-h-[120px] flex-col justify-between py-5 pr-5 transition-colors hover:bg-white/5 sm:border-r sm:pr-6">
+                <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">TELEGRAM</p><p className="mt-1.5 text-base font-semibold text-cream">{CONTACT_CONFIG.TELEGRAM_HANDLE}</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Написати в Telegram' : 'Message us'} <Send size={13} /></span>
               </a>
-              <a href={WHATSAPP_URL} className="group editorial-focus flex min-h-[120px] flex-col justify-between py-5 sm:border-t sm:border-white/20 sm:pl-6">
+              <a href={getWhatsappUrl()} className="group editorial-focus flex min-h-[120px] flex-col justify-between py-5 sm:border-t sm:border-white/20 sm:pl-6">
                 <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">WHATSAPP</p><p className="mt-1.5 text-base font-semibold text-cream">{uk ? 'Написати' : 'Message us'}</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Відкрити WhatsApp' : 'Open WhatsApp'} <ArrowUpRight size={14} /></span>
               </a>

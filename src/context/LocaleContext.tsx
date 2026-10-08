@@ -29,6 +29,7 @@ export function LocaleProvider({ children }: { children?: ReactNode }) {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, locale);
+      document.cookie = `${STORAGE_KEY}=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     } catch {
       // ignore
     }

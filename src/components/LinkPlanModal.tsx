@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Loader2 } from 'lucide-react';
-import { trackConversion } from '../lib/gtag';
+import { trackLeadConversion } from '../lib/gtag';
 import { useLocale } from '../context/LocaleContext';
 
 const content = {
@@ -142,7 +142,7 @@ export default function LinkPlanModal({ open, onClose }: LinkPlanModalProps) {
       }
 
       setDone(true);
-      trackConversion();
+      trackLeadConversion();
     } catch {
       setError(c.error);
     } finally {

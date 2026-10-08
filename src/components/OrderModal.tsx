@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Loader2, CheckCircle, CreditCard, MessageSquare, AlertCircle } from 'lucide-react';
-import { trackConversion } from '../lib/gtag';
+import { trackLeadConversion, trackPurchaseConversion } from '../lib/gtag';
 import { payWithWayForPay } from '../lib/wayforpay';
 
 export interface Package {
@@ -98,7 +98,7 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
       }
 
       setDone(true);
-      trackConversion();
+      trackLeadConversion();
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -133,7 +133,7 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
       });
       setPayOutcome(outcome.outcome);
       if (outcome.outcome === 'approved') {
-        trackConversion();
+        trackPurchaseConversion(pkg.name, priceValue);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Payment could not be started. Please try again.');
