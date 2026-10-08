@@ -9,7 +9,7 @@ const UA_BLOCKED = [
   'AhrefsBot', 'MJ12bot', 'DotBot', 'PiplBot', 'BLEXBot',
 ];
 
-export default async (request: Request, context: { geo?: GeoContext }) {
+export default async (request: Request, context: { geo?: GeoContext }) => {
   const url = new URL(request.url);
 
   // Only redirect from the exact homepage path
