@@ -5,6 +5,7 @@ import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, Che
 import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type PlacementServiceType, type PlacementStatus } from '../data/placements';
 import ImageUploader from '../components/ImageUploader';
 import MultiImageUploader from '../components/MultiImageUploader';
+import { isCrmOwner } from '../lib/crm';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 
@@ -1443,6 +1444,7 @@ function SeoPanel({ userId }: { userId: string }) {
 
 export default function AdminPage() {
   const { user, signOut } = useAuth();
+  const [access, setAccess] = useState<'checking' | 'allowed' | 'denied'>('checking');
   const [section, setSection] = useState<AdminSection>('seo');
   const [editingPost, setEditingPost] = useState<DbPost | null | 'new'>(null);
   const [editingCase, setEditingCase] = useState<DbCase | null | 'new'>(null);
@@ -1455,6 +1457,38 @@ export default function AdminPage() {
     { id: 'orders', label: 'Заказы',         icon: <Link2 size={15} /> },
     { id: 'placements', label: 'Placements',  icon: <LayoutGrid size={15} /> },
   ];
+
+  useEffect(() => {
+    let active = true;
+    if (!user) { setAccess('denied'); return; }
+    isCrmOwner(user.id).then(ok => { if (active) setAccess(ok ? 'allowed' : 'denied'); });
+    return () => { active = false; };
+  }, [user]);
+
+  if (access === 'checking') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm text-gray-500">
+        Проверка доступа...
+      </div>
+    );
+  }
+
+  if (access === 'denied') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+        <div className="max-w-sm text-center">
+          <h1 className="text-lg font-semibold text-gray-900 mb-2">Доступ запрещён</h1>
+          <p className="text-sm text-gray-500 mb-5">У этого аккаунта нет прав администратора.</p>
+          <button
+            onClick={() => signOut()}
+            className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium"
+          >
+            Выйти
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
