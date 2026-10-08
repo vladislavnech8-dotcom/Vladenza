@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,19 +22,17 @@ function isDisposable(email: string): boolean {
   return DISPOSABLE_DOMAINS.has(domain);
 }
 
-// Very basic email format check beyond what browsers do
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-// Rate limit: simple in-memory store (resets per function cold start)
 const recentIPs = new Map<string, number[]>();
-const RATE_WINDOW_MS = 60_000; // 1 minute
-const RATE_LIMIT = 3; // max 3 submissions per IP per minute
+const RATE_WINDOW_MS = 60_000;
+const RATE_LIMIT = 3;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
-  const timestamps = (recentIPs.get(ip) ?? []).filter(t => now - t < RATE_WINDOW_MS);
+  const timestamps = (recentIPs.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
   if (timestamps.length >= RATE_LIMIT) return true;
   timestamps.push(now);
   recentIPs.set(ip, timestamps);
@@ -63,9 +62,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { email, messenger, website, budget, message, source, service, _ts } = body;
+    const { email, messenger, website, budget, message, source, service, name, packageName, packageDetails, _ts } = body;
 
-    // Required field
     if (!email || typeof email !== "string") {
       return new Response(JSON.stringify({ error: "Missing email" }), {
         status: 400,
@@ -73,7 +71,6 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Email format
     if (!isValidEmail(email)) {
       return new Response(JSON.stringify({ error: "Invalid email" }), {
         status: 400,
@@ -81,16 +78,13 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Disposable email check
     if (isDisposable(email)) {
-      // Silent reject — don't tell bots why it failed
       return new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Time-gate: _ts should be within last 30 minutes and not in the future
     if (_ts) {
       const age = Date.now() - Number(_ts);
       if (age < 2000 || age > 30 * 60 * 1000) {
@@ -101,29 +95,60 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Forward to Telegram notification (if configured)
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    const leadName = typeof name === "string" ? name : "";
+    const leadMessenger = typeof messenger === "string" ? messenger : "";
+    const leadWebsite = typeof website === "string" ? website : "";
+    const leadBudget = typeof budget === "string" ? budget : "";
+    const leadService = typeof service === "string" ? service : "General Inquiry";
+    const leadPackage = typeof packageName === "string" ? packageName : "Quote Request";
+    const leadPackageDetails = typeof packageDetails === "string" ? packageDetails : (typeof message === "string" ? message : "");
+    const leadSource = typeof source === "string" ? source : "vladenza.com";
+
+    const { error: dbError } = await supabase.from("leads").insert({
+      name: leadName,
+      email,
+      messenger: leadMessenger,
+      website: leadWebsite,
+      service: leadService,
+      package: leadPackage,
+      package_details: leadPackageDetails,
+      budget: leadBudget,
+      source: leadSource,
+    });
+
+    if (dbError) {
+      console.error("Lead insert error:", dbError);
+      return new Response(JSON.stringify({ error: "Could not save lead" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
     const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID");
 
-    let tgResult: unknown = null;
-
     if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
       const lines = [
-        `🔔 *New Lead — ${service ?? "vladenza.com"}*`,
+        `🔔 *New Lead — ${leadService}*`,
         `━━━━━━━━━━━━━━━━━━━━`,
         `📧 *Email:* ${email}`,
-        messenger ? `💬 *Messenger:* ${messenger}` : null,
-        website ? `🌐 *Website:* ${website}` : null,
-        budget ? `💰 *Budget:* ${budget}` : null,
-        message ? `📝 *Message:* ${message}` : null,
-        `📍 *Source:* ${source ?? "unknown"}`,
+        leadName ? `👤 *Name:* ${leadName}` : null,
+        leadMessenger ? `💬 *Messenger:* ${leadMessenger}` : null,
+        leadWebsite ? `🌐 *Website:* ${leadWebsite}` : null,
+        leadBudget ? `💰 *Budget:* ${leadBudget}` : null,
+        leadPackageDetails ? `📝 *Details:* ${leadPackageDetails}` : null,
+        `📍 *Source:* ${leadSource}`,
         `━━━━━━━━━━━━━━━━━━━━`,
       ].filter(Boolean) as string[];
 
-      const chatIds = TELEGRAM_CHAT_ID.split(",").map(id => id.trim()).filter(Boolean);
+      const chatIds = TELEGRAM_CHAT_ID.split(",").map((id) => id.trim()).filter(Boolean);
 
-      const results = await Promise.all(
-        chatIds.map(chat_id =>
+      await Promise.all(
+        chatIds.map((chat_id) =>
           fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -132,13 +157,9 @@ Deno.serve(async (req: Request) => {
               text: lines.join("\n"),
               parse_mode: "Markdown",
             }),
-          }).then(r => r.json()).catch(() => ({}))
+          }).then((r) => r.json()).catch(() => ({}))
         )
       );
-      tgResult = results;
-      console.log("TG result:", JSON.stringify(tgResult));
-    } else {
-      tgResult = { skipped: true, token: !!TELEGRAM_BOT_TOKEN, chat: !!TELEGRAM_CHAT_ID };
     }
 
     return new Response(JSON.stringify({ ok: true }), {

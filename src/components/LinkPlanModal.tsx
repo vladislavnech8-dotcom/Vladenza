@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { trackConversion } from '../lib/gtag';
 import { useLocale } from '../context/LocaleContext';
 
@@ -116,40 +115,31 @@ export default function LinkPlanModal({ open, onClose }: LinkPlanModalProps) {
     setLoading(true);
 
     try {
-      const { error: dbError } = await supabase.from('leads').insert({
-        name: '',
-        email,
-        website,
-        service: 'Link Plan Request',
-        package: 'Link Plan Request',
-        package_details: `Budget: ${budget || 'Not specified'} | Goal: ${goal || 'Not specified'}`,
-        budget: budget || 'Not specified',
-        message: notes || '',
-        source: 'vladenza.com',
-        language: locale,
-      });
+      const details = `Budget: ${budget || 'Not specified'} | Goal: ${goal || 'Not specified'}${notes ? ` | Notes: ${notes}` : ''} | Language: ${locale}`;
 
-      if (dbError) {
-        setError(dbError.message || c.error);
-        return;
-      }
-
-      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inbound-lead`, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inbound-lead`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
+          name: '',
           email,
           website,
-          message: `Link Plan Request — Budget: ${budget || 'N/A'} | Goal: ${goal || 'N/A'}${notes ? ` | Notes: ${notes}` : ''}`,
-          source: 'vladenza.com',
+          budget: budget || 'Not specified',
           service: 'Link Plan Request',
-          language: locale,
+          packageName: 'Link Plan Request',
+          packageDetails: details,
+          source: 'vladenza.com',
           _ts: Date.now() - 5000,
         }),
-      }).catch(() => {});
+      });
+
+      if (!response.ok) {
+        setError(c.error);
+        return;
+      }
 
       setDone(true);
       trackConversion();

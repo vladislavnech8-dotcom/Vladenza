@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { trackConversion } from '../lib/gtag';
 import { useLocale } from '../context/LocaleContext';
 
@@ -72,15 +71,29 @@ export default function LeadForm({ defaultService, variant = 'default' }: LeadFo
       `Language: ${locale === 'uk' ? 'Ukrainian' : 'English'}`,
     ].filter(Boolean).join(' | ');
 
-    const { error: dbError } = await supabase.from('leads').insert({
-      name: name || '', email, messenger: messenger || '', website: website || '', service: serviceLabel, package: 'Quote Request', package_details: details, budget: budget || '', source: 'vladenza.com',
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inbound-lead`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({
+        name: name || '',
+        email,
+        messenger: messenger || '',
+        website: website || '',
+        budget: budget || '',
+        service: serviceLabel,
+        packageName: 'Quote Request',
+        packageDetails: details,
+        source: 'vladenza.com',
+        _ts: Date.now() - 5000,
+      }),
     });
-    if (dbError) { console.error('Lead insert error:', dbError); setError(t['form.errorGeneric']); setLoading(false); return; }
 
-    await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inbound-lead`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ email, messenger: messenger || undefined, website: website || undefined, budget: budget || undefined, message: details, source: 'vladenza.com', service: serviceLabel, _ts: Date.now() - 5000 }),
-    }).catch(() => {});
+    if (!response.ok) {
+      console.error('Lead submission failed:', response.status);
+      setError(t['form.errorGeneric']);
+      setLoading(false);
+      return;
+    }
 
     setLoading(false);
     setSent(true);

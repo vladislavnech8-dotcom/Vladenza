@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Loader2, CheckCircle, CreditCard, MessageSquare, AlertCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { trackConversion } from '../lib/gtag';
 import { payWithWayForPay } from '../lib/wayforpay';
 
@@ -71,25 +70,9 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
 
     try {
       const serviceLabel = pkg.service || pkg.name;
+      const packageDetails = `${pkg.links} · ${pkg.price}`;
 
-      const { error: dbError } = await supabase.from('leads').insert({
-        name,
-        email,
-        messenger: messenger || '',
-        website: website || '',
-        service: serviceLabel,
-        package: pkg.name,
-        package_details: `${pkg.links} · ${pkg.price}`,
-        budget: budget || 'Not specified',
-        source: 'vladenza.com',
-      });
-
-      if (dbError) {
-        setError(dbError.message || 'Something went wrong. Please try again.');
-        return;
-      }
-
-      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inbound-lead`, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inbound-lead`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,14 +81,21 @@ export default function OrderModal({ pkg, onClose }: OrderModalProps) {
         body: JSON.stringify({
           name,
           email,
-          messenger: messenger || undefined,
-          website: website || undefined,
-          source: 'vladenza.com',
+          messenger: messenger || '',
+          website: website || '',
+          budget: budget || 'Not specified',
           service: serviceLabel,
-          message: `${serviceLabel} — ${pkg.name} (${pkg.links} · ${pkg.price})`,
+          packageName: pkg.name,
+          packageDetails,
+          source: 'vladenza.com',
           _ts: Date.now() - 5000,
         }),
-      }).catch(() => {});
+      });
+
+      if (!response.ok) {
+        setError('Something went wrong. Please try again.');
+        return;
+      }
 
       setDone(true);
       trackConversion();
