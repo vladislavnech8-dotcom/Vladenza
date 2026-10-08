@@ -2,8 +2,8 @@ import { NICHE_EDIT_STARTING_PRICE } from './nicheEditPackages';
 
 export const PRICING = {
   linkInsertions: { from: NICHE_EDIT_STARTING_PRICE, coverage: '12-month coverage' },
-  guestPosts: { from: 100, coverage: '12-month coverage' },
-  crowdMarketing: { from: 290, coverage: '30-day replacement coverage' },
+  guestPosts: { from: 510, coverage: '12-month coverage' },
+  crowdMarketing: { from: 199, coverage: '30-day replacement coverage' },
   whiteLabel: { from: 700, coverage: null },
 } as const;
 
