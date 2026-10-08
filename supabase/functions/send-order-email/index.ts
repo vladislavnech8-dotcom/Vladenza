@@ -54,6 +54,15 @@ interface CartSnapshot {
   currency: string;
 }
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 const FROM_NAME = "Vladenza Orders";
 const FROM_EMAIL = "info@vladenza.com";
 const REPLY_TO = "info@vladenza.com";
@@ -143,7 +152,7 @@ Deno.serve(async (req: Request) => {
     const itemRowsHtml = itemsForEmail
       .map(
         (item) =>
-          `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;">${item.name}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:center;">${item.quantity}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">$${item.unitPrice.toLocaleString()}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">$${(item.unitPrice * item.quantity).toLocaleString()}</td></tr>`
+          `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;">${escapeHtml(item.name)}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:center;">${item.quantity}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${item.unitPrice.toLocaleString()}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${(item.unitPrice * item.quantity).toLocaleString()}</td></tr>`
       )
       .join("");
 
@@ -152,7 +161,7 @@ Deno.serve(async (req: Request) => {
       .join("\n");
 
     // Customer first name
-    const firstName = (order.name || "").trim().split(/\s+/)[0] || "there";
+    const firstName = escapeHtml((order.name || "").trim().split(/\s+/)[0] || "there");
 
     const subject = `Order confirmed — ${order.order_number} | Vladenza`;
 
@@ -287,8 +296,8 @@ ${SITE_URL}`;
   <tr><td style="padding:32px 40px;">
     <h1 style="font-size:20px;color:#111;margin:0 0 16px;">New Paid Order</h1>
     <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Order:</strong> ${order.order_number}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Customer:</strong> ${order.name}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Email:</strong> ${order.email}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Customer:</strong> ${escapeHtml(order.name || "")}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Email:</strong> ${escapeHtml(order.email || "")}</p>
     <p style="font-size:14px;color:#333;margin:0 0 16px;"><strong>Requirements:</strong> ${reqStatus}</p>
 
     <h2 style="font-size:15px;color:#111;margin:0 0 8px;">Items</h2>

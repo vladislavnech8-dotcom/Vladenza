@@ -323,7 +323,6 @@ async function sendTelegramNotification(
         body: JSON.stringify({
           chat_id,
           text: message,
-          parse_mode: "HTML",
         }),
       })
         .then((r) => r.json())

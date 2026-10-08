@@ -155,7 +155,6 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               chat_id,
               text: lines.join("\n"),
-              parse_mode: "Markdown",
             }),
           }).then((r) => r.json()).catch(() => ({}))
         )

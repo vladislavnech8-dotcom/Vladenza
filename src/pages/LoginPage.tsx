@@ -23,7 +23,7 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await signIn(email, password);
     setLoading(false);
-    if (error) setError(error.message);
+    if (error) setError('Invalid email or password.');
   };
 
   return (

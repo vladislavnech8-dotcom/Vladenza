@@ -42,10 +42,10 @@ function AuthGate() {
     setLoading(true);
     if (mode === 'login') {
       const { error } = await signIn(email, password);
-      if (error) setError(error.message);
+      if (error) setError('Invalid email or password.');
     } else {
       const { error } = await signUp(email, password);
-      if (error) setError(error.message);
+      if (error) setError('Could not create account. Please try again.');
       else setConfirmSent(true);
     }
     setLoading(false);
@@ -177,7 +177,7 @@ function AuthGate() {
             <div className="px-7 pb-6 text-center">
               <p className="text-gray-400 text-xs">
                 Need help?{' '}
-                <a href="mailto:hello@vladenza.com" className="text-[#F97316] hover:underline">Contact support</a>
+                <a href="mailto:info@vladenza.com" className="text-[#F97316] hover:underline">Contact support</a>
               </p>
             </div>
           </div>

@@ -88,8 +88,8 @@ export default function ImageUploader({
       onChange(publicUrl);
       setProgress(100);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Upload failed. Please try again.';
-      setError(msg);
+      console.error('Upload failed', err);
+      setError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
       setTimeout(() => setProgress(0), 500);

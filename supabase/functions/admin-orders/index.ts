@@ -168,9 +168,12 @@ Deno.serve(async (req: Request) => {
         query = query.eq("requirements_status", reqStatus);
       }
       if (search) {
-        query = query.or(
-          `order_number.ilike.%${search}%,email.ilike.%${search}%,name.ilike.%${search}%,website.ilike.%${search}%`,
-        );
+        const safeSearch = search.replace(/[,().*\\"']/g, "").slice(0, 100);
+        if (safeSearch) {
+          query = query.or(
+            `order_number.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%,name.ilike.%${safeSearch}%,website.ilike.%${safeSearch}%`,
+          );
+        }
       }
 
       query = query.order("created_at", { ascending: false });

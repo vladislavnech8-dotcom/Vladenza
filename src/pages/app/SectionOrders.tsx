@@ -121,7 +121,11 @@ function NewOrderPanel({ onCreated, onCancel }: { onCreated: () => void; onCance
       notes: notes.trim(),
     });
     setSaving(false);
-    if (err) { setError(err.message); return; }
+    if (err) {
+      console.error('Order create failed', err);
+      setError('We could not save your order. Please check your details and try again.');
+      return;
+    }
     onCreated();
   }
 
