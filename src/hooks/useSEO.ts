@@ -52,7 +52,7 @@ const RETAINED_BLOG_SLUGS = [
 // UK indexable routes: compact commercial layer only (no blog/case-study mirrors)
 const UK_INDEXABLE_STATIC_ROUTES = [
   '/', '/services/guest-posting', '/services/niche-edits', '/services/crowd-links',
-  '/services/white-label', '/pricing',
+  '/services/white-label', '/pricing', '/case-studies',
 ];
 
 function isIndexableRoute(pathname: string): boolean {
@@ -61,8 +61,10 @@ function isIndexableRoute(pathname: string): boolean {
   const stripped = normalized.endsWith('/') && normalized !== '/' ? normalized.slice(0, -1) : normalized;
 
   if (isUk) {
-    // UK: only compact commercial layer is indexable
-    return UK_INDEXABLE_STATIC_ROUTES.includes(stripped);
+    if (UK_INDEXABLE_STATIC_ROUTES.includes(stripped)) return true;
+    const ukCaseMatch = stripped.match(/^\/case-studies\/(.+)$/);
+    if (ukCaseMatch) return INDEXABLE_CASE_SLUGS.includes(ukCaseMatch[1]);
+    return false;
   }
 
   // EN: full indexable set

@@ -55,6 +55,7 @@ const UK_INDEXABLE_STATIC = [
   '/services/white-label',
   '/contact',
   '/pricing',
+  '/case-studies',
 ];
 
 // ─── EN noindex routes (accessible but excluded from sitemap) ───
@@ -101,7 +102,6 @@ const UK_NOINDEX_STATIC = [
   '/refund-policy',
   '/cookie-policy',
   '/placements',
-  '/case-studies',
   '/blog',
 ];
 
@@ -189,7 +189,10 @@ function isEnIndexable(route) {
 }
 
 function isUkIndexable(route) {
-  return UK_INDEXABLE_STATIC.includes(route);
+  if (UK_INDEXABLE_STATIC.includes(route)) return true;
+  const caseMatch = route.match(/^\/case-studies\/(.+)$/);
+  if (caseMatch) return EN_INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
+  return false;
 }
 
 // Only emit hreflang if BOTH en and uk versions are indexable
@@ -338,10 +341,14 @@ async function main() {
   const ukBlogRoutes = EN_INDEXABLE_BLOG_SLUGS
     .filter((s) => blogPostsUk[s] && (dbPostsBySlug.has(s) || allBlogSlugs.includes(s)))
     .map((s) => `/blog/${s}`);
-  // UK case studies: all that have UK translations (noindex)
-  const ukCaseRoutes = [...EN_INDEXABLE_CASE_SLUGS, ...UNVERIFIED_CASE_SLUGS]
+  // UK case studies: split into indexable (verified) and noindex (unverified)
+  const ukIndexableCaseRoutes = EN_INDEXABLE_CASE_SLUGS
     .filter((s) => casesUk[s] && dbCasesBySlug.has(s))
     .map((s) => `/case-studies/${s}`);
+  const ukUnverifiedCaseRoutes = UNVERIFIED_CASE_SLUGS
+    .filter((s) => casesUk[s] && dbCasesBySlug.has(s))
+    .map((s) => `/case-studies/${s}`);
+  const ukCaseRoutes = [...ukIndexableCaseRoutes, ...ukUnverifiedCaseRoutes];
   // UK crowd language pages (noindex)
   const ukCrowdLangRoutes = CROWD_LINKS_LANGUAGES.map((l) => `/services/crowd-links/${l}`);
 
@@ -441,7 +448,7 @@ async function main() {
         (locale === 'en' && EN_NOINDEX_STATIC.includes(contentRoute)) ||
         (locale === 'uk' && UK_NOINDEX_STATIC.includes(contentRoute)) ||
         (locale === 'en' && enUnverifiedCaseRoutes.includes(contentRoute)) ||
-        (locale === 'uk' && ukCaseRoutes.includes(contentRoute)) ||
+        (locale === 'uk' && ukUnverifiedCaseRoutes.includes(contentRoute)) ||
         (locale === 'en' && enNoindexBlogRoutes.includes(contentRoute)) ||
         (locale === 'uk' && ukBlogRoutes.includes(contentRoute)) ||
         (locale === 'en' && crowdLangRoutes.includes(contentRoute)) ||
@@ -474,8 +481,8 @@ async function main() {
     ...enIndexableBlogRoutes,
   ];
 
-  // UK indexable routes: compact commercial layer only
-  const sitemapUkRoutes = UK_INDEXABLE_STATIC;
+  // UK indexable routes: compact commercial layer + verified case studies
+  const sitemapUkRoutes = [...UK_INDEXABLE_STATIC, ...ukIndexableCaseRoutes];
 
   const sitemapEntries = [];
 

@@ -92,6 +92,13 @@
   <url>
     <loc>https://vladenza.com/case-studies/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/"/>
   </url>
   <url>
@@ -102,36 +109,85 @@
   <url>
     <loc>https://vladenza.com/case-studies/dating-5x-traffic/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/dating-5x-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/dating-5x-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/dating-5x-traffic/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/dating-5x-traffic/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/dating-5x-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/dating-5x-traffic/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/dating-5x-traffic/"/>
   </url>
   <url>
     <loc>https://vladenza.com/case-studies/saas-non-brand-traffic/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/saas-non-brand-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/saas-non-brand-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/saas-non-brand-traffic/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/saas-non-brand-traffic/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/saas-non-brand-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/saas-non-brand-traffic/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/saas-non-brand-traffic/"/>
   </url>
   <url>
     <loc>https://vladenza.com/case-studies/igaming-domain-authority/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/igaming-domain-authority/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/igaming-domain-authority/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/igaming-domain-authority/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/igaming-domain-authority/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/igaming-domain-authority/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/igaming-domain-authority/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/igaming-domain-authority/"/>
   </url>
   <url>
     <loc>https://vladenza.com/case-studies/crypto-page1-ranking/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/crypto-page1-ranking/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/crypto-page1-ranking/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/crypto-page1-ranking/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/crypto-page1-ranking/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/crypto-page1-ranking/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/crypto-page1-ranking/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/crypto-page1-ranking/"/>
   </url>
   <url>
     <loc>https://vladenza.com/case-studies/health-google-update-recovery/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/health-google-update-recovery/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/health-google-update-recovery/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/health-google-update-recovery/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/health-google-update-recovery/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/health-google-update-recovery/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/health-google-update-recovery/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/health-google-update-recovery/"/>
   </url>
   <url>
     <loc>https://vladenza.com/case-studies/igaming-20k-traffic/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/igaming-20k-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/igaming-20k-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/igaming-20k-traffic/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/igaming-20k-traffic/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/igaming-20k-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/igaming-20k-traffic/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/igaming-20k-traffic/"/>
   </url>
   <url>
     <loc>https://vladenza.com/case-studies/crypto-forum-x10-traffic/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/crypto-forum-x10-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/crypto-forum-x10-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/crypto-forum-x10-traffic/"/>
+  </url>
+  <url>
+    <loc>https://vladenza.com/uk/case-studies/crypto-forum-x10-traffic/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vladenza.com/case-studies/crypto-forum-x10-traffic/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://vladenza.com/uk/case-studies/crypto-forum-x10-traffic/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://vladenza.com/case-studies/crypto-forum-x10-traffic/"/>
   </url>
   <url>
