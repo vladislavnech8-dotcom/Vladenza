@@ -56,6 +56,26 @@ function loadWidgetScript(): Promise<void> {
 
 export type WfpOutcome = 'approved' | 'declined' | 'pending';
 
+export interface PromoValidationResult {
+  valid: boolean;
+  error?: string;
+  discount_amount?: number;
+  final_total?: number;
+  eligible_subtotal?: number;
+  total_subtotal?: number;
+  code?: string;
+  discount_type?: string;
+  discount_value?: number;
+}
+
+export async function validatePromoCode(promoCode: string, items: CartItemInput[]): Promise<PromoValidationResult> {
+  const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
+    body: { action: 'validate_promo', promoCode, items },
+  });
+  if (error || !data) return { valid: false, error: 'validation_error' };
+  return data as PromoValidationResult;
+}
+
 export interface PayResult {
   outcome: WfpOutcome;
   orderRef: string;
@@ -103,6 +123,7 @@ export async function payWithWayForPay(params: {
   requirements?: unknown;
   requirementsStatus?: string;
   checkoutAttemptId: string;
+  promoCode?: string;
 }): Promise<PayResult> {
   const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
     body: {
@@ -119,6 +140,7 @@ export async function payWithWayForPay(params: {
       requirements: params.requirements,
       requirementsStatus: params.requirementsStatus,
       checkoutAttemptId: params.checkoutAttemptId,
+      promoCode: params.promoCode || '',
     },
   });
 

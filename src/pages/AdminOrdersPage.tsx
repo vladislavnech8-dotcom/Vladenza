@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   Search, RefreshCw, ChevronDown, ChevronLeft, ChevronRight,
   Loader2, AlertCircle, Mail, Save, X, Package, Clock,
-  CheckCircle2, ArrowRight, ExternalLink,
+  CheckCircle2, ArrowRight, ExternalLink, Tag,
 } from 'lucide-react';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
@@ -49,6 +49,9 @@ interface AdminOrder {
   wfpTransactionId: string;
   adminNotes: string;
   statusChangedBy: string;
+  discountAmount: number | null;
+  originalAmount: number | null;
+  promoCodeSnapshot: { code?: string } | null;
 }
 
 type LoadingState = 'loading' | 'loaded' | 'error';
@@ -567,6 +570,21 @@ function OrderDetailDrawer({ order, session, onClose, onUpdated }: {
             <DetailRow label="Created" value={formatDate(order.createdAt)} />
             <DetailRow label="Paid" value={formatDate(order.paidAt)} />
             <DetailRow label="Total" value={formatMoney(order.amount, order.currency)} />
+            {order.discountAmount != null && order.discountAmount > 0 && (
+              <>
+                <DetailRow label="Original Amount" value={order.originalAmount != null ? formatMoney(order.originalAmount, order.currency) : '—'} />
+                <DetailRow label="Discount" value={
+                  <span className="text-orange-600 font-semibold flex items-center gap-1 justify-end">
+                    <Tag size={11} /> −{formatMoney(order.discountAmount, order.currency)}
+                  </span>
+                } />
+                <DetailRow label="Promo Code" value={
+                  <span className="inline-flex items-center gap-1 bg-orange-50 border border-orange-200 text-orange-700 px-2 py-0.5 rounded-md text-xs font-semibold">
+                    <Tag size={10} /> {order.promoCodeSnapshot?.code || '—'}
+                  </span>
+                } />
+              </>
+            )}
             <DetailRow label="WFP Transaction ID" value={order.wfpTransactionId || '—'} />
             <DetailRow label="Last Updated" value={formatDate(order.updatedAt)} />
             {order.statusChangedBy && (

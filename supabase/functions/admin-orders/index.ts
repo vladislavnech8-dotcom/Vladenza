@@ -40,6 +40,9 @@ interface OrderRow {
   wfp_transaction_id: string | null;
   admin_notes: string;
   status_changed_by: string;
+  discount_amount: number | null;
+  original_amount: number | null;
+  promo_code_snapshot: { code?: string } | null;
 }
 
 function sanitizeOrder(row: OrderRow) {
@@ -68,6 +71,9 @@ function sanitizeOrder(row: OrderRow) {
     wfpTransactionId: row.wfp_transaction_id ?? "",
     adminNotes: row.admin_notes ?? "",
     statusChangedBy: row.status_changed_by ?? "",
+    discountAmount: row.discount_amount != null ? Number(row.discount_amount) : null,
+    originalAmount: row.original_amount != null ? Number(row.original_amount) : null,
+    promoCodeSnapshot: row.promo_code_snapshot ?? null,
   };
 }
 
@@ -151,7 +157,7 @@ Deno.serve(async (req: Request) => {
       let query = supabase
         .from("orders")
         .select(
-          "id, order_ref, order_number, package_name, amount, currency, type, name, email, website, company, message, status, order_status, order_items, requirements, requirements_status, cart_snapshot, created_at, paid_at, updated_at, wfp_transaction_id, admin_notes, status_changed_by",
+          "id, order_ref, order_number, package_name, amount, currency, type, name, email, website, company, message, status, order_status, order_items, requirements, requirements_status, cart_snapshot, created_at, paid_at, updated_at, wfp_transaction_id, admin_notes, status_changed_by, discount_amount, original_amount, promo_code_snapshot",
           { count: "exact" },
         );
 

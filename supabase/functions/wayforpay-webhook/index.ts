@@ -89,7 +89,7 @@ Deno.serve(async (req: Request) => {
     const { data: existingOrder, error: fetchError } = await supabase
       .from("orders")
       .select(
-        "id, status, order_status, order_number, name, email, website, amount, currency, order_items, requirements, requirements_status, wfp_transaction_id"
+        "id, status, order_status, order_number, name, email, website, amount, currency, order_items, requirements, requirements_status, wfp_transaction_id, discount_amount, promo_code_snapshot"
       )
       .eq("order_ref", orderReference)
       .maybeSingle();
@@ -226,8 +226,9 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Send Telegram notification ONLY for confirmed payments
+    // Confirm or release promo code redemption based on payment result
     if (isApproved) {
+      await supabase.rpc("confirm_promo_redemption", { p_order_id: existingOrder.id });
       await sendTelegramNotification(supabase, existingOrder, orderReference);
       // Send customer confirmation + internal notification email (idempotent via email_sent_at)
       try {
@@ -239,6 +240,8 @@ Deno.serve(async (req: Request) => {
       } catch (emailErr) {
         console.error("Failed to send order email:", emailErr);
       }
+    } else {
+      await supabase.rpc("release_promo_redemption", { p_order_id: existingOrder.id });
     }
 
     // Return the signed WayForPay acknowledgement:

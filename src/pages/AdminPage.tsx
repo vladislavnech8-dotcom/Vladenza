@@ -6,10 +6,11 @@ import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type Place
 import ImageUploader from '../components/ImageUploader';
 import MultiImageUploader from '../components/MultiImageUploader';
 import { isCrmOwner } from '../lib/crm';
+import PromoCodesPanel from '../components/PromoCodesPanel';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 
-type AdminSection = 'seo' | 'blog' | 'cases' | 'orders' | 'placements';
+type AdminSection = 'seo' | 'blog' | 'cases' | 'orders' | 'placements' | 'promos';
 type SeoTab = 'basic' | 'opengraph' | 'advanced';
 
 interface DbPost {
@@ -1455,6 +1456,7 @@ export default function AdminPage() {
     { id: 'blog',   label: 'Блог',          icon: <FileText size={15} /> },
     { id: 'cases',  label: 'Кейсы',         icon: <Briefcase size={15} /> },
     { id: 'orders', label: 'Заказы',         icon: <Link2 size={15} /> },
+    { id: 'promos', label: 'Promo Codes',    icon: <Tag size={15} /> },
     { id: 'placements', label: 'Placements',  icon: <LayoutGrid size={15} /> },
   ];
 
@@ -1574,6 +1576,7 @@ export default function AdminPage() {
           </>
         )}
         {section === 'orders' && <ClientOrdersPanel />}
+        {section === 'promos' && <PromoCodesPanel />}
 
         {section === 'placements' && (
           <>

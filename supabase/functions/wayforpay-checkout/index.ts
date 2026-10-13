@@ -37,6 +37,9 @@ interface StoredOrder {
   email: string;
   order_items: CartItemInput[];
   requirements_token_encrypted: string;
+  promo_code_id: string | null;
+  discount_amount: number;
+  original_amount: number;
 }
 
 function hmacMd5(key: string, data: string): string {
@@ -166,6 +169,36 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ success: true, status });
     }
 
+    if (body.action === "validate_promo") {
+      const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : "";
+      const items = Array.isArray(body.items) ? body.items as CartItemInput[] : [];
+      if (!promoCode) return jsonResponse({ valid: false, error: "empty_code" }, 400);
+      if (items.length === 0) return jsonResponse({ valid: false, error: "empty_cart" }, 400);
+
+      const cartItemsForValidation = items.map((item) => {
+        const canonicalPrice = VALID_PRICES[item.productId];
+        const eligibleAmount = (canonicalPrice ?? 0) * Number(item.quantity);
+        return {
+          productId: item.productId,
+          quantity: Number(item.quantity),
+          eligibleAmount: Math.round(eligibleAmount * 100) / 100,
+        };
+      });
+
+      const { data: promoResult, error: promoError } = await supabase.rpc("validate_promo_code", {
+        p_code: promoCode,
+        p_cart_items: cartItemsForValidation,
+        p_order_ref: "validation_only",
+      });
+
+      if (promoError) {
+        console.error("Promo validation error:", promoError);
+        return jsonResponse({ valid: false, error: "validation_error" }, 400);
+      }
+
+      return jsonResponse(promoResult as Record<string, unknown>);
+    }
+
     const currency = typeof body.currency === "string" ? body.currency.toUpperCase() : "USD";
     const checkoutAttemptId = typeof body.checkoutAttemptId === "string" ? body.checkoutAttemptId : "";
     const name = typeof body.name === "string" ? body.name : "";
@@ -174,6 +207,7 @@ Deno.serve(async (req: Request) => {
     const company = typeof body.company === "string" ? body.company : "";
     const type = typeof body.type === "string" ? body.type : "payment";
     const items = Array.isArray(body.items) ? body.items as CartItemInput[] : [];
+    const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : "";
 
     if (!checkoutAttemptId || checkoutAttemptId.length < 20 || checkoutAttemptId.length > 100) return jsonResponse({ error: "Invalid checkout attempt" }, 400);
     if (currency !== "USD") return jsonResponse({ error: "Unsupported currency" }, 400);
@@ -185,18 +219,52 @@ Deno.serve(async (req: Request) => {
     const merchantSecret = Deno.env.get("WFP_MERCHANT_SECRET");
     if (!merchantLogin || !merchantSecret) return jsonResponse({ error: "Payment configuration unavailable" }, 503);
 
-    let amount = 0;
+    let originalAmount = 0;
     const normalizedItems: CartItemInput[] = [];
     for (const item of items) {
       const quantity = Number(item.quantity);
       const canonicalPrice = VALID_PRICES[item.productId];
       if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100 || canonicalPrice === undefined) return jsonResponse({ error: "Invalid cart item" }, 400);
-      amount += canonicalPrice * quantity;
+      originalAmount += canonicalPrice * quantity;
       normalizedItems.push({ productId: item.productId, name: typeof item.name === "string" && item.name ? item.name : item.productId, unitPrice: canonicalPrice, quantity });
     }
-    amount = Math.round(amount * 100) / 100;
+    originalAmount = Math.round(originalAmount * 100) / 100;
 
-    const orderFields = "order_ref, order_number, order_status, amount, currency, name, email, order_items, requirements_token_encrypted";
+    let discountAmount = 0;
+    let promoCodeId: string | null = null;
+    let promoCodeSnapshot: string | null = null;
+
+    if (promoCode) {
+      const cartItemsForValidation = normalizedItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        eligibleAmount: Math.round(VALID_PRICES[item.productId] * item.quantity * 100) / 100,
+      }));
+
+      const { data: promoResult, error: promoError } = await supabase.rpc("validate_promo_code", {
+        p_code: promoCode,
+        p_cart_items: cartItemsForValidation,
+        p_order_ref: "checkout_" + checkoutAttemptId,
+      });
+
+      if (promoError || !promoResult) {
+        const errMsg = promoError?.message || "Promo code validation failed";
+        return jsonResponse({ error: errMsg }, 400);
+      }
+
+      const result = promoResult as Record<string, unknown>;
+      if (result.valid !== true) {
+        return jsonResponse({ error: "Invalid promo code" }, 400);
+      }
+
+      discountAmount = Number(result.discount_amount) || 0;
+      promoCodeId = result.promo_code_id as string;
+      promoCodeSnapshot = result.code as string;
+    }
+
+    const amount = Math.round((originalAmount - discountAmount) * 100) / 100;
+
+    const orderFields = "order_ref, order_number, order_status, amount, currency, name, email, order_items, requirements_token_encrypted, promo_code_id, discount_amount, original_amount";
     const { data: existingOrder } = await supabase.from("orders").select(orderFields).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
     if (existingOrder) {
       if (existingOrder.order_status !== "pending_payment") return jsonResponse({ error: "Checkout attempt already completed" }, 409);
@@ -212,7 +280,7 @@ Deno.serve(async (req: Request) => {
     const orderNumber = orderNumberResult.data as string || `NE-${Date.now()}`;
     const requirementsStatus = body.requirementsStatus === "provided" ? "received" : "pending";
 
-    const insertPayload = {
+    const insertPayload: Record<string, unknown> = {
       order_ref: orderRef,
       order_number: orderNumber,
       checkout_attempt_id: checkoutAttemptId,
@@ -234,7 +302,18 @@ Deno.serve(async (req: Request) => {
       requirements_token_encrypted: requirementsTokenEncrypted,
     };
 
-    const { error: insertError } = await supabase.from("orders").insert(insertPayload);
+    if (promoCodeId) {
+      insertPayload.promo_code_id = promoCodeId;
+      insertPayload.promo_code_snapshot = promoCodeSnapshot;
+      insertPayload.discount_amount = discountAmount;
+      insertPayload.original_amount = originalAmount;
+    } else {
+      insertPayload.discount_amount = 0;
+      insertPayload.original_amount = originalAmount;
+    }
+
+    const { data: insertedOrder, error: insertError } = await supabase.from("orders").insert(insertPayload).select("id").single();
+
     if (insertError) {
       if (insertError.code === "23505") {
         const { data: racedOrder } = await supabase.from("orders").select(orderFields).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
@@ -247,6 +326,14 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ error: "Could not create checkout" }, 500);
     }
 
+    if (promoCodeId && insertedOrder) {
+      await supabase.rpc("reserve_promo_code", {
+        p_promo_code_id: promoCodeId,
+        p_order_id: insertedOrder.id,
+        p_discount_amount: discountAmount,
+      });
+    }
+
     return jsonResponse(buildCheckoutData({
       order_ref: orderRef,
       order_number: orderNumber,
@@ -257,6 +344,9 @@ Deno.serve(async (req: Request) => {
       email,
       order_items: normalizedItems,
       requirements_token_encrypted: requirementsTokenEncrypted,
+      promo_code_id: promoCodeId,
+      discount_amount: discountAmount,
+      original_amount: originalAmount,
     }, merchantLogin, merchantSecret, requirementsToken));
   } catch (err) {
     console.error("wayforpay-checkout error", err);

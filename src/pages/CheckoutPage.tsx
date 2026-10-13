@@ -7,7 +7,7 @@ import { useCart } from '../context/CartContext';
 import { useCheckout, type PlacementRequirement } from '../context/CheckoutContext';
 import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
-import { payWithWayForPay } from '../lib/wayforpay';
+import { payWithWayForPay, validatePromoCode, type PromoValidationResult } from '../lib/wayforpay';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
 import { trackPurchaseConversion } from '../lib/gtag';
 
@@ -98,6 +98,18 @@ const content = {
     perPost: 'includes',
     posts: 'publications',
     placements: 'placements',
+    promoCode: 'Promo code',
+    promoPlaceholder: 'Promo code',
+    apply: 'Apply',
+    remove: 'Remove',
+    discount: 'Discount',
+    promoApplied: 'Promo code applied',
+    promoInvalid: 'Invalid promo code',
+    promoExpired: 'Promo code expired',
+    promoUsageLimit: 'Usage limit reached',
+    promoMinOrder: 'Minimum order amount not reached',
+    promoNoEligible: 'No eligible items for this promo code',
+    promoChecking: 'Checking...',
   },
   uk: {
     steps: ['Кошик', 'Вимоги', 'Перевірка', 'Оплата'] as const,
@@ -180,6 +192,18 @@ const content = {
     perPost: 'включає',
     posts: 'публікацій',
     placements: 'розміщень',
+    promoCode: 'Промокод',
+    promoPlaceholder: 'Промокод',
+    apply: 'Застосувати',
+    remove: 'Видалити',
+    discount: 'Знижка',
+    promoApplied: 'Промокод застосовано',
+    promoInvalid: 'Недійсний промокод',
+    promoExpired: 'Термін дії промокоду минув',
+    promoUsageLimit: 'Ліміт використань вичерпано',
+    promoMinOrder: 'Мінімальна сума замовлення не досягнута',
+    promoNoEligible: 'Немає відповідних позицій для цього промокоду',
+    promoChecking: 'Перевірка...',
   },
 } as const;
 
@@ -195,8 +219,10 @@ function getItemSubtitle(item: { productId: string; description: string }, c: ty
   return item.description;
 }
 
-function OrderSummary({ c, currency = 'USD' }: { c: typeof content.en; currency?: string }) {
+function OrderSummary({ c, currency = 'USD', promoData }: { c: typeof content.en; currency?: string; promoData?: { code: string; discountAmount: number } | null }) {
   const { items, total } = useCart();
+  const discount = promoData?.discountAmount ?? 0;
+  const finalTotal = Math.max(0, Math.round((total - discount) * 100) / 100);
   return (
     <div className="border-2 border-ink/15 bg-white p-5">
       <h3 className="text-xs font-bold uppercase tracking-widest text-ink/40 mb-4">{c.orderSummary}</h3>
@@ -211,9 +237,15 @@ function OrderSummary({ c, currency = 'USD' }: { c: typeof content.en; currency?
           </div>
         ))}
       </div>
+      {promoData && discount > 0 && (
+        <div className="flex items-center justify-between border-t-2 border-ink/10 pt-2.5 mb-2.5">
+          <span className="text-sm font-bold text-signal">{c.discount} ({promoData.code})</span>
+          <span className="text-sm font-bold text-signal">−{formatMoney(discount, currency)}</span>
+        </div>
+      )}
       <div className="flex items-center justify-between border-t-2 border-ink/10 pt-3">
         <span className="text-sm font-bold text-ink/50">{c.total}</span>
-        <span className="font-display text-2xl font-bold text-ink">{formatMoney(total, currency)}</span>
+        <span className="font-display text-2xl font-bold text-ink">{formatMoney(finalTotal, currency)}</span>
       </div>
       <div className="flex items-center gap-1.5 mt-3 text-xs text-ink/40">
         <Lock size={11} /> {c.securePayment}
@@ -271,6 +303,14 @@ export default function CheckoutPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
   const initiateCheckoutFired = useRef(false);
+  const [promoInput, setPromoInput] = useState('');
+  const [promoData, setPromoData] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [promoStatus, setPromoStatus] = useState<'idle' | 'checking' | 'applied' | 'error'>('idle');
+  const [promoError, setPromoError] = useState('');
+  const [promoValidating, setPromoValidating] = useState(false);
+
+  const discountAmount = promoData?.discountAmount ?? 0;
+  const finalTotal = Math.max(0, Math.round((total - discountAmount) * 100) / 100);
 
   const placementReqs = useMemo<PlacementRequirement[]>(() => {
     if (data.placementRequirements.length > 0) return data.placementRequirements;
@@ -354,6 +394,48 @@ export default function CheckoutPage() {
     setStep(4);
   };
 
+  const handleApplyPromo = async () => {
+    const code = promoInput.trim();
+    if (!code) return;
+    setPromoValidating(true);
+    setPromoStatus('checking');
+    setPromoError('');
+    try {
+      const cartItems = items.map((i) => ({ productId: i.productId, name: i.name, unitPrice: i.unitPrice, quantity: i.quantity }));
+      const result = await validatePromoCode(code, cartItems);
+      if (result.valid && result.discount_amount !== undefined) {
+        setPromoData({ code: result.code || code.toUpperCase(), discountAmount: result.discount_amount });
+        setPromoStatus('applied');
+        update({ paymentAttemptId: '' });
+      } else {
+        const errCode = result.error || 'invalid';
+        const errMsg = errCode === 'not_found' || errCode === 'invalid' ? c.promoInvalid
+          : errCode === 'expired' ? c.promoExpired
+          : errCode === 'usage_limit_reached' ? c.promoUsageLimit
+          : errCode === 'min_order_not_met' ? c.promoMinOrder
+          : errCode === 'no_eligible_items' ? c.promoNoEligible
+          : c.promoInvalid;
+        setPromoStatus('error');
+        setPromoError(errMsg);
+        setPromoData(null);
+      }
+    } catch {
+      setPromoStatus('error');
+      setPromoError(c.promoInvalid);
+      setPromoData(null);
+    } finally {
+      setPromoValidating(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setPromoInput('');
+    setPromoData(null);
+    setPromoStatus('idle');
+    setPromoError('');
+    update({ paymentAttemptId: '' });
+  };
+
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!data.customerName.trim() || !data.customerEmail.trim()) {
@@ -383,6 +465,7 @@ export default function CheckoutPage() {
         requirements: data.requirementsChoice === 'later' ? null : placementReqs,
         requirementsStatus: data.requirementsChoice === 'later' ? 'pending' : 'provided',
         checkoutAttemptId,
+        promoCode: promoData?.code || '',
       });
       setOutcome(result.outcome);
       setPaidOrderRef(result.orderRef);
@@ -392,9 +475,9 @@ export default function CheckoutPage() {
         update({ paymentAttemptId: '' });
       }
       if (result.outcome === 'approved') {
-        trackEvent('purchase', { value: total, currency: 'USD', transaction_id: result.orderNumber, items: items.length });
+        trackEvent('purchase', { value: finalTotal, currency: 'USD', transaction_id: result.orderNumber, items: items.length });
         trackMetaEvent('Purchase', {
-          value: total,
+          value: finalTotal,
           currency: 'USD',
           content_ids: items.map((i) => i.productId),
           content_type: 'product',
@@ -403,6 +486,9 @@ export default function CheckoutPage() {
         });
         update({ paymentAttemptId: '' });
         clear();
+        setPromoData(null);
+        setPromoInput('');
+        setPromoStatus('idle');
       }
     } catch {
       setError(c.paymentError);
@@ -673,10 +759,58 @@ export default function CheckoutPage() {
                         </div>
                       ))}
                     </div>
+                    {promoData && discountAmount > 0 && (
+                      <div className="flex items-center justify-between border-t-2 border-ink/10 pt-2.5 mb-2.5">
+                        <span className="text-sm font-bold text-signal">{c.discount} ({promoData.code})</span>
+                        <span className="text-sm font-bold text-signal">−{formatMoney(discountAmount, currency)}</span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between border-t-2 border-ink/10 pt-3">
                       <span className="text-sm font-bold text-ink/50">{c.total}</span>
-                      <span className="font-display text-2xl font-bold text-ink">{formatMoney(total, currency)}</span>
+                      <span className="font-display text-2xl font-bold text-ink">{formatMoney(finalTotal, currency)}</span>
                     </div>
+                  </div>
+
+                  <div className="border-2 border-ink/15 bg-white p-5 mb-4">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">{c.promoCode}</h2>
+                    {promoStatus === 'applied' && promoData ? (
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle size={16} className="text-green-600 flex-shrink-0" />
+                          <div>
+                            <span className="text-sm font-bold text-ink">{promoData.code}</span>
+                            <span className="text-xs text-green-600 ml-2">−{formatMoney(promoData.discountAmount, currency)}</span>
+                          </div>
+                        </div>
+                        <button onClick={handleRemovePromo} className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors flex items-center gap-1">
+                          <Trash2 size={13} /> {c.remove}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={promoInput}
+                          onChange={(e) => { setPromoInput(e.target.value); setPromoStatus('idle'); setPromoError(''); }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyPromo(); } }}
+                          placeholder={c.promoPlaceholder}
+                          className={inputCls}
+                          disabled={promoValidating}
+                        />
+                        <button
+                          onClick={handleApplyPromo}
+                          disabled={!promoInput.trim() || promoValidating}
+                          className="px-4 py-2.5 text-sm font-bold border-2 border-ink/15 text-ink hover:border-signal hover:text-signal transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        >
+                          {promoValidating ? <Loader2 size={14} className="animate-spin" /> : c.apply}
+                        </button>
+                      </div>
+                    )}
+                    {promoStatus === 'error' && promoError && (
+                      <p className="text-red-600 text-xs mt-2 flex items-center gap-1.5">
+                        <AlertCircle size={13} className="flex-shrink-0" /> {promoError}
+                      </p>
+                    )}
                   </div>
 
                   <div className="border-2 border-ink/15 bg-white p-5 mb-4">
@@ -756,7 +890,7 @@ export default function CheckoutPage() {
                     </label>
 
                     <button type="submit" disabled={loading || !agreedToTerms} className="w-full flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 text-sm transition-all duration-200">
-                      {loading ? <><Loader2 size={16} className="animate-spin" /> {c.openingPayment}</> : <><CreditCard size={16} /> {c.paySecurely(formatMoney(total, currency))}</>}
+                      {loading ? <><Loader2 size={16} className="animate-spin" /> {c.openingPayment}</> : <><CreditCard size={16} /> {c.paySecurely(formatMoney(finalTotal, currency))}</>}
                     </button>
                     <p className="text-center text-xs text-ink/40">{c.secureCheckout}</p>
                   </form>
@@ -771,7 +905,7 @@ export default function CheckoutPage() {
             {/* RIGHT: sticky order summary (desktop) */}
             <div className="hidden lg:block">
               <div className="sticky top-28">
-                <OrderSummary c={c} currency={currency} />
+                <OrderSummary c={c} currency={currency} promoData={promoData} />
               </div>
             </div>
 
@@ -788,13 +922,13 @@ export default function CheckoutPage() {
                 </span>
               </button>
               {mobileSummaryOpen && (
-                <div className="mt-2"><OrderSummary c={c} currency={currency} /></div>
+                <div className="mt-2"><OrderSummary c={c} currency={currency} promoData={promoData} /></div>
               )}
               {/* Always-visible total bar at bottom on mobile */}
               {!mobileSummaryOpen && (
                 <div className="fixed bottom-0 left-0 right-0 z-30 bg-navy text-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between lg:hidden" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px) + env(keyboard-inset-height, 0px))' }}>
                   <span className="text-sm font-bold text-cream/70">{c.total}</span>
-                  <span className="font-display text-xl font-bold">{formatMoney(total, currency)}</span>
+                  <span className="font-display text-xl font-bold">{formatMoney(finalTotal, currency)}</span>
                 </div>
               )}
             </div>
