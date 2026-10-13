@@ -108,7 +108,7 @@ export default function HomePage() {
 
       <ReviewsSection />
 
-      <section id="faq" className="scroll-mt-20 bg-[#D94712] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 3)} compact orange /><FAQ faqs={c.faq.items.slice(3)} compact orange /></div></div></section>
+      <section id="faq" className="scroll-mt-20 bg-[#D94712] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 6)} compact orange /><FAQ faqs={c.faq.items.slice(6)} compact orange /></div></div></section>
     </main>
     <Footer />
   </div>;
