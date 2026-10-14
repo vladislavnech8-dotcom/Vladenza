@@ -26,7 +26,7 @@ const faqEn = [
 export const homePageContent: Record<Locale, HomePageContent> = {
   en: {
     seo: { title: 'Building Links for Online Visibility | Vladenza', description: 'We build brand presence across Google, AI and the wider web through link building, SEO and digital strategy. Because word of mouth can only take you so far.' },
-    hero: { h1First: 'Word of mouth is cute.', h1Second: 'Google scales better.', body: 'SEO, link building, Digital PR, and digital marketing for brands that have outgrown word of mouth.', pricing: 'Pricing', placements: 'Browse Real Placements' },
+    hero: { h1First: 'Word of mouth is cute.', h1Second: 'Google scales better.', body: 'SEO, link building, Digital PR, and digital marketing for brands that have outgrown word of mouth.', pricing: 'Services', placements: 'Browse Real Placements' },
     proof: { label: 'Real proof, from the platforms where clients hire us', fiverr: '4.9 rating · 1,100+ reviews on Fiverr', experience: '8+ years of link-building experience', clutch: 'View our profile on Clutch' },
     services: { heading: 'Link Building Without the Guesswork', items: [
       { name: 'Guest Posts', description: 'Editorial placements on relevant sites, built around your target page.', price: PRICING_LABELS_EN.guestPosts, href: '/services/guest-posting', visual: '/assets/visuals/service-guest-posts.webp', alt: '' },
@@ -45,7 +45,7 @@ export const homePageContent: Record<Locale, HomePageContent> = {
   },
   uk: {
     seo: { title: 'Будуємо посилання для онлайн-видимості | Vladenza', description: 'Розвиваємо присутність брендів у Google, AI та в мережі. Лінкбілдинг, SEO та діджитал-стратегії. Бо одного сарафанного радіо вже якось мало.' },
-    hero: { h1First: 'Сарафанне радіо — це добре.', h1Second: 'Google масштабує краще.', body: 'SEO, лінкбілдинг, Digital PR і digital-маркетинг для брендів, яким уже замало сарафанного радіо.', pricing: 'Ціни', placements: 'Переглянути реальні розміщення' },
+    hero: { h1First: 'Сарафанне радіо — це добре.', h1Second: 'Google масштабує краще.', body: 'SEO, лінкбілдинг, Digital PR і digital-маркетинг для брендів, яким уже замало сарафанного радіо.', pricing: 'Послуги', placements: 'Переглянути реальні розміщення' },
     proof: { label: 'Реальні підтвердження з платформ, де нас наймають', fiverr: 'Рейтинг 4.9 · 1 100+ відгуків на Fiverr', experience: '8+ років досвіду в лінкбілдингу', clutch: 'Переглянути профіль на Clutch' },
     services: { heading: 'Варіанти лінкбілдингу', items: [
       { name: 'Гостьові публікації', description: 'Тематичні публікації на сайтах із посиланнями на потрібні сторінки.', price: PRICING_LABELS_UK.guestPosts, href: '/services/guest-posting', visual: '/assets/visuals/service-guest-posts.webp', alt: '' },

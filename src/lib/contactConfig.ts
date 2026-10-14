@@ -3,6 +3,7 @@ export const CONTACT_CONFIG = {
   TELEGRAM_URL: 'https://t.me/vladenza',
   TELEGRAM_HANDLE: '@vladenza',
   LINKEDIN_URL: 'https://www.linkedin.com/company/vladenza',
+  FOUNDER_LINKEDIN_URL: 'https://www.linkedin.com/in/vladislav-nechai/',
   BOOKING_URL: 'https://koalendar.com/e/meet-with-vladenza-agency',
   WHATSAPP_URL: 'https://wa.me/message/KJI2Y7J4CAXGC1',
 };
