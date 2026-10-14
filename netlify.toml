@@ -358,6 +358,28 @@
   status = 301
   force = true
 
+# ─── Caching: fingerprinted JS/CSS and static images under /assets/ ───
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ─── Caching: root-level static images and logos (shorter TTL) ───
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
 # ─── SPA fallbacks (must come after all redirects) ───
 [[redirects]]
   from = "/order/*"

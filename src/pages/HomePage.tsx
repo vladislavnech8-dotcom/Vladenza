@@ -9,9 +9,9 @@ import PlacementCard from '../components/PlacementCard';
 import VisualAsset from '../components/VisualAsset';
 import { useSEO } from '../hooks/useSEO';
 import { fetchPlacements, type Placement, type PlacementServiceType } from '../data/placements';
-import { cases, casesUk } from '../data/cases';
 import { useLocale } from '../context/LocaleContext';
 import { homePageContent } from '../lib/homeContent';
+import { getFeaturedCases } from '../data/featuredCases';
 
 const serviceTypeMap: Record<string, PlacementServiceType> = { 'Guest Posts': 'guest_post', 'Гостьові публікації': 'guest_post', 'Link Insertions': 'niche_edit', 'Розміщення посилань': 'niche_edit', 'Crowd Marketing': 'crowd_link', 'Крауд-маркетинг': 'crowd_link' };
 const processIcons = [Search, ClipboardCheck, Check, Link2, Eye];
@@ -31,7 +31,7 @@ export default function HomePage() {
   useSEO({ title: c.seo.title, description: c.seo.description, canonical: locale === 'uk' ? 'https://vladenza.com/uk/' : 'https://vladenza.com/', schema: { '@context': 'https://schema.org', '@type': 'Organization', name: 'Vladenza', description: c.seo.description, url: 'https://vladenza.com', logo: 'https://vladenza.com/logo.svg' } });
 
   useEffect(() => { fetchPlacements({ status: 'active', homepage_featured: true }).then(setPlacements); }, []);
-  const featuredCases = (locale === 'uk' ? cases.slice(0, 3).map((item) => ({ ...item, ...(casesUk[item.slug] ?? {}) })) : cases.slice(0, 3));
+  const featuredCases = getFeaturedCases(locale);
   const tabs = c.services.items.slice(0, 3).map((item) => ({ label: item.name, type: serviceTypeMap[item.name] }));
   const visiblePlacements = placements.filter((item) => item.service_type === activeType).slice(0, 3);
 
@@ -40,7 +40,7 @@ export default function HomePage() {
 
     <main>
       <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
-        <img src="/assets/visuals/vladenzaheroimage.webp" alt="" width="1440" height="1024" fetchPriority="high" decoding="async" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] opacity-60 saturate-[.8] brightness-[.48] lg:object-[72%_68%]" />
+        <img src="/assets/visuals/vladenzaheroimage.webp" alt="" width="1440" height="1024" fetchPriority="high" decoding="async" srcSet="/assets/visuals/vladenzaheroimage-mobile.webp 750w, /assets/visuals/vladenzaheroimage-tablet.webp 1100w, /assets/visuals/vladenzaheroimage.webp 1671w" sizes="100vw" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] opacity-60 saturate-[.8] brightness-[.48] lg:object-[72%_68%]" />
         <div className="absolute inset-0 bg-[#07102B]/72" />
         <div className="paper-grain absolute inset-0 opacity-20" />
         <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-center justify-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
