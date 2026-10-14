@@ -66,7 +66,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pr-10"
             >
-              <svg viewBox="0 0 24 24" className="h-10 w-10 shrink-0 text-[#1DBF73]" fill="currentColor" aria-hidden="true"><path d="M22.011 6.344H8.252v2.634h4.893v2.633H8.252v2.634H6.464v-2.634H1.694V6.344h1.788v2.634h3.182V6.344h-1.79V3.71h1.79V2.552h1.788V3.71h6.988V2.552h1.788V3.71h3.182v2.634h-3.182v2.633h3.182v2.634h-1.788V8.978h-3.182z M13.246 11.295h-1.788v2.634h1.788z M13.246 16.562h-1.788v2.634h1.788z M17.283 14.085h1.788v2.633h-1.788z"/></svg>
+              <img src="/fiverr-logo.svg" alt="Fiverr" width="120" height="32" loading="lazy" decoding="async" className="h-8 w-auto shrink-0" />
               <div>
                 <p className="font-display text-[30px] font-bold leading-none tracking-tight text-ink group-hover:text-signal">4.9 · 1,100+</p>
                 <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Рейтинг і відгуки на Fiverr' : 'Rating and reviews on Fiverr'}</p>

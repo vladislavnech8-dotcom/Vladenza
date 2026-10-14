@@ -233,7 +233,7 @@ export default function Pricing() {
                 </ul>
 
                 <a
-                  href="#contact"
+                  href="/contact"
                   className={`text-center py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                     plan.highlight
                       ? 'bg-[#F97316] text-white hover:bg-[#EA580C] hover:shadow-md hover:shadow-orange-200'

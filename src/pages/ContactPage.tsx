@@ -38,20 +38,20 @@ export default function ContactPage() {
                 <div className="aspect-[4/3] overflow-hidden bg-[#d2d0cb] sm:aspect-[5/4]">
                   <img src={PORTRAIT_SRC} alt={uk ? 'Влад, засновник Vladenza' : 'Vlad, founder of Vladenza'} loading="lazy" decoding="async" className="h-full w-full object-cover object-[center_30%]" />
                 </div>
-                <figcaption className="flex items-end justify-between gap-4 pt-3.5">
-                  <div className="flex flex-col gap-0.5">
-                    <p className="font-display text-base font-bold tracking-tight text-ink">VLAD</p>
-                    <p className="text-xs font-semibold text-ink/65">{uk ? 'Засновник Vladenza' : 'Founder, Vladenza'}</p>
+                <figcaption className="flex items-end justify-between gap-4 pt-4">
+                  <div className="flex flex-col gap-1">
+                    <p className="font-display text-lg font-bold tracking-tight text-ink">VLAD</p>
+                    <p className="text-sm font-semibold text-ink/80">{uk ? 'Засновник Vladenza' : 'Founder, Vladenza'}</p>
                   </div>
                   <a
                     href={CONTACT_CONFIG.FOUNDER_LINKEDIN_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="editorial-focus group inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-bold text-ink/70 transition-colors hover:bg-ink/5 hover:text-signal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+                    className="editorial-focus group inline-flex items-center gap-1.5 rounded-md border-2 border-ink/15 px-3 py-2 text-sm font-bold text-ink transition-colors hover:border-signal hover:bg-signal hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
                   >
-                    <Linkedin size={14} className="text-ink/55 transition-colors group-hover:text-signal" />
+                    <Linkedin size={16} className="text-ink transition-colors group-hover:text-white" />
                     LinkedIn
-                    <ArrowUpRight size={12} className="text-ink/40 transition-colors group-hover:text-signal" />
+                    <ArrowUpRight size={13} className="text-ink/60 transition-colors group-hover:text-white" />
                   </a>
                 </figcaption>
               </figure>
@@ -63,39 +63,37 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="border-t border-white/15 bg-navy py-8 text-white sm:py-10">
+        <section className="border-t border-white/15 bg-navy py-10 text-white sm:py-12">
           <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-12">
-            <p className="mb-1.5 text-xs font-bold uppercase tracking-[.18em] text-signal">{uk ? 'НЕ ЛЮБИТЕ ФОРМИ?' : "DON'T LIKE FORMS?"}</p>
-            <h2 className="font-display text-[clamp(2rem,3.5vw,3.25rem)] font-bold leading-[.95] text-cream">{uk ? 'Розуміємо.' : 'Fair enough.'}</h2>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[.18em] text-signal">{uk ? 'НЕ ЛЮБИТЕ ФОРМИ?' : "DON'T LIKE FORMS?"}</p>
+            <h2 className="font-display text-[clamp(1.75rem,3vw,2.75rem)] font-bold leading-[.95] text-cream">{uk ? 'Розуміємо.' : 'Fair enough.'}</h2>
 
-            <div className="mt-6 grid border-y border-white/20 sm:grid-cols-2">
+            <div className="mt-5 grid border-y border-white/20 sm:grid-cols-2">
               <a
                 href={getBookingUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group editorial-focus flex min-h-[108px] flex-col justify-between border-b border-white/20 py-4 pr-5 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:border-r sm:py-5 sm:pr-6"
+                className="group editorial-focus flex min-h-[96px] flex-col justify-between border-b border-white/20 py-4 pr-5 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:border-r sm:py-5 sm:pr-6"
               >
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">{uk ? 'ЗАПЛАНУВАТИ ЗУСТРІЧ' : 'BOOK A MEETING'}</p>
-                  <p className="mt-1.5 font-display text-xl text-cream">Vladenza Agency</p>
+                  <p className="mt-1.5 font-display text-lg text-cream">Vladenza Agency</p>
                 </div>
-                <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/80 transition-colors group-hover:text-signal">
-                  {uk ? 'Обрати зручний час' : 'Choose a Time'}
-                  <ArrowUpRight size={14} />
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-cream/90 transition-colors group-hover:text-signal">
+                  {uk ? 'Обрати зручний час ↗' : 'Choose a Time ↗'}
                 </span>
               </a>
 
               <a
                 href={`mailto:${CONTACT_CONFIG.EMAIL}`}
-                className="group editorial-focus flex min-h-[108px] flex-col justify-between border-b border-white/20 py-4 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:py-5 sm:pl-6"
+                className="group editorial-focus flex min-h-[96px] flex-col justify-between border-b border-white/20 py-4 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:py-5 sm:pl-6"
               >
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">EMAIL</p>
                   <p className="mt-1.5 text-base font-semibold text-cream">{CONTACT_CONFIG.EMAIL}</p>
                 </div>
-                <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/80 transition-colors group-hover:text-signal">
-                  {uk ? 'Написати нам' : 'Email us'}
-                  <ArrowUpRight size={14} />
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-cream/90 transition-colors group-hover:text-signal">
+                  {uk ? 'Написати нам ↗' : 'Email us ↗'}
                 </span>
               </a>
 
@@ -103,15 +101,14 @@ export default function ContactPage() {
                 href={CONTACT_CONFIG.TELEGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group editorial-focus flex min-h-[108px] flex-col justify-between py-4 pr-5 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:border-r sm:py-5 sm:pr-6"
+                className="group editorial-focus flex min-h-[96px] flex-col justify-between py-4 pr-5 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:border-r sm:py-5 sm:pr-6"
               >
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">TELEGRAM</p>
                   <p className="mt-1.5 text-base font-semibold text-cream">{CONTACT_CONFIG.TELEGRAM_HANDLE}</p>
                 </div>
-                <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/80 transition-colors group-hover:text-signal">
-                  {uk ? 'Написати в Telegram' : 'Message us'}
-                  <Send size={13} />
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-cream/90 transition-colors group-hover:text-signal">
+                  {uk ? 'Написати в Telegram ↗' : 'Message us ↗'}
                 </span>
               </a>
 
@@ -119,15 +116,14 @@ export default function ContactPage() {
                 href={getWhatsappUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group editorial-focus flex min-h-[108px] flex-col justify-between py-4 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:border-t sm:border-white/20 sm:py-5 sm:pl-6"
+                className="group editorial-focus flex min-h-[96px] flex-col justify-between py-4 transition-colors hover:bg-white/5 focus-visible:bg-white/5 sm:border-t sm:border-white/20 sm:py-5 sm:pl-6"
               >
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">WHATSAPP</p>
                   <p className="mt-1.5 text-base font-semibold text-cream">{uk ? 'Написати' : 'Message us'}</p>
                 </div>
-                <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/80 transition-colors group-hover:text-signal">
-                  {uk ? 'Відкрити WhatsApp' : 'Open WhatsApp'}
-                  <ArrowUpRight size={14} />
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-cream/90 transition-colors group-hover:text-signal">
+                  {uk ? 'Відкрити WhatsApp ↗' : 'Open WhatsApp ↗'}
                 </span>
               </a>
             </div>

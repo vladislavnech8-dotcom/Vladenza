@@ -4,7 +4,7 @@ import { trackLeadConversion } from '../lib/gtag';
 import { useLocale } from '../context/LocaleContext';
 
 const defaultInputCls = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all';
-const contactInputCls = 'w-full border-0 border-b-2 border-ink/25 bg-transparent px-0 py-3 text-base text-ink placeholder-ink/40 focus:border-signal focus:outline-none transition-colors';
+const contactInputCls = 'w-full border-0 border-b-2 border-ink/35 bg-transparent px-0 py-3 text-base text-ink placeholder-ink/55 focus:border-signal focus:outline-none transition-colors';
 
 const DISPOSABLE_DOMAINS = [
   'mailinator.com','guerrillamail.com','10minutemail.com','trashmail.com','yopmail.com','tempmail.com','throwam.com','sharklasers.com','guerrillamailblock.com','grr.la','guerrillamail.info','guerrillamail.biz','guerrillamail.de','guerrillamail.net','guerrillamail.org','spam4.me','fakeinbox.com','dispostable.com',
@@ -51,7 +51,7 @@ export default function LeadForm({ defaultService, variant = 'default' }: LeadFo
     { value: '$500–1,000', label: t['form.budget1'] }, { value: '$1,000–3,000', label: t['form.budget2'] }, { value: '$3,000+', label: t['form.budget3'] }, { value: 'Not sure', label: t['form.budget4'] },
   ];
   const inputCls = contact ? contactInputCls : defaultInputCls;
-  const labelCls = contact ? 'mb-1.5 block text-[11px] font-bold uppercase tracking-[.14em] text-ink/70' : 'mb-1.5 block text-xs font-medium text-gray-500';
+  const labelCls = contact ? 'mb-1.5 block text-[11px] font-bold uppercase tracking-[.14em] text-ink/85' : 'mb-1.5 block text-xs font-medium text-gray-600';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

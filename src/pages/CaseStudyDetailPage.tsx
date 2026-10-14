@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ServicePageLayout from '../components/ServicePageLayout';
-import { type CaseSection, type CaseStudy, casesUk } from '../data/cases';
+import { type CaseSection, type CaseStudy, cases, casesUk } from '../data/cases';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
 import { useLocale } from '../context/LocaleContext';
@@ -129,8 +129,30 @@ export default function CaseStudyDetailPage() {
       supabase.from('case_studies').select('*').eq('slug', slug!).maybeSingle(),
       supabase.from('case_studies').select('slug,niche,title,metric,metric_sub,period,color').eq('published', true).neq('slug', slug!).limit(3),
     ]).then(([main, others]) => {
-      if (main.data) setC(dbToCase(main.data as Record<string, unknown>));
-      if (others.data) setOtherCases(others.data as typeof otherCases);
+      if (main.data) {
+        setC(dbToCase(main.data as Record<string, unknown>));
+      } else {
+        const localCase = cases.find((cs) => cs.slug === slug);
+        if (localCase) setC(localCase);
+      }
+      if (others.data && others.data.length > 0) {
+        setOtherCases(others.data as typeof otherCases);
+      } else {
+        const localOthers = cases.filter((cs) => cs.slug !== slug && cs.published !== false).slice(0, 3).map((cs) => ({
+          slug: cs.slug, niche: cs.niche, title: cs.title, metric: cs.metric,
+          metric_sub: cs.metricSub, period: cs.period, color: cs.color,
+        }));
+        setOtherCases(localOthers);
+      }
+      setLoading(false);
+    }).catch(() => {
+      const localCase = cases.find((cs) => cs.slug === slug);
+      if (localCase) setC(localCase);
+      const localOthers = cases.filter((cs) => cs.slug !== slug && cs.published !== false).slice(0, 3).map((cs) => ({
+        slug: cs.slug, niche: cs.niche, title: cs.title, metric: cs.metric,
+        metric_sub: cs.metricSub, period: cs.period, color: cs.color,
+      }));
+      setOtherCases(localOthers);
       setLoading(false);
     });
   }, [slug]);
