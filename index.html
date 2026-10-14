@@ -58,23 +58,38 @@
       }
     }
     </script>
+    <!-- Google Tag Manager — async, non-render-blocking, dataLayer initialized immediately -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-NG4Q3HPN');
+    </script>
+    <!-- gtag.js — async, gtag stub defined immediately so conversion tracking works before script loads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YCY47F1WX0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500
+      });
+      gtag('js', new Date());
+      gtag('config', 'G-YCY47F1WX0');
+      gtag('config', 'AW-16851233410');
+    </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <!-- Analytics: deferred to reduce initial load contention -->
-    <!-- Google Tag Manager -->
-    <script>
-      window.addEventListener('load', function() {
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-NG4Q3HPN');
-      });
-    </script>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG4Q3HPN"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- Deferred analytics: non-critical, loaded after page is interactive -->
     <!-- Ahrefs Analytics -->
     <script>
       window.addEventListener('load', function() {
@@ -108,27 +123,6 @@
         fbq('init', '1862776151346158');
         fbq('track', 'PageView');
         if(window.__fbqPending){window.__fbqPending.forEach(function(f){f();});window.__fbqPending=[];}
-      });
-    </script>
-    <!-- Google tag (gtag.js) -->
-    <script>
-      window.addEventListener('load', function() {
-        var g = document.createElement('script');
-        g.async = true;
-        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-YCY47F1WX0';
-        document.body.appendChild(g);
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('consent', 'default', {
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied',
-          analytics_storage: 'denied',
-          wait_for_update: 500
-        });
-        gtag('js', new Date());
-        gtag('config', 'G-YCY47F1WX0');
-        gtag('config', 'AW-16851233410');
       });
     </script>
   </body>
