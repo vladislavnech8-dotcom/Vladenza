@@ -335,7 +335,7 @@ export default function BlogPostPage() {
 
           {/* Cover image */}
           <div className="mt-8 h-[280px] overflow-hidden border-2 border-ink bg-white md:h-[400px]">
-            <img src={heroImage} alt={postUk!.title} loading="eager" decoding="async" className="w-full h-full object-cover" />
+            <img src={heroImage} alt={postUk!.title} loading="eager" decoding="async" fetchPriority="high" className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
@@ -478,6 +478,7 @@ export default function BlogPostPage() {
                     src={rp.image}
                     alt={rpUk ? rpUk.title! : rp.title}
                     loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[600ms] ease-out"
                   />
                 </div>

@@ -6,7 +6,7 @@ import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
 import { CONTACT_CONFIG, getBookingUrl, getWhatsappUrl } from '../lib/contactConfig';
 
-const PORTRAIT_SRC = '/assets/visuals/photovladenza.png';
+const PORTRAIT_SRC = '/assets/visuals/photovladenza.webp';
 
 export default function ContactPage() {
   const { locale } = useLocale();

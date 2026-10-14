@@ -130,6 +130,7 @@ function PostCard({ post, onNavigate, uk }: { post: Post; onNavigate: (slug: str
           src={post.image}
           alt={post.title}
           loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -294,6 +295,8 @@ export default function BlogPage() {
                       <img
                         src={featured.image}
                         alt={featured.title}
+                        loading="eager"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-[600ms] ease-out"
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10 md:to-black/20" />

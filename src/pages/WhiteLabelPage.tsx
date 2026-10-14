@@ -103,7 +103,7 @@ export default function WhiteLabelPage() {
     <ServicePageLayout defaultService="White Label Link Building" flushTop>
       <main className="bg-cream text-ink">
         <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
-          <img src="/assets/visuals/Whitelabel_linkbuilding.png" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-65 saturate-[.8] brightness-[.52] sm:object-center" />
+          <img src="/assets/visuals/Whitelabel_linkbuilding.webp" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-65 saturate-[.8] brightness-[.52] sm:object-center" />
           <div className="absolute inset-0 bg-[#07102B]/72" />
           <div className="paper-grain absolute inset-0 opacity-20" />
           <div className="relative z-10 mx-auto w-full max-w-[1440px] px-5 py-16 sm:px-8 sm:py-20 lg:px-16 lg:py-24">

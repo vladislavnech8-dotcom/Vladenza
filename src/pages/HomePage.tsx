@@ -39,13 +39,13 @@ export default function HomePage() {
     <Navigation />
 
     <main>
-      <section className="relative overflow-hidden bg-navy text-white lg:min-h-[calc(100svh-104px)]">
-        <img src="/assets/visuals/vladenzaheroimage.png" alt="" width="1440" height="1024" fetchPriority="high" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] opacity-60 saturate-[.8] brightness-[.48] lg:object-[72%_68%]" />
+      <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+        <img src="/assets/visuals/vladenzaheroimage.webp" alt="" width="1440" height="1024" fetchPriority="high" decoding="async" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] opacity-60 saturate-[.8] brightness-[.48] lg:object-[72%_68%]" />
         <div className="absolute inset-0 bg-[#07102B]/72" />
         <div className="paper-grain absolute inset-0 opacity-20" />
-        <div className="relative z-10 mx-auto flex min-h-0 w-full min-w-0 box-border flex-col lg:min-h-[calc(100svh-104px)] items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-16 lg:py-20">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-center justify-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
           <div className="flex w-full min-w-0 max-w-[1500px] flex-col items-center">
-            <h1 className="w-full min-w-0 font-display text-[clamp(36px,9vw,64px)] font-bold leading-[1.06] tracking-[-.035em] sm:text-[clamp(3.5rem,6vw,7.75rem)] sm:leading-[.94] sm:tracking-[-.055em]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
+            <h1 className="w-full min-w-0 font-display text-[clamp(2.75rem,7vw,5.5rem)] font-bold leading-[.95] tracking-[-.05em] sm:text-[clamp(3rem,6vw,6rem)] sm:leading-[.94] sm:tracking-[-.05em]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
               <span className="block w-full text-cream">{c.hero.h1First}</span>
               <span className="mt-2 block w-full text-signal sm:mt-1">{c.hero.h1Second}</span>
             </h1>
@@ -66,23 +66,23 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pr-10"
             >
-              <img src="https://www.fiverr.com/favicon.ico" alt="Fiverr" width="56" height="56" className="h-14 w-14 shrink-0 object-contain" />
+              <svg viewBox="0 0 24 24" className="h-10 w-10 shrink-0 text-[#1DBF73]" fill="currentColor" aria-hidden="true"><path d="M22.011 6.344H8.252v2.634h4.893v2.633H8.252v2.634H6.464v-2.634H1.694V6.344h1.788v2.634h3.182V6.344h-1.79V3.71h1.79V2.552h1.788V3.71h6.988V2.552h1.788V3.71h3.182v2.634h-3.182v2.633h3.182v2.634h-1.788V8.978h-3.182z M13.246 11.295h-1.788v2.634h1.788z M13.246 16.562h-1.788v2.634h1.788z M17.283 14.085h1.788v2.633h-1.788z"/></svg>
               <div>
                 <p className="font-display text-[30px] font-bold leading-none tracking-tight text-ink group-hover:text-signal">4.9 · 1,100+</p>
                 <p className="mt-2 text-sm leading-snug text-ink/55">{locale === 'uk' ? 'Рейтинг і відгуки на Fiverr' : 'Rating and reviews on Fiverr'}</p>
               </div>
             </a>
             <a
-              href="https://clutch.co/share/badges/2348413/34510?utm_source=clutch_top_company_badge&utm_medium=image_embed"
+              href="https://clutch.co/profile/vladenza"
               target="_blank"
               rel="noopener noreferrer"
               className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pl-10"
             >
-              <img src="/assets/visuals/Top_Clutch_Ecommerce_Marketing_Agency_Ukraine_2026_(1).png" alt="Top Clutch Ecommerce Marketing Agency Ukraine 2026" width="800" height="800" loading="lazy" decoding="async" className="h-24 w-24 shrink-0 object-contain sm:h-28 sm:w-28" />
+              <img src="/assets/visuals/Top_Clutch_Ecommerce_Marketing_Agency_Ukraine_2026_(1).webp" alt="Top Clutch Ecommerce Marketing Agency Ukraine 2026" width="800" height="800" loading="lazy" decoding="async" className="h-24 w-24 shrink-0 object-contain sm:h-28 sm:w-28" />
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[.14em] text-signal">Clutch</p>
                 <p className="mt-1 max-w-[210px] font-display text-xl font-bold leading-tight text-ink group-hover:text-signal">Top Ecommerce Marketing Agency · Ukraine · 2026</p>
-                <p className="mt-2 text-sm font-bold text-signal">{locale === 'uk' ? 'Переглянути нагороду →' : 'View award →'}</p>
+                <p className="mt-2 text-sm font-bold text-signal">{locale === 'uk' ? 'Переглянути профіль →' : 'View Profile →'}</p>
               </div>
             </a>
           </div>

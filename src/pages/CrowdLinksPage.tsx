@@ -84,7 +84,7 @@ export default function CrowdLinksPage() {
     <ServicePageLayout defaultService="Crowd Marketing" flushTop>
       <main>
         <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
-          <img src="/assets/visuals/Crowd_marketing_page.png" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
+          <img src="/assets/visuals/Crowd_marketing_page.webp" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-[#07102B]/70" />
           <div className="paper-grain absolute inset-0 opacity-20" />
           <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
