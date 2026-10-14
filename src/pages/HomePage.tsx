@@ -50,7 +50,7 @@ export default function HomePage() {
               <span className="mt-2 block w-full text-signal sm:mt-1">{c.hero.h1Second}</span>
             </h1>
             <div className="mt-8 flex w-full max-w-[360px] flex-col items-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
-              <Link to={lp('/pricing')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-signal px-6 text-base font-bold text-white transition-colors hover:bg-[#EA580C] sm:w-auto sm:min-w-[170px] lg:min-h-[56px] lg:px-8">{c.hero.pricing}<ArrowRight size={18} /></Link>
+              <Link to={lp('/#services')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-signal px-6 text-base font-bold text-white transition-colors hover:bg-[#EA580C] sm:w-auto sm:min-w-[170px] lg:min-h-[56px] lg:px-8">{c.hero.pricing}<ArrowRight size={18} /></Link>
               <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-[#FFFDF8] px-6 text-base font-bold text-navy transition-colors hover:bg-white sm:w-auto sm:min-w-[230px] lg:min-h-[56px] lg:px-8">{c.hero.placements}<ArrowRight size={18} /></Link>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="editorial-focus group flex min-h-[128px] items-center gap-5 py-7 transition-colors hover:text-signal sm:pl-10"
             >
-              <img src="/assets/visuals/Top_Clutch_Ecommerce_Marketing_Agency_Ukraine_2026_(1).png" alt="Top Clutch Ecommerce Marketing Agency Ukraine 2026" width="800" height="800" className="h-24 w-24 shrink-0 object-contain sm:h-28 sm:w-28" />
+              <img src="/assets/visuals/Top_Clutch_Ecommerce_Marketing_Agency_Ukraine_2026_(1).png" alt="Top Clutch Ecommerce Marketing Agency Ukraine 2026" width="800" height="800" loading="lazy" decoding="async" className="h-24 w-24 shrink-0 object-contain sm:h-28 sm:w-28" />
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[.14em] text-signal">Clutch</p>
                 <p className="mt-1 max-w-[210px] font-display text-xl font-bold leading-tight text-ink group-hover:text-signal">Top Ecommerce Marketing Agency · Ukraine · 2026</p>
@@ -89,7 +89,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-cream py-[88px] md:py-28">
+      <section id="services" className="scroll-mt-20 bg-cream py-[88px] md:py-28">
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><div className="max-w-[620px]"><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-signal">01 / Services</p><h2 className="font-display max-w-[580px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em]">{c.services.heading}</h2></div>
           <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">{c.services.items.map((item, index) => <Link key={item.name} to={lp(item.href)} className="group editorial-focus border-2 border-ink bg-white transition-transform hover:-translate-y-2"><VisualAsset src={item.visual} alt={item.alt} width={640} height={480} tone="cream" className="border-0 border-b border-ink" /><div className="flex min-h-64 flex-col p-6"><span className="text-xs font-bold text-signal">0{index + 1}</span><h3 className="mt-4 font-display text-[25px] font-bold tracking-tight">{item.name}</h3><p className="mt-3 text-[15px] leading-6 text-ink/70">{item.description}</p><div className="mt-auto flex items-end justify-between gap-3 border-t-2 border-ink/10 pt-5"><span className="text-sm font-bold">{item.price}</span><ArrowRight size={18} className="text-signal transition-transform group-hover:translate-x-1" /></div></div></Link>)}</div>
         </div>

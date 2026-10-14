@@ -100,8 +100,8 @@ const content = {
     placements: 'placements',
     promoCode: 'Promo code',
     promoPlaceholder: 'Promo code',
-    apply: 'Apply',
-    remove: 'Remove',
+    promoApply: 'Apply',
+    promoRemove: 'Remove',
     discount: 'Discount',
     promoApplied: 'Promo code applied',
     promoInvalid: 'Invalid promo code',
@@ -194,8 +194,8 @@ const content = {
     placements: 'розміщень',
     promoCode: 'Промокод',
     promoPlaceholder: 'Промокод',
-    apply: 'Застосувати',
-    remove: 'Видалити',
+    promoApply: 'Застосувати',
+    promoRemove: 'Видалити',
     discount: 'Знижка',
     promoApplied: 'Промокод застосовано',
     promoInvalid: 'Недійсний промокод',
@@ -783,7 +783,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         <button onClick={handleRemovePromo} className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors flex items-center gap-1">
-                          <Trash2 size={13} /> {c.remove}
+                          <Trash2 size={13} /> {c.promoRemove}
                         </button>
                       </div>
                     ) : (
@@ -802,7 +802,7 @@ export default function CheckoutPage() {
                           disabled={!promoInput.trim() || promoValidating}
                           className="px-4 py-2.5 text-sm font-bold border-2 border-ink/15 text-ink hover:border-signal hover:text-signal transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                         >
-                          {promoValidating ? <Loader2 size={14} className="animate-spin" /> : c.apply}
+                          {promoValidating ? <Loader2 size={14} className="animate-spin" /> : c.promoApply}
                         </button>
                       </div>
                     )}

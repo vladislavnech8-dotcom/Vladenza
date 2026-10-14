@@ -115,7 +115,7 @@ export default function GuestPostingPage() {
     <ServicePageLayout defaultService="Guest Posting" flushTop>
       <main>
         <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
-          <img src="/assets/visuals/Guest_post.png" alt="" className="absolute inset-0 h-full w-full object-cover object-[68%_center] sm:object-center" />
+          <img src="/assets/visuals/Guest_post.png" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[68%_center] sm:object-center" />
           <div className="absolute inset-0 bg-[#07102B]/75" />
           <div className="paper-grain absolute inset-0 opacity-20" />
           <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">

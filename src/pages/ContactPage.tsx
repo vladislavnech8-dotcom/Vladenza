@@ -36,7 +36,7 @@ export default function ContactPage() {
 
               <figure className="mt-7 max-w-[420px]">
                 <div className="aspect-[4/3] overflow-hidden bg-[#d2d0cb] sm:aspect-[5/4]">
-                  <img src={PORTRAIT_SRC} alt={uk ? 'Влад, засновник Vladenza' : 'Vlad, founder of Vladenza'} className="h-full w-full object-cover object-[center_30%]" />
+                  <img src={PORTRAIT_SRC} alt={uk ? 'Влад, засновник Vladenza' : 'Vlad, founder of Vladenza'} loading="lazy" decoding="async" className="h-full w-full object-cover object-[center_30%]" />
                 </div>
                 <figcaption className="flex items-center justify-between gap-4 pt-3">
                   <p className="text-xs font-bold uppercase tracking-[.14em] text-ink/60">VLAD <span className="text-ink/30">·</span> <span className="normal-case tracking-normal text-ink/50">Founder, Vladenza</span></p>
@@ -59,8 +59,8 @@ export default function ContactPage() {
             <h2 className="font-display text-[clamp(2.25rem,4vw,3.75rem)] font-bold leading-[.95] text-cream">{uk ? 'Розуміємо.' : 'Fair enough.'}</h2>
 
             <div className="mt-7 grid border-y border-white/20 sm:grid-cols-2">
-              <a href={getBookingUrl()} className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 pr-5 transition-colors hover:bg-white/5 sm:border-r sm:pr-6">
-                <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">{uk ? 'ЗАПЛАНУВАТИ ДЗВІНОК' : 'BOOK A CALL'}</p><p className="mt-1.5 font-display text-xl text-cream">Google Meet</p></div>
+              <a href={getBookingUrl()} target="_blank" rel="noopener noreferrer" className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 pr-5 transition-colors hover:bg-white/5 sm:border-r sm:pr-6">
+                <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-signal">{uk ? 'ЗАПЛАНУВАТИ ЗУСТРІЧ' : 'BOOK A MEETING'}</p><p className="mt-1.5 font-display text-xl text-cream">Koalendar</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Оберіть зручний час' : 'Pick a time that works'} <ArrowUpRight size={14} /></span>
               </a>
               <a href={`mailto:${CONTACT_CONFIG.EMAIL}`} className="group editorial-focus flex min-h-[120px] flex-col justify-between border-b border-white/20 py-5 sm:pl-6">
@@ -71,7 +71,7 @@ export default function ContactPage() {
                 <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">TELEGRAM</p><p className="mt-1.5 text-base font-semibold text-cream">{CONTACT_CONFIG.TELEGRAM_HANDLE}</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Написати в Telegram' : 'Message us'} <Send size={13} /></span>
               </a>
-              <a href={getWhatsappUrl()} className="group editorial-focus flex min-h-[120px] flex-col justify-between py-5 sm:border-t sm:border-white/20 sm:pl-6">
+              <a href={getWhatsappUrl()} target="_blank" rel="noopener noreferrer" className="group editorial-focus flex min-h-[120px] flex-col justify-between py-5 sm:border-t sm:border-white/20 sm:pl-6">
                 <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-white/45">WHATSAPP</p><p className="mt-1.5 text-base font-semibold text-cream">{uk ? 'Написати' : 'Message us'}</p></div>
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-cream/65 group-hover:text-signal">{uk ? 'Відкрити WhatsApp' : 'Open WhatsApp'} <ArrowUpRight size={14} /></span>
               </a>

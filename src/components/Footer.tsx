@@ -27,7 +27,6 @@ export default function Footer({ onOpenModal }: FooterProps) {
   ];
 
   const resourceLinks = [
-    { label: t['nav.pricing'], href: lp('/pricing') },
     { label: t['nav.blog'], href: lp('/blog') },
     { label: t['footer.contact'], href: lp('/contact') },
   ];

@@ -55,7 +55,6 @@ export default function Navigation({ onOpenModal }: NavigationProps) {
   const navLinks = [
     { label: t['nav.placements'], href: lp('/placements') },
     { label: t['nav.caseStudies'], href: lp('/case-studies') },
-    { label: t['nav.pricing'], href: lp('/pricing') },
     { label: t['nav.blog'], href: lp('/blog') },
   ];
 

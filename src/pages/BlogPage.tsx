@@ -407,7 +407,7 @@ export default function BlogPage() {
                   <p className="text-white font-bold text-sm mb-1.5">{uk ? 'Потрібен лінкбілдинг?' : 'Need link building?'}</p>
                   <p className="text-gray-400 text-xs leading-relaxed mb-4">{uk ? 'Отримайте безкоштовну стратегічну сесію з нашою командою.' : 'Get a free strategy session with our team.'}</p>
                   <a
-                    href={lp('/#contact')}
+                    href={lp('/contact')}
                     className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold px-4 py-2.5  transition-all duration-200"
                   >
                     {uk ? 'Почати' : 'Get Started'} <ArrowRight size={12} />

@@ -353,7 +353,7 @@ export default function CaseStudyDetailPage() {
                   <div className="text-sm font-bold text-gray-900 mb-1">{uk ? 'Хочете подібних результатів?' : 'Want similar results?'}</div>
                   <p className="text-xs text-gray-500 mb-4 leading-relaxed">{uk ? 'Розкажіть про вашу нішу — ми розробимо стратегію.' : "Tell us your niche — we'll build the strategy."}</p>
                   <a
-                    href={lp('/#contact')}
+                    href={lp('/contact')}
                     className="flex items-center justify-center gap-2 text-white font-bold text-sm py-2.5 rounded-xl transition-all duration-200 hover:opacity-90 hover:shadow-md"
                     style={{ backgroundColor: cUk!.color }}
                   >

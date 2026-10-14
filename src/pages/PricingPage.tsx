@@ -243,7 +243,7 @@ export default function PricingPage() {
             {pt("Tell us about your goals and we'll recommend the right mix of services for your campaign.", locale)}
           </p>
           <a
-            href={lp('/#contact')}
+            href={lp('/contact')}
             className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-7 py-3.5 rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-orange-900/30"
           >
             {pt('Get a Custom Proposal', locale)} <ArrowRight size={14} />

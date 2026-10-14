@@ -335,7 +335,7 @@ export default function BlogPostPage() {
 
           {/* Cover image */}
           <div className="mt-8 h-[280px] overflow-hidden border-2 border-ink bg-white md:h-[400px]">
-            <img src={heroImage} alt={postUk!.title} className="w-full h-full object-cover" />
+            <img src={heroImage} alt={postUk!.title} loading="eager" decoding="async" className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
@@ -438,7 +438,7 @@ export default function BlogPostPage() {
                     </nav>
                     <div className="mt-6 pt-5 border-t border-gray-100">
                       <a
-                        href={lp('/#contact')}
+                        href={lp('/contact')}
                         className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-2.5 px-4  text-xs text-center transition-colors block"
                       >
                         {uk ? 'Отримати безкоштовний аудит посилань' : 'Get a Free Link Audit'}
