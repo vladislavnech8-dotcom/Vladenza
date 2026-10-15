@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Check, Eye, Link2, Search, ClipboardCheck } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Eye, Link2, Search, ClipboardCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -108,7 +108,31 @@ export default function HomePage() {
 
       <ReviewsSection />
 
-      <section id="faq" className="scroll-mt-20 bg-[#D94712] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">05 / FAQ</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 6)} compact orange /><FAQ faqs={c.faq.items.slice(6)} compact orange /></div></div></section>
+      <section id="faq" className="scroll-mt-20 bg-[#D94712] py-[88px] md:py-28"><div className="mx-auto max-w-[1120px] px-5 sm:px-8"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-white/75">{locale === 'uk' ? '05 / Часті запитання' : '05 / FAQ'}</p><h2 className="font-display max-w-[620px] text-[clamp(2.75rem,3.6vw,4.25rem)] font-bold leading-[.96] tracking-[-.045em] text-[#FFFDF8]">{c.faq.heading}</h2></div><div className="mt-8 grid gap-0 md:grid-cols-2"><FAQ faqs={c.faq.items.slice(0, 6)} compact orange /><FAQ faqs={c.faq.items.slice(6)} compact orange /></div></div></section>
+      {locale === 'uk' && (
+        <section className="bg-cream pb-14 md:pb-20">
+          <div className="mx-auto max-w-3xl px-5 sm:px-8">
+            <details className="group border-2 border-ink/15 bg-white">
+              <summary className="editorial-focus flex min-h-14 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left sm:px-6">
+                <span className="font-display text-lg font-bold text-ink">Більше про лінкбілдинг</span>
+                <ChevronDown size={20} className="shrink-0 text-ink/50 transition-transform duration-300 group-open:rotate-180" />
+              </summary>
+              <div className="border-t-2 border-ink/10 px-5 py-6 sm:px-6">
+                <h3 className="font-display text-xl font-bold text-ink">Лінкбілдинг для SEO-просування сайтів</h3>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Лінкбілдинг — один із напрямів зовнішньої SEO-оптимізації. Його завдання — розвивати посилальний профіль сайту за допомогою релевантних згадок і зворотних посилань з інших ресурсів.</p>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Для пошукових систем важлива не лише кількість зовнішніх посилань. Має значення їхнє походження, контекст, якість сторінок і характер розміщення. Водночас сам факт отримання посилання не гарантує покращення позицій.</p>
+                <h3 className="mt-8 font-display text-xl font-bold text-ink">Як працює лінкбілдинг?</h3>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Робота починається з аналізу сайту, його посилального профілю та конкурентів. Далі визначаються пріоритетні сторінки, типи розміщень, анкори та бюджет.</p>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Для цього можна використовувати гостьові публікації, посилання в готових статтях, форумні згадки та інші формати digital PR і контентного просування.</p>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Стратегію варто регулярно переглядати з урахуванням змін у пошуковій видимості, стану сайту та результатів попередніх розміщень.</p>
+                <h3 className="mt-8 font-display text-xl font-bold text-ink">Чому кількість посилань — не головне?</h3>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Сотня випадкових посилань не обов'язково принесе більше користі, ніж кілька релевантних згадок на сайтах із відповідною аудиторією.</p>
+                <p className="mt-4 text-[15px] leading-7 text-ink/75">Ми оцінюємо не тільки DR, а й органічний трафік, історію домену, тематику сторінки та доречність посилання. Це допомагає підбирати розміщення під конкретні завдання, а не просто збільшувати кількість URL у звіті.</p>
+              </div>
+            </details>
+          </div>
+        </section>
+      )}
     </main>
     <Footer />
   </div>;

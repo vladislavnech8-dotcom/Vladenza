@@ -23,8 +23,8 @@ function FAQItem({ faq, index, openId, onToggle, orange }: { faq: FaqItem; index
           <ChevronDown size={18} className={`shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#FFFDF8]' : 'text-[#FFFDF8]/75'}`} />
         </button>
         <div id={panelId} role="region" hidden={!isOpen} className="overflow-hidden transition-all duration-300"
-          style={isOpen ? { maxHeight: '300px' } : { maxHeight: '0px' }}>
-          <p className="max-w-xl pb-5 pr-6 text-[15px] leading-[1.7] text-[#FFFDF8]">{faq.a}</p>
+          style={isOpen ? { maxHeight: '1000px' } : { maxHeight: '0px' }}>
+          <div className="max-w-xl pb-5 pr-6 text-[15px] leading-[1.7] text-[#FFFDF8]">{Array.isArray(faq.a) ? faq.a.map((p, i) => <p key={i} className={i > 0 ? 'mt-3' : ''}>{p}</p>) : <p>{faq.a}</p>}</div>
         </div>
       </div>
     );
@@ -35,7 +35,7 @@ function FAQItem({ faq, index, openId, onToggle, orange }: { faq: FaqItem; index
       <button type="button" onClick={() => onToggle(index)} aria-expanded={isOpen} aria-controls={panelId} className="editorial-focus flex min-h-14 w-full items-center justify-between gap-4 px-4 text-left sm:px-5">
         <span className="text-sm font-bold text-ink">{faq.q}</span><ChevronDown size={18} className={`shrink-0 transition-transform ${isOpen ? 'rotate-180 text-signal' : 'text-ink/50'}`} />
       </button>
-      <div id={panelId} role="region" hidden={!isOpen} className="px-4 pb-5 sm:px-5"><p className="max-w-xl text-sm leading-6 text-ink/65">{faq.a}</p></div>
+      <div id={panelId} role="region" hidden={!isOpen} className="px-4 pb-5 sm:px-5"><div className="max-w-xl text-sm leading-6 text-ink/65">{Array.isArray(faq.a) ? faq.a.map((p, i) => <p key={i} className={i > 0 ? 'mt-3' : ''}>{p}</p>) : <p>{faq.a}</p>}</div></div>
     </div>
   );
 }
