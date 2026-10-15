@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, Check, Info, Minus, Plus } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Info, Minus, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ServicePageLayout from '../components/ServicePageLayout';
 import PlacementExplorer from '../components/PlacementExplorer';
@@ -9,6 +9,7 @@ import { useCart } from '../context/CartContext';
 import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
+import { setFaqSchemaCapture } from '../components/ServiceSeoBlock';
 
 type LinkPackage = {
   id: string;
@@ -27,9 +28,9 @@ const packagesEn: LinkPackage[] = [
 ];
 
 const packagesUk: LinkPackage[] = [
-  { id: 'good-place', name: 'GOOD PLACE', requirements: 'DR20+ · 1K+ органічного трафіку', title: 'Хороше не має бути складним.', price: 90, items: ['Релевантна проіндексована стаття', 'Ручна перевірка сайту та статті', 'Погодження до публікації', 'Анкор і цільова сторінка підібрані під контекст', 'Link Care на 1 рік'], },
-  { id: 'better-place', name: 'BETTER PLACE', requirements: 'DR40+ · 5K+ органічного трафіку', title: 'Трохи складніше знайти. У цьому й сенс.', price: 200, popular: true, items: ['Релевантна проіндексована стаття', 'Сильніший авторитет і органічний трафік', 'Ручна перевірка сайту та статті', 'Погодження до публікації', 'Анкор і цільова сторінка підібрані під контекст', 'Link Care на 1 рік'], },
-  { id: 'picky-mode', name: 'PICKY MODE', requirements: 'DR50+ · 10K+ органічного трафіку', title: 'Будь ласка. Ускладніть нам завдання.', price: 280, items: ['Релевантна проіндексована стаття', 'Вищий авторитет і органічний трафік', 'Жорсткіший відбір', 'Ручна перевірка сайту та статті', 'Погодження до публікації', 'Link Care на 1 рік'], },
+  { id: 'good-place', name: 'GOOD PLACE', requirements: 'DR20+ · 1K+ органічного трафіку', title: 'Хороше не має бути складним.', price: 90, items: ['Релевантна проіндексована стаття', 'Ручна перевірка сайту та статті', 'Погодження розміщення перед публікацією', 'Анкор і цільова сторінка підібрані під контекст', 'Link Care на 1 рік'], },
+  { id: 'better-place', name: 'BETTER PLACE', requirements: 'DR40+ · 5K+ органічного трафіку', title: 'Трохи складніше знайти. У цьому й сенс.', price: 200, popular: true, items: ['Релевантна проіндексована стаття', 'Сильніший авторитет і органічний трафік', 'Ручна перевірка сайту та статті', 'Погодження розміщення перед публікацією', 'Анкор і цільова сторінка підібрані під контекст', 'Link Care на 1 рік'], },
+  { id: 'picky-mode', name: 'PICKY MODE', requirements: 'DR50+ · 10K+ органічного трафіку', title: 'Будь ласка, ускладніть нам завдання. По максимуму.', price: 280, items: ['Релевантна проіндексована стаття', 'Вищий авторитет і органічний трафік', 'Жорсткіший відбір', 'Ручна перевірка сайту та статті', 'Погодження розміщення перед публікацією', 'Link Care на 1 рік'], },
 ];
 
 const detailsEn = [
@@ -56,12 +57,13 @@ const faqEn = [
 ];
 
 const faqUk = [
-  { q: 'Чи можу я погодити кожен сайт до розміщення?', a: 'Так. Кожен пакет включає погодження до публікації, щоб ви могли переглянути статтю та сайт.' },
+  { q: 'Чи можу я погодити кожен сайт до розміщення?', a: 'Так. Кожен пакет включає погодження розміщення перед публікацією, щоб ви могли переглянути статтю та сайт.' },
   { q: 'Стаття вже проіндексована в Google?', a: 'Так. Ми шукаємо релевантні статті, які вже проіндексовані до погодження.' },
   { q: 'Чи можу я обрати цільову сторінку та анкор?', a: 'Так. Ви можете надати цільову сторінку та бажаний анкор. Ми підбираємо їх під контекст.' },
   { q: 'Чи можу я попросити конкретну нішу або країну?', a: 'Так. Додайте нішу, країну, мову та інші вимоги у бриф. Специфічні вимоги можуть потребувати індивідуального пошуку.' },
   { q: 'Що покриває Link Care на 1 рік?', a: 'Протягом 12 місяців після розміщення ми стежимо за результатами. Видалення розглядаються відповідно до політики Link Care.' },
   { q: 'Що, якщо мені потрібно 10, 50 або 100+ розміщень?', a: 'Ми можемо побудувати більшу кампанію під ваші сторінки, анкори, ринки та беклінк-профіль.' },
+  { q: 'Що означають DR, анкор і органічний трафік?', a: <>DR (Domain Rating) — показник Ahrefs, який оцінює силу посилального профілю домену за шкалою від 0 до 100.<br /><br />Анкор — текст, на який встановлено посилання.<br /><br />Органічний трафік — відвідування сайту з неоплачуваних результатів пошуку. У наших пакетах використовуємо оцінку трафіку за даними Ahrefs.</> },
 ];
 
 export default function NicheEditsPage() {
@@ -75,10 +77,24 @@ export default function NicheEditsPage() {
   const [careOpen, setCareOpen] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
 
+  const stripTags = (s: string) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const faqStrings = uk ? faqUk.map((f) => ({ q: f.q, a: typeof f.a === 'string' ? f.a : stripTags((f.a as React.ReactElement)?.props?.children?.toString() || '') })) : faqEn.map((f) => ({ q: f.q, a: f.a }));
+  const faqSchema = uk ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: 'uk',
+    mainEntity: faqStrings.map((f) => ({ '@type': 'Question', name: f.q, inLanguage: 'uk', acceptedAnswer: { '@type': 'Answer', text: f.a, inLanguage: 'uk' } })),
+  } : undefined;
+
+  if (typeof window === 'undefined') {
+    setFaqSchemaCapture(faqStrings as unknown as { q: string; a: string }[]);
+  }
+
   useSEO({
     title: uk ? 'Купити посилання у готових статтях | Vladenza' : 'Buy Link Insertions & Niche Edits | Vladenza',
     description: uk ? 'Розміщуємо посилання у вже опублікованих релевантних статтях. Знаходимо сторінку, перевіряємо контекст і не пхаємо лінк туди, де йому не місце.' : "Get links placed inside relevant content that's already live. We find the page, check the context and make sure your link belongs there. No crowbar required.",
     canonical: `https://vladenza.com${lp('/services/niche-edits')}`,
+    schema: faqSchema,
   });
 
   const getQuantity = (id: string) => quantities[id] ?? 1;
@@ -106,7 +122,7 @@ export default function NicheEditsPage() {
           </div>
         </section>
 
-        <section id="packages" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><div className="mb-8 max-w-3xl"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">01 / {uk ? 'Розміщення посилань' : 'LINK PLACEMENTS'}</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Наскільки прискіпливими нам бути?' : 'How picky should we be?'}</h2><p className="mt-3 text-[17px] leading-7 text-ink/65">{uk ? 'Чим вищі вимоги, тим ретельніше ми шукаємо.' : 'The higher the requirements, the harder we search.'}</p><p className="mt-3 max-w-2xl text-[16px] leading-7 text-ink/65">{uk ? 'Кожне розміщення походить із релевантної статті, вже проіндексованої в Google та перевіреної вручну до того, як ми покажемо її вам.' : 'Every placement comes from a relevant article already indexed in Google, manually checked before we send it your way.'}</p></div><div className="grid items-stretch gap-5 lg:grid-cols-3">{packages.map((pkg) => { const quantity = getQuantity(pkg.id); const productId = `niche-edit-${pkg.id}`; const inCart = items.find((item) => item.productId === productId); return <article key={pkg.id} className={`relative flex h-full flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1 sm:p-6 ${pkg.popular ? 'shadow-[6px_6px_0_#FF5A1F]' : ''}`}>
+        <section id="packages" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><div className="mb-8 max-w-3xl"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">01 / {uk ? 'Розміщення посилань' : 'LINK PLACEMENTS'}</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Наскільки прискіпливими нам бути?' : 'How picky should we be?'}</h2><p className="mt-3 text-[17px] leading-7 text-ink/65">{uk ? 'Чим вищі вимоги, тим ретельніше ми шукаємо.' : 'The higher the requirements, the harder we search.'}</p>{uk && <p className="mt-3 max-w-2xl text-[16px] leading-7 text-ink/65">Посилання в готових статтях — це розміщення на сторінках, які вже опубліковані та проіндексовані в Google.</p>}{uk && <p className="mt-3 max-w-2xl text-[16px] leading-7 text-ink/65">Ми перевіряємо тематику сайту, органічний трафік, історію домену та саму статтю. Кожне розміщення проходить ручну перевірку, перш ніж ми запропонуємо його вам.</p>}{!uk && <p className="mt-3 max-w-2xl text-[16px] leading-7 text-ink/65">Every placement comes from a relevant article already indexed in Google, manually checked before we send it your way.</p>}</div><div className="grid items-stretch gap-5 lg:grid-cols-3">{packages.map((pkg) => { const quantity = getQuantity(pkg.id); const productId = `niche-edit-${pkg.id}`; const inCart = items.find((item) => item.productId === productId); return <article key={pkg.id} className={`relative flex h-full flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1 sm:p-6 ${pkg.popular ? 'shadow-[6px_6px_0_#FF5A1F]' : ''}`}>
           {pkg.popular && <span className="absolute right-5 top-0 -translate-y-1/2 bg-signal px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">{uk ? 'Найпопулярніший' : 'Most popular'}</span>}
           <p className="text-xs font-bold uppercase tracking-[.16em] text-signal">{pkg.name}</p><p className="mt-2 text-sm font-bold text-ink/55">{pkg.requirements}</p><h3 className="mt-6 max-w-sm font-display text-[25px] font-bold leading-[1.05]">{pkg.title}</h3>
           <ul className="mt-6 flex flex-col gap-3 border-t-2 border-ink/10 pt-5">{pkg.items.map((item) => <li key={item} className="flex gap-3 text-[15px] leading-6 text-ink/75"><Check size={16} className="mt-1 shrink-0 text-signal" />{item === '1-Year Link Care' || item === 'Link Care на 1 рік' ? <><span>{item}</span><button type="button" onClick={() => setCareOpen(true)} aria-label="Link Care details" className="editorial-focus inline-flex text-ink/55 hover:text-signal"><Info size={14} /></button></> : item}</li>)}</ul>
@@ -117,11 +133,36 @@ export default function NicheEditsPage() {
 
         <section id="placements" className="scroll-mt-20 bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">03 / {uk ? 'Докази' : 'THE RECEIPTS'}</p><h2 className="font-display max-w-3xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? <>Менше розмов.<br />Більше посилань, які ми справді розмістили.</> : <>Less talk.<br />More links we've actually placed.</>}</h2><p className="mt-4 mb-8 max-w-xl text-[16px] leading-7 text-ink/65">{uk ? 'Перегляньте реальні приклади з виконаних замовлень.' : 'Browse real examples from completed link insertion orders.'}</p><PlacementExplorer serviceType="niche_edit" /><div className="mt-6"><Link to={lp('/placements')} className="inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-[#EA580C]">{uk ? 'Усі розміщення' : 'See All Placements'} <ArrowRight size={15} /></Link></div></div></section>
 
-        <section className="bg-navy py-14 text-white md:py-20"><div className="mx-auto max-w-[1000px] px-5 sm:px-8 lg:px-16"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">04 / 1-YEAR LINK CARE</p><h2 className="font-display max-w-3xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96] text-cream">{uk ? 'Публікація — не кінець нашої роботи.' : "Published isn't where our job ends."}</h2><p className="mt-5 max-w-xl text-[17px] leading-7 text-white/70">{uk ? 'Протягом 12 місяців після розміщення ми стежимо за тим, що доставили.' : "For 12 months after placement, we keep an eye on what we've delivered."}</p><div className="mt-9 grid gap-5 border-y border-white/20 py-6 md:grid-cols-3"><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">WE CHECK IT</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Розміщення все ще активне?' : 'Is the placement still live?'}</p></div><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">SOMETHING CHANGED?</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Ми перевіримо, що сталося.' : 'We review what happened.'}</p></div><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">SOMETHING DISAPPEARED?</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Видалення розглядаються за політикою Link Care.' : 'Eligible removals are handled according to our Link Care policy.'}</p></div></div><button type="button" onClick={() => setCareOpen(true)} className="editorial-focus mt-6 inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-white">{uk ? 'Що покривається?' : "What's covered?"} <Info size={15} /></button><p className="mt-10 font-display text-2xl font-bold text-cream">{uk ? 'Бо «воно було активним, коли ми надіслали звіт» — недостатньо.' : 'Because “it was live when we sent the report” isn’t good enough.'}</p></div></section>
+        <section className="bg-navy py-14 text-white md:py-20"><div className="mx-auto max-w-[1000px] px-5 sm:px-8 lg:px-16"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">04 / {uk ? 'Link Care — гарантія на 1 рік' : '1-YEAR LINK CARE'}</p><h2 className="font-display max-w-3xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96] text-cream">{uk ? 'Публікація — не кінець нашої роботи.' : "Published isn't where our job ends."}</h2><p className="mt-5 max-w-xl text-[17px] leading-7 text-white/70">{uk ? 'Протягом 12 місяців після розміщення ми стежимо за тим, що доставили.' : "For 12 months after placement, we keep an eye on what we've delivered."}</p><div className="mt-9 grid gap-5 border-y border-white/20 py-6 md:grid-cols-3"><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">WE CHECK IT</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Розміщення все ще активне?' : 'Is the placement still live?'}</p></div><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">SOMETHING CHANGED?</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Ми перевіримо, що сталося.' : 'We review what happened.'}</p></div><div><p className="text-xs font-bold uppercase tracking-[.14em] text-signal">SOMETHING DISAPPEARED?</p><p className="mt-2 text-[16px] leading-6 text-cream">{uk ? 'Видалення розглядаються за політикою Link Care.' : 'Eligible removals are handled according to our Link Care policy.'}</p></div></div><button type="button" onClick={() => setCareOpen(true)} className="editorial-focus mt-6 inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-white">{uk ? 'Що покривається?' : "What's covered?"} <Info size={15} /></button><p className="mt-10 font-display text-2xl font-bold text-cream">{uk ? 'Бо «воно було активним, коли ми надіслали звіт» — недостатньо.' : 'Because “it was live when we sent the report” isn’t good enough.'}</p></div></section>
 
         <section className="bg-[#D94712] py-14 text-[#FFFDF8] md:py-20"><div className="mx-auto max-w-5xl px-5 sm:px-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-white/75">05 / {uk ? 'Перед запитаннями' : 'BEFORE YOU ASK'}</p><h2 className="font-display max-w-2xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Так, ми це вже чули.' : 'Yes, we’ve heard that one before.'}</h2><div className="mt-8"><FAQ faqs={faqs} compact orange /></div></div></section>
 
-        <section className="bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1000px] px-5 text-center sm:px-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">06 / YOUR CALL</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Наскільки прискіпливими ви хочете бути?' : 'How picky do you want to be?'}</h2><p className="mx-auto mt-4 max-w-xl text-[17px] leading-7 text-ink/65">{uk ? 'Good Place. Better Place. Або ускладніть нам життя.' : 'Good Place. Better Place. Or make our lives difficult.'}</p><div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><a href="#packages" className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-signal px-6 text-sm font-bold text-white hover:bg-[#EA580C]">{uk ? 'Обрати розміщення' : 'Choose Your Placement'} <ArrowRight size={16} /></a><button type="button" onClick={() => setBriefOpen(true)} className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-navy px-6 text-sm font-bold text-white hover:bg-[#101F52]">{uk ? 'Дайте складніший бриф' : 'Give Us a Harder Brief'} <ArrowRight size={16} /></button></div></div></section>
+        <section className="bg-cream py-14 md:py-20"><div className="mx-auto max-w-[1000px] px-5 text-center sm:px-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">06 / {uk ? 'ВАШ ВИБІР' : 'YOUR CALL'}</p><h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">{uk ? 'Наскільки прискіпливими ви хочете бути?' : 'How picky do you want to be?'}</h2><p className="mx-auto mt-4 max-w-xl text-[17px] leading-7 text-ink/65">{uk ? 'Good Place. Better Place. Або ускладніть нам життя.' : 'Good Place. Better Place. Or make our lives difficult.'}</p><div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><a href="#packages" className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-signal px-6 text-sm font-bold text-white hover:bg-[#EA580C]">{uk ? 'Обрати розміщення' : 'Choose Your Placement'} <ArrowRight size={16} /></a><button type="button" onClick={() => setBriefOpen(true)} className="editorial-focus inline-flex min-h-12 items-center justify-center gap-2 bg-navy px-6 text-sm font-bold text-white hover:bg-[#101F52]">{uk ? 'Дайте складніший бриф' : 'Give Us a Harder Brief'} <ArrowRight size={16} /></button></div></div></section>
+
+        {uk && (
+          <section className="bg-white pb-14 md:pb-20">
+            <div className="mx-auto max-w-3xl px-5 sm:px-8">
+              <details className="group border-2 border-ink/15 bg-cream">
+                <summary className="editorial-focus flex min-h-14 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left sm:px-6">
+                  <span className="font-display text-lg font-bold text-ink">Більше про розміщення посилань</span>
+                  <ChevronDown size={20} className="shrink-0 text-ink/50 transition-transform duration-300 group-open:rotate-180" />
+                </summary>
+                <div className="border-t-2 border-ink/10 px-5 py-6 sm:px-6">
+                  <h3 className="font-display text-xl font-bold text-ink">Розміщення посилань для SEO-просування</h3>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Розміщення посилань у готових статтях (нішеві едіти) — один із способів отримувати зворотні посилання. На відміну від гостьового постингу, тут не потрібно створювати нову статтю: посилання додається до вже опублікованого та проіндексованого матеріалу.</p>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Це працює добре, коли стаття релевантна вашій тематиці, а посилання вписується в контекст природно. Ми перевіряємо саму сторінку, її індексацію, органічний трафік сайту та відповідність темі.</p>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Розміщення посилань можна поєднувати з іншими інструментами лінкбілдингу: <a href={lp('/services/guest-posting')} className="font-bold underline underline-offset-2 hover:text-signal">гостьовим постингом</a>, digital PR та <a href={lp('/services/crowd-links')} className="font-bold underline underline-offset-2 hover:text-signal">крауд-маркетингом</a>. Вибір залежить від конкуренції, бюджету та цілей вашого сайту.</p>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Варто пам'ятати, що вічних посилань із безумовною гарантією не існує. Так само ніхто не може гарантувати конкретних позицій у Google чи інших пошукових системах — незалежно від того, просуваєте ви сайт в Україні чи на <a href={lp('/')} className="font-bold underline underline-offset-2 hover:text-signal">міжнародному ринку</a>.</p>
+
+                  <h3 className="mt-8 font-display text-xl font-bold text-ink">Як замовити посилання в готових статтях?</h3>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Обираєте пакет Good Place, Better Place або Picky Mode відповідно до потрібних показників DR та органічного трафіку. Вказуєте сайт, цільову сторінку й бажаний анкор.</p>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Ми підбираємо релевантні статті, перевіряємо майданчики та надсилаємо варіанти на погодження. Після підтвердження організовуємо розміщення й додаємо посилання до звіту.</p>
+                  <p className="mt-4 text-[15px] leading-7 text-ink/75">Якщо стандартні пакети не підходять, можна замовити індивідуальний підбір за тематикою, країною, трафіком або іншими критеріями.</p>
+                </div>
+              </details>
+            </div>
+          </section>
+        )}
       </main>
       {careOpen && <div className="fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setCareOpen(false)}><div className="absolute inset-0 bg-black/60 backdrop-blur-sm" /><div className="relative max-w-md border-2 border-ink bg-[#FFFDF8] p-6 shadow-[6px_6px_0_#FF5A1F]" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between gap-5"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-signal">1-Year Link Care</p><h2 className="mt-2 font-display text-2xl">{uk ? 'Що покривається?' : "What's covered?"}</h2></div><button type="button" onClick={() => setCareOpen(false)} className="editorial-focus text-2xl leading-none text-ink/50 hover:text-ink" aria-label="Close">×</button></div><p className="mt-5 text-[15px] leading-7 text-ink/70">{uk ? 'Протягом 12 місяців після публікації ми стежимо за доставленими розміщеннями. Якщо відповідне розміщення зникає, ми перевіряємо ситуацію та діємо відповідно до політики Link Care.' : "For 12 months after publication, we keep an eye on delivered placements. If an eligible placement disappears, we review what happened and handle it according to our Link Care policy."}</p><button type="button" onClick={() => setCareOpen(false)} className="editorial-focus mt-5 min-h-11 w-full bg-navy text-sm font-bold text-white hover:bg-[#101F52]">{uk ? 'Зрозуміло' : 'Got it'}</button></div></div>}
       <LinkPlanModal open={briefOpen} onClose={() => setBriefOpen(false)} />

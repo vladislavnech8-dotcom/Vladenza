@@ -8,6 +8,7 @@ import { useCart } from '../context/CartContext';
 import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
+import { setFaqSchemaCapture } from '../components/ServiceSeoBlock';
 
 type GuestPackage = {
   id: string;
@@ -103,18 +104,18 @@ export default function GuestPostingPage() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [careOpen, setCareOpen] = useState(false);
 
+  const stripTags = (s: string) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const faqStrings = uk ? faqUk.map((f) => ({ q: f.q, a: typeof f.a === 'string' ? f.a : stripTags((f.a as React.ReactElement)?.props?.children?.toString() || '') })) : faqEn.map((f) => ({ q: f.q, a: f.a }));
   const faqSchema = uk ? {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqUk.map((f) => {
-      const stripTags = (s: string) => s.replace(/<[^>]+>/g, '');
-      return {
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: typeof f.a === 'string' ? f.a : stripTags((f.a as React.ReactElement)?.props?.children?.toString() || '') },
-      };
-    }),
+    inLanguage: 'uk',
+    mainEntity: faqStrings.map((f) => ({ '@type': 'Question', name: f.q, inLanguage: 'uk', acceptedAnswer: { '@type': 'Answer', text: f.a, inLanguage: 'uk' } })),
   } : undefined;
+
+  if (typeof window === 'undefined') {
+    setFaqSchemaCapture(faqStrings as unknown as { q: string; a: string }[]);
+  }
 
   useSEO({
     title: uk ? 'Купити гостьові публікації. DR 50+ — це ще не стратегія | Vladenza' : 'Buy Guest Posts on Real Websites | Vladenza',

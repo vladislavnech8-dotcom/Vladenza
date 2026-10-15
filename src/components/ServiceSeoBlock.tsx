@@ -14,6 +14,10 @@ export function resetFaqSchemaCapture() {
   lastRenderedFaqSchema = null;
 }
 
+export function setFaqSchemaCapture(faqs: Faq[] | null) {
+  lastRenderedFaqSchema = faqs;
+}
+
 interface Props {
   heading: string;
   intro: string;
