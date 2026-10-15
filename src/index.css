@@ -48,6 +48,43 @@ body {
 }
 
 @layer components {
+  .marketing-hero {
+    min-height: clamp(540px, 72svh, 680px);
+  }
+
+  .marketing-hero-content {
+    max-width: 1500px;
+    padding: clamp(64px, 8vw, 112px) 20px;
+  }
+
+  .marketing-hero-content-left {
+    text-align: left;
+  }
+
+  .marketing-hero-title {
+    max-width: 1024px;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(2.75rem, 7vw, 6rem);
+    font-weight: 800;
+    line-height: .95;
+    letter-spacing: -.05em;
+    text-wrap: balance;
+  }
+
+  @media (min-width: 640px) {
+    .marketing-hero-content {
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .marketing-hero-content {
+      padding-left: 64px;
+      padding-right: 64px;
+    }
+  }
+
   .input {
     @apply w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition placeholder-gray-400 bg-white;
   }

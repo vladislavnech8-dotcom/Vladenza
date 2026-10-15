@@ -111,13 +111,13 @@ export default function NicheEditsPage() {
   return (
     <ServicePageLayout defaultService="Niche Edits" flushTop>
       <main>
-        <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+        <section className="marketing-hero relative flex items-center overflow-hidden bg-navy text-white">
           <img src="/assets/visuals/Niche_edits_main_page.webp" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center opacity-55 saturate-[.75] brightness-[.42]" />
           <div className="absolute inset-0 bg-[#07102B]/65" />
           <div className="paper-grain absolute inset-0 opacity-20" />
-          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
+          <div className="marketing-hero-content relative z-10 mx-auto flex w-full flex-col items-center text-center">
             <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-signal">{uk ? 'РОЗМІЩЕННЯ ПОСИЛАНЬ' : 'LINK INSERTIONS'}</p>
-            <h1 className="max-w-4xl font-display text-[clamp(2.75rem,7vw,6.75rem)] font-bold leading-[.95] tracking-[-.05em] text-cream">{uk ? <>Хороший контент уже є.<br /><span className="text-signal">Ваше посилання має бути в ньому.</span></> : <>Good Content Already Exists.<br /><span className="text-signal">Your Link Should Be In It.</span></>}</h1>
+            <h1 className="marketing-hero-title text-cream">{uk ? <>Хороший контент уже є.<br /><span className="text-signal">Ваше посилання має бути в ньому.</span></> : <>Good Content Already Exists.<br /><span className="text-signal">Your Link Should Be In It.</span></>}</h1>
             <div className="mt-8 flex w-full max-w-[360px] flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center"><a href="#packages" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-signal px-7 text-base font-bold text-white transition-colors hover:bg-[#EA580C]">{uk ? 'Обрати розміщення' : 'Choose Your Placement'} <ArrowRight size={18} /></a><a href="#placements" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-[#FFFDF8] px-7 text-base font-bold text-navy transition-colors hover:bg-white">{uk ? 'Наші роботи' : 'See Our Work'} <ArrowRight size={18} /></a></div>
           </div>
         </section>

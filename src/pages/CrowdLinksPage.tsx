@@ -83,12 +83,12 @@ export default function CrowdLinksPage() {
   return (
     <ServicePageLayout defaultService="Crowd Marketing" flushTop>
       <main>
-        <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+        <section className="marketing-hero relative flex items-center overflow-hidden bg-navy text-white">
           <img src="/assets/visuals/Crowd_marketing_page.webp" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-[#07102B]/70" />
           <div className="paper-grain absolute inset-0 opacity-20" />
-          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
-            <h1 className="max-w-4xl font-display text-[clamp(2.75rem,7vw,6.75rem)] font-bold leading-[.95] tracking-[-.05em] text-cream">{uk ? 'Крауд-маркетинг. Згадки. Посилання.' : <>Mentions. Links.<br /><span className="text-signal">Where They Make Sense.</span></>}</h1>
+          <div className="marketing-hero-content relative z-10 mx-auto flex w-full flex-col items-center text-center">
+            <h1 className="marketing-hero-title text-cream">{uk ? 'Крауд-маркетинг. Згадки. Посилання.' : <>Mentions. Links.<br /><span className="text-signal">Where They Make Sense.</span></>}</h1>
             <div className="mt-8 flex w-full max-w-[360px] flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center"><a href="#packages" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-signal px-7 text-base font-bold text-white transition-colors hover:bg-[#EA580C]">{uk ? 'Обрати пакет' : 'Choose Your Package'} <ArrowRight size={18} /></a><a href="#work" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-[#FFFDF8] px-7 text-base font-bold text-navy transition-colors hover:bg-white">{uk ? 'Як це працює' : 'How It Works'} <ArrowRight size={18} /></a></div>
           </div>
         </section>

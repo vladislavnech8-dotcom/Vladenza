@@ -243,15 +243,15 @@ export default function BlogPage() {
     <ServicePageLayout>
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-navy py-16 text-white lg:py-24">
+      <section className="marketing-hero relative overflow-hidden bg-navy text-white">
         <div className="paper-grain absolute inset-0 opacity-20" />
-        <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
+        <div className="marketing-hero-content relative mx-auto w-full px-5 sm:px-8 lg:px-16">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-5 h-0.5  bg-[#F97316]" />
               <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F97316]">{uk ? 'Блог і ресурси' : 'Blog & Resources'}</span>
             </div>
-            <h1 className="font-display text-[clamp(3rem,6vw,6rem)] font-bold leading-[.92] tracking-[-.05em] text-cream mb-5">
+            <h1 className="marketing-hero-title text-cream mb-5">
               {uk ? 'SEO-інсайти від' : 'SEO insights from'}<br />
               <span className="text-[#F97316]">{uk ? 'практиків' : 'practitioners'}</span>
             </h1>

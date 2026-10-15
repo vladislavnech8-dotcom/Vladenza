@@ -124,13 +124,13 @@ export default function PlacementsPage() {
 
       <div className="pt-[88px]">
         {/* Header — navy editorial */}
-        <section className="relative overflow-hidden bg-navy text-white">
+        <section className="marketing-hero relative overflow-hidden bg-navy text-white">
           <div className="paper-grain absolute inset-0 opacity-20" />
-          <div className="relative z-10 mx-auto max-w-[1440px] px-5 py-14 sm:px-8 md:py-20 lg:px-16">
+          <div className="marketing-hero-content relative z-10 mx-auto w-full text-left">
             <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-signal">
               {uk ? 'РОЗМИЩЕННЯ' : 'PLACEMENTS'}
             </p>
-            <h1 className="font-display text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[.95] tracking-[-.04em] text-cream">
+            <h1 className="marketing-hero-title text-cream">
               {uk ? <>Та частина, де ми <span className="text-signal">показуємо посилання.</span></> : <>The part where we <span className="text-signal">show the links.</span></>}
             </h1>
           </div>

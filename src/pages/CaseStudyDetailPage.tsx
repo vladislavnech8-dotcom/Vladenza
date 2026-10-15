@@ -227,9 +227,9 @@ export default function CaseStudyDetailPage() {
 
       {/* Hero */}
       <section
-        className="relative overflow-hidden bg-cream py-14 md:py-20"
+        className="marketing-hero relative overflow-hidden bg-cream"
       >
-        <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
+        <div className="marketing-hero-content mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
           <a href={lp('/case-studies')} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-6">
             <ArrowLeft size={12} /> {uk ? 'Усі кейси' : 'All cases'}
           </a>
@@ -246,7 +246,7 @@ export default function CaseStudyDetailPage() {
             <span className="text-xs text-gray-400">{cUk!.period}</span>
           </div>
 
-          <h1 className="text-3xl md:text-4xl lg:text-[44px] font-bold text-gray-900 leading-[1.1] tracking-tight max-w-3xl">
+          <h1 className="marketing-hero-title text-ink max-w-3xl">
             {cUk!.title}
           </h1>
         </div>

@@ -39,13 +39,13 @@ export default function HomePage() {
     <Navigation />
 
     <main>
-      <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+      <section className="marketing-hero relative flex items-center overflow-hidden bg-navy text-white">
         <img src="/assets/visuals/vladenzaheroimage.webp" alt="" width="1440" height="1024" fetchPriority="high" decoding="async" srcSet="/assets/visuals/vladenzaheroimage-mobile.webp 750w, /assets/visuals/vladenzaheroimage-tablet.webp 1100w, /assets/visuals/vladenzaheroimage.webp 1671w" sizes="100vw" className="absolute inset-0 block h-full w-full object-cover object-[72%_72%] opacity-60 saturate-[.8] brightness-[.48] lg:object-[72%_68%]" />
         <div className="absolute inset-0 bg-[#07102B]/72" />
         <div className="paper-grain absolute inset-0 opacity-20" />
-        <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-center justify-center px-5 py-16 text-center sm:px-8 sm:py-20 lg:py-24">
+        <div className="marketing-hero-content relative z-10 mx-auto flex w-full flex-col items-center justify-center text-center">
           <div className="flex w-full min-w-0 max-w-[1500px] flex-col items-center">
-            <h1 className="w-full min-w-0 font-display text-[clamp(2.75rem,7vw,5.5rem)] font-bold leading-[.95] tracking-[-.05em] sm:text-[clamp(3rem,6vw,6rem)] sm:leading-[.94] sm:tracking-[-.05em]" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
+            <h1 className="marketing-hero-title w-full min-w-0 text-cream" style={{ textShadow: '0 2px 14px rgba(0,0,0,0.22)' }}>
               <span className="block w-full text-cream">{c.hero.h1First}</span>
               <span className="mt-2 block w-full text-signal sm:mt-1">{c.hero.h1Second}</span>
             </h1>

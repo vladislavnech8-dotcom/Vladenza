@@ -102,14 +102,14 @@ export default function WhiteLabelPage() {
   return (
     <ServicePageLayout defaultService="White Label Link Building" flushTop>
       <main className="bg-cream text-ink">
-        <section className="relative flex min-h-[540px] items-center overflow-hidden bg-navy text-white sm:min-h-[580px] lg:min-h-[620px]">
+        <section className="marketing-hero relative flex items-center overflow-hidden bg-navy text-white">
           <img src="/assets/visuals/Whitelabel_linkbuilding.webp" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[62%_center] opacity-65 saturate-[.8] brightness-[.52] sm:object-center" />
           <div className="absolute inset-0 bg-[#07102B]/72" />
           <div className="paper-grain absolute inset-0 opacity-20" />
-          <div className="relative z-10 mx-auto w-full max-w-[1440px] px-5 py-16 sm:px-8 sm:py-20 lg:px-16 lg:py-24">
+          <div className="marketing-hero-content marketing-hero-content-left relative z-10 mx-auto w-full">
             <div className="max-w-3xl">
               <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-signal">WHITE LABEL LINK BUILDING</p>
-              <h1 className="max-w-3xl font-display text-[clamp(2.75rem,6vw,6rem)] font-bold leading-[.94] tracking-[-.05em] text-cream">{uk ? <>Ваші клієнти. Ваш бренд.<br /><span className="text-signal">Наша команда лінкбілдингу.</span></> : <>Your clients. Your brand.<br /><span className="text-signal">Our link building team.</span></>}</h1>
+              <h1 className="marketing-hero-title text-cream">{uk ? <>Ваші клієнти. Ваш бренд.<br /><span className="text-signal">Наша команда лінкбілдингу.</span></> : <>Your clients. Your brand.<br /><span className="text-signal">Our link building team.</span></>}</h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-cream/85">{uk ? 'Ви продаєте лінкбілдинг. Ми беремо на себе складну частину — дослідження, аутріч, контент, розміщення та звітність.' : 'You sell the link building. We handle the messy part behind it — research, outreach, content, placements and reporting.'}</p>
               <div className="mt-8 flex w-full max-w-[420px] flex-col gap-3 sm:flex-row sm:max-w-none"><button type="button" onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })} className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-signal px-7 text-base font-bold text-white hover:bg-[#EA580C]">{uk ? 'Переглянути плани агенції' : 'See Agency Plans'} <ArrowRight size={18} /></button><a href="#placements" className="editorial-focus inline-flex min-h-14 items-center justify-center gap-2 bg-[#FFFDF8] px-7 text-base font-bold text-navy hover:bg-white">{uk ? 'Переглянути роботи' : 'See Our Work'} <ArrowRight size={18} /></a></div>
             </div>

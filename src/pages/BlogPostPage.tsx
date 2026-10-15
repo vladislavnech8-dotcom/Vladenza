@@ -304,8 +304,8 @@ export default function BlogPostPage() {
       </div>
 
       {/* Article header */}
-      <div className="bg-cream pb-0 pt-12">
-        <div className="mx-auto max-w-[900px] px-5 sm:px-8">
+      <div className="marketing-hero bg-cream">
+        <div className="marketing-hero-content mx-auto max-w-[900px] px-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className={`text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full border ${catColor}`}>
               {postUk!.category}
@@ -317,7 +317,7 @@ export default function BlogPostPage() {
             <span className="text-gray-400 text-xs">{postDate}</span>
           </div>
 
-          <h1 className="font-display max-w-3xl text-4xl font-bold leading-[1.02] tracking-[-.04em] text-ink md:text-[56px] mb-5">
+          <h1 className="marketing-hero-title text-ink mb-5">
             {postUk!.title}
           </h1>
 
