@@ -40,7 +40,7 @@ const opportunitiesEn = [
 ];
 
 const opportunitiesUk = [
-  ['01', 'РЕКОМЕНДАЦІЇ', 'Хтось шукає варіанти.', 'Користувач просить поради задає питання або шукає конкретний продукт. Ваш бренд та лінка може природно з\'явитися серед відповідних рекомендацій.'],
+  ['01', 'РЕКОМЕНДАЦІЇ', 'Хтось шукає варіанти.', 'Користувач просить поради задає питання або шукає конкретний продукт. Ваш бренд та лінка може природно з’явитися серед відповідних рекомендацій.'],
   ['02', 'ПРОБЛЕМИ', 'Хтось має проблему, яку ви можете вирішити.', 'Ми знаходимо обговорення, у яких ваш продукт, послуга або стаття на сайті можуть допомогти з відповіддю.'],
   ['03', 'ПОРІВНЯННЯ', 'Люди порівнюють свої варіанти.', 'Коли користувачі обирають між кількома рішеннями, ваш бренд може бути однією з альтернатив. Важливо не просто згадати компанію, а пояснити, чому це доречно.'],
   ['04', 'ТЕМАТИЧНІ ДИСКУСІЇ', 'Тема справді стосується вашого бізнесу.', 'Навіть на загальному форумі може бути обговорення, яке безпосередньо стосується вашого продукту. Ми оцінюємо зміст конкретної дискусії, а не лише загальну тематику сайту.'],
@@ -62,7 +62,7 @@ const faqUk = [
   { q: 'Де можна купити крауд-посилання?', a: 'У Vladenza можна замовити пакети на 25, 50 або 100 розміщень. Ми самостійно підбираємо форуми та обговорення, перевіряємо майданчики й готуємо коментарі. Якщо потрібна конкретна країна, мова, ніша або додаткові вимоги, можна замовити індивідуальний підбір.' },
   { q: 'Чи працює крауд-маркетинг у соціальних мережах?', a: 'Крауд-маркетинг може використовуватися не лише на форумах, а й у тематичних спільнотах та соціальних мережах, де люди обговорюють продукти й послуги. Однак наші пакети крауд-посилань передбачають насамперед розміщення у форумних обговореннях. Роботу з іншими платформами узгоджуємо окремо.' },
   { q: 'Чим крауд-посилання відрізняються від гостьових публікацій?', a: 'Крауд-посилання розміщуються в коментарях, відповідях та обговореннях. Гостьові публікації — це нові статті, які створюються для публікації на сторонніх сайтах. Обидва формати можна поєднувати в межах однієї SEO-стратегії, але вони вирішують різні завдання.' },
-  { q: 'Чи обв\'язково форум має відповідати тематиці мого сайту?', a: 'Ні. Важливо, щоб конкретне обговорення відповідало вашому продукту або послузі. Наприклад, посилання на магазин акумуляторів для смартфонів може бути доречним у темі про ремонт телефону на загальнотехнічному форумі.' },
+  { q: 'Чи обв’язково форум має відповідати тематиці мого сайту?', a: 'Ні. Важливо, щоб конкретне обговорення відповідало вашому продукту або послузі. Наприклад, посилання на магазин акумуляторів для смартфонів може бути доречним у темі про ремонт телефону на загальнотехнічному форумі.' },
   { q: 'Чи всі крауд-посилання будуть dofollow?', a: 'Ні. Тип посилання залежить від правил та технічних налаштувань конкретного майданчика. Форуми можуть використовувати атрибути nofollow або ugc. Ми не гарантуємо однаковий тип посилань для всіх розміщень.' },
   { q: 'Чи можна погоджувати форуми та коментарі перед публікацією?', a: 'Так. За бажанням ви можете переглядати запропоновані форуми, дискусії та тексти коментарів до розміщення.' },
   { q: 'Чи всі форумні посилання індексуються в Google?', a: 'Ні. Індексація залежить від налаштувань форуму, доступності сторінки та рішень пошукової системи. Ми враховуємо ці фактори під час відбору майданчиків, але не можемо гарантувати індексацію кожного коментаря.' },
@@ -108,13 +108,38 @@ export default function CrowdLinksPage() {
 
         {uk ? (
           <>
+            {/* 01 / Пакети крауд-маркетингу */}
+            <section id="packages" className="scroll-mt-20 bg-cream py-14 md:py-20">
+              <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
+                <div className="mb-8 max-w-2xl">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">01 / Пакети крауд-маркетингу</p>
+                  <h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">Впізнаваність бренду не з’являється сама собою.</h2>
+                </div>
+                <div className="grid items-stretch gap-5 lg:grid-cols-3">
+                  {packages.map((pkg) => {
+                    const productId = `crowd-marketing-${pkg.name.toLowerCase()}`;
+                    const inCart = items.some((item) => item.productId === productId);
+                    return (
+                      <article key={pkg.name} className={`relative flex h-full flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1 sm:p-6 ${pkg.popular ? 'shadow-[6px_6px_0_#FF5A1F]' : ''}`}>
+                        {pkg.popular && <span className="absolute right-5 top-0 -translate-y-1/2 bg-signal px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">Найпопулярніший</span>}
+                        <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-signal">{pkg.name}</p><p className="mt-1 text-sm font-bold text-ink/55">{pkg.count}</p></div><span className="font-display text-3xl font-bold text-ink">${pkg.price}</span></div>
+                        <h3 className="mt-6 max-w-sm font-display text-[25px] font-bold leading-[1.05]">{pkg.title}</h3>
+                        <ul className="mt-6 flex flex-col gap-3 border-t-2 border-ink/10 pt-5">{pkg.items.map((item) => <li key={item} className="flex gap-3 text-[15px] leading-6 text-ink/75"><Check size={16} className="mt-1 shrink-0 text-signal" />{item}</li>)}</ul>
+                        <div className="mt-auto pt-5"><div className="border-t-2 border-ink/10 pt-4"><button type="button" onClick={() => setCarePackage(pkg)} className="editorial-focus inline-flex items-center gap-1 text-xs font-bold text-ink/60 underline decoration-ink/25 underline-offset-4 hover:text-signal">{pkg.care} Link Care <Info size={13} /></button></div><button type="button" onClick={() => addPackageToCart(pkg)} className={`editorial-focus mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 text-sm font-bold transition-colors ${pkg.popular ? 'bg-signal text-white hover:bg-[#EA580C]' : 'bg-navy text-white hover:bg-[#101F52]'}`}>{inCart ? 'Додано до кошика' : pkg.cta}<ArrowRight size={16} /></button></div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
             {/* 02 / Де ви доречні */}
             <section className="bg-white py-14 md:py-20">
               <div className="mx-auto max-w-[1240px] px-5 sm:px-8 lg:px-16">
                 <div className="max-w-3xl">
                   <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">02 / Де ви доречні</p>
-                  <h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">Не кожен форум нам підходить. Не кожна дискусія потребує вашого посилання.</h2>
-                  <p className="mt-5 max-w-2xl text-[17px] leading-[1.6] text-ink/70">Крауд-посилання мають з\'являтися там, де вони справді стосуються обговорення і посилання дасть цінність. Ми шукаємо на форумах, тематичні спільноти та дискусії, які дадуть буст до видимості ваших ключових слів у пошуку та розбавлять посилальний профіль для натуральності.</p>
+                  <h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]"><>Не кожен форум нам підходить.<br /><span className="text-signal">Не кожна дискусія потребує вашого посилання.</span></></h2>
+                  <p className="mt-5 max-w-2xl text-[17px] leading-[1.6] text-ink/70">Крауд-посилання мають з’являтися там, де вони справді стосуються обговорення і посилання дасть цінність. Ми шукаємо на форумах, тематичні спільноти та дискусії, які дадуть буст до видимості ваших ключових слів у пошуку та розбавлять посилальний профіль для натуральності.</p>
                 </div>
                 <div className="mt-10 grid border-y-2 border-ink md:grid-cols-2">
                   {opportunitiesUk.map(([number, label, title, body], index) => (
@@ -127,48 +152,9 @@ export default function CrowdLinksPage() {
                   ))}
                 </div>
                 <div className="mt-10 max-w-4xl">
-                  <h3 className="font-display text-[clamp(2.25rem,4vw,4rem)] font-bold leading-[.98]">Не весь форум має відповідати вашій ніші. <span className="text-signal">Достатньо, щоб відповідала дискусія.</span></h3>
+                  <h3 className="font-display text-[clamp(2.25rem,4vw,4rem)] font-bold leading-[.98]"><>Не весь форум має відповідати вашій ніші.<br /><span className="text-signal">Достатньо, щоб відповідала дискусія.</span></></h3>
                   <p className="mt-4 max-w-2xl text-[16px] leading-7 text-ink/65">Під час відбору майданчиків враховуємо органічний трафік, DR, якість обговорень та індексацію сторінок у Google.</p>
                   <p className="mt-4 max-w-2xl text-[16px] leading-7 text-ink/65">Крауд-маркетинг — це не лише кількість посилань на форумах. Важливо, хто побачить згадку, наскільки вона доречна і чи має цінність для учасників розмови.</p>
-                </div>
-              </div>
-            </section>
-
-            {/* 01 / Пакети крауд-маркетингу */}
-            <section id="packages" className="scroll-mt-20 bg-cream py-14 md:py-20">
-              <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
-                <div className="mb-8 max-w-2xl">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">01 / Пакети крауд-маркетингу</p>
-                  <h2 className="font-display text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">Впізнаваність бренду не з\'являється сама собою.</h2>
-                  <p className="mt-5 max-w-2xl text-[17px] leading-[1.6] text-ink/70">25, 50 або 100 розміщень на форумах та у спільнотах. Ми шукаємо релевантні обговорення вручну, пишемо коментарі під конкретні теми та підбираємо сторінки вашого сайту відповідно до контексту.</p>
-                </div>
-                <div className="grid items-stretch gap-5 lg:grid-cols-3">
-                  {packages.map((pkg) => {
-                    const productId = `crowd-marketing-${pkg.name.toLowerCase()}`;
-                    const inCart = items.some((item) => item.productId === productId);
-                    return (
-                      <article key={pkg.name} className={`relative flex h-full flex-col border-2 border-ink bg-white p-5 transition-transform hover:-translate-y-1 sm:p-6 ${pkg.popular ? 'shadow-[6px_6px_0_#FF5A1F]' : ''}`}>
-                        {pkg.popular && <span className="absolute right-5 top-0 -translate-y-1/2 bg-signal px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">Найпопулярніший</span>}
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-xs font-bold uppercase tracking-[.16em] text-signal">{pkg.name}</p>
-                            <p className="mt-1 text-sm font-bold text-ink/55">{pkg.count}</p>
-                          </div>
-                        </div>
-                        <h3 className="mt-6 max-w-sm font-display text-[25px] font-bold leading-[1.05]">{pkg.title}</h3>
-                        <ul className="mt-6 flex flex-col gap-3 border-t-2 border-ink/10 pt-5">
-                          {pkg.items.map((item) => <li key={item} className="flex gap-3 text-[15px] leading-6 text-ink/75"><Check size={16} className="mt-1 shrink-0 text-signal" />{item}</li>)}
-                        </ul>
-                        <div className="mt-auto pt-5">
-                          <div className="flex items-center justify-between border-t-2 border-ink/10 pt-4">
-                            <span className="font-display text-3xl font-bold text-ink">${pkg.price}</span>
-                            <button type="button" onClick={() => setCarePackage(pkg)} className="editorial-focus inline-flex items-center gap-1 text-xs font-bold text-ink/60 underline decoration-ink/25 underline-offset-4 hover:text-signal">{pkg.care} Link Care <Info size={13} /></button>
-                          </div>
-                          <button type="button" onClick={() => addPackageToCart(pkg)} className={`editorial-focus mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 text-sm font-bold transition-colors ${pkg.popular ? 'bg-signal text-white hover:bg-[#EA580C]' : 'bg-navy text-white hover:bg-[#101F52]'}`}>{inCart ? 'Додано до кошика' : pkg.cta}<ArrowRight size={16} /></button>
-                        </div>
-                      </article>
-                    );
-                  })}
                 </div>
               </div>
             </section>
@@ -178,14 +164,14 @@ export default function CrowdLinksPage() {
               <div className="mx-auto grid max-w-[1240px] gap-10 px-5 sm:px-8 md:grid-cols-[.8fr_1.2fr] md:gap-16 lg:px-16">
                 <div>
                   <p className="mb-5 text-xs font-bold uppercase tracking-[.18em] text-signal">03 / За що ви платите</p>
-                  <h2 className="font-display text-[clamp(2.75rem,5vw,5rem)] font-bold leading-[.9] text-cream">Будь-хто може залишити <span className="text-signal">посилання.</span></h2>
+                  <h2 className="font-display text-[clamp(2.75rem,5vw,5rem)] font-bold leading-[.9] text-cream"><>Будь-хто<br />може залишити<br /><span className="text-signal">посилання.</span></></h2>
                   <h3 className="mt-6 font-display text-2xl leading-tight text-cream sm:text-3xl">Зробити це доречно — вже інша робота.</h3>
                   <p className="mt-4 max-w-md text-[16px] leading-7 text-white/65">Розміщення крауд-посилань — це не просто публікація коментарів на форумах. Потрібно знайти потрібну дискусію, розібратися в її змісті, врахувати правила спільноти та написати відповідь, яка доповнює розмову.</p>
                 </div>
                 <div className="relative">
                   {[
                     ['01', 'ЗНАЙТИ ДИСКУСІЮ', 'Шукаємо обговорення на форумах і тематичних майданчиках. Перевіряємо не лише показники сайту, а й зміст теми.'],
-                    ['02', 'ЗРОЗУМІТИ КОНТЕКСТ', "З\'ясовуємо, чи буде ваш продукт, бренд або матеріал корисним учасникам обговорення. Не кожна дискусія підходить для розміщення посилання."],
+                    ['02', 'ЗРОЗУМІТИ КОНТЕКСТ', 'З’ясовуємо, чи буде ваш продукт, бренд або матеріал корисним учасникам обговорення. Не кожна дискусія підходить для розміщення посилання.'],
                     ['03', 'НАПИСАТИ ДЛЯ ЦІЄЇ СПІЛЬНОТИ', 'Кожен форум має власні правила та стиль спілкування. Ми враховуємо це під час підготовки коментарів, щоб повідомлення відповідало темі та не виглядало шаблонним.'],
                     ['04', 'ПЕРЕВІРИТИ ПІСЛЯ РОЗМІЩЕННЯ', 'Стежимо за доступністю опублікованих повідомлень. Якщо коментар або посилання видалено, розглядаємо ситуацію відповідно до умов Link Care.'],
                   ].map(([number, title, body], index) => (
@@ -212,11 +198,6 @@ export default function CrowdLinksPage() {
               <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-16">
                 <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-signal">04 / Реальні розміщення</p>
                 <h2 className="font-display max-w-3xl text-[clamp(2.5rem,4vw,4.5rem)] font-bold leading-[.96]">Менше обіцянок. Більше реальних обговорень.</h2>
-                <p className="mt-4 max-w-xl text-[16px] leading-7 text-ink/65">Перегляньте приклади форумних посилань і згадок брендів, які ми розмістили для клієнтів.</p>
-                <p className="mt-2 max-w-xl text-[16px] leading-7 text-ink/65">У каталозі можна переглянути майданчики з різних ніш і відфільтрувати розміщення за тематикою, DR та органічним трафіком.</p>
-                <p className="mt-2 max-w-xl text-[15px] leading-7 text-ink/50">Фільтри: Ніша · DR · Трафік</p>
-                <p className="mt-2 max-w-xl text-[15px] leading-7 text-ink/50">Зберегти поточні картки fitday.com, intua.net і renotalk.com, включно зі скриншотами, показниками та URL.</p>
-                <p className="mt-2 max-w-xl text-[15px] leading-7 text-ink/50">Метрики Ahrefs можуть змінюватися. DR — Domain Rating. Трафік — оцінка органічних відвідувань на місяць.</p>
                 <div className="mt-8"><PlacementExplorer serviceType="crowd_link" /></div>
                 <div className="mt-6"><Link to={lp('/placements')} className="inline-flex items-center gap-2 text-sm font-bold text-signal hover:text-[#EA580C]">Усі розміщення <ArrowRight size={15} /></Link></div>
               </div>
