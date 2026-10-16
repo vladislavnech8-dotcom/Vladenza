@@ -46,9 +46,32 @@ export function Router({ routes }: RouterProps) {
   }, []);
 
   const navigate = (to: string) => {
+    const hashIdx = to.indexOf('#');
+    const pathOnly = hashIdx >= 0 ? to.slice(0, hashIdx) : to;
+    const hash = hashIdx >= 0 ? to.slice(hashIdx + 1) : '';
+
+    const currentPath = window.location.pathname;
+    if (pathOnly === currentPath && hash) {
+      window.history.pushState(null, '', to);
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+
     window.history.pushState(null, '', to);
-    setPath(to);
-    window.scrollTo(0, 0);
+    setPath(pathOnly || '/');
+
+    if (hash) {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        else window.scrollTo(0, 0);
+      });
+    } else {
+      window.scrollTo(0, 0);
+    }
   };
 
   for (const route of routes) {
