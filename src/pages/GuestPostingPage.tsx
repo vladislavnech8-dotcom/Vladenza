@@ -129,7 +129,8 @@ export default function GuestPostingPage() {
   const addToCampaign = (pkg: GuestPackage) => {
     const quantity = getQuantity(pkg.id);
     const productId = `guest-post-${pkg.id}`;
-    addItem({ productId, service: 'Guest Posting', name: `Guest Posting — ${pkg.name}`, description: pkg.count, unitPrice: pkg.price }, quantity);
+    const serviceName = uk ? 'Гостьові публікації' : 'Guest Posting';
+    addItem({ productId, service: serviceName, name: `${serviceName} — ${pkg.name}`, description: pkg.count, unitPrice: pkg.price }, quantity);
     trackEvent('add_to_cart', { product_id: productId, quantity, price: pkg.price });
     trackMetaEvent('AddToCart', { content_name: `Guest Posting ${pkg.name}`, content_category: 'Guest Posting', content_ids: [productId], content_type: 'product', value: pkg.price * quantity, currency: 'USD', contents: [{ id: productId, quantity, item_price: pkg.price }] });
     setQuantities((current) => ({ ...current, [pkg.id]: 1 }));

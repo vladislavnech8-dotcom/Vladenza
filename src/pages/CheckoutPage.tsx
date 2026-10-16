@@ -58,6 +58,7 @@ const content = {
     link: (n: number) => `Link ${n}`,
     targetUrl: 'Target URL *',
     preferredAnchor: 'Preferred Anchor',
+    anchorPlaceholder: 'best crm software',
     letRecommend: 'Let Vladenza recommend the anchor',
     notesOptional: 'Notes (optional)',
     campaignNotes: 'Campaign Notes',
@@ -157,6 +158,7 @@ const content = {
     link: (n: number) => `Посилання ${n}`,
     targetUrl: 'Цільовий URL *',
     preferredAnchor: 'Бажаний якір',
+    anchorPlaceholder: 'найкраще CRM програмне забезпечення',
     letRecommend: 'Дозволити Vladenza підібрати якір',
     notesOptional: 'Нотатки (необов\u2019язково)',
     campaignNotes: 'Нотатки кампанії',
@@ -720,7 +722,7 @@ export default function CheckoutPage() {
                               </div>
                               <div>
                                 <label className={labelCls}>{c.preferredAnchor}</label>
-                                <input type="text" value={req.anchor} onChange={(e) => updatePlacementReq(idx, { anchor: e.target.value, letVladenzaRecommend: false })} placeholder="best crm software" disabled={req.letVladenzaRecommend} className={`${inputCls} ${req.letVladenzaRecommend ? 'opacity-50' : ''}`} />
+                                <input type="text" value={req.anchor} onChange={(e) => updatePlacementReq(idx, { anchor: e.target.value, letVladenzaRecommend: false })} placeholder={c.anchorPlaceholder} disabled={req.letVladenzaRecommend} className={`${inputCls} ${req.letVladenzaRecommend ? 'opacity-50' : ''}`} />
                                 <label className="flex items-center gap-1.5 mt-1.5 text-xs text-ink/40 cursor-pointer">
                                   <input type="checkbox" checked={req.letVladenzaRecommend} onChange={(e) => updatePlacementReq(idx, { letVladenzaRecommend: e.target.checked })} className="accent-signal" />
                                   {c.letRecommend}

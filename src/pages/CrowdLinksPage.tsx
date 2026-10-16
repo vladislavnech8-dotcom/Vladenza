@@ -88,7 +88,8 @@ export default function CrowdLinksPage() {
 
   const addPackageToCart = (pkg: PackageData) => {
     const productId = `crowd-marketing-${pkg.name.toLowerCase()}`;
-    addItem({ productId, service: 'Crowd Marketing', name: `Crowd Marketing — ${pkg.name}`, description: pkg.count, unitPrice: pkg.price });
+    const serviceName = uk ? 'Крауд-маркетинг' : 'Crowd Marketing';
+    addItem({ productId, service: serviceName, name: `${serviceName} — ${pkg.name}`, description: pkg.count, unitPrice: pkg.price });
     trackEvent('add_to_cart', { product_id: productId, quantity: 1, price: pkg.price });
     trackMetaEvent('AddToCart', { content_name: `Crowd Marketing ${pkg.name}`, content_category: 'Crowd Marketing', content_ids: [productId], content_type: 'product', value: pkg.price, currency: 'USD', contents: [{ id: productId, quantity: 1, item_price: pkg.price }] });
   };
