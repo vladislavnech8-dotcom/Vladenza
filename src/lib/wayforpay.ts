@@ -156,7 +156,19 @@ export async function payWithWayForPay(params: {
 
   return new Promise((resolve) => {
     const wfp = new window.Wayforpay!();
+    let settled = false;
+
+    const timeoutId = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      void resolveWithStatus('pending');
+    }, 120_000);
+
     const resolveWithStatus = async (fallback: WfpOutcome) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+
       if (fallback === 'declined') {
         resolve({ outcome: fallback, orderRef, orderNumber, requirementsToken });
         return;

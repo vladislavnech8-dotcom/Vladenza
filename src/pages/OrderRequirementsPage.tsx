@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Loader2, AlertCircle, ArrowRight, Clock } from 'lucide-react';
+import { CheckCircle, Loader2, AlertCircle, ArrowRight, Clock, ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { useLocale } from '../context/LocaleContext';
 
 const content = {
@@ -32,8 +33,8 @@ const content = {
     saved: 'Saved',
     pending: 'Pending',
     targetUrl: 'Target URL *',
-    anchorText: 'Preferred Anchor Text *',
-    niche: 'Website Niche / Topic *',
+    anchorText: 'Preferred Anchor Text',
+    niche: 'Website Niche / Topic',
     notes: 'Additional Notes',
     willProvideLater: 'I will provide details for this placement later',
     saving: 'Saving...',
@@ -41,6 +42,7 @@ const content = {
     needHelp: 'Need help? Email us at',
     loadError: 'Could not load order details. Please try again or contact support.',
     saveError: 'Could not save requirements. Please try again or contact support.',
+    back: 'Back',
   },
   uk: {
     loading: 'Завантаження вашого замовлення...',
@@ -69,8 +71,8 @@ const content = {
     saved: 'Збережено',
     pending: 'Очікує',
     targetUrl: 'Цільовий URL *',
-    anchorText: 'Бажаний якірний текст *',
-    niche: 'Ніша / тема сайту *',
+    anchorText: 'Бажаний якірний текст',
+    niche: 'Ніша / тема сайту',
     notes: 'Додаткові нотатки',
     willProvideLater: 'Я надам деталі для цього розміщення пізніше',
     saving: 'Збереження...',
@@ -78,6 +80,7 @@ const content = {
     needHelp: 'Потрібна допомога? Напишіть нам на',
     loadError: 'Не вдалося завантажити деталі замовлення. Спробуйте ще раз або зверніться до підтримки.',
     saveError: 'Не вдалося зберегти вимоги. Спробуйте ще раз або зверніться до підтримки.',
+    back: 'Назад',
   },
 } as const;
 
@@ -98,11 +101,11 @@ interface RequirementForm {
 
 type PageState = 'loading' | 'form' | 'submitting' | 'success' | 'invalid' | 'error';
 
-const inputCls = 'w-full bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#F97316]/60 focus:ring-2 focus:ring-[#F97316]/10 transition-all';
-const labelCls = 'block text-xs font-semibold text-gray-500 mb-1.5';
+const inputCls = 'w-full bg-cream border border-ink/15 px-3.5 py-2.5 text-ink text-sm placeholder-ink/35 focus:outline-none focus:border-signal focus:ring-1 focus:ring-signal/30 transition-all';
+const labelCls = 'block text-xs font-bold uppercase tracking-wider text-ink/50 mb-1.5';
 
 function isComplete(r: RequirementForm): boolean {
-  return !r.willProvideLater && !!r.targetUrl.trim() && !!r.anchor.trim() && !!r.niche.trim();
+  return !r.willProvideLater && !!r.targetUrl.trim() && (!!r.anchor.trim() || !!r.niche.trim());
 }
 
 export default function OrderRequirementsPage() {
@@ -140,7 +143,6 @@ export default function OrderRequirementsPage() {
       setPlacements(pls);
       setOrderNumber(data.orderNumber || '');
 
-      // Build forms: use existing data if available, otherwise blank
       const builtForms = pls.map((p) => {
         const existingEntry = existing.find((r: RequirementForm) => r.placementId === p.placementId) ?? existing[pls.indexOf(p)];
         if (existingEntry) {
@@ -215,164 +217,150 @@ export default function OrderRequirementsPage() {
     }
   };
 
-  // Loading state
   if (state === 'loading') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
-          <Loader2 size={32} className="text-[#F97316] animate-spin mx-auto mb-4" />
-          <p className="text-gray-400 text-sm">{c.loading}</p>
+          <Loader2 size={32} className="text-signal animate-spin mx-auto mb-4" />
+          <p className="text-ink/40 text-sm">{c.loading}</p>
         </div>
+        <Footer />
       </div>
     );
   }
 
-  // Invalid/expired token
   if (state === 'invalid') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
+          <div className="w-16 h-16 border-2 border-red-500 bg-red-50 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} className="text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.invalidTitle}</h1>
-          <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">
+          <h1 className="font-display text-2xl font-bold text-ink mb-2">{c.invalidTitle}</h1>
+          <p className="text-ink/50 text-sm max-w-sm mx-auto mb-6">
             {c.invalidBody}{' '}
-            <a href="mailto:info@vladenza.com" className="text-[#F97316] font-semibold">info@vladenza.com</a>.
+            <a href="mailto:info@vladenza.com" className="text-signal font-bold">info@vladenza.com</a>.
           </p>
-          <Link to={lp('/')} className="text-sm font-semibold text-[#F97316] hover:underline">{c.backToHome}</Link>
+          <Link to={lp('/')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
+            <ArrowLeft size={14} /> {c.backToHome}
+          </Link>
         </div>
+        <Footer />
       </div>
     );
   }
 
-  // Success state
   if (state === 'success') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
-            <CheckCircle size={32} className="text-green-500" />
+          <div className="w-16 h-16 border-2 border-green-600 bg-green-50 flex items-center justify-center mx-auto mb-5">
+            <CheckCircle size={32} className="text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.savedTitle}</h1>
-          {orderNumber && <p className="text-gray-400 text-sm mb-1">{c.orderPrefix}{orderNumber}</p>}
-          <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">{successMsg}</p>
+          <h1 className="font-display text-3xl font-bold text-ink mb-2">{c.savedTitle}</h1>
+          {orderNumber && <p className="text-ink/40 text-sm mb-1">{c.orderPrefix}{orderNumber}</p>}
+          <p className="text-ink/60 text-sm max-w-md mx-auto mb-8">{successMsg}</p>
 
           {!allComplete && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-md mx-auto mb-6 text-left">
+            <div className="border-2 border-ink/15 bg-white p-4 max-w-md mx-auto mb-6 text-left">
               <div className="flex items-center gap-2 mb-2">
-                <Clock size={16} className="text-amber-600" />
-                <span className="text-sm font-semibold text-amber-700">{c.somePending}</span>
+                <Clock size={16} className="text-ink/50" />
+                <span className="text-sm font-bold text-ink/70">{c.somePending}</span>
               </div>
-              <p className="text-xs text-amber-600 leading-relaxed">
-                {c.somePendingBody}
-              </p>
+              <p className="text-xs text-ink/50 leading-relaxed">{c.somePendingBody}</p>
             </div>
           )}
 
           {allComplete && (
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 max-w-md mx-auto mb-6 text-left">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{c.whatHappensNext}</h3>
+            <div className="border-2 border-ink/15 bg-white p-5 max-w-md mx-auto mb-6 text-left">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-ink/40 mb-3">{c.whatHappensNext}</h3>
               <ul className="flex flex-col gap-2">
-                {[
-                  c.next1,
-                  c.next2,
-                  c.next3,
-                  c.next4,
-                ].map((t) => (
-                  <li key={t} className="flex items-center gap-2 text-sm text-gray-600">
-                    <CheckCircle size={14} className="text-green-500 flex-shrink-0" /> {t}
+                {[c.next1, c.next2, c.next3, c.next4].map((t) => (
+                  <li key={t} className="flex items-center gap-2 text-sm text-ink/70">
+                    <CheckCircle size={14} className="text-green-600 flex-shrink-0" /> {t}
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap gap-3 justify-center">
             {!allComplete && (
-              <button
-                onClick={() => setState('form')}
-                className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors"
-              >
+              <button onClick={() => setState('form')} className="inline-flex items-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold px-5 py-3 text-sm transition-colors">
                 {c.continueEditing}
               </button>
             )}
-            <Link to={lp('/')} className="text-sm font-semibold text-[#F97316] hover:underline">{c.backToHome}</Link>
+            <Link to={lp('/')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
+              {c.backToHome}
+            </Link>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
-  // Error state
   if (state === 'error') {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-cream min-h-screen">
         <Navigation />
         <div className="pt-[88px] max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">
+          <div className="w-16 h-16 border-2 border-red-500 bg-red-50 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} className="text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.errorTitle}</h1>
-          <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">{errorMsg || c.errorFallback}</p>
-          <button
-            onClick={() => { setState('form'); setErrorMsg(''); }}
-            className="bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors mr-3"
-          >
-            {c.tryAgain}
-          </button>
-          <a href="mailto:info@vladenza.com" className="text-sm font-semibold text-gray-500 hover:text-gray-700">{c.contactSupport}</a>
+          <h1 className="font-display text-2xl font-bold text-ink mb-2">{c.errorTitle}</h1>
+          <p className="text-ink/50 text-sm max-w-sm mx-auto mb-6">{errorMsg || c.errorFallback}</p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <button onClick={() => { setState('form'); setErrorMsg(''); }} className="inline-flex items-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold px-5 py-3 text-sm transition-colors">
+              {c.tryAgain}
+            </button>
+            <a href="mailto:info@vladenza.com" className="inline-flex items-center gap-2 border-2 border-ink/15 text-ink/60 hover:text-ink/80 font-bold px-5 py-3 text-sm transition-colors">
+              {c.contactSupport}
+            </a>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
-  // Form state (includes submitting)
   const submitting = state === 'submitting';
   const completedCount = forms.filter(isComplete).length;
   const pendingCount = forms.length - completedCount;
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-cream min-h-screen">
       <Navigation />
       <div className="pt-[88px]">
-        <div className="border-b border-gray-100 bg-gray-50">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
-            <Link to={lp('/')} className="text-xs text-gray-400 hover:text-gray-700 transition-colors">{c.backToHome}</Link>
+        <div className="bg-navy text-white">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
+            <Link to={lp('/')} className="flex items-center gap-1.5 text-xs text-cream/50 hover:text-white transition-colors">
+              <ArrowLeft size={12} /> {c.back}
+            </Link>
           </div>
         </div>
 
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{c.addTitle}</h1>
-          {orderNumber && <p className="text-gray-400 text-sm mb-6">{c.orderPrefix}{orderNumber}</p>}
-          <p className="text-gray-500 text-sm mb-6">
-            {c.addBody}
-          </p>
+          <h1 className="font-display text-3xl font-bold text-ink mb-2">{c.addTitle}</h1>
+          {orderNumber && <p className="text-ink/40 text-sm mb-6">{c.orderPrefix}{orderNumber}</p>}
+          <p className="text-ink/50 text-sm mb-6">{c.addBody}</p>
 
-          {/* Progress indicator */}
           {forms.length > 0 && (
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#F97316] rounded-full transition-all duration-300"
-                  style={{ width: `${(completedCount / forms.length) * 100}%` }}
-                />
+              <div className="flex-1 h-2 bg-ink/10 overflow-hidden">
+                <div className="h-full bg-signal transition-all duration-300" style={{ width: `${(completedCount / forms.length) * 100}%` }} />
               </div>
-              <span className="text-xs font-semibold text-gray-500 whitespace-nowrap">
-                {completedCount}/{forms.length} {c.completed}
-              </span>
+              <span className="text-xs font-bold text-ink/50 whitespace-nowrap">{completedCount}/{forms.length} {c.completed}</span>
             </div>
           )}
 
           {pendingCount > 0 && completedCount > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-6 flex items-center gap-2">
-              <Clock size={15} className="text-amber-600 flex-shrink-0" />
-              <p className="text-xs text-amber-700">
-                {c.pendingInfo(pendingCount)}
-              </p>
+            <div className="border-2 border-ink/15 bg-white px-4 py-3 mb-6 flex items-center gap-2">
+              <Clock size={15} className="text-ink/50 flex-shrink-0" />
+              <p className="text-xs text-ink/60">{c.pendingInfo(pendingCount)}</p>
             </div>
           )}
 
@@ -382,81 +370,47 @@ export default function OrderRequirementsPage() {
               const completed = form ? isComplete(form) : false;
 
               return (
-                <div key={placement.placementId} className={`border rounded-xl p-5 transition-colors ${completed ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-white'}`}>
+                <div key={placement.placementId} className={`border-2 p-5 transition-colors ${completed ? 'border-green-200 bg-green-50/30' : 'border-ink/15 bg-white'}`}>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{c.placement(idx + 1)}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-ink/40">{c.placement(idx + 1)}</span>
                       {completed && (
-                        <span className="flex items-center gap-1 text-[10px] font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-md">
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5">
                           <CheckCircle size={10} /> {c.saved}
                         </span>
                       )}
                       {form?.willProvideLater && !completed && (
-                        <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-ink/50 bg-cream border border-ink/15 px-2 py-0.5">
                           <Clock size={10} /> {c.pending}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-gray-300">{placement.packageLabel}</span>
+                    <span className="text-[10px] font-bold text-ink/30">{placement.packageLabel}</span>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-3 mb-3">
+                  <div className="grid sm:grid-cols-2 gap-2.5 mb-3">
                     <div>
                       <label className={labelCls}>{c.targetUrl}</label>
-                      <input
-                        type="url"
-                        value={form?.targetUrl || ''}
-                        onChange={(e) => updateForm(idx, { targetUrl: e.target.value })}
-                        placeholder="https://example.com/page"
-                        disabled={form?.willProvideLater || submitting}
-                        className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`}
-                      />
+                      <input type="url" value={form?.targetUrl || ''} onChange={(e) => updateForm(idx, { targetUrl: e.target.value })} placeholder="https://example.com/page" disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                     </div>
                     <div>
                       <label className={labelCls}>{c.anchorText}</label>
-                      <input
-                        type="text"
-                        value={form?.anchor || ''}
-                        onChange={(e) => updateForm(idx, { anchor: e.target.value })}
-                        placeholder="best crm software"
-                        disabled={form?.willProvideLater || submitting}
-                        className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`}
-                      />
+                      <input type="text" value={form?.anchor || ''} onChange={(e) => updateForm(idx, { anchor: e.target.value })} placeholder="best crm software" disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                     </div>
                   </div>
 
                   <div className="mb-3">
                     <label className={labelCls}>{c.niche}</label>
-                    <input
-                      type="text"
-                      value={form?.niche || ''}
-                      onChange={(e) => updateForm(idx, { niche: e.target.value })}
-                      placeholder="e.g. SaaS, Marketing, Finance"
-                      disabled={form?.willProvideLater || submitting}
-                      className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`}
-                    />
+                    <input type="text" value={form?.niche || ''} onChange={(e) => updateForm(idx, { niche: e.target.value })} placeholder="e.g. SaaS, Marketing, Finance" disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                   </div>
 
                   <div className="mb-3">
                     <label className={labelCls}>{c.notes}</label>
-                    <input
-                      type="text"
-                      value={form?.notes || ''}
-                      onChange={(e) => updateForm(idx, { notes: e.target.value })}
-                      placeholder="Optional: competitor pages, anchor restrictions, etc."
-                      disabled={form?.willProvideLater || submitting}
-                      className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`}
-                    />
+                    <input type="text" value={form?.notes || ''} onChange={(e) => updateForm(idx, { notes: e.target.value })} placeholder="Optional: competitor pages, anchor restrictions, etc." disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                   </div>
 
-                  <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form?.willProvideLater || false}
-                      onChange={(e) => updateForm(idx, { willProvideLater: e.target.checked })}
-                      disabled={submitting}
-                      className="accent-[#F97316]"
-                    />
+                  <label className="flex items-center gap-2 text-xs text-ink/40 cursor-pointer">
+                    <input type="checkbox" checked={form?.willProvideLater || false} onChange={(e) => updateForm(idx, { willProvideLater: e.target.checked })} disabled={submitting} className="accent-signal" />
                     {c.willProvideLater}
                   </label>
                 </div>
@@ -464,30 +418,23 @@ export default function OrderRequirementsPage() {
             })}
 
             {errorMsg && (
-              <p className="text-red-500 text-xs bg-red-50 border border-red-100 rounded-lg px-3 py-2">{errorMsg}</p>
+              <p className="text-red-600 text-xs bg-red-50 border-2 border-red-200 px-3 py-2">{errorMsg}</p>
             )}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
-            >
-              {submitting ? (
-                <><Loader2 size={15} className="animate-spin" /> {c.saving}</>
-              ) : (
-                <>{c.saveRequirements} <ArrowRight size={15} /></>
-              )}
+            <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-4 text-sm transition-all duration-200">
+              {submitting ? <><Loader2 size={16} className="animate-spin" /> {c.saving}</> : <>{c.saveRequirements} <ArrowRight size={15} /></>}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-ink/40">
               {c.needHelp}{' '}
-              <a href="mailto:info@vladenza.com" className="text-[#F97316] font-semibold">info@vladenza.com</a>
+              <a href="mailto:info@vladenza.com" className="text-signal font-bold">info@vladenza.com</a>
             </p>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

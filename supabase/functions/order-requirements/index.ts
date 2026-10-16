@@ -23,9 +23,12 @@ interface RequirementEntry {
   placementId: string;
   targetUrl: string;
   anchor: string;
-  niche: string;
-  notes: string;
-  willProvideLater: boolean;
+  niche?: string;
+  notes?: string;
+  willProvideLater?: boolean;
+  letVladenzaRecommend?: boolean;
+  cartItemId?: string;
+  packageLabel?: string;
 }
 
 /** Build the full list of placement slots from order_items. */
@@ -47,8 +50,7 @@ function buildPlacements(orderItems: OrderItem[]): { placementId: string; packag
 function isComplete(r: RequirementEntry): boolean {
   return !r.willProvideLater &&
     !!r.targetUrl?.trim() &&
-    !!r.anchor?.trim() &&
-    !!r.niche?.trim();
+    !!r.anchor?.trim();
 }
 
 /** Compute requirements_status and order_status from the requirements array. */
@@ -94,6 +96,7 @@ function mergeRequirements(
         niche: incomingEntry.niche ?? "",
         notes: incomingEntry.notes ?? "",
         willProvideLater: incomingEntry.willProvideLater ?? false,
+        letVladenzaRecommend: incomingEntry.letVladenzaRecommend ?? false,
       });
     } else if (existingEntry) {
       // Not in this submission — keep existing data
@@ -107,6 +110,7 @@ function mergeRequirements(
         niche: "",
         notes: "",
         willProvideLater: false,
+        letVladenzaRecommend: false,
       });
     }
   }
@@ -216,15 +220,9 @@ Deno.serve(async (req: Request) => {
               { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
             );
           }
-          if (!r.anchor?.trim()) {
+          if (!r.anchor?.trim() && !r.letVladenzaRecommend) {
             return new Response(
               JSON.stringify({ error: "Preferred anchor text is required for placements not marked 'will provide later'." }),
-              { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-            );
-          }
-          if (!r.niche?.trim()) {
-            return new Response(
-              JSON.stringify({ error: "Website niche/topic is required for placements not marked 'will provide later'." }),
               { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
             );
           }

@@ -89,7 +89,7 @@ Deno.serve(async (req: Request) => {
     const { data: existingOrder, error: fetchError } = await supabase
       .from("orders")
       .select(
-        "id, status, order_status, order_number, name, email, website, amount, currency, order_items, requirements, requirements_status, wfp_transaction_id, discount_amount, promo_code_snapshot"
+        "id, status, order_status, order_number, name, email, website, amount, currency, order_items, requirements, requirements_status, wfp_transaction_id, discount_amount, promo_code_snapshot, original_amount"
       )
       .eq("order_ref", orderReference)
       .maybeSingle();
@@ -192,6 +192,10 @@ Deno.serve(async (req: Request) => {
       items: snapshotItems,
       total: Math.round(snapshotTotal * 100) / 100,
       currency: String(serverCurrency || "USD"),
+      original_amount: Number(existingOrder.original_amount) || Math.round(snapshotTotal * 100) / 100,
+      discount_amount: Number(existingOrder.discount_amount) || 0,
+      promo_code: existingOrder.promo_code_snapshot || "",
+      paid_amount: Number(existingOrder.amount) || 0,
     };
 
     const update: Record<string, unknown> = {
@@ -285,19 +289,27 @@ async function sendTelegramNotification(
   const items = (order.order_items || []) as OrderItem[];
   const requirements = (order.requirements || []) as PlacementRequirement[];
   const reqStatus = order.requirements_status as string;
+  const originalAmount = Number(order.original_amount) || 0;
+  const discountAmount = Number(order.discount_amount) || 0;
+  const paidAmount = Number(order.amount) || 0;
+  const promoCode = order.promo_code_snapshot as string || "";
 
   const itemLines = items
-    .map((item) => `🔗 ${item.name} ×${item.quantity} — $${(item.unitPrice * item.quantity).toLocaleString()}`)
+    .map((item) => `🔗 ${item.name} ×${item.quantity} — ${(item.unitPrice * item.quantity).toLocaleString()}`)
     .join("\n");
 
   const targetUrlCount = requirements.filter((r) => r.targetUrl && r.targetUrl.trim()).length;
   const anchorCount = requirements.filter((r) => r.anchor && r.anchor.trim()).length;
   const agencyRecCount = requirements.filter((r) => r.letVladenzaRecommend).length;
 
-  const reqLine =
+  const reqDetailLines =
     reqStatus === "received"
       ? `📋 Requirements: Received\n🎯 Target URLs: ${targetUrlCount}\n⚓ Anchors: ${anchorCount} supplied${agencyRecCount > 0 ? ` / ${agencyRecCount} agency recommendation` : ""}`
       : `📋 Requirements: Waiting for customer`;
+
+  const discountLine = discountAmount > 0
+    ? `🎟 Promo: ${promoCode} (-${discountAmount.toLocaleString()})\n`
+    : "";
 
   const message = [
     `💰 NEW PAID ORDER`,
@@ -310,11 +322,13 @@ async function sendTelegramNotification(
     ``,
     itemLines,
     ``,
-    `💵 Total: $${Number(order.amount).toLocaleString()}`,
+    `💵 Subtotal: ${originalAmount.toLocaleString()}`,
+    discountLine,
+    `💵 Paid: ${paidAmount.toLocaleString()}`,
     `✅ Payment: PAID`,
     ``,
-    reqLine,
-  ].join("\n");
+    reqDetailLines,
+  ].filter(Boolean).join("\n");
 
   const chatIds = TELEGRAM_CHAT_ID.split(",").map((id) => id.trim()).filter(Boolean);
 
