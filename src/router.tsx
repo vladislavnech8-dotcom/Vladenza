@@ -47,10 +47,11 @@ export function Router({ routes }: RouterProps) {
 
   const navigate = (to: string) => {
     const hashIdx = to.indexOf('#');
-    const pathOnly = hashIdx >= 0 ? to.slice(0, hashIdx) : to;
+    const pathOnly = (hashIdx >= 0 ? to.slice(0, hashIdx) : to).replace(/\/+$/, '') || '/';
     const hash = hashIdx >= 0 ? to.slice(hashIdx + 1) : '';
 
-    const currentPath = window.location.pathname;
+    const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+
     if (pathOnly === currentPath && hash) {
       window.history.pushState(null, '', to);
       const el = document.getElementById(hash);
@@ -61,7 +62,7 @@ export function Router({ routes }: RouterProps) {
     }
 
     window.history.pushState(null, '', to);
-    setPath(pathOnly || '/');
+    setPath(pathOnly);
 
     if (hash) {
       requestAnimationFrame(() => {
