@@ -230,7 +230,7 @@ function getItemSubtitle(item: { productId: string; description: string }, local
   return getCartItemDescription(item.productId, item.description, locale);
 }
 
-function OrderSummary({ c, currency = 'USD', promoData }: { c: typeof content.en; currency?: string; promoData?: { code: string; discountAmount: number } | null }) {
+function OrderSummary({ c, currency = 'USD', promoData, locale }: { c: typeof content.en; currency?: string; promoData?: { code: string; discountAmount: number } | null; locale: 'en' | 'uk' }) {
   const { items, total } = useCart();
   const discount = promoData?.discountAmount ?? 0;
   const finalTotal = Math.max(0, Math.round((total - discount) * 100) / 100);
@@ -929,7 +929,7 @@ export default function CheckoutPage() {
             {/* RIGHT: sticky order summary (desktop) */}
             <div className="hidden lg:block">
               <div className="sticky top-28">
-                <OrderSummary c={c} currency={currency} promoData={promoData} />
+                <OrderSummary c={c} currency={currency} promoData={promoData} locale={locale} />
               </div>
             </div>
 
@@ -946,7 +946,7 @@ export default function CheckoutPage() {
                 </span>
               </button>
               {mobileSummaryOpen && (
-                <div className="mt-2"><OrderSummary c={c} currency={currency} promoData={promoData} /></div>
+                <div className="mt-2"><OrderSummary c={c} currency={currency} promoData={promoData} locale={locale} /></div>
               )}
               {/* Always-visible total bar at bottom on mobile */}
               {!mobileSummaryOpen && (
