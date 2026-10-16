@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { supabase, SeoSettings } from '../lib/supabase';
+import { supabase, SeoSettings, SeoRevision } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2, LayoutGrid, Package, Users } from 'lucide-react';
 import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type PlacementServiceType, type PlacementStatus } from '../data/placements';
@@ -1224,37 +1224,42 @@ function CaseList({ onEdit, onNew }: { onEdit: (c: DbCase) => void; onNew: () =>
 
 /* ─── SEO Settings panel (unchanged logic) ───────────────────────── */
 
-const SEO_TABS: { id: SeoTab; label: string; icon: React.ReactNode }[] = [
-  { id: 'basic', label: 'Основные', icon: <Search size={15} /> },
-  { id: 'opengraph', label: 'Open Graph', icon: <Share2 size={15} /> },
-  { id: 'advanced', label: 'Дополнительно', icon: <Code2 size={15} /> },
+const SEO_PAGES: { value: string; label: string }[] = [
+  { value: 'home', label: 'Home (/)' },
+  { value: 'services/guest-posting', label: 'Guest Posting' },
+  { value: 'services/niche-edits', label: 'Niche Edits' },
+  { value: 'services/crowd-links', label: 'Crowd Marketing' },
+  { value: 'services/white-label', label: 'White Label' },
+  { value: 'placements', label: 'Placements' },
+  { value: 'contact', label: 'Contact' },
+  { value: 'pricing', label: 'Pricing' },
+  { value: 'case-studies', label: 'Case Studies' },
+  { value: 'blog', label: 'Blog' },
+  { value: 'services/seo-audit', label: 'SEO Audit' },
+  { value: 'services/ai-llm', label: 'AI & LLM Visibility' },
+  { value: 'services/linkedin-personal', label: 'LinkedIn Personal' },
+  { value: 'services/linkedin-company', label: 'LinkedIn Company' },
+  { value: 'seo-audit-sample', label: 'SEO Audit Sample' },
+  { value: 'sitemap', label: 'Sitemap Page' },
+  { value: 'checkout', label: 'Checkout' },
+  { value: 'privacy-policy', label: 'Privacy Policy' },
+  { value: 'terms', label: 'Terms of Service' },
+  { value: 'refund-policy', label: 'Refund Policy' },
+  { value: 'cookie-policy', label: 'Cookie Policy' },
 ];
 
-const SEO_PAGES: { value: string; label: string }[] = [
-  { value: 'home', label: 'Главная (/)' },
-  { value: 'services/seo-audit', label: 'SEO Аудит' },
-  { value: 'services/guest-posting', label: 'Guest Posting' },
-  { value: 'services/niche-edits', label: 'Link Insertions' },
-  { value: 'services/crowd-links', label: 'Crowd Marketing' },
-  { value: 'services/ai-llm', label: 'AI/LLM SEO' },
-  { value: 'services/local-seo-links', label: 'Local SEO Links' },
-  { value: 'services/link-packages/igaming', label: 'Пакеты — iGaming' },
-  { value: 'services/link-packages/saas', label: 'Пакеты — SaaS' },
-  { value: 'services/link-packages/auto', label: 'Пакеты — Auto' },
-  { value: 'services/link-packages/health', label: 'Пакеты — Health' },
-  { value: 'services/link-packages/proxy', label: 'Пакеты — Proxy' },
-  { value: 'services/link-packages/renovations', label: 'Пакеты — Renovations' },
-  { value: 'case-studies', label: 'Кейсы' },
-  { value: 'blog', label: 'Блог' },
-  { value: 'services/white-label', label: 'White Label' },
-  { value: 'reviews', label: 'Отзывы' },
-  { value: 'sitemap', label: 'Карта сайта' },
+const SEO_TABS: { id: SeoTab; label: string; icon: React.ReactNode }[] = [
+  { id: 'basic', label: 'Basic', icon: <Search size={15} /> },
+  { id: 'opengraph', label: 'Open Graph', icon: <Share2 size={15} /> },
+  { id: 'advanced', label: 'Advanced', icon: <Code2 size={15} /> },
+  { id: 'revisions', label: 'Revisions', icon: <Layers size={15} /> },
 ];
 
 function SeoPanel({ userId }: { userId: string }) {
   const [selectedPage, setSelectedPage] = useState('home');
+  const [selectedLocale, setSelectedLocale] = useState<'en' | 'uk'>('en');
   const [settings, setSettings] = useState<Partial<SeoSettings>>({
-    page: 'home', title: '', description: '', og_title: '', og_description: '',
+    page: 'home', locale: 'en', title: '', description: '', og_title: '', og_description: '',
     og_image: '', robots: 'index, follow', canonical: '', keywords: '', schema_json: '',
   });
   const [settingsId, setSettingsId] = useState<string | null>(null);
@@ -1262,21 +1267,39 @@ function SeoPanel({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [revisions, setRevisions] = useState<SeoRevision[]>([]);
+  const [creatingRevision, setCreatingRevision] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
-  useEffect(() => { fetchSettings(selectedPage); }, [selectedPage]);
+  useEffect(() => { fetchSettings(selectedPage, selectedLocale); }, [selectedPage, selectedLocale]);
+  useEffect(() => { fetchRevisions(); }, []);
 
   const handlePageChange = (page: string) => {
+    if (dirty && !confirm('You have unsaved changes. Switch pages?')) return;
     setSelectedPage(page);
     setSettingsId(null);
-    setSettings({ page, title: '', description: '', og_title: '', og_description: '', og_image: '', robots: 'index, follow', canonical: '', keywords: '', schema_json: '' });
+    setDirty(false);
+    setSettings({ page, locale: selectedLocale, title: '', description: '', og_title: '', og_description: '', og_image: '', robots: 'index, follow', canonical: '', keywords: '', schema_json: '' });
   };
 
-  const fetchSettings = async (page: string) => {
+  const handleLocaleChange = (locale: 'en' | 'uk') => {
+    if (dirty && !confirm('You have unsaved changes. Switch locale?')) return;
+    setSelectedLocale(locale);
+    setDirty(false);
+  };
+
+  const fetchSettings = async (page: string, locale: 'en' | 'uk') => {
     setLoading(true);
-    const { data } = await supabase.from('seo_settings').select('*').eq('page', page).maybeSingle();
+    const { data } = await supabase.from('seo_settings').select('*').eq('page', page).eq('locale', locale).maybeSingle();
     if (data) { setSettings(data); setSettingsId(data.id); }
-    else { setSettings({ page, title: '', description: '', og_title: '', og_description: '', og_image: '', robots: 'index, follow', canonical: '', keywords: '', schema_json: '' }); setSettingsId(null); }
+    else { setSettings({ page, locale, title: '', description: '', og_title: '', og_description: '', og_image: '', robots: 'index, follow', canonical: '', keywords: '', schema_json: '' }); setSettingsId(null); }
     setLoading(false);
+    setDirty(false);
+  };
+
+  const fetchRevisions = async () => {
+    const { data } = await supabase.from('seo_revisions').select('*').order('number', { ascending: false }).limit(20);
+    if (data) setRevisions(data as SeoRevision[]);
   };
 
   const showToast = (type: 'success' | 'error', message: string) => {
@@ -1286,7 +1309,7 @@ function SeoPanel({ userId }: { userId: string }) {
 
   const handleSave = async () => {
     setSaving(true);
-    const payload = { ...settings, page: selectedPage, updated_by: userId, updated_at: new Date().toISOString() };
+    const payload = { ...settings, page: selectedPage, locale: selectedLocale, updated_by: userId, updated_at: new Date().toISOString() };
     let error;
     if (settingsId) {
       ({ error } = await supabase.from('seo_settings').update(payload).eq('id', settingsId));
@@ -1296,48 +1319,121 @@ function SeoPanel({ userId }: { userId: string }) {
       if (res.data) setSettingsId(res.data.id);
     }
     setSaving(false);
-    if (error) showToast('error', 'Ошибка при сохранении');
-    else showToast('success', 'Настройки сохранены');
+    if (error) showToast('error', error.message || 'Error saving');
+    else { showToast('success', 'Draft saved'); setDirty(false); }
   };
 
-  const update = (field: keyof SeoSettings, value: string) => setSettings(prev => ({ ...prev, [field]: value }));
+  const handleCreateRevision = async () => {
+    if (dirty && !confirm('You have unsaved draft changes. Save before creating a revision?')) return;
+    setCreatingRevision(true);
+    const { data, error } = await supabase.rpc('create_seo_revision');
+    setCreatingRevision(false);
+    if (error) { showToast('error', error.message); return; }
+    if (data) showToast('success', `Revision #${(data as { revision_number: number }).revision_number} created. Build and verify to activate.`);
+    fetchRevisions();
+  };
+
+  const handleActivate = async (revId: string) => {
+    const { error } = await supabase.rpc('activate_seo_revision', { p_revision_id: revId, p_html_hash: null });
+    if (error) showToast('error', error.message);
+    else { showToast('success', 'Revision activated'); fetchRevisions(); }
+  };
+
+  const handleFail = async (revId: string) => {
+    const { error } = await supabase.rpc('fail_seo_revision', { p_revision_id: revId, p_reason: 'Manually failed by admin' });
+    if (error) showToast('error', error.message);
+    else { showToast('success', 'Revision failed'); fetchRevisions(); }
+  };
+
+  const handleCancel = async (revId: string) => {
+    const { error } = await supabase.rpc('cancel_pending_revision', { p_revision_id: revId });
+    if (error) showToast('error', error.message);
+    else { showToast('success', 'Pending revision cancelled'); fetchRevisions(); }
+  };
+
+  const handleRollback = async (revId: string) => {
+    if (!confirm('Rollback to this revision? You will need to rebuild and redeploy to update the live HTML.')) return;
+    const { error } = await supabase.rpc('rollback_seo_revision', { p_target_revision_id: revId });
+    if (error) showToast('error', error.message);
+    else { showToast('success', 'Rolled back. Rebuild to update live HTML.'); fetchRevisions(); }
+  };
+
+  const update = (field: keyof SeoSettings, value: string) => { setSettings(prev => ({ ...prev, [field]: value })); setDirty(true); };
   const titleLen = settings.title?.length ?? 0;
   const descLen = settings.description?.length ?? 0;
   const titleColor = titleLen === 0 ? 'text-gray-400' : titleLen <= 60 ? 'text-emerald-600' : 'text-amber-500';
   const descColor = descLen === 0 ? 'text-gray-400' : descLen <= 160 ? 'text-emerald-600' : 'text-amber-500';
 
+  const pendingRevision = revisions.find(r => r.status === 'pending');
+  const activeRevision = revisions.find(r => r.status === 'active');
+  const pageUrl = selectedPage === 'home' ? 'vladenza.com' : `vladenza.com/${selectedPage}`;
+
+  const statusBadge = (status: SeoRevision['status']) => {
+    const styles: Record<string, string> = {
+      pending: 'text-amber-700 bg-amber-50 border-amber-200',
+      active: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+      failed: 'text-red-700 bg-red-50 border-red-200',
+      superseded: 'text-gray-500 bg-gray-100 border-gray-200',
+    };
+    return <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${styles[status] ?? styles.superseded}`}>{status}</span>;
+  };
+
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">SEO настройки</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Управление мета-тегами и разметкой страниц</p>
+          <h1 className="text-xl font-semibold text-gray-900">SEO Settings</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Manage metadata, create revisions, and deploy</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={fetchSettings} disabled={loading} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-white border border-transparent hover:border-gray-200 transition">
-            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Обновить
+          <button onClick={() => { fetchSettings(selectedPage, selectedLocale); fetchRevisions(); }} disabled={loading} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-white border border-transparent hover:border-gray-200 transition">
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button onClick={handleSave} disabled={saving || loading} className="flex items-center gap-2 bg-gray-900 text-white text-sm px-4 py-2 rounded-xl hover:bg-gray-800 transition disabled:opacity-50">
             {saving ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={14} />}
-            Сохранить
+            Save Draft
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center gap-3">
-        <Globe size={15} className="text-gray-400" />
-        <span className="text-sm text-gray-600 font-medium">Страница:</span>
-        <div className="relative">
-          <select value={selectedPage} onChange={e => handlePageChange(e.target.value)} className="appearance-none text-sm bg-gray-50 border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-900">
-            {SEO_PAGES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-          </select>
-          <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      {/* Status bar */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Globe size={15} className="text-gray-400" />
+          <span className="text-sm text-gray-600 font-medium">Page:</span>
+          <div className="relative">
+            <select value={selectedPage} onChange={e => handlePageChange(e.target.value)} className="appearance-none text-sm bg-gray-50 border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-900">
+              {SEO_PAGES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+            </select>
+            <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm text-gray-600 font-medium">Locale:</span>
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
+            {(['en', 'uk'] as const).map(l => (
+              <button key={l} onClick={() => handleLocaleChange(l)}
+                className={`text-xs font-semibold px-3 py-1 rounded-md transition ${selectedLocale === l ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
         {!settingsId && !loading && (
-          <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1">Не заполнено</span>
+          <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1">Empty draft</span>
         )}
-        {settingsId && !loading && (
-          <span className="text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1">Заполнено</span>
+        {dirty && (
+          <span className="text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg px-2.5 py-1">Unsaved changes</span>
+        )}
+        {pendingRevision && (
+          <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1">
+            Pending revision #{pendingRevision.number} — build & verify to activate
+          </span>
+        )}
+        {activeRevision && !pendingRevision && (
+          <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1">
+            Active revision #{activeRevision.number}
+          </span>
         )}
       </div>
 
@@ -1357,16 +1453,13 @@ function SeoPanel({ userId }: { userId: string }) {
             <>
               {activeTab === 'basic' && (
                 <div className="space-y-5">
-                  <Field label="Title" hint="Отображается во вкладке браузера и поисковой выдаче" counter={<span className={`text-xs font-medium ${titleColor}`}>{titleLen}/60</span>}>
-                    <input type="text" value={settings.title ?? ''} onChange={e => update('title', e.target.value)} placeholder="Заголовок страницы..." className="input" />
+                  <Field label="Title" hint="Appears in browser tab and search results" counter={<span className={`text-xs font-medium ${titleColor}`}>{titleLen}/60</span>}>
+                    <input type="text" value={settings.title ?? ''} onChange={e => update('title', e.target.value)} placeholder="Page title..." className="input" />
                   </Field>
-                  <Field label="Meta Description" hint="Краткое описание (до 160 символов)" counter={<span className={`text-xs font-medium ${descColor}`}>{descLen}/160</span>}>
-                    <textarea value={settings.description ?? ''} onChange={e => update('description', e.target.value)} rows={3} placeholder="Описание страницы..." className="input resize-none" />
+                  <Field label="Meta Description" hint="Brief description (up to 160 characters)" counter={<span className={`text-xs font-medium ${descColor}`}>{descLen}/160</span>}>
+                    <textarea value={settings.description ?? ''} onChange={e => update('description', e.target.value)} rows={3} placeholder="Page description..." className="input resize-none" />
                   </Field>
-                  <Field label="Keywords" hint="Ключевые слова через запятую (опционально)">
-                    <input type="text" value={settings.keywords ?? ''} onChange={e => update('keywords', e.target.value)} placeholder="seo, link building..." className="input" />
-                  </Field>
-                  <Field label="Robots" hint="Директива для поисковых роботов">
+                  <Field label="Robots" hint="Search engine directives">
                     <div className="relative">
                       <select value={settings.robots ?? 'index, follow'} onChange={e => update('robots', e.target.value)} className="input appearance-none pr-9">
                         <option value="index, follow">index, follow</option>
@@ -1377,22 +1470,22 @@ function SeoPanel({ userId }: { userId: string }) {
                       <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                     </div>
                   </Field>
-                  <Field label="Canonical URL" hint="Каноническая ссылка">
-                    <input type="url" value={settings.canonical ?? ''} onChange={e => update('canonical', e.target.value)} placeholder="https://example.com/" className="input" />
+                  <Field label="Canonical URL" hint="Must be on vladenza.com domain">
+                    <input type="url" value={settings.canonical ?? ''} onChange={e => update('canonical', e.target.value)} placeholder="https://vladenza.com/..." className="input" />
                   </Field>
                   <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                    <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">Превью в Google</p>
-                    <p className="text-[#1a0dab] text-base leading-snug font-normal truncate">{settings.title || 'Заголовок страницы'}</p>
-                    <p className="text-[#006621] text-xs">seoagency.com{selectedPage !== 'home' ? `/${selectedPage}` : ''}</p>
-                    <p className="text-[#545454] text-sm leading-relaxed line-clamp-2">{settings.description || 'Описание страницы появится здесь...'}</p>
+                    <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">Google Preview</p>
+                    <p className="text-[#1a0dab] text-base leading-snug font-normal truncate">{settings.title || 'Page title'}</p>
+                    <p className="text-[#006621] text-xs">{pageUrl}</p>
+                    <p className="text-[#545454] text-sm leading-relaxed line-clamp-2">{settings.description || 'Page description will appear here...'}</p>
                   </div>
                 </div>
               )}
               {activeTab === 'opengraph' && (
                 <div className="space-y-5">
-                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 text-sm text-blue-700">Open Graph теги управляют тем, как страница выглядит при шеринге в соц. сетях.</div>
-                  <Field label="OG Title"><input type="text" value={settings.og_title ?? ''} onChange={e => update('og_title', e.target.value)} placeholder="Заголовок для соц. сетей..." className="input" /></Field>
-                  <Field label="OG Description"><textarea value={settings.og_description ?? ''} onChange={e => update('og_description', e.target.value)} rows={3} placeholder="Описание для соц. сетей..." className="input resize-none" /></Field>
+                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 text-sm text-blue-700">Open Graph tags control how your page appears when shared on social media.</div>
+                  <Field label="OG Title"><input type="text" value={settings.og_title ?? ''} onChange={e => update('og_title', e.target.value)} placeholder="Social media title..." className="input" /></Field>
+                  <Field label="OG Description"><textarea value={settings.og_description ?? ''} onChange={e => update('og_description', e.target.value)} rows={3} placeholder="Social media description..." className="input resize-none" /></Field>
                   <Field label="OG Image" hint="Recommended 1200x630px">
                     <ImageUploader
                       value={settings.og_image ?? ''}
@@ -1415,15 +1508,106 @@ function SeoPanel({ userId }: { userId: string }) {
               )}
               {activeTab === 'advanced' && (
                 <div className="space-y-5">
-                  <Field label="JSON-LD Schema" hint="Структурированная разметка для поисковиков (schema.org). Вставь валидный JSON.">
+                  <Field label="JSON-LD Schema" hint="Structured data for search engines (schema.org). Enter valid JSON.">
                     <textarea value={settings.schema_json ?? ''} onChange={e => update('schema_json', e.target.value)} rows={12}
                       placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "WebSite"\n}'}
                       className="input resize-y font-mono text-xs" spellCheck={false} />
                   </Field>
                   {settings.schema_json && (() => {
-                    try { JSON.parse(settings.schema_json); return <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-2.5"><CheckCircle2 size={15} /> JSON валиден</div>; }
-                    catch { return <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5"><AlertCircle size={15} /> Невалидный JSON</div>; }
+                    try { JSON.parse(settings.schema_json); return <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-2.5"><CheckCircle2 size={15} /> Valid JSON</div>; }
+                    catch { return <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5"><AlertCircle size={15} /> Invalid JSON</div>; }
                   })()}
+                </div>
+              )}
+              {activeTab === 'revisions' && (
+                <div className="space-y-5">
+                  {/* Create revision */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">Create New Revision</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Snapshots all draft SEO settings into an immutable revision for deployment.</p>
+                    </div>
+                    <button onClick={handleCreateRevision} disabled={creatingRevision || !!pendingRevision}
+                      className="flex items-center gap-2 bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                      {creatingRevision ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus size={14} />}
+                      Create Revision
+                    </button>
+                  </div>
+                  {pendingRevision && (
+                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-sm text-amber-800">
+                      <p className="font-semibold mb-1">Revision #{pendingRevision.number} is pending deployment</p>
+                      <p className="text-xs">1. Build the site (the prerender script will use this revision's metadata).</p>
+                      <p className="text-xs">2. Deploy to Netlify.</p>
+                      <p className="text-xs">3. Verify the deployed HTML, then click "Activate" below.</p>
+                      <div className="flex gap-2 mt-3">
+                        <button onClick={() => handleActivate(pendingRevision.id)} className="text-xs font-semibold text-white bg-emerald-600 px-3 py-1.5 rounded-lg hover:bg-emerald-700">Activate</button>
+                        <button onClick={() => handleCancel(pendingRevision.id)} className="text-xs font-semibold text-gray-600 bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50">Cancel</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Revision history */}
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 mb-3">Revision History</p>
+                    {revisions.length === 0 ? (
+                      <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                        <p className="text-sm text-gray-400">No revisions yet. Create one to start the deployment workflow.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {revisions.map(r => (
+                          <div key={r.id} className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                            <div className="flex-shrink-0 w-10 text-center">
+                              <span className="text-lg font-bold text-gray-300">#{r.number}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                {statusBadge(r.status)}
+                                <span className="text-xs text-gray-400">
+                                  {new Date(r.created_at).toLocaleString()}
+                                </span>
+                              </div>
+                              {r.activated_at && (
+                                <p className="text-xs text-gray-500 mt-0.5">Activated: {new Date(r.activated_at).toLocaleString()}</p>
+                              )}
+                              {r.failure_reason && (
+                                <p className="text-xs text-red-500 mt-0.5">{r.failure_reason}</p>
+                              )}
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                {Object.keys(r.metadata || {}).length} pages
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              {r.status === 'pending' && (
+                                <>
+                                  <button onClick={() => handleActivate(r.id)} className="text-xs font-semibold text-emerald-600 px-2 py-1 rounded hover:bg-emerald-50">Activate</button>
+                                  <button onClick={() => handleCancel(r.id)} className="text-xs font-semibold text-gray-500 px-2 py-1 rounded hover:bg-gray-100">Cancel</button>
+                                </>
+                              )}
+                              {r.status === 'failed' && (
+                                <button onClick={() => handleFail(r.id)} className="text-xs text-gray-400 px-2 py-1">View</button>
+                              )}
+                              {r.status === 'superseded' && (
+                                <button onClick={() => handleRollback(r.id)} className="text-xs font-semibold text-amber-600 px-2 py-1 rounded hover:bg-amber-50">Rollback</button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Deployment info */}
+                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm text-blue-700">
+                    <p className="font-semibold mb-1">How deployment works</p>
+                    <ol className="text-xs space-y-0.5 list-decimal list-inside">
+                      <li>Edit draft SEO settings for each page and locale, then Save Draft.</li>
+                      <li>Click "Create Revision" to snapshot all drafts into an immutable revision.</li>
+                      <li>Trigger a build (git push or Netlify dashboard). The build uses the pending revision's metadata.</li>
+                      <li>After deploy, click "Activate" to mark the revision as live.</li>
+                      <li>To revert, use "Rollback" on a previous revision, then rebuild.</li>
+                    </ol>
+                  </div>
                 </div>
               )}
             </>

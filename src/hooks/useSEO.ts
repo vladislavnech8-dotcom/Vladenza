@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { isIndexableRoute, isBothLocalesIndexable, getHreflangPair } from '../lib/routeRegistry';
 const SITE_URL = 'https://vladenza.com';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.svg`;
 
@@ -32,66 +33,6 @@ function normalizeTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`;
 }
 
-const INDEXABLE_STATIC_ROUTES = [
-  '/', '/services/guest-posting', '/services/niche-edits', '/services/crowd-links',
-  '/services/white-label', '/placements', '/pricing', '/case-studies', '/blog',
-];
-const INDEXABLE_CASE_SLUGS = [
-  'dating-5x-traffic', 'saas-non-brand-traffic', 'igaming-domain-authority',
-  'crypto-page1-ranking', 'health-google-update-recovery', 'igaming-20k-traffic',
-  'crypto-forum-x10-traffic',
-];
-const RETAINED_BLOG_SLUGS = [
-  '5-facts-about-backlinks', 'crowd-marketing-website-promotion',
-  'geo-get-cited-by-chatgpt-2025', 'igaming-seo-link-building-2025',
-  'link-building-2026', 'link-building-german-websites', 'link-building-services-guide',
-  'saas-link-building', 'white-label-seo', 'how-long-does-link-building-take',
-  'niche-edits-vs-guest-posts', 'how-to-analyze-competitor-backlinks',
-];
-
-// UK indexable routes: compact commercial layer only (no blog/case-study mirrors)
-const UK_INDEXABLE_STATIC_ROUTES = [
-  '/', '/services/guest-posting', '/services/niche-edits', '/services/crowd-links',
-  '/services/white-label', '/pricing', '/case-studies',
-];
-
-function isIndexableRoute(pathname: string): boolean {
-  const isUk = pathname.startsWith('/uk');
-  const normalized = isUk ? pathname.slice(3) || '/' : pathname;
-  const stripped = normalized.endsWith('/') && normalized !== '/' ? normalized.slice(0, -1) : normalized;
-
-  if (isUk) {
-    if (UK_INDEXABLE_STATIC_ROUTES.includes(stripped)) return true;
-    const ukCaseMatch = stripped.match(/^\/case-studies\/(.+)$/);
-    if (ukCaseMatch) return INDEXABLE_CASE_SLUGS.includes(ukCaseMatch[1]);
-    return false;
-  }
-
-  // EN: full indexable set
-  if (INDEXABLE_STATIC_ROUTES.includes(stripped)) return true;
-  const caseMatch = stripped.match(/^\/case-studies\/(.+)$/);
-  if (caseMatch) return INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
-  const blogMatch = stripped.match(/^\/blog\/(.+)$/);
-  if (blogMatch) return RETAINED_BLOG_SLUGS.includes(blogMatch[1]);
-  return false;
-}
-
-function getHreflangPair(pathname: string): { en: string; uk: string } {
-  let enPath = pathname;
-  let ukPath = pathname;
-  if (pathname.startsWith('/uk')) {
-    enPath = pathname.slice(3) || '/';
-    ukPath = pathname;
-  } else {
-    enPath = pathname;
-    ukPath = pathname === '/' ? '/uk' : '/uk' + pathname;
-  }
-  return {
-    en: normalizeTrailingSlash(`${SITE_URL}${enPath}`),
-    uk: normalizeTrailingSlash(`${SITE_URL}${ukPath}`),
-  };
-}
-
 export function useSEO({ title, description, canonical, ogImage, schema, noindex }: SEOProps) {
   const resolvedCanonical = normalizeTrailingSlash(canonical || buildCanonicalFromLocation());
 
@@ -100,18 +41,45 @@ export function useSEO({ title, description, canonical, ogImage, schema, noindex
   }
 
   useEffect(() => {
-    document.title = title;
-    const desc = clampDescription(description);
-    const image = ogImage || DEFAULT_OG_IMAGE;
-    const pageUrl = resolvedCanonical;
+    // 1. Set hardcoded metadata immediately (no flash of wrong content)
+    let effectiveTitle = title;
+    let effectiveDescription = description;
+    let effectiveOgImage = ogImage || DEFAULT_OG_IMAGE;
+    let effectiveCanonical = resolvedCanonical;
+
+    // 2. Check for embedded SEO manifest (from prerendered HTML)
+    const manifestEl = document.getElementById('seo-manifest');
+    if (manifestEl) {
+      try {
+        const manifest = JSON.parse(manifestEl.textContent || '{}');
+        const { pathname } = window.location;
+        const isUk = pathname.startsWith('/uk');
+        const contentRoute = isUk ? pathname.slice(3) || '/' : pathname;
+        const pageKey = contentRoute === '/' ? 'home' : contentRoute.replace(/^\//, '').replace(/\/$/, '');
+        const entry = manifest.metadata?.[pageKey];
+        if (entry) {
+          if (entry.title) effectiveTitle = entry.title;
+          if (entry.description) effectiveDescription = entry.description;
+          if (entry.og_image) effectiveOgImage = entry.og_image;
+          if (entry.canonical) effectiveCanonical = entry.canonical;
+        }
+      } catch {
+        // Manifest parse failed — use hardcoded values
+      }
+    }
+
+    document.title = effectiveTitle;
+    const desc = clampDescription(effectiveDescription);
+    const image = effectiveOgImage;
+    const pageUrl = effectiveCanonical;
     setMeta('name', 'description', desc);
-    setMeta('property', 'og:title', title);
+    setMeta('property', 'og:title', effectiveTitle);
     setMeta('property', 'og:description', desc);
     setMeta('property', 'og:type', 'website');
     setMeta('property', 'og:url', pageUrl);
     setMeta('property', 'og:site_name', 'Vladenza');
     setMeta('property', 'og:image', image);
-    setMeta('name', 'twitter:title', title);
+    setMeta('name', 'twitter:title', effectiveTitle);
     setMeta('name', 'twitter:description', desc);
     setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:image', image);
@@ -137,11 +105,7 @@ export function useSEO({ title, description, canonical, ogImage, schema, noindex
 
     // Hreflang — only when BOTH en and uk routes are indexable
     const { pathname } = window.location;
-    const isEnIndexable = isIndexableRoute(pathname);
-    // Check if the reciprocal locale is also indexable
-    const ukPath = pathname.startsWith('/uk') ? pathname : (pathname === '/' ? '/uk' : '/uk' + pathname);
-    const isUkIndexable = isIndexableRoute(ukPath);
-    if (isEnIndexable && isUkIndexable) {
+    if (isBothLocalesIndexable(pathname)) {
       const pair = getHreflangPair(pathname);
       const hreflangs: Array<{ hreflang: string; href: string }> = [
         { hreflang: 'en', href: pair.en },

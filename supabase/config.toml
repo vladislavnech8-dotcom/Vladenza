@@ -7,9 +7,6 @@ verify_jwt = false
 [functions.inbound-lead]
 verify_jwt = false
 
-[functions.sitemap]
-verify_jwt = false
-
 [functions.order-requirements]
 verify_jwt = false
 
@@ -18,3 +15,6 @@ verify_jwt = false
 
 [functions.admin-orders]
 verify_jwt = false
+
+[functions.seo-verify]
+verify_jwt = true

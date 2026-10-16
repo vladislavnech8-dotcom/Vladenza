@@ -2,131 +2,26 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render, getStaticBlogSlugs, supabase, blogPostsUk, casesUk } from '../dist-ssr/entry-server.js';
+import {
+  INDEXABLE_STATIC as EN_INDEXABLE_STATIC,
+  UK_INDEXABLE_STATIC,
+  NOINDEX_STATIC as EN_NOINDEX_STATIC,
+  UK_NOINDEX_STATIC,
+  INDEXABLE_CASE_SLUGS as EN_INDEXABLE_CASE_SLUGS,
+  INDEXABLE_BLOG_SLUGS as EN_INDEXABLE_BLOG_SLUGS,
+  NOINDEX_BLOG_SLUGS as EN_NOINDEX_BLOG_SLUGS,
+  UNVERIFIED_CASE_SLUGS,
+  CROWD_LINKS_LANGUAGES,
+  REDIRECTED_ROUTES,
+  GONE_ROUTES,
+  isEnIndexable,
+  isUkIndexable,
+  shouldHaveHreflang,
+} from '../src/lib/routeRegistry.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const distDir = path.join(root, 'dist');
-
-// ─── EN indexable routes ─────────────────────────────────────────
-const EN_INDEXABLE_STATIC = [
-  '/',
-  '/services/guest-posting',
-  '/services/niche-edits',
-  '/services/crowd-links',
-  '/services/white-label',
-  '/placements',
-  '/contact',
-  '/pricing',
-  '/case-studies',
-  '/blog',
-];
-
-const EN_INDEXABLE_CASE_SLUGS = [
-  'dating-5x-traffic',
-  'saas-non-brand-traffic',
-  'igaming-domain-authority',
-  'crypto-page1-ranking',
-  'health-google-update-recovery',
-  'igaming-20k-traffic',
-  'crypto-forum-x10-traffic',
-];
-
-const EN_INDEXABLE_BLOG_SLUGS = [
-  '5-facts-about-backlinks',
-  'crowd-marketing-website-promotion',
-  'geo-get-cited-by-chatgpt-2025',
-  'igaming-seo-link-building-2025',
-  'link-building-2026',
-  'link-building-german-websites',
-  'link-building-services-guide',
-  'saas-link-building',
-  'white-label-seo',
-  'how-long-does-link-building-take',
-  'niche-edits-vs-guest-posts',
-  'how-to-analyze-competitor-backlinks',
-];
-
-// ─── UK indexable routes (compact commercial layer only) ─────────
-const UK_INDEXABLE_STATIC = [
-  '/',
-  '/services/guest-posting',
-  '/services/niche-edits',
-  '/services/crowd-links',
-  '/services/white-label',
-  '/contact',
-  '/pricing',
-  '/case-studies',
-];
-
-// ─── EN noindex routes (accessible but excluded from sitemap) ───
-const EN_NOINDEX_STATIC = [
-  '/services/seo-audit',
-  '/services/ai-llm',
-  '/services/linkedin-personal',
-  '/services/linkedin-company',
-  '/seo-audit-sample',
-  '/sitemap',
-  '/checkout',
-  '/privacy-policy',
-  '/terms',
-  '/refund-policy',
-  '/cookie-policy',
-];
-
-const EN_NOINDEX_BLOG_SLUGS = [
-  'seo-redirects-guide',
-];
-
-// Case studies pending editorial verification (noindex, not in sitemap)
-const UNVERIFIED_CASE_SLUGS = [
-  'automotive-keyword-rankings',
-  'fintech-lead-generation',
-  'health-organic-growth',
-  'software-263-traffic',
-];
-
-// Crowd Marketing language pages (noindex pending uniqueness review)
-const CROWD_LINKS_LANGUAGES = ['german', 'french', 'spanish'];
-
-// ─── UK noindex routes ───────────────────────────────────────────
-const UK_NOINDEX_STATIC = [
-  '/services/seo-audit',
-  '/services/ai-llm',
-  '/services/linkedin-personal',
-  '/services/linkedin-company',
-  '/seo-audit-sample',
-  '/sitemap',
-  '/checkout',
-  '/privacy-policy',
-  '/terms',
-  '/refund-policy',
-  '/cookie-policy',
-  '/placements',
-  '/blog',
-];
-
-// ─── Routes that are 301 redirects (NOT prerendered, NOT noindex) ──
-// These are handled entirely by netlify.toml
-const REDIRECTED_ROUTES = [
-  '/reviews',
-  '/services/local-seo-links',
-  '/services/link-packages/auto',
-  '/services/link-packages/saas',
-  '/services/link-packages/igaming',
-  '/services/link-packages/health',
-  '/services/link-packages/proxy',
-  '/services/link-packages/renovations',
-  '/services/crowd-links/english',
-  '/blog/backlink-quality-guide',
-  '/blog/dofollow-vs-nofollow-links',
-  '/blog/organic-seo-inbound-clients',
-];
-
-// ─── Routes that are 410 Gone (NOT prerendered, NOT noindex) ─────
-const GONE_ROUTES = [
-  '/services/crowd-links/korean',
-  '/services/crowd-links/portuguese',
-];
 
 const HOME_META = {
   title: 'Vladenza — Manual Link Building Services | Guest Posts, Link Insertions & Crowd Marketing',
@@ -176,32 +71,6 @@ function injectFaqSchema(html, faqs) {
   };
   const scriptTag = `<script id="faq-schema" type="application/ld+json">${JSON.stringify(schema)}</script>`;
   return html.replace('</head>', `  ${scriptTag}\n</head>`);
-}
-
-// Check if a content route is indexable in a given locale
-function isEnIndexable(route) {
-  if (EN_INDEXABLE_STATIC.includes(route)) return true;
-  const caseMatch = route.match(/^\/case-studies\/(.+)$/);
-  if (caseMatch) return EN_INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
-  const blogMatch = route.match(/^\/blog\/(.+)$/);
-  if (blogMatch) return EN_INDEXABLE_BLOG_SLUGS.includes(blogMatch[1]);
-  return false;
-}
-
-function isUkIndexable(route) {
-  if (UK_INDEXABLE_STATIC.includes(route)) return true;
-  const caseMatch = route.match(/^\/case-studies\/(.+)$/);
-  if (caseMatch) return EN_INDEXABLE_CASE_SLUGS.includes(caseMatch[1]);
-  return false;
-}
-
-// Only emit hreflang if BOTH en and uk versions are indexable
-function shouldHaveHreflang(contentRoute, locale) {
-  if (locale === 'uk') {
-    return isUkIndexable(contentRoute) && isEnIndexable(contentRoute);
-  } else {
-    return isEnIndexable(contentRoute) && isUkIndexable(contentRoute);
-  }
 }
 
 function injectHreflang(html, enPath, ukPath) {
@@ -257,6 +126,71 @@ function mergeUkCase(dbCase, uk) {
   };
 }
 
+async function getSeoRevision() {
+  // Prefer pending revision (staged for this build), fall back to active (last deployed)
+  try {
+    const { data: pending } = await supabase
+      .from('seo_revisions')
+      .select('*')
+      .eq('status', 'pending')
+      .order('number', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (pending) {
+      console.log(`✓ Using pending SEO revision #${pending.number}`);
+      return pending;
+    }
+    const { data: active } = await supabase
+      .from('seo_revisions')
+      .select('*')
+      .eq('status', 'active')
+      .order('number', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (active) {
+      console.log(`✓ Using active SEO revision #${active.number}`);
+      return active;
+    }
+  } catch (err) {
+    console.warn('⚠ SEO revision fetch failed:', err.message);
+  }
+  console.log('✓ No SEO revision found — using hardcoded metadata');
+  return null;
+}
+
+function getRevisionMetaForRoute(revision, contentRoute, locale) {
+  if (!revision || !revision.metadata) return null;
+  // contentRoute is like '/services/guest-posting' or '/'
+  const pageKey = contentRoute === '/' ? 'home' : contentRoute.replace(/^\//, '');
+  const entry = revision.metadata[pageKey];
+  if (!entry) return null;
+  // Only use entries matching the locale (or en as fallback for og_title etc.)
+  if (entry.locale && entry.locale !== locale) return null;
+  return entry;
+}
+
+function injectSeoManifest(html, revision) {
+  if (!revision) return html;
+  const manifest = JSON.stringify({
+    revisionId: revision.id,
+    revisionNumber: revision.number,
+    metadata: revision.metadata,
+  });
+  const tag = `<script type="application/json" id="seo-manifest" data-revision="${revision.number}">${manifest}</script>`;
+  // Remove any existing manifest
+  html = html.replace(/<script[^>]*id="seo-manifest"[^>]*><\/script>/g, '');
+  return html.replace('</head>', `  ${tag}\n</head>`);
+}
+
+function injectBuildManifest(revision) {
+  if (!revision) return null;
+  return {
+    revisionId: revision.id,
+    revisionNumber: revision.number,
+    builtAt: new Date().toISOString(),
+  };
+}
+
 async function getDynamicData() {
   let dbPosts = [];
   let dbCases = [];
@@ -302,6 +236,7 @@ async function main() {
   fs.writeFileSync(path.join(distDir, 'spa-fallback.html'), template);
 
   const { allBlogSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
+  const seoRevision = await getSeoRevision();
 
   // ─── Build route lists ─────────────────────────────────────────
   // EN indexable case/blog routes
@@ -434,6 +369,19 @@ async function main() {
         html = injectMeta(html, meta);
       }
 
+      // Override with SEO revision metadata if available
+      const revMeta = getRevisionMetaForRoute(seoRevision, contentRoute, locale);
+      if (revMeta && revMeta.title) {
+        const revOverride = {
+          title: revMeta.title,
+          description: revMeta.description || '',
+          canonical: revMeta.canonical || (locale === 'uk'
+            ? `https://vladenza.com${route === '/uk' ? '/uk/' : route + '/'}`
+            : `https://vladenza.com${route === '/' ? '/' : route + '/'}`),
+        };
+        html = injectMeta(html, revOverride);
+      }
+
       // Hreflang: only if both EN and UK are indexable
       if (shouldHaveHreflang(contentRoute, locale)) {
         const enPath = locale === 'uk' ? contentRoute : route;
@@ -460,6 +408,9 @@ async function main() {
       }
 
       if (faqSchema) html = injectFaqSchema(html, faqSchema);
+
+      // Inject SEO metadata manifest for SPA navigation consistency
+      html = injectSeoManifest(html, seoRevision);
 
       const outPath = route === '/'
         ? path.join(distDir, 'index.html')
@@ -518,6 +469,16 @@ async function main() {
 
   // Also copy sitemap.xml to public/ so it exists before build
   fs.writeFileSync(path.join(root, 'public', 'sitemap.xml'), sitemapXml);
+
+  // Write build manifest for deployment verification
+  const buildManifest = injectBuildManifest(seoRevision);
+  if (buildManifest) {
+    fs.writeFileSync(path.join(distDir, 'seo-build-manifest.json'), JSON.stringify(buildManifest, null, 2));
+    console.log(`✓ seo-build-manifest.json: revision #${buildManifest.revisionNumber}`);
+  } else {
+    fs.writeFileSync(path.join(distDir, 'seo-build-manifest.json'), JSON.stringify({ revisionId: null, revisionNumber: null, builtAt: new Date().toISOString() }, null, 2));
+    console.log('✓ seo-build-manifest.json: no revision (hardcoded metadata)');
+  }
 
   console.log(`\n✓ Done: ${successCount}/${allRoutes.length} pages prerendered.`);
   console.log(`✓ sitemap.xml: ${sitemapEntries.length} URLs (${sitemapEnRoutes.length} EN + ${sitemapUkRoutes.length} UK)`);
