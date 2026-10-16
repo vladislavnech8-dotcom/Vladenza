@@ -3,6 +3,7 @@ import { X, Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLocale } from '../context/LocaleContext';
 import { trackMetaEvent } from '../lib/analytics';
+import { getCartItemName, getCartItemDescription } from '../lib/cartDisplay';
 
 const cartDrawerContent = {
   en: { total: 'Total', browsePackages: 'Browse packages', continueToReqs: 'Continue to Requirements', items: 'items', item: 'item' },
@@ -59,8 +60,8 @@ export default function CartDrawer() {
                 <div key={item.productId} className="border border-gray-200 rounded-xl p-4">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold text-gray-900">{item.name}</div>
-                      <div className="text-xs text-gray-400">{item.description}</div>
+                      <div className="text-sm font-semibold text-gray-900">{getCartItemName(item.productId, item.name, locale)}</div>
+                      <div className="text-xs text-gray-400">{getCartItemDescription(item.productId, item.description, locale)}</div>
                     </div>
                     <button
                       onClick={() => removeItem(item.productId)}

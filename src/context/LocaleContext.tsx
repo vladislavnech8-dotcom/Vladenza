@@ -60,8 +60,7 @@ export function LocaleProvider({ children }: { children?: ReactNode }) {
     <LocaleContext.Provider
       value={{ locale, t, localizePath: localize, switchLocale, otherLocale }}
     >
-      {children}
-      <Outlet />
+      {children ?? <Outlet />}
     </LocaleContext.Provider>
   );
 }

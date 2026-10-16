@@ -150,56 +150,54 @@ export default function App() {
     <CartProvider>
       <CheckoutProvider>
         <CookieConsentProvider>
-          <CartDrawer />
-          <CookieConsentBanner />
-          <Suspense fallback={<RouteTransition><div /></RouteTransition>}>
-            <ErrorBoundary>
-              <Routes>
-                {/* English routes (no prefix) */}
-                <Route element={<LocaleProvider />}>
+          <LocaleProvider>
+            <CartDrawer />
+            <CookieConsentBanner />
+            <Suspense fallback={<RouteTransition><div /></RouteTransition>}>
+              <ErrorBoundary>
+                <Routes>
+                  {/* English routes (no prefix) */}
                   {publicRoutes}
-                </Route>
 
-                {/* Ukrainian routes (/uk/ prefix) */}
-                <Route path="/uk" element={<LocaleProvider />}>
-                  <Route index element={<HomePage />} />
-                  <Route path="services/seo-audit" element={<SeoAuditPage />} />
-                  <Route path="services/guest-posting" element={<GuestPostingPage />} />
-                  <Route path="services/niche-edits" element={<NicheEditsPage />} />
-                  <Route path="services/crowd-links" element={<CrowdLinksPage />} />
-                  <Route path="services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
-                  <Route path="services/ai-llm" element={<AiLlmPage />} />
-                  <Route path="services/link-packages/:niche" element={<LinkPackagesPage />} />
-                  <Route path="services/local-seo-links" element={<LocalSeoLinksPage />} />
-                  <Route path="case-studies" element={<CaseStudiesPage />} />
-                  <Route path="case-studies/:slug" element={<CaseStudyDetailPage />} />
-                  <Route path="blog" element={<BlogPage />} />
-                  <Route path="blog/:slug" element={<BlogPostPage />} />
-                  <Route path="sitemap" element={<SitemapPage />} />
-                  <Route path="reviews" element={<ReviewsPage />} />
-                  <Route path="services/linkedin-personal" element={<LinkedInPersonalPage />} />
-                  <Route path="services/linkedin-company" element={<LinkedInCompanyPage />} />
-                  <Route path="seo-audit-sample" element={<SeoAuditSamplePage />} />
-                  <Route path="services/white-label" element={<WhiteLabelPage />} />
-                  <Route path="pricing" element={<PricingPage />} />
-                  <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
-                  <Route path="terms" element={<TermsPage />} />
-                  <Route path="refund-policy" element={<RefundPolicyPage />} />
-                  <Route path="cookie-policy" element={<CookiePolicyPage />} />
-                  <Route path="placements" element={<PlacementsPage />} />
-                  <Route path="contact" element={<ContactPage />} />
-                  <Route path="checkout" element={<CheckoutPage />} />
-                </Route>
+                  {/* Ukrainian routes (/uk/ prefix) */}
+                  <Route path="/uk" element={<HomePage />} />
+                  <Route path="/uk/services/seo-audit" element={<SeoAuditPage />} />
+                  <Route path="/uk/services/guest-posting" element={<GuestPostingPage />} />
+                  <Route path="/uk/services/niche-edits" element={<NicheEditsPage />} />
+                  <Route path="/uk/services/crowd-links" element={<CrowdLinksPage />} />
+                  <Route path="/uk/services/crowd-links/:language" element={<CrowdLinksLanguagePage />} />
+                  <Route path="/uk/services/ai-llm" element={<AiLlmPage />} />
+                  <Route path="/uk/services/link-packages/:niche" element={<LinkPackagesPage />} />
+                  <Route path="/uk/services/local-seo-links" element={<LocalSeoLinksPage />} />
+                  <Route path="/uk/case-studies" element={<CaseStudiesPage />} />
+                  <Route path="/uk/case-studies/:slug" element={<CaseStudyDetailPage />} />
+                  <Route path="/uk/blog" element={<BlogPage />} />
+                  <Route path="/uk/blog/:slug" element={<BlogPostPage />} />
+                  <Route path="/uk/sitemap" element={<SitemapPage />} />
+                  <Route path="/uk/reviews" element={<ReviewsPage />} />
+                  <Route path="/uk/services/linkedin-personal" element={<LinkedInPersonalPage />} />
+                  <Route path="/uk/services/linkedin-company" element={<LinkedInCompanyPage />} />
+                  <Route path="/uk/seo-audit-sample" element={<SeoAuditSamplePage />} />
+                  <Route path="/uk/services/white-label" element={<WhiteLabelPage />} />
+                  <Route path="/uk/pricing" element={<PricingPage />} />
+                  <Route path="/uk/privacy-policy" element={<PrivacyPolicyPage />} />
+                  <Route path="/uk/terms" element={<TermsPage />} />
+                  <Route path="/uk/refund-policy" element={<RefundPolicyPage />} />
+                  <Route path="/uk/cookie-policy" element={<CookiePolicyPage />} />
+                  <Route path="/uk/placements" element={<PlacementsPage />} />
+                  <Route path="/uk/contact" element={<ContactPage />} />
+                  <Route path="/uk/checkout" element={<CheckoutPage />} />
 
-                {/* Non-localized routes (admin, etc.) */}
-                <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
-                <Route path="/admin/orders" element={<AuthProvider><AdminOrdersRoute /></AuthProvider>} />
-                <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
-                <Route path="/order/:token" element={<OrderRequirementsPage />} />
-                <Route path="/crm" element={<AuthProvider><CrmRoute /></AuthProvider>} />
-              </Routes>
-            </ErrorBoundary>
-          </Suspense>
+                  {/* Non-localized routes (admin, etc.) */}
+                  <Route path="/admin" element={<AuthProvider><AdminRoute /></AuthProvider>} />
+                  <Route path="/admin/orders" element={<AuthProvider><AdminOrdersRoute /></AuthProvider>} />
+                  <Route path="/app" element={<AuthProvider><ClientAppPage /></AuthProvider>} />
+                  <Route path="/order/:token" element={<OrderRequirementsPage />} />
+                  <Route path="/crm" element={<AuthProvider><CrmRoute /></AuthProvider>} />
+                </Routes>
+              </ErrorBoundary>
+            </Suspense>
+          </LocaleProvider>
         </CookieConsentProvider>
       </CheckoutProvider>
     </CartProvider>

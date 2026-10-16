@@ -11,6 +11,7 @@ import { payWithWayForPay, validatePromoCode, type PromoValidationResult } from 
 import Turnstile from '../components/Turnstile';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
 import { trackPurchaseConversion } from '../lib/gtag';
+import { getCartItemName, getCartItemDescription } from '../lib/cartDisplay';
 
 function formatMoney(amount: number, currency = 'USD'): string {
   const symbol = currency === 'USD' ? '$' : '';
@@ -225,11 +226,8 @@ type Step = 1 | 2 | 3 | 4;
 const inputCls = 'w-full bg-cream border border-ink/15 px-3.5 py-2.5 text-ink text-sm placeholder-ink/35 focus:outline-none focus:border-signal focus:ring-1 focus:ring-signal/30 transition-all';
 const labelCls = 'block text-xs font-bold uppercase tracking-wider text-ink/50 mb-1.5';
 
-function getItemSubtitle(item: { productId: string; description: string }, c: typeof content.en): string {
-  if (item.productId.startsWith('guest-post-') && item.description) {
-    return `${c.perPost} ${item.description.toLowerCase()}`;
-  }
-  return item.description;
+function getItemSubtitle(item: { productId: string; description: string }, locale: 'en' | 'uk'): string {
+  return getCartItemDescription(item.productId, item.description, locale);
 }
 
 function OrderSummary({ c, currency = 'USD', promoData }: { c: typeof content.en; currency?: string; promoData?: { code: string; discountAmount: number } | null }) {
@@ -243,8 +241,8 @@ function OrderSummary({ c, currency = 'USD', promoData }: { c: typeof content.en
         {items.map((item) => (
           <div key={item.productId} className="flex items-start justify-between gap-3 text-sm">
             <div className="min-w-0">
-              <span className="text-ink/70">{item.quantity} × {item.name}</span>
-              {getItemSubtitle(item, c) && <p className="text-[11px] text-ink/40 mt-0.5">{getItemSubtitle(item, c)}</p>}
+              <span className="text-ink/70">{item.quantity} × {getCartItemName(item.productId, item.name, locale)}</span>
+              {getItemSubtitle(item, locale) && <p className="text-[11px] text-ink/40 mt-0.5">{getItemSubtitle(item, locale)}</p>}
             </div>
             <span className="font-bold text-ink whitespace-nowrap">{formatMoney(item.unitPrice * item.quantity, currency)}</span>
           </div>
@@ -614,8 +612,8 @@ export default function CheckoutPage() {
                       <div key={item.productId} className="border-2 border-ink/15 bg-white p-4">
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <div className="min-w-0">
-                            <div className="text-sm font-bold text-ink">{item.name}</div>
-                            {getItemSubtitle(item, c) && <div className="text-xs text-ink/40 mt-0.5">{getItemSubtitle(item, c)}</div>}
+                            <div className="text-sm font-bold text-ink">{getCartItemName(item.productId, item.name, locale)}</div>
+                            {getItemSubtitle(item, locale) && <div className="text-xs text-ink/40 mt-0.5">{getItemSubtitle(item, locale)}</div>}
                           </div>
                           <button onClick={() => { removeItem(item.productId); update({ paymentAttemptId: '' }); trackEvent('remove_from_cart', { product_id: item.productId }); }} className="text-ink/30 hover:text-red-500 transition-colors flex-shrink-0">
                             <Trash2 size={16} />
@@ -773,8 +771,8 @@ export default function CheckoutPage() {
                       {items.map((item) => (
                         <div key={item.productId} className="flex items-start justify-between gap-3 text-sm">
                           <div className="min-w-0">
-                            <span className="text-ink/80">{item.name}</span>
-                            {getItemSubtitle(item, c) && <span className="text-xs text-ink/40 block mt-0.5">{getItemSubtitle(item, c)}</span>}
+                            <span className="text-ink/80">{getCartItemName(item.productId, item.name, locale)}</span>
+                            {getItemSubtitle(item, locale) && <span className="text-xs text-ink/40 block mt-0.5">{getItemSubtitle(item, locale)}</span>}
                           </div>
                           <div className="text-right flex-shrink-0">
                             <div className="text-xs text-ink/40">{c.qty}: {item.quantity}</div>
