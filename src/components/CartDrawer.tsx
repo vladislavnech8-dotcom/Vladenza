@@ -65,7 +65,7 @@ export default function CartDrawer() {
                     <button
                       onClick={() => removeItem(item.productId)}
                       className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0"
-                      aria-label="Remove"
+                      aria-label={locale === 'uk' ? 'Видалити' : 'Remove'}
                     >
                       <Trash2 size={15} />
                     </button>

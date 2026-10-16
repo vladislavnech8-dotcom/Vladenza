@@ -67,6 +67,11 @@ const content = {
     continueToReview: 'Continue',
     reviewOrder: 'Review Your Order',
     orderItems: 'Order Items',
+    namePlaceholder: 'Jane Doe',
+    emailPlaceholder: 'you@company.com',
+    companyPlaceholder: 'Acme Inc.',
+    websitePlaceholder: 'https://yoursite.com',
+    bulkPlaceholder: 'https://site.com/page1 | CRM software\nhttps://site.com/page2 | marketing automation',
     qty: 'Qty',
     requirements: 'Requirements',
     edit: 'Edit',
@@ -159,12 +164,17 @@ const content = {
     laterInfo: 'Ви зможете додати вимоги після оплати. Ми також надішлемо вам email посилання для їх надсилання.',
     editCart: 'Редагувати кошик',
     continueToReview: 'Продовжити',
-    reviewOrder: 'Перевірте ваше замовлення',
-    orderItems: 'Позиції замовлення',
-    qty: 'К-ть',
+    reviewOrder: 'Перевірте замовлення',
+    orderItems: 'Склад замовлення',
+    namePlaceholder: 'Іван Іваненко',
+    emailPlaceholder: 'you@company.com',
+    companyPlaceholder: 'Acme Inc.',
+    websitePlaceholder: 'https://yoursite.com',
+    bulkPlaceholder: 'https://site.com/page1 | CRM програми\nhttps://site.com/page2 | маркетинг автоматизація',
+    qty: 'Кількість',
     requirements: 'Вимоги',
     edit: 'Редагувати',
-    willBeProvided: 'Буде надано після оформлення замовлення',
+    willBeProvided: 'Вимоги будуть надані після оплати',
     reqsProvided: (n: number) => `${n} цільов${n !== 1 ? 'их URL' : 'ий URL'} надано`,
     campaignNotesIncluded: ' · нотатки кампанії включено',
     contactDetails: 'Контактні дані',
@@ -687,7 +697,7 @@ export default function CheckoutPage() {
                         ) : (
                           <div className="border-2 border-ink/15 bg-white p-4">
                             <label className={labelCls}>{c.pasteRows}</label>
-                            <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={5} placeholder="https://site.com/page1 | CRM software&#10;https://site.com/page2 | marketing automation" className={inputCls} />
+                            <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={5} placeholder={c.bulkPlaceholder} className={inputCls} />
                             <div className="flex gap-2 mt-2">
                               <button onClick={parseBulk} className="text-xs font-bold bg-signal hover:bg-[#EA580C] text-white px-3 py-2 transition-colors">{c.apply}</button>
                               <button onClick={() => setShowBulk(false)} className="text-xs font-bold text-ink/40 hover:text-ink/60 px-3 py-2">{c.cancel}</button>
@@ -865,19 +875,19 @@ export default function CheckoutPage() {
                   <form onSubmit={handlePay} className="flex flex-col gap-4">
                     <div>
                       <label className={labelCls}>{c.name}</label>
-                      <input type="text" required value={data.customerName} onChange={(e) => update({ customerName: e.target.value })} placeholder="Jane Doe" className={inputCls} />
+                      <input type="text" required value={data.customerName} onChange={(e) => update({ customerName: e.target.value })} placeholder={c.namePlaceholder} className={inputCls} />
                     </div>
                     <div>
                       <label className={labelCls}>{c.email}</label>
-                      <input type="email" required value={data.customerEmail} onChange={(e) => update({ customerEmail: e.target.value })} placeholder="you@company.com" className={inputCls} />
+                      <input type="email" required value={data.customerEmail} onChange={(e) => update({ customerEmail: e.target.value })} placeholder={c.emailPlaceholder} className={inputCls} />
                     </div>
                     <div>
                       <label className={labelCls}>{c.company}</label>
-                      <input type="text" value={data.customerCompany} onChange={(e) => update({ customerCompany: e.target.value })} placeholder="Acme Inc." className={inputCls} />
+                      <input type="text" value={data.customerCompany} onChange={(e) => update({ customerCompany: e.target.value })} placeholder={c.companyPlaceholder} className={inputCls} />
                     </div>
                     <div>
                       <label className={labelCls}>{c.website}</label>
-                      <input type="url" value={data.customerWebsite} onChange={(e) => update({ customerWebsite: e.target.value })} placeholder="https://yoursite.com" className={inputCls} />
+                      <input type="url" value={data.customerWebsite} onChange={(e) => update({ customerWebsite: e.target.value })} placeholder={c.websitePlaceholder} className={inputCls} />
                     </div>
 
                     {error && (
