@@ -198,7 +198,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("id, order_number, order_status, name, email, order_items, requirements, requirements_status, amount, currency, cart_snapshot")
+      .select("id, order_number, order_status, name, email, order_items, requirements, requirements_status, amount, currency, cart_snapshot, locale")
       .eq("requirements_token_hash", tokenHash)
       .maybeSingle();
 
@@ -236,20 +236,15 @@ Deno.serve(async (req: Request) => {
           existingRequirements,
           requirementsStatus,
           customerName: order.name,
+          locale: order.locale || "en",
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
     if (req.method === "POST" || req.method === "PATCH" || req.method === "PUT") {
-      // Turnstile verification for POST (form submission)
+      // Turnstile verification (fail open when not configured — verifyTurnstile returns true if no secret is set)
       const turnstileToken = postBody?.turnstileToken || "";
-      if (!turnstileToken) {
-        return new Response(
-          JSON.stringify({ error: "Bot verification required" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
       const turnstileValid = await verifyTurnstile(turnstileToken, clientIp);
       if (!turnstileValid) {
         return new Response(
@@ -309,13 +304,75 @@ Deno.serve(async (req: Request) => {
       }
 
       const allComplete = requirementsStatus === "received";
+      const orderLocale = String(order.locale || "en");
+
+      // Send agency notification email
+      const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+      if (RESEND_API_KEY) {
+        try {
+          const reqSummary = merged.map((r, i) =>
+            `  ${i + 1}. ${r.willProvideLater ? "(will provide later)" : `URL: ${r.targetUrl || "—"} | Anchor: ${r.anchor || (r.letVladenzaRecommend ? "(agency pick)" : "—")}${r.niche ? ` | Niche: ${r.niche}` : ""}${r.notes ? ` | Notes: ${r.notes}` : ""}`}`
+          ).join("\n");
+
+          const agencySubject = `Requirements ${allComplete ? "received" : "partially received"} — ${order.order_number}`;
+          const agencyHtml = `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f8f8f8;font-family:sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;padding:24px 0;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;max-width:600px;">
+  <tr><td style="padding:32px 40px;">
+    <h1 style="font-size:20px;color:#111;margin:0 0 16px;">Order Requirements ${allComplete ? "Received" : "Partially Received"}</h1>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Order:</strong> ${order.order_number}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Customer:</strong> ${order.name || "—"}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Email:</strong> ${order.email || "—"}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 16px;"><strong>Requirements status:</strong> ${requirementsStatus}</p>
+    <h2 style="font-size:15px;color:#111;margin:0 0 8px;">Requirements Detail</h2>
+    <pre style="font-size:13px;color:#555;line-height:1.6;white-space:pre-wrap;margin:0 0 16px;">${reqSummary}</pre>
+    <p style="font-size:14px;margin:16px 0 0;"><a href="https://vladenza.com/admin" style="color:#F97316;">View in admin dashboard</a></p>
+  </td></tr>
+</table></td></tr></table></body></html>`;
+
+          const agencyText = `Order Requirements ${allComplete ? "Received" : "Partially Received"}
+
+Order: ${order.order_number}
+Customer: ${order.name || "—"}
+Email: ${order.email || "—"}
+Requirements status: ${requirementsStatus}
+
+Requirements Detail:
+${reqSummary}
+
+View in admin dashboard: https://vladenza.com/admin`;
+
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Vladenza Orders <info@vladenza.com>",
+              to: "info@vladenza.com",
+              reply_to: "info@vladenza.com",
+              subject: agencySubject,
+              html: agencyHtml,
+              text: agencyText,
+            }),
+          });
+        } catch (emailErr) {
+          console.error("Agency notification email failed:", emailErr);
+        }
+      }
+
+      const successMsgEn = allComplete
+        ? "Requirements saved successfully."
+        : "Requirements partially saved. You can return later to complete the remaining placements.";
+      const successMsgUk = allComplete
+        ? "Вимоги успішно збережено."
+        : "Вимоги частково збережено. Ви можете повернутися пізніше, щоб завершити решту розміщень.";
 
       return new Response(
         JSON.stringify({
           success: true,
-          message: allComplete
-            ? "Requirements saved successfully."
-            : "Requirements partially saved. You can return later to complete the remaining placements.",
+          message: orderLocale === "uk" ? successMsgUk : successMsgEn,
           requirementsStatus,
           allComplete,
         }),

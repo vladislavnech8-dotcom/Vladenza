@@ -4,7 +4,6 @@ import { CheckCircle, Loader2, AlertCircle, ArrowRight, Clock, ArrowLeft } from 
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import Turnstile from '../components/Turnstile';
-import { useLocale } from '../context/LocaleContext';
 
 const content = {
   en: {
@@ -44,6 +43,10 @@ const content = {
     loadError: 'Could not load order details. Please try again or contact support.',
     saveError: 'Could not save requirements. Please try again or contact support.',
     back: 'Back',
+    targetUrlPlaceholder: 'https://example.com/page',
+    anchorPlaceholder: 'best crm software',
+    nichePlaceholder: 'e.g. SaaS, Marketing, Finance',
+    notesPlaceholder: 'Optional: competitor pages, anchor restrictions, etc.',
   },
   uk: {
     loading: 'Завантаження вашого замовлення...',
@@ -82,6 +85,10 @@ const content = {
     loadError: 'Не вдалося завантажити деталі замовлення. Спробуйте ще раз або зверніться до підтримки.',
     saveError: 'Не вдалося зберегти вимоги. Спробуйте ще раз або зверніться до підтримки.',
     back: 'Назад',
+    targetUrlPlaceholder: 'https://example.com/page',
+    anchorPlaceholder: 'найкраще CRM програмне забезпечення',
+    nichePlaceholder: 'напр. SaaS, Маркетинг, Фінанси',
+    notesPlaceholder: 'Необов\\u2019язково: сторінки конкурентів, обмеження якорів тощо.',
   },
 } as const;
 
@@ -111,8 +118,6 @@ function isComplete(r: RequirementForm): boolean {
 
 export default function OrderRequirementsPage() {
   const { token } = useParams<{ token: string }>();
-  const { locale, localizePath: lp } = useLocale();
-  const c = content[locale];
   const [state, setState] = useState<PageState>('loading');
   const [orderNumber, setOrderNumber] = useState('');
   const [placements, setPlacements] = useState<PlacementSection[]>([]);
@@ -121,6 +126,10 @@ export default function OrderRequirementsPage() {
   const [successMsg, setSuccessMsg] = useState('');
   const [allComplete, setAllComplete] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
+  const [orderLocale, setOrderLocale] = useState<'en' | 'uk'>('en');
+
+  const c = content[orderLocale];
+  const lp = (path: string) => orderLocale === 'uk' ? `/uk${path === '/' ? '' : path}` : path;
 
   const fetchOrder = useCallback(async () => {
     if (!token) {
@@ -168,6 +177,7 @@ export default function OrderRequirementsPage() {
       });
 
       setForms(builtForms);
+      setOrderLocale(data.locale === 'uk' ? 'uk' : 'en');
       setState('form');
     } catch {
       setState('error');
@@ -393,22 +403,22 @@ export default function OrderRequirementsPage() {
                   <div className="grid sm:grid-cols-2 gap-2.5 mb-3">
                     <div>
                       <label className={labelCls}>{c.targetUrl}</label>
-                      <input type="url" value={form?.targetUrl || ''} onChange={(e) => updateForm(idx, { targetUrl: e.target.value })} placeholder="https://example.com/page" disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
+                      <input type="url" value={form?.targetUrl || ''} onChange={(e) => updateForm(idx, { targetUrl: e.target.value })} placeholder={c.targetUrlPlaceholder} disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                     </div>
                     <div>
                       <label className={labelCls}>{c.anchorText}</label>
-                      <input type="text" value={form?.anchor || ''} onChange={(e) => updateForm(idx, { anchor: e.target.value })} placeholder="best crm software" disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
+                      <input type="text" value={form?.anchor || ''} onChange={(e) => updateForm(idx, { anchor: e.target.value })} placeholder={c.anchorPlaceholder} disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                     </div>
                   </div>
 
                   <div className="mb-3">
                     <label className={labelCls}>{c.niche}</label>
-                    <input type="text" value={form?.niche || ''} onChange={(e) => updateForm(idx, { niche: e.target.value })} placeholder="e.g. SaaS, Marketing, Finance" disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
+                    <input type="text" value={form?.niche || ''} onChange={(e) => updateForm(idx, { niche: e.target.value })} placeholder={c.nichePlaceholder} disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                   </div>
 
                   <div className="mb-3">
                     <label className={labelCls}>{c.notes}</label>
-                    <input type="text" value={form?.notes || ''} onChange={(e) => updateForm(idx, { notes: e.target.value })} placeholder="Optional: competitor pages, anchor restrictions, etc." disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
+                    <input type="text" value={form?.notes || ''} onChange={(e) => updateForm(idx, { notes: e.target.value })} placeholder={c.notesPlaceholder} disabled={form?.willProvideLater || submitting} className={`${inputCls} ${form?.willProvideLater ? 'opacity-50' : ''}`} />
                   </div>
 
                   <label className="flex items-center gap-2 text-xs text-ink/40 cursor-pointer">
