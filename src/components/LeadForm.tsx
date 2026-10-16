@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
+import Turnstile from './Turnstile';
 import { trackLeadConversion } from '../lib/gtag';
 import { useLocale } from '../context/LocaleContext';
 
@@ -40,6 +41,7 @@ export default function LeadForm({ defaultService, variant = 'default' }: LeadFo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [honeypot, setHoneypot] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const serviceIds = contact ? ['link-building', 'seo', 'digital-marketing', 'everything', 'not-sure'] as const : ['guest-posting','niche-edits','crowd-links','link-packages','seo-audit','ai-llm','local-seo'] as const;
   const serviceLabels: Record<string, string> = contact
@@ -85,6 +87,7 @@ export default function LeadForm({ defaultService, variant = 'default' }: LeadFo
         packageDetails: details,
         source: 'vladenza.com',
         _ts: Date.now() - 5000,
+        turnstileToken,
       }),
     });
 
@@ -123,6 +126,7 @@ export default function LeadForm({ defaultService, variant = 'default' }: LeadFo
           {contact && <div><label className={labelCls}>{locale === 'uk' ? 'ЩО ВІДБУВАЄТЬСЯ?' : "WHAT'S GOING ON?"}</label><textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder={locale === 'uk' ? 'Коротко — достатньо.' : 'The short version is fine.'} rows={3} className={`${inputCls} resize-none`} /></div>}
           {!contact && <><div><p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-gray-500">{t['form.selectService']}</p><div className="flex flex-wrap gap-2">{serviceIds.map((id) => <button key={id} type="button" onClick={() => setService(service === id ? '' : id)} className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all ${service === id ? 'border-[#F97316] bg-[#F97316] text-white' : 'border-gray-200 bg-white text-gray-600 hover:border-[#F97316]/50 hover:text-[#F97316]'}`}>{serviceLabels[id]}</button>)}</div></div><div className="grid grid-cols-2 gap-3"><div><label className={labelCls}>{t['form.whatsapp']}</label><input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder={t['form.whatsappPlaceholder']} className={inputCls} /></div><div><label className={labelCls}>{t['form.telegram']}</label><input type="text" value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder={t['form.telegramPlaceholder']} className={inputCls} /></div></div><div><label className={labelCls}>{t['form.budget']}</label><select value={budget} onChange={(e) => setBudget(e.target.value)} className={`${inputCls} cursor-pointer`}><option value="">{t['form.budgetPlaceholder']}</option>{budgetOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></div></>}
           {error && <p className={contact ? 'border-l-2 border-red-500 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700' : 'rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-500'}>{error}</p>}
+          <Turnstile onToken={setTurnstileToken} className={contact ? '' : 'px-6'} />
           <button type="submit" disabled={loading} className={contact ? 'editorial-focus mt-1 inline-flex min-h-14 w-full items-center justify-center gap-2 bg-signal px-5 text-sm font-bold text-white transition-colors hover:bg-[#EA580C] disabled:opacity-70' : 'group mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-[#F97316] py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#ea6c0a] hover:shadow-lg hover:shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-70'}>{loading ? t['form.sending'] : (contact ? (locale === 'uk' ? 'НАДІСЛАТИ' : 'SEND IT') : t['form.submit'])}{!loading && <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />}</button>
           {!contact && <p className="-mt-1 text-center text-xs text-gray-400">{t['form.noSpam']} <a href="#" className="text-[#F97316] hover:underline">{t['form.privacyPolicy']}</a></p>}
         </form>

@@ -103,6 +103,53 @@ function jsonResponse(body: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
 
+// ── Turnstile verification ──
+async function verifyTurnstile(token: string, remoteip?: string): Promise<boolean> {
+  const secret = Deno.env.get("TURNSTILE_SECRET_KEY");
+  if (!secret) return true; // fail open when not configured
+
+  const formData = new FormData();
+  formData.append("secret", secret);
+  formData.append("response", token);
+  if (remoteip) formData.append("remoteip", remoteip);
+
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
+
+// ── Persistent rate limiting via Supabase ──
+async function checkRateLimit(
+  supabase: ReturnType<typeof createClient>,
+  endpoint: string,
+  identifier: string,
+  limit: number,
+  windowMs: number,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("check_rate_limit", {
+    p_endpoint: endpoint,
+    p_identifier: identifier,
+    p_limit: limit,
+    p_window_ms: windowMs,
+  });
+  if (error) {
+    console.error("Rate limit check failed:", error.message);
+    return true; // fail open — don't block legitimate customers if DB is down
+  }
+  return data === true;
+}
+
+function getClientIp(req: Request): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
 function buildCheckoutData(order: StoredOrder, merchantLogin: string, merchantSecret: string, requirementsToken: string) {
   const items = Array.isArray(order.order_items) ? order.order_items : [];
   const productNames = items.map((item) => item.name || item.productId);
@@ -156,7 +203,9 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json() as Record<string, unknown>;
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const clientIp = getClientIp(req);
 
+    // ── Status check (no Turnstile needed, lightweight) ──
     if (body.action === "status") {
       const orderRef = typeof body.orderRef === "string" ? body.orderRef : "";
       const checkoutAttemptId = typeof body.checkoutAttemptId === "string" ? body.checkoutAttemptId : "";
@@ -169,7 +218,11 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({ success: true, status });
     }
 
+    // ── Promo validation (rate limited, no Turnstile) ──
     if (body.action === "validate_promo") {
+      const allowed = await checkRateLimit(supabase, "promo", clientIp, 10, 60_000);
+      if (!allowed) return jsonResponse({ error: "too_many_requests" }, 429);
+
       const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : "";
       const items = Array.isArray(body.items) ? body.items as CartItemInput[] : [];
       if (!promoCode) return jsonResponse({ valid: false, error: "empty_code" }, 400);
@@ -199,6 +252,7 @@ Deno.serve(async (req: Request) => {
       return jsonResponse(promoResult as Record<string, unknown>);
     }
 
+    // ── Payment creation (rate limited + Turnstile) ──
     const currency = typeof body.currency === "string" ? body.currency.toUpperCase() : "USD";
     const checkoutAttemptId = typeof body.checkoutAttemptId === "string" ? body.checkoutAttemptId : "";
     const name = typeof body.name === "string" ? body.name : "";
@@ -208,6 +262,17 @@ Deno.serve(async (req: Request) => {
     const type = typeof body.type === "string" ? body.type : "payment";
     const items = Array.isArray(body.items) ? body.items as CartItemInput[] : [];
     const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : "";
+    const locale = typeof body.locale === "string" ? body.locale : "en";
+    const turnstileToken = typeof body.turnstileToken === "string" ? body.turnstileToken : "";
+
+    // Rate limit: max 5 checkout attempts per minute per IP
+    const allowed = await checkRateLimit(supabase, "checkout", clientIp, 5, 60_000);
+    if (!allowed) return jsonResponse({ error: "too_many_requests" }, 429);
+
+    // Turnstile verification
+    if (!turnstileToken) return jsonResponse({ error: "Bot verification required" }, 400);
+    const turnstileValid = await verifyTurnstile(turnstileToken, clientIp);
+    if (!turnstileValid) return jsonResponse({ error: "Bot verification failed" }, 403);
 
     if (!checkoutAttemptId || checkoutAttemptId.length < 20 || checkoutAttemptId.length > 100) return jsonResponse({ error: "Invalid checkout attempt" }, 400);
     if (currency !== "USD") return jsonResponse({ error: "Unsupported currency" }, 400);
@@ -292,6 +357,7 @@ Deno.serve(async (req: Request) => {
       email,
       website,
       company,
+      locale: locale === "uk" ? "uk" : "en",
       message: typeof body.message === "string" ? body.message : "",
       status: "pending_payment",
       order_status: "pending_payment",

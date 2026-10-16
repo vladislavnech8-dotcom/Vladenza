@@ -12,6 +12,51 @@ function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
+function getClientIp(req: Request): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
+async function checkRateLimit(
+  supabase: ReturnType<typeof createClient>,
+  endpoint: string,
+  identifier: string,
+  limit: number,
+  windowMs: number,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("check_rate_limit", {
+    p_endpoint: endpoint,
+    p_identifier: identifier,
+    p_limit: limit,
+    p_window_ms: windowMs,
+  });
+  if (error) {
+    console.error("Rate limit check failed:", error.message);
+    return true;
+  }
+  return data === true;
+}
+
+async function verifyTurnstile(token: string, remoteip?: string): Promise<boolean> {
+  const secret = Deno.env.get("TURNSTILE_SECRET_KEY");
+  if (!secret) return true; // fail open when not configured
+
+  const formData = new FormData();
+  formData.append("secret", secret);
+  formData.append("response", token);
+  if (remoteip) formData.append("remoteip", remoteip);
+
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
+
 interface OrderItem {
   productId: string;
   name: string;
@@ -31,7 +76,6 @@ interface RequirementEntry {
   packageLabel?: string;
 }
 
-/** Build the full list of placement slots from order_items. */
 function buildPlacements(orderItems: OrderItem[]): { placementId: string; packageLabel: string; productId: string }[] {
   return orderItems.flatMap((item, itemIdx) => {
     const sections = [];
@@ -50,10 +94,9 @@ function buildPlacements(orderItems: OrderItem[]): { placementId: string; packag
 function isComplete(r: RequirementEntry): boolean {
   return !r.willProvideLater &&
     !!r.targetUrl?.trim() &&
-    !!r.anchor?.trim();
+    (!!r.anchor?.trim() || !!r.letVladenzaRecommend);
 }
 
-/** Compute requirements_status and order_status from the requirements array. */
 function computeStatus(requirements: RequirementEntry[], placementCount: number) {
   if (requirements.length === 0) {
     return { requirementsStatus: "pending", orderStatus: "requirements_pending" };
@@ -71,7 +114,6 @@ function computeStatus(requirements: RequirementEntry[], placementCount: number)
   return { requirementsStatus: "partial", orderStatus: "requirements_pending" };
 }
 
-/** Merge incoming requirements into existing ones by placementId. */
 function mergeRequirements(
   existing: RequirementEntry[],
   incoming: RequirementEntry[],
@@ -88,7 +130,6 @@ function mergeRequirements(
     const existingEntry = existingMap.get(pid);
 
     if (incomingEntry) {
-      // Customer submitted this one — use the new data
       result.push({
         placementId: pid,
         targetUrl: incomingEntry.targetUrl ?? "",
@@ -99,10 +140,8 @@ function mergeRequirements(
         letVladenzaRecommend: incomingEntry.letVladenzaRecommend ?? false,
       });
     } else if (existingEntry) {
-      // Not in this submission — keep existing data
       result.push(existingEntry);
     } else {
-      // No data yet — placeholder
       result.push({
         placementId: pid,
         targetUrl: "",
@@ -127,10 +166,21 @@ Deno.serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
+  const clientIp = getClientIp(req);
+
   try {
+    // Rate limit: 10 requests per minute per IP (GET is read, POST is write)
+    const allowed = await checkRateLimit(supabase, "requirements", clientIp, 10, 60_000);
+    if (!allowed) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please wait a moment." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const url = new URL(req.url);
     let token = url.searchParams.get("token");
-    let postBody: { token?: string; requirements?: RequirementEntry[] } | null = null;
+    let postBody: { token?: string; requirements?: RequirementEntry[]; turnstileToken?: string } | null = null;
 
     if (req.method === "POST" || req.method === "PATCH" || req.method === "PUT") {
       postBody = await req.json();
@@ -150,7 +200,7 @@ Deno.serve(async (req: Request) => {
       .from("orders")
       .select("id, order_number, order_status, name, email, order_items, requirements, requirements_status, amount, currency, cart_snapshot")
       .eq("requirements_token_hash", tokenHash)
-      .single();
+      .maybeSingle();
 
     if (orderError || !order) {
       return new Response(
@@ -175,7 +225,6 @@ Deno.serve(async (req: Request) => {
       placementId: requirement.placementId || placementIds[index],
     }));
 
-    // GET: return order info + existing requirements (always allow re-entry)
     if (req.method === "GET") {
       const { requirementsStatus } = computeStatus(existingRequirements, placementIds.length);
 
@@ -192,8 +241,23 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // POST / PATCH / PUT: save (or merge) requirements
     if (req.method === "POST" || req.method === "PATCH" || req.method === "PUT") {
+      // Turnstile verification for POST (form submission)
+      const turnstileToken = postBody?.turnstileToken || "";
+      if (!turnstileToken) {
+        return new Response(
+          JSON.stringify({ error: "Bot verification required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      const turnstileValid = await verifyTurnstile(turnstileToken, clientIp);
+      if (!turnstileValid) {
+        return new Response(
+          JSON.stringify({ error: "Bot verification failed" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
       const { requirements: incoming } = postBody as { requirements: RequirementEntry[] };
 
       if (!Array.isArray(incoming) || incoming.length === 0) {
@@ -211,7 +275,6 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      // Validate incoming requirements that are NOT willProvideLater
       for (const r of incoming) {
         if (!r.willProvideLater) {
           if (!r.targetUrl?.trim()) {
@@ -222,16 +285,14 @@ Deno.serve(async (req: Request) => {
           }
           if (!r.anchor?.trim() && !r.letVladenzaRecommend) {
             return new Response(
-              JSON.stringify({ error: "Preferred anchor text is required for placements not marked 'will provide later'." }),
+              JSON.stringify({ error: "Preferred anchor text is required, or select 'Let Vladenza recommend'." }),
               { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
             );
           }
         }
       }
 
-      // Merge incoming with existing by placementId
       const merged = mergeRequirements(existingRequirements, incoming, placementIds);
-
       const { requirementsStatus, orderStatus } = computeStatus(merged, placementIds.length);
 
       const { error: updateError } = await supabase

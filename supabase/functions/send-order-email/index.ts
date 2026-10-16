@@ -30,7 +30,7 @@ async function getEncryptionKey(supabase: ReturnType<typeof createClient>): Prom
     .from("app_secrets")
     .select("value")
     .eq("name", "REQUIREMENTS_TOKEN_ENCRYPTION_KEY")
-    .single();
+    .maybeSingle();
   if (error || !data) throw new Error("Encryption key not configured");
   return data.value as string;
 }
@@ -83,6 +83,112 @@ const REPLY_TO = "info@vladenza.com";
 const SUPPORT_EMAIL = "info@vladenza.com";
 const SITE_URL = "https://vladenza.com";
 
+// ─── Email content in English ───
+const en = {
+  subject: (orderNum: string) => `Order confirmed — ${orderNum} | Vladenza`,
+  greeting: (name: string) => `Hi ${name},`,
+  body1: "Thank you for your order! Your payment has been confirmed and we're ready to get started.",
+  orderNumber: "Order number:",
+  payment: "Payment:",
+  paymentConfirmed: "Confirmed",
+  whatHappensNext: "What happens next:",
+  nextStepsReceived: [
+    "We review your website and submitted requirements.",
+    "We source placements within the selected metrics.",
+    "Placements are manually checked before delivery.",
+    "You'll receive the completed links in your order report.",
+  ],
+  nextStepsPending: [
+    "Submit your target URLs and anchor text using the button below.",
+    "Vladenza reviews your requirements.",
+    "Relevant placements are sourced and manually checked.",
+    "Completed links are delivered in your order report.",
+  ],
+  reqsReceivedNote: "Your requirements have been received. Our team will review your order.",
+  addReqsBtn: "Add Order Requirements",
+  orCopyLink: "Or copy this link:",
+  questionsLine: `If you have any questions, just reply to this email or contact us at`,
+  footer: "Vladenza — Professional Link Building Services",
+  internalSubject: (orderNum: string) => `New paid order — ${orderNum}`,
+  internalReqReceived: "Received",
+  internalReqWaiting: "Waiting for customer",
+  internalRequirementsLabel: "Requirements:",
+  internalCustomerLabel: "Customer:",
+  internalEmailLabel: "Email:",
+  internalWebsiteLabel: "Website:",
+  internalCompanyLabel: "Company:",
+  internalOrderLabel: "Order:",
+  internalPaymentLabel: "Payment:",
+  internalReqDetailTitle: "Requirements Detail",
+  viewInAdmin: "View in admin dashboard",
+  tablePackage: "Package",
+  tableQty: "Qty",
+  tableUnitPrice: "Unit Price",
+  tableSubtotal: "Subtotal",
+  tableTargetUrl: "Target URL",
+  tableAnchor: "Anchor",
+  tableNotes: "Notes",
+  totalLabel: "Total",
+  totalPaidLabel: "Total Paid",
+  subtotalLabel: "Subtotal",
+  discountLabel: "Discount",
+  agencyPick: "(agency pick)",
+};
+
+// ─── Email content in Ukrainian (native, not translated from English) ───
+const uk = {
+  subject: (orderNum: string) => `Замовлення підтверджено — ${orderNum} | Vladenza`,
+  greeting: (name: string) => `Вітаємо, ${name}!`,
+  body1: "Дякуємо за замовлення! Ваш платіж підтверджено, і ми готові розпочати роботу.",
+  orderNumber: "Номер замовлення:",
+  payment: "Оплата:",
+  paymentConfirmed: "Підтверджено",
+  whatHappensNext: "Що далі:",
+  nextStepsReceived: [
+    "Ми переглядаємо ваш сайт і надіслані вимоги.",
+    "Підбираємо розміщення за обраними метриками.",
+    "Розміщення перевіряються вручну перед доставкою.",
+    "Ви отримаєте готові посилання у звіті про замовлення.",
+  ],
+  nextStepsPending: [
+    "Надішліть цільові URL та якірні тексти через кнопку нижче.",
+    "Vladenza переглядає ваші вимоги.",
+    "Відповідні розміщення підбираються та перевіряються вручну.",
+    "Готові посилання доставляються у звіті про замовлення.",
+  ],
+  reqsReceivedNote: "Ваші вимоги отримано. Наша команда перегляне ваше замовлення.",
+  addReqsBtn: "Додати вимоги до замовлення",
+  orCopyLink: "Або скопіюйте це посилання:",
+  questionsLine: "Якщо у вас є запитання — просто дайте відповідь на цей лист або напишіть нам на",
+  footer: "Vladenza — Професійні послуги з лінкбілдингу",
+  internalSubject: (orderNum: string) => `Нове оплачене замовлення — ${orderNum}`,
+  internalReqReceived: "Отримано",
+  internalReqWaiting: "Очікує на клієнта",
+  internalRequirementsLabel: "Вимоги:",
+  internalCustomerLabel: "Клієнт:",
+  internalEmailLabel: "Email:",
+  internalWebsiteLabel: "Сайт:",
+  internalCompanyLabel: "Компанія:",
+  internalOrderLabel: "Замовлення:",
+  internalPaymentLabel: "Оплата:",
+  internalReqDetailTitle: "Деталі вимог",
+  viewInAdmin: "Переглянути в адмін-панелі",
+  tablePackage: "Пакет",
+  tableQty: "К-ть",
+  tableUnitPrice: "Ціна",
+  tableSubtotal: "Сума",
+  tableTargetUrl: "Цільовий URL",
+  tableAnchor: "Якір",
+  tableNotes: "Нотатки",
+  totalLabel: "Разом",
+  totalPaidLabel: "Сплачено",
+  subtotalLabel: "Підсумок",
+  discountLabel: "Знижка",
+  agencyPick: "(підбирає агентство)",
+};
+
+type L = typeof en;
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -106,6 +212,30 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // ── Security: verify the order is actually paid before sending any email ──
+    const { data: orderCheck, error: checkError } = await supabase
+      .from("orders")
+      .select("order_status, status")
+      .eq("order_ref", orderRef)
+      .maybeSingle();
+
+    if (checkError || !orderCheck) {
+      return new Response(
+        JSON.stringify({ error: "Order not found" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const paidStatuses = ["paid", "ready_for_review", "requirements_pending", "in_progress", "completed"];
+    if (!paidStatuses.includes(orderCheck.order_status)) {
+      console.log(`Email send blocked for order ${orderRef}: order_status is '${orderCheck.order_status}', not paid`);
+      return new Response(
+        JSON.stringify({ error: "Order is not in a paid state" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Idempotency: claim the email sending atomically ──
     const { data: claimed, error: claimError } = await supabase.rpc("claim_email_sending", {
       p_order_ref: orderRef,
     });
@@ -122,7 +252,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("id, order_number, name, email, amount, currency, order_items, cart_snapshot, requirements_status, order_status, requirements_token_encrypted, original_amount, discount_amount, promo_code_snapshot, requirements, website, company")
+      .select("id, order_number, name, email, amount, currency, order_items, cart_snapshot, requirements_status, order_status, requirements_token_encrypted, original_amount, discount_amount, promo_code_snapshot, requirements, website, company, locale")
       .eq("order_ref", orderRef)
       .single();
 
@@ -133,6 +263,10 @@ Deno.serve(async (req: Request) => {
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Select language based on stored locale
+    const locale = String(order.locale || "en");
+    const L: L = locale === "uk" ? uk : en;
 
     let requirementsToken: string | null = null;
     if (order.requirements_token_encrypted) {
@@ -163,6 +297,9 @@ Deno.serve(async (req: Request) => {
     const requirementsReceived = reqStatus === "received";
     const requirements = (order.requirements || []) as PlacementRequirement[];
 
+    const firstName = escapeHtml((order.name || "").trim().split(/\s+/)[0] || (locale === "uk" ? "там" : "there"));
+    const subject = L.subject(order.order_number);
+
     const itemRowsHtml = itemsForEmail
       .map(
         (item) =>
@@ -174,19 +311,16 @@ Deno.serve(async (req: Request) => {
       .map((item) => `  ${item.name} — Qty: ${item.quantity} — $${formatMoney(item.unitPrice)} each — $${formatMoney(item.unitPrice * item.quantity)}`)
       .join("\n");
 
-    const firstName = escapeHtml((order.name || "").trim().split(/\s+/)[0] || "there");
-    const subject = `Order confirmed — ${order.order_number} | Vladenza`;
-
     // Build pricing rows
     const pricingRowsHtml = hasDiscount
-      ? `<tr><td colspan="3" style="padding:8px 0;text-align:right;font-size:14px;color:#666;">Subtotal</td><td style="padding:8px 0;text-align:right;font-size:14px;color:#666;">$${formatMoney(originalAmount)}</td></tr>
-         <tr><td colspan="3" style="padding:8px 0;text-align:right;font-size:14px;color:#F97316;font-weight:600;">Discount${promoCode ? ` (${escapeHtml(promoCode)})` : ""}</td><td style="padding:8px 0;text-align:right;font-size:14px;color:#F97316;font-weight:600;">−$${formatMoney(discountAmount)}</td></tr>
-         <tr><td colspan="3" style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">Total Paid</td><td style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">$${formatMoney(paidAmount)}</td></tr>`
-      : `<tr><td colspan="3" style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">Total</td><td style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">$${formatMoney(paidAmount)}</td></tr>`;
+      ? `<tr><td colspan="3" style="padding:8px 0;text-align:right;font-size:14px;color:#666;">${L.subtotalLabel}</td><td style="padding:8px 0;text-align:right;font-size:14px;color:#666;">$${formatMoney(originalAmount)}</td></tr>
+         <tr><td colspan="3" style="padding:8px 0;text-align:right;font-size:14px;color:#F97316;font-weight:600;">${L.discountLabel}${promoCode ? ` (${escapeHtml(promoCode)})` : ""}</td><td style="padding:8px 0;text-align:right;font-size:14px;color:#F97316;font-weight:600;">−$${formatMoney(discountAmount)}</td></tr>
+         <tr><td colspan="3" style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">${L.totalPaidLabel}</td><td style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">$${formatMoney(paidAmount)}</td></tr>`
+      : `<tr><td colspan="3" style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">${L.totalLabel}</td><td style="padding:12px 0;text-align:right;font-weight:700;font-size:15px;color:#111;">$${formatMoney(paidAmount)}</td></tr>`;
 
     const pricingRowsText = hasDiscount
-      ? `Subtotal: $${formatMoney(originalAmount)}\nDiscount${promoCode ? ` (${promoCode})` : ""}: −$${formatMoney(discountAmount)}\nTotal Paid: $${formatMoney(paidAmount)}`
-      : `Total: $${formatMoney(paidAmount)}`;
+      ? `${L.subtotalLabel}: $${formatMoney(originalAmount)}\n${L.discountLabel}${promoCode ? ` (${promoCode})` : ""}: −$${formatMoney(discountAmount)}\n${L.totalPaidLabel}: $${formatMoney(paidAmount)}`
+      : `${L.totalLabel}: $${formatMoney(paidAmount)}`;
 
     // Conditional next-steps section based on requirements status
     let nextStepsHtml: string;
@@ -194,41 +328,27 @@ Deno.serve(async (req: Request) => {
     let requirementsButtonHtml: string;
 
     if (requirementsReceived) {
-      nextStepsHtml = `<p style="font-size:15px;color:#333;margin:0 0 8px;font-weight:600;">What happens next:</p>
+      const stepsOl = L.nextStepsReceived.map((s) => `<li>${s}</li>`).join("");
+      nextStepsHtml = `<p style="font-size:15px;color:#333;margin:0 0 8px;font-weight:600;">${L.whatHappensNext}</p>
       <ol style="font-size:14px;color:#555;line-height:1.8;padding-left:20px;margin:0 0 24px;">
-        <li>We review your website and submitted requirements.</li>
-        <li>We source placements within the selected metrics.</li>
-        <li>Placements are manually checked before delivery.</li>
-        <li>You'll receive the completed links in your order report.</li>
+        ${stepsOl}
       </ol>
-      <p style="font-size:14px;color:#16a34a;font-weight:600;margin:0 0 24px;">✓ Your requirements have been received. Our team will review your order.</p>`;
-      nextStepsText = `What happens next:
-1. We review your website and submitted requirements.
-2. We source placements within the selected metrics.
-3. Placements are manually checked before delivery.
-4. You'll receive the completed links in your order report.
-
-Your requirements have been received. Our team will review your order.`;
+      <p style="font-size:14px;color:#16a34a;font-weight:600;margin:0 0 24px;">✓ ${L.reqsReceivedNote}</p>`;
+      nextStepsText = `${L.whatHappensNext}\n${L.nextStepsReceived.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n${L.reqsReceivedNote}`;
       requirementsButtonHtml = "";
     } else {
-      nextStepsHtml = `<p style="font-size:15px;color:#333;margin:0 0 8px;font-weight:600;">Next steps:</p>
+      const stepsOl = L.nextStepsPending.map((s) => `<li>${s}</li>`).join("");
+      nextStepsHtml = `<p style="font-size:15px;color:#333;margin:0 0 8px;font-weight:600;">${L.whatHappensNext}</p>
       <ol style="font-size:14px;color:#555;line-height:1.8;padding-left:20px;margin:0 0 24px;">
-        <li>Submit your target URLs and anchor text using the button below.</li>
-        <li>Vladenza reviews your requirements.</li>
-        <li>Relevant placements are sourced and manually checked.</li>
-        <li>Completed links are delivered in your order report.</li>
+        ${stepsOl}
       </ol>`;
-      nextStepsText = `Next steps:
-1. Submit your target URLs and anchor text using the link below.
-2. Vladenza reviews your requirements.
-3. Relevant placements are sourced and manually checked.
-4. Completed links are delivered in your order report.`;
+      nextStepsText = `${L.whatHappensNext}\n${L.nextStepsPending.map((s, i) => `${i + 1}. ${s}`).join("\n")}`;
       requirementsButtonHtml = `<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
         <tr><td align="center">
-          <a href="${requirementsUrl}" style="display:inline-block;background:#F97316;color:#ffffff;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">Add Order Requirements</a>
+          <a href="${requirementsUrl}" style="display:inline-block;background:#F97316;color:#ffffff;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">${L.addReqsBtn}</a>
         </td></tr>
       </table>
-      <p style="font-size:13px;color:#888;margin:0 0 4px;">Or copy this link:</p>
+      <p style="font-size:13px;color:#888;margin:0 0 4px;">${L.orCopyLink}</p>
       <p style="font-size:13px;color:#666;margin:0 0 24px;word-break:break-all;">${requirementsUrl}</p>`;
     }
 
@@ -241,33 +361,33 @@ Your requirements have been received. Our team will review your order.`;
 <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;max-width:600px;">
   <tr><td style="padding:32px 40px 8px;">
     <h1 style="font-size:22px;font-weight:700;color:#111;margin:0 0 4px;">Vladenza</h1>
-    <p style="font-size:13px;color:#888;margin:0;">Order Confirmation</p>
+    <p style="font-size:13px;color:#888;margin:0;">${locale === "uk" ? "Підтвердження замовлення" : "Order Confirmation"}</p>
   </td></tr>
   <tr><td style="padding:24px 40px;">
-    <p style="font-size:16px;color:#333;margin:0 0 16px;">Hi ${firstName},</p>
-    <p style="font-size:15px;color:#333;margin:0 0 16px;">Thank you for your order! Your payment has been confirmed and we're ready to get started.</p>
-    <p style="font-size:14px;color:#666;margin:0 0 24px;">Order number: <strong style="color:#111;">${order.order_number}</strong></p>
+    <p style="font-size:16px;color:#333;margin:0 0 16px;">${L.greeting(firstName)}</p>
+    <p style="font-size:15px;color:#333;margin:0 0 16px;">${L.body1}</p>
+    <p style="font-size:14px;color:#666;margin:0 0 24px;">${L.orderNumber} <strong style="color:#111;">${order.order_number}</strong></p>
 
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 24px;">
       <tr style="background:#f5f5f5;">
-        <th style="padding:10px 0;text-align:left;font-size:12px;color:#666;font-weight:600;padding-left:12px;">Package</th>
-        <th style="padding:10px 0;text-align:center;font-size:12px;color:#666;font-weight:600;">Qty</th>
-        <th style="padding:10px 0;text-align:right;font-size:12px;color:#666;font-weight:600;">Unit Price</th>
-        <th style="padding:10px 0;text-align:right;font-size:12px;color:#666;font-weight:600;padding-right:12px;">Subtotal</th>
+        <th style="padding:10px 0;text-align:left;font-size:12px;color:#666;font-weight:600;padding-left:12px;">${L.tablePackage}</th>
+        <th style="padding:10px 0;text-align:center;font-size:12px;color:#666;font-weight:600;">${L.tableQty}</th>
+        <th style="padding:10px 0;text-align:right;font-size:12px;color:#666;font-weight:600;">${L.tableUnitPrice}</th>
+        <th style="padding:10px 0;text-align:right;font-size:12px;color:#666;font-weight:600;padding-right:12px;">${L.tableSubtotal}</th>
       </tr>
       ${itemRowsHtml}
       ${pricingRowsHtml}
     </table>
 
-    <p style="font-size:14px;color:#333;font-weight:600;margin:0 0 12px;">Payment: <span style="color:#16a34a;">Confirmed</span></p>
+    <p style="font-size:14px;color:#333;font-weight:600;margin:0 0 12px;">${L.payment} <span style="color:#16a34a;">${L.paymentConfirmed}</span></p>
 
     ${nextStepsHtml}
     ${requirementsButtonHtml}
 
-    <p style="font-size:14px;color:#555;margin:0 0 8px;">If you have any questions, just reply to this email or contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color:#F97316;">${SUPPORT_EMAIL}</a>.</p>
+    <p style="font-size:14px;color:#555;margin:0 0 8px;">${L.questionsLine} <a href="mailto:${SUPPORT_EMAIL}" style="color:#F97316;">${SUPPORT_EMAIL}</a>.</p>
   </td></tr>
   <tr><td style="padding:24px 40px 32px;border-top:1px solid #eee;">
-    <p style="font-size:12px;color:#999;margin:0;">Vladenza — Professional Link Building Services<br>${SITE_URL}</p>
+    <p style="font-size:12px;color:#999;margin:0;">${L.footer}<br>${SITE_URL}</p>
   </td></tr>
 </table>
 </td></tr>
@@ -275,27 +395,27 @@ Your requirements have been received. Our team will review your order.`;
 </body>
 </html>`;
 
-    const textBody = `Vladenza — Order Confirmation
+    const textBody = `Vladenza — ${locale === "uk" ? "Підтвердження замовлення" : "Order Confirmation"}
 
-Hi ${firstName},
+${L.greeting(firstName)}
 
-Thank you for your order! Your payment has been confirmed and we're ready to get started.
+${L.body1}
 
-Order number: ${order.order_number}
+${L.orderNumber} ${order.order_number}
 
-Items:
+${locale === "uk" ? "Позиції:" : "Items:"}
 ${itemRowsText}
 
 ${pricingRowsText}
 
-Payment: Confirmed
+${L.payment} ${L.paymentConfirmed}
 
 ${nextStepsText}
-${requirementsReceived ? "" : `\nAdd Order Requirements: ${requirementsUrl}\n`}
+${requirementsReceived ? "" : `\n${L.addReqsBtn}: ${requirementsUrl}\n`}
 
-If you have any questions, just reply to this email or contact us at ${SUPPORT_EMAIL}.
+${L.questionsLine} ${SUPPORT_EMAIL}.
 
-Vladenza — Professional Link Building Services
+${L.footer}
 ${SITE_URL}`;
 
     if (!RESEND_API_KEY) {
@@ -331,21 +451,16 @@ ${SITE_URL}`;
       throw new Error("Failed to send customer email");
     }
 
-    // Build requirements summary for internal email
+    // Build internal (agency) email — always in English for internal team
     const targetUrls = requirements.filter((r) => r.targetUrl?.trim()).map((r) => r.targetUrl);
     const anchors = requirements.filter((r) => r.anchor?.trim()).map((r) => r.anchor);
-    const reqSummary = requirementsReceived
-      ? `Requirements: Received\nTarget URLs: ${targetUrls.length}\nAnchors: ${anchors.length} supplied`
-      : "Requirements: Waiting for customer";
-
-    const internalSubject = `New paid order — ${order.order_number}`;
-    const reqStatusInternal = requirementsReceived ? "Received" : "Waiting for customer";
+    const reqStatusInternal = requirementsReceived ? en.internalReqReceived : en.internalReqWaiting;
 
     const internalPricingRows = hasDiscount
-      ? `<tr><td colspan="2" style="padding:8px;text-align:right;font-size:13px;color:#666;">Subtotal</td><td style="padding:8px;text-align:right;font-size:13px;color:#666;">$${formatMoney(originalAmount)}</td></tr>
-         <tr><td colspan="2" style="padding:8px;text-align:right;font-size:13px;color:#F97316;">Discount${promoCode ? ` (${escapeHtml(promoCode)})` : ""}</td><td style="padding:8px;text-align:right;font-size:13px;color:#F97316;">−$${formatMoney(discountAmount)}</td></tr>
-         <tr><td colspan="2" style="padding:8px;text-align:right;font-weight:700;">Total Paid</td><td style="padding:8px;text-align:right;font-weight:700;">$${formatMoney(paidAmount)}</td></tr>`
-      : `<tr><td colspan="2" style="padding:8px;text-align:right;font-weight:700;">Total</td><td style="padding:8px;text-align:right;font-weight:700;">$${formatMoney(paidAmount)}</td></tr>`;
+      ? `<tr><td colspan="2" style="padding:8px;text-align:right;font-size:13px;color:#666;">${en.subtotalLabel}</td><td style="padding:8px;text-align:right;font-size:13px;color:#666;">$${formatMoney(originalAmount)}</td></tr>
+         <tr><td colspan="2" style="padding:8px;text-align:right;font-size:13px;color:#F97316;">${en.discountLabel}${promoCode ? ` (${escapeHtml(promoCode)})` : ""}</td><td style="padding:8px;text-align:right;font-size:13px;color:#F97316;">−$${formatMoney(discountAmount)}</td></tr>
+         <tr><td colspan="2" style="padding:8px;text-align:right;font-weight:700;">${en.totalPaidLabel}</td><td style="padding:8px;text-align:right;font-weight:700;">$${formatMoney(paidAmount)}</td></tr>`
+      : `<tr><td colspan="2" style="padding:8px;text-align:right;font-weight:700;">${en.totalLabel}</td><td style="padding:8px;text-align:right;font-weight:700;">$${formatMoney(paidAmount)}</td></tr>`;
 
     const internalHtml = `<!DOCTYPE html>
 <html><body style="margin:0;padding:0;background:#f8f8f8;font-family:sans-serif;">
@@ -354,38 +469,38 @@ ${SITE_URL}`;
 <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;max-width:600px;">
   <tr><td style="padding:32px 40px;">
     <h1 style="font-size:20px;color:#111;margin:0 0 16px;">New Paid Order</h1>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Order:</strong> ${order.order_number}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Customer:</strong> ${escapeHtml(order.name || "")}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Email:</strong> ${escapeHtml(order.email || "")}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Website:</strong> ${escapeHtml(order.website || "—")}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>Company:</strong> ${escapeHtml(order.company || "—")}</p>
-    <p style="font-size:14px;color:#333;margin:0 0 16px;"><strong>Requirements:</strong> ${reqStatusInternal}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>${en.internalOrderLabel}</strong> ${order.order_number}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>${en.internalCustomerLabel}</strong> ${escapeHtml(order.name || "")}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>${en.internalEmailLabel}</strong> ${escapeHtml(order.email || "")}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>${en.internalWebsiteLabel}</strong> ${escapeHtml(order.website || "—")}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 8px;"><strong>${en.internalCompanyLabel}</strong> ${escapeHtml(order.company || "—")}</p>
+    <p style="font-size:14px;color:#333;margin:0 0 16px;"><strong>${en.internalRequirementsLabel}</strong> ${reqStatusInternal}</p>
 
     <h2 style="font-size:15px;color:#111;margin:0 0 8px;">Items</h2>
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 16px;">
       <tr style="background:#f5f5f5;">
-        <th style="padding:8px;text-align:left;font-size:12px;color:#666;">Package</th>
-        <th style="padding:8px;text-align:center;font-size:12px;color:#666;">Qty</th>
-        <th style="padding:8px;text-align:right;font-size:12px;color:#666;">Subtotal</th>
+        <th style="padding:8px;text-align:left;font-size:12px;color:#666;">${en.tablePackage}</th>
+        <th style="padding:8px;text-align:center;font-size:12px;color:#666;">${en.tableQty}</th>
+        <th style="padding:8px;text-align:right;font-size:12px;color:#666;">${en.tableSubtotal}</th>
       </tr>
       ${itemRowsHtml}
       ${internalPricingRows}
     </table>
 
-    <p style="font-size:14px;color:#333;margin:16px 0 8px;"><strong>Payment:</strong> <span style="color:#16a34a;">PAID</span></p>
+    <p style="font-size:14px;color:#333;margin:16px 0 8px;"><strong>${en.internalPaymentLabel}</strong> <span style="color:#16a34a;">PAID</span></p>
 
-    ${requirementsReceived ? `<h2 style="font-size:15px;color:#111;margin:16px 0 8px;">Requirements Detail</h2>
+    ${requirementsReceived ? `<h2 style="font-size:15px;color:#111;margin:16px 0 8px;">${en.internalReqDetailTitle}</h2>
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 16px;font-size:13px;">
       <tr style="background:#f5f5f5;">
         <th style="padding:6px;text-align:left;">#</th>
-        <th style="padding:6px;text-align:left;">Target URL</th>
-        <th style="padding:6px;text-align:left;">Anchor</th>
-        <th style="padding:6px;text-align:left;">Notes</th>
+        <th style="padding:6px;text-align:left;">${en.tableTargetUrl}</th>
+        <th style="padding:6px;text-align:left;">${en.tableAnchor}</th>
+        <th style="padding:6px;text-align:left;">${en.tableNotes}</th>
       </tr>
-      ${requirements.map((r, i) => `<tr><td style="padding:6px;border-bottom:1px solid #eee;">${i + 1}</td><td style="padding:6px;border-bottom:1px solid #eee;word-break:break-all;">${escapeHtml(r.targetUrl || "—")}</td><td style="padding:6px;border-bottom:1px solid #eee;">${escapeHtml(r.anchor || (r.letVladenzaRecommend ? "(agency pick)" : "—"))}</td><td style="padding:6px;border-bottom:1px solid #eee;">${escapeHtml(r.notes || "—")}</td></tr>`).join("")}
+      ${requirements.map((r, i) => `<tr><td style="padding:6px;border-bottom:1px solid #eee;">${i + 1}</td><td style="padding:6px;border-bottom:1px solid #eee;word-break:break-all;">${escapeHtml(r.targetUrl || "—")}</td><td style="padding:6px;border-bottom:1px solid #eee;">${escapeHtml(r.anchor || (r.letVladenzaRecommend ? en.agencyPick : "—"))}</td><td style="padding:6px;border-bottom:1px solid #eee;">${escapeHtml(r.notes || "—")}</td></tr>`).join("")}
     </table>` : ""}
 
-    <p style="font-size:14px;margin:16px 0 0;"><a href="${SITE_URL}/admin" style="color:#F97316;">View in admin dashboard</a></p>
+    <p style="font-size:14px;margin:16px 0 0;"><a href="${SITE_URL}/admin" style="color:#F97316;">${en.viewInAdmin}</a></p>
   </td></tr>
 </table>
 </td></tr>
@@ -394,22 +509,22 @@ ${SITE_URL}`;
 
     const internalText = `New Paid Order
 
-Order: ${order.order_number}
-Customer: ${order.name}
-Email: ${order.email}
-Website: ${order.website || "—"}
-Company: ${order.company || "—"}
-Requirements: ${reqStatusInternal}
+${en.internalOrderLabel} ${order.order_number}
+${en.internalCustomerLabel} ${order.name}
+${en.internalEmailLabel} ${order.email}
+${en.internalWebsiteLabel} ${order.website || "—"}
+${en.internalCompanyLabel} ${order.company || "—"}
+${en.internalRequirementsLabel} ${reqStatusInternal}
 
 Items:
 ${itemRowsText}
 
 ${pricingRowsText}
 
-Payment: PAID
-${requirementsReceived ? `\nRequirements Detail:\n${requirements.map((r, i) => `  ${i + 1}. URL: ${r.targetUrl || "—"} | Anchor: ${r.anchor || (r.letVladenzaRecommend ? "(agency pick)" : "—")} | Notes: ${r.notes || "—"}`).join("\n")}` : ""}
+${en.internalPaymentLabel} PAID
+${requirementsReceived ? `\nRequirements Detail:\n${requirements.map((r, i) => `  ${i + 1}. URL: ${r.targetUrl || "—"} | Anchor: ${r.anchor || (r.letVladenzaRecommend ? en.agencyPick : "—")} | Notes: ${r.notes || "—"}`).join("\n")}` : ""}
 
-View in admin dashboard: ${SITE_URL}/admin`;
+${en.viewInAdmin}: ${SITE_URL}/admin`;
 
     await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -421,7 +536,7 @@ View in admin dashboard: ${SITE_URL}/admin`;
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
         to: SUPPORT_EMAIL,
         reply_to: REPLY_TO,
-        subject: internalSubject,
+        subject: en.internalSubject(order.order_number),
         html: internalHtml,
         text: internalText,
       }),

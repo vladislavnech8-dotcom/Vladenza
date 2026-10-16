@@ -8,6 +8,7 @@ import { useCheckout, type PlacementRequirement } from '../context/CheckoutConte
 import { useLocale } from '../context/LocaleContext';
 import { useSEO } from '../hooks/useSEO';
 import { payWithWayForPay, validatePromoCode, type PromoValidationResult } from '../lib/wayforpay';
+import Turnstile from '../components/Turnstile';
 import { trackEvent, trackMetaEvent } from '../lib/analytics';
 import { trackPurchaseConversion } from '../lib/gtag';
 
@@ -308,6 +309,7 @@ export default function CheckoutPage() {
   const [promoStatus, setPromoStatus] = useState<'idle' | 'checking' | 'applied' | 'error'>('idle');
   const [promoError, setPromoError] = useState('');
   const [promoValidating, setPromoValidating] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const discountAmount = promoData?.discountAmount ?? 0;
   const finalTotal = Math.max(0, Math.round((total - discountAmount) * 100) / 100);
@@ -466,6 +468,8 @@ export default function CheckoutPage() {
         requirementsStatus: data.requirementsChoice === 'later' ? 'pending' : 'provided',
         checkoutAttemptId,
         promoCode: promoData?.code || '',
+        locale,
+        turnstileToken,
       });
       setOutcome(result.outcome);
       setPaidOrderRef(result.orderRef);
@@ -888,6 +892,8 @@ export default function CheckoutPage() {
                         <Link to={lp('/refund-policy')} className="text-signal hover:underline font-bold">{c.refundPolicy}</Link>.
                       </span>
                     </label>
+
+                    <Turnstile onToken={setTurnstileToken} className="mb-1" />
 
                     <button type="submit" disabled={loading || !agreedToTerms} className="w-full flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 text-sm transition-all duration-200">
                       {loading ? <><Loader2 size={16} className="animate-spin" /> {c.openingPayment}</> : <><CreditCard size={16} /> {c.paySecurely(formatMoney(finalTotal, currency))}</>}

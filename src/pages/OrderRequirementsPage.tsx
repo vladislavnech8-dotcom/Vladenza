@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Loader2, AlertCircle, ArrowRight, Clock, ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
+import Turnstile from '../components/Turnstile';
 import { useLocale } from '../context/LocaleContext';
 
 const content = {
@@ -119,6 +120,7 @@ export default function OrderRequirementsPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [allComplete, setAllComplete] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const fetchOrder = useCallback(async () => {
     if (!token) {
@@ -198,7 +200,7 @@ export default function OrderRequirementsPage() {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ requirements: forms }),
+        body: JSON.stringify({ requirements: forms, turnstileToken }),
       });
       const data = await res.json();
 
@@ -420,6 +422,8 @@ export default function OrderRequirementsPage() {
             {errorMsg && (
               <p className="text-red-600 text-xs bg-red-50 border-2 border-red-200 px-3 py-2">{errorMsg}</p>
             )}
+
+            <Turnstile onToken={setTurnstileToken} className="mb-1" />
 
             <button type="submit" disabled={submitting} className="w-full flex items-center justify-center gap-2 bg-signal hover:bg-[#EA580C] disabled:opacity-60 text-white font-bold py-4 text-sm transition-all duration-200">
               {submitting ? <><Loader2 size={16} className="animate-spin" /> {c.saving}</> : <>{c.saveRequirements} <ArrowRight size={15} /></>}

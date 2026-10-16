@@ -124,6 +124,8 @@ export async function payWithWayForPay(params: {
   requirementsStatus?: string;
   checkoutAttemptId: string;
   promoCode?: string;
+  locale?: string;
+  turnstileToken?: string;
 }): Promise<PayResult> {
   const { data, error } = await supabase.functions.invoke('wayforpay-checkout', {
     body: {
@@ -141,6 +143,8 @@ export async function payWithWayForPay(params: {
       requirementsStatus: params.requirementsStatus,
       checkoutAttemptId: params.checkoutAttemptId,
       promoCode: params.promoCode || '',
+      locale: params.locale || 'en',
+      turnstileToken: params.turnstileToken || '',
     },
   });
 
