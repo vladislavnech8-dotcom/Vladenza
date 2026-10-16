@@ -4,10 +4,16 @@ import { useCart } from '../context/CartContext';
 import { useLocale } from '../context/LocaleContext';
 import { trackMetaEvent } from '../lib/analytics';
 
+const cartDrawerContent = {
+  en: { total: 'Total', browsePackages: 'Browse packages', continueToReqs: 'Continue to Requirements', items: 'items', item: 'item' },
+  uk: { total: 'Разом', browsePackages: 'Переглянути пакети', continueToReqs: 'Продовжити до вимог', items: 'товарів', item: 'товар' },
+};
+
 export default function CartDrawer() {
   const { items, total, itemCount, isOpen, closeCart, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
-  const { t, localizePath: lp } = useLocale();
+  const { t, localizePath: lp, locale } = useLocale();
+  const dc = cartDrawerContent[locale];
 
   if (!isOpen) return null;
 
@@ -26,7 +32,7 @@ export default function CartDrawer() {
             <ShoppingBag size={18} className="text-[#F97316]" />
             <span className="font-bold text-gray-900">{t['nav.openCart']}</span>
             {itemCount > 0 && (
-              <span className="text-xs font-semibold text-gray-400">({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
+              <span className="text-xs font-semibold text-gray-400">({itemCount} {itemCount === 1 ? dc.item : dc.items})</span>
             )}
           </div>
           <button onClick={closeCart} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
@@ -43,7 +49,7 @@ export default function CartDrawer() {
               onClick={closeCart}
               className="text-sm font-semibold text-[#F97316] hover:underline"
             >
-              Browse packages
+              {dc.browsePackages}
             </button>
           </div>
         ) : (
@@ -91,7 +97,7 @@ export default function CartDrawer() {
             {/* Footer */}
             <div className="border-t border-gray-100 px-5 py-4">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-gray-500">Total</span>
+                <span className="text-sm font-semibold text-gray-500">{dc.total}</span>
                 <span className="text-xl font-black text-gray-900">${total.toLocaleString()}</span>
               </div>
               <button
@@ -109,7 +115,7 @@ export default function CartDrawer() {
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 hover:shadow-lg hover:shadow-orange-200"
               >
-                {lp('/checkout') === '/checkout' ? 'Continue to Requirements' : 'Продовжити до вимог'} <ArrowRight size={15} />
+                {dc.continueToReqs} <ArrowRight size={15} />
               </button>
             </div>
           </>

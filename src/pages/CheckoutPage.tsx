@@ -64,7 +64,7 @@ const content = {
     campaignPlaceholder: 'Competitors, preferred pages, anchor restrictions, niche requirements, countries, or anything else we should know.',
     laterInfo: "You'll be able to add requirements after payment. We'll also email you a link to submit them.",
     editCart: 'Edit Cart',
-    continueToReview: 'Continue to Review',
+    continueToReview: 'Continue',
     reviewOrder: 'Review Your Order',
     orderItems: 'Order Items',
     qty: 'Qty',
@@ -158,7 +158,7 @@ const content = {
     campaignPlaceholder: 'Конкуренти, бажані сторінки, обмеження якорів, вимоги до ніши, країни чи будь-що інше, що нам варто знати.',
     laterInfo: 'Ви зможете додати вимоги після оплати. Ми також надішлемо вам email посилання для їх надсилання.',
     editCart: 'Редагувати кошик',
-    continueToReview: 'Продовжити до перевірки',
+    continueToReview: 'Продовжити',
     reviewOrder: 'Перевірте ваше замовлення',
     orderItems: 'Позиції замовлення',
     qty: 'К-ть',
@@ -315,11 +315,19 @@ export default function CheckoutPage() {
   const finalTotal = Math.max(0, Math.round((total - discountAmount) * 100) / 100);
 
   const placementReqs = useMemo<PlacementRequirement[]>(() => {
-    if (data.placementRequirements.length > 0) return data.placementRequirements;
+    const validKeys = new Set<string>();
+    for (const item of items) {
+      for (let i = 0; i < item.quantity; i++) {
+        validKeys.add(`${item.productId}-${i}`);
+      }
+    }
+    const filtered = data.placementRequirements.filter((r) => validKeys.has(r.cartItemId));
+    if (filtered.length === validKeys.size && filtered.length > 0) return filtered;
     const reqs: PlacementRequirement[] = [];
     for (const item of items) {
       for (let i = 0; i < item.quantity; i++) {
-        reqs.push({
+        const existing = data.placementRequirements.find((r) => r.cartItemId === `${item.productId}-${i}`);
+        reqs.push(existing || {
           cartItemId: `${item.productId}-${i}`,
           packageLabel: item.name,
           targetUrl: '',
@@ -343,13 +351,13 @@ export default function CheckoutPage() {
           <p className="text-ink/40 text-sm mb-5">{c.cartEmpty}</p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link to={lp('/services/niche-edits')} className="inline-flex items-center gap-2 bg-signal hover:bg-[#EA580C] text-white font-bold px-5 py-3 text-sm transition-colors">
-              Link Insertions <ArrowRight size={15} />
+              {locale === 'uk' ? 'Розміщення посилань' : 'Link Insertions'} <ArrowRight size={15} />
             </Link>
             <Link to={lp('/services/guest-posting')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
-              Guest Posting
+              {locale === 'uk' ? 'Гостьові публікації' : 'Guest Posting'}
             </Link>
             <Link to={lp('/services/crowd-links')} className="inline-flex items-center gap-2 border-2 border-ink text-ink hover:bg-ink hover:text-white font-bold px-5 py-3 text-sm transition-colors">
-              Crowd Marketing
+              {locale === 'uk' ? 'Крауд-маркетинг' : 'Crowd Marketing'}
             </Link>
           </div>
         </div>

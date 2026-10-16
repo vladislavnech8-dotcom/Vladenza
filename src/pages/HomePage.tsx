@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, Check, ChevronDown, Eye, Link2, Search, ClipboardCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import FAQ from '../components/FAQ';
@@ -24,6 +24,7 @@ function DecorativeChart({ color }: { color: string }) {
 
 export default function HomePage() {
   const { locale, localizePath: lp } = useLocale();
+  const navigate = useNavigate();
   const c = homePageContent[locale];
   const [activeType, setActiveType] = useState<PlacementServiceType>('guest_post');
   const [placements, setPlacements] = useState<Placement[]>([]);
@@ -50,7 +51,7 @@ export default function HomePage() {
               <span className="mt-2 block w-full text-signal sm:mt-1">{c.hero.h1Second}</span>
             </h1>
             <div className="mt-8 flex w-full max-w-[360px] flex-col items-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
-              <Link to={lp('/#services')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-signal px-6 text-base font-bold text-white transition-colors hover:bg-[#EA580C] sm:w-auto sm:min-w-[170px] lg:min-h-[56px] lg:px-8">{c.hero.pricing}<ArrowRight size={18} /></Link>
+              <button onClick={() => { const el = document.getElementById('services'); if (el) el.scrollIntoView({ behavior: 'smooth' }); else navigate(lp('/')); }} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-signal px-6 text-base font-bold text-white transition-colors hover:bg-[#EA580C] sm:w-auto sm:min-w-[170px] lg:min-h-[56px] lg:px-8">{c.hero.pricing}<ArrowRight size={18} /></button>
               <Link to={lp('/placements')} className="editorial-focus inline-flex min-h-[54px] w-full items-center justify-center gap-2 bg-[#FFFDF8] px-6 text-base font-bold text-navy transition-colors hover:bg-white sm:w-auto sm:min-w-[230px] lg:min-h-[56px] lg:px-8">{c.hero.placements}<ArrowRight size={18} /></Link>
             </div>
           </div>

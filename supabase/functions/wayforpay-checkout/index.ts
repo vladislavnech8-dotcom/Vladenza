@@ -40,6 +40,7 @@ interface StoredOrder {
   promo_code_id: string | null;
   discount_amount: number;
   original_amount: number;
+  locale?: string;
 }
 
 function hmacMd5(key: string, data: string): string {
@@ -150,7 +151,7 @@ function getClientIp(req: Request): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip")?.trim() || "unknown";
 }
 
-function buildCheckoutData(order: StoredOrder, merchantLogin: string, merchantSecret: string, requirementsToken: string) {
+function buildCheckoutData(order: StoredOrder, merchantLogin: string, merchantSecret: string, requirementsToken: string, orderLocale: string) {
   const items = Array.isArray(order.order_items) ? order.order_items : [];
   const productNames = items.map((item) => item.name || item.productId);
   const productCounts = items.map((item) => Number(item.quantity));
@@ -191,7 +192,7 @@ function buildCheckoutData(order: StoredOrder, merchantLogin: string, merchantSe
       clientLastName: nameParts.slice(1).join(" ") || "-",
       clientEmail: order.email,
       clientPhone: "000000000000",
-      language: "EN",
+      language: orderLocale === "uk" ? "UA" : "EN",
       serviceUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/wayforpay-webhook`,
     },
   };
@@ -269,8 +270,7 @@ Deno.serve(async (req: Request) => {
     const allowed = await checkRateLimit(supabase, "checkout", clientIp, 5, 60_000);
     if (!allowed) return jsonResponse({ error: "too_many_requests" }, 429);
 
-    // Turnstile verification
-    if (!turnstileToken) return jsonResponse({ error: "Bot verification required" }, 400);
+    // Turnstile verification (fail open when not configured — verifyTurnstile returns true if no secret is set)
     const turnstileValid = await verifyTurnstile(turnstileToken, clientIp);
     if (!turnstileValid) return jsonResponse({ error: "Bot verification failed" }, 403);
 
@@ -329,13 +329,13 @@ Deno.serve(async (req: Request) => {
 
     const amount = Math.round((originalAmount - discountAmount) * 100) / 100;
 
-    const orderFields = "order_ref, order_number, order_status, amount, currency, name, email, order_items, requirements_token_encrypted, promo_code_id, discount_amount, original_amount";
+    const orderFields = "order_ref, order_number, order_status, amount, currency, name, email, order_items, requirements_token_encrypted, promo_code_id, discount_amount, original_amount, locale";
     const { data: existingOrder } = await supabase.from("orders").select(orderFields).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
     if (existingOrder) {
       if (existingOrder.order_status !== "pending_payment") return jsonResponse({ error: "Checkout attempt already completed" }, 409);
       if (Number(existingOrder.amount) !== amount || String(existingOrder.currency).toUpperCase() !== currency) return jsonResponse({ error: "Checkout attempt does not match cart" }, 409);
       const requirementsToken = await decryptToken(existingOrder.requirements_token_encrypted, await getEncryptionKey(supabase));
-      return jsonResponse(buildCheckoutData({ ...existingOrder, order_items: existingOrder.order_items as CartItemInput[] }, merchantLogin, merchantSecret, requirementsToken));
+      return jsonResponse(buildCheckoutData({ ...existingOrder, order_items: existingOrder.order_items as CartItemInput[] }, merchantLogin, merchantSecret, requirementsToken, existingOrder.locale || locale));
     }
 
     const requirementsToken = generateToken();
@@ -385,7 +385,7 @@ Deno.serve(async (req: Request) => {
         const { data: racedOrder } = await supabase.from("orders").select(orderFields).eq("checkout_attempt_id", checkoutAttemptId).maybeSingle();
         if (racedOrder && racedOrder.order_status === "pending_payment" && Number(racedOrder.amount) === amount) {
           const racedToken = await decryptToken(racedOrder.requirements_token_encrypted, await getEncryptionKey(supabase));
-          return jsonResponse(buildCheckoutData({ ...racedOrder, order_items: racedOrder.order_items as CartItemInput[] }, merchantLogin, merchantSecret, racedToken));
+          return jsonResponse(buildCheckoutData({ ...racedOrder, order_items: racedOrder.order_items as CartItemInput[] }, merchantLogin, merchantSecret, racedToken, locale));
         }
       }
       console.error("wayforpay-checkout insert failed", insertError);
@@ -413,7 +413,8 @@ Deno.serve(async (req: Request) => {
       promo_code_id: promoCodeId,
       discount_amount: discountAmount,
       original_amount: originalAmount,
-    }, merchantLogin, merchantSecret, requirementsToken));
+      locale: locale === "uk" ? "uk" : "en",
+    }, merchantLogin, merchantSecret, requirementsToken, locale));
   } catch (err) {
     console.error("wayforpay-checkout error", err);
     return jsonResponse({ error: "Could not start checkout" }, 500);
