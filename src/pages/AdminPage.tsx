@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { supabase, SeoSettings, SeoRevision } from '../lib/supabase';
+import { supabase, SeoSettings } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Save, RefreshCw, Globe, Share2, Search, Code2, ChevronDown, CheckCircle2, AlertCircle, Layers, ExternalLink, FileText, Plus, Trash2, Eye, EyeOff, CreditCard as Edit3, ArrowLeft, Tag, Clock, Image, AlignLeft, List, Hash, Quote, Table2, Lightbulb, X, ChevronUp, ChevronRight, Briefcase, Link2, Loader2, LayoutGrid, Package, Users } from 'lucide-react';
 import { fetchAllPlacements, PLACEMENT_NICHE_PRESETS, type Placement, type PlacementServiceType, type PlacementStatus } from '../data/placements';
@@ -1252,7 +1252,6 @@ const SEO_TABS: { id: SeoTab; label: string; icon: React.ReactNode }[] = [
   { id: 'basic', label: 'Basic', icon: <Search size={15} /> },
   { id: 'opengraph', label: 'Open Graph', icon: <Share2 size={15} /> },
   { id: 'advanced', label: 'Advanced', icon: <Code2 size={15} /> },
-  { id: 'revisions', label: 'Revisions', icon: <Layers size={15} /> },
 ];
 
 function SeoPanel({ userId }: { userId: string }) {
@@ -1267,12 +1266,10 @@ function SeoPanel({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [revisions, setRevisions] = useState<SeoRevision[]>([]);
-  const [creatingRevision, setCreatingRevision] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   useEffect(() => { fetchSettings(selectedPage, selectedLocale); }, [selectedPage, selectedLocale]);
-  useEffect(() => { fetchRevisions(); }, []);
 
   const handlePageChange = (page: string) => {
     if (dirty && !confirm('You have unsaved changes. Switch pages?')) return;
@@ -1297,11 +1294,6 @@ function SeoPanel({ userId }: { userId: string }) {
     setDirty(false);
   };
 
-  const fetchRevisions = async () => {
-    const { data } = await supabase.from('seo_revisions').select('*').order('number', { ascending: false }).limit(20);
-    if (data) setRevisions(data as SeoRevision[]);
-  };
-
   const showToast = (type: 'success' | 'error', message: string) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 3500);
@@ -1320,42 +1312,7 @@ function SeoPanel({ userId }: { userId: string }) {
     }
     setSaving(false);
     if (error) showToast('error', error.message || 'Error saving');
-    else { showToast('success', 'Draft saved'); setDirty(false); }
-  };
-
-  const handleCreateRevision = async () => {
-    if (dirty && !confirm('You have unsaved draft changes. Save before creating a revision?')) return;
-    setCreatingRevision(true);
-    const { data, error } = await supabase.rpc('create_seo_revision');
-    setCreatingRevision(false);
-    if (error) { showToast('error', error.message); return; }
-    if (data) showToast('success', `Revision #${(data as { revision_number: number }).revision_number} created. Build and verify to activate.`);
-    fetchRevisions();
-  };
-
-  const handleActivate = async (revId: string) => {
-    const { error } = await supabase.rpc('activate_seo_revision', { p_revision_id: revId, p_html_hash: null });
-    if (error) showToast('error', error.message);
-    else { showToast('success', 'Revision activated'); fetchRevisions(); }
-  };
-
-  const handleFail = async (revId: string) => {
-    const { error } = await supabase.rpc('fail_seo_revision', { p_revision_id: revId, p_reason: 'Manually failed by admin' });
-    if (error) showToast('error', error.message);
-    else { showToast('success', 'Revision failed'); fetchRevisions(); }
-  };
-
-  const handleCancel = async (revId: string) => {
-    const { error } = await supabase.rpc('cancel_pending_revision', { p_revision_id: revId });
-    if (error) showToast('error', error.message);
-    else { showToast('success', 'Pending revision cancelled'); fetchRevisions(); }
-  };
-
-  const handleRollback = async (revId: string) => {
-    if (!confirm('Rollback to this revision? You will need to rebuild and redeploy to update the live HTML.')) return;
-    const { error } = await supabase.rpc('rollback_seo_revision', { p_target_revision_id: revId });
-    if (error) showToast('error', error.message);
-    else { showToast('success', 'Rolled back. Rebuild to update live HTML.'); fetchRevisions(); }
+    else { showToast('success', 'Saved to database — live for site visitors'); setDirty(false); setLastSavedAt(new Date().toISOString()); }
   };
 
   const update = (field: keyof SeoSettings, value: string) => { setSettings(prev => ({ ...prev, [field]: value })); setDirty(true); };
@@ -1364,35 +1321,22 @@ function SeoPanel({ userId }: { userId: string }) {
   const titleColor = titleLen === 0 ? 'text-gray-400' : titleLen <= 60 ? 'text-emerald-600' : 'text-amber-500';
   const descColor = descLen === 0 ? 'text-gray-400' : descLen <= 160 ? 'text-emerald-600' : 'text-amber-500';
 
-  const pendingRevision = revisions.find(r => r.status === 'pending');
-  const activeRevision = revisions.find(r => r.status === 'active');
   const pageUrl = selectedPage === 'home' ? 'vladenza.com' : `vladenza.com/${selectedPage}`;
-
-  const statusBadge = (status: SeoRevision['status']) => {
-    const styles: Record<string, string> = {
-      pending: 'text-amber-700 bg-amber-50 border-amber-200',
-      active: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-      failed: 'text-red-700 bg-red-50 border-red-200',
-      superseded: 'text-gray-500 bg-gray-100 border-gray-200',
-      cancelled: 'text-gray-500 bg-gray-100 border-gray-200',
-    };
-    return <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${styles[status] ?? styles.superseded}`}>{status}</span>;
-  };
 
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">SEO Settings</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage metadata, create revisions, and deploy</p>
+          <p className="text-sm text-gray-500 mt-0.5">Edit page metadata — saved changes are live immediately for site visitors</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => { fetchSettings(selectedPage, selectedLocale); fetchRevisions(); }} disabled={loading} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-white border border-transparent hover:border-gray-200 transition">
+          <button onClick={() => fetchSettings(selectedPage, selectedLocale)} disabled={loading} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-white border border-transparent hover:border-gray-200 transition">
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button onClick={handleSave} disabled={saving || loading} className="flex items-center gap-2 bg-gray-900 text-white text-sm px-4 py-2 rounded-xl hover:bg-gray-800 transition disabled:opacity-50">
             {saving ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={14} />}
-            Save Draft
+            Save
           </button>
         </div>
       </div>
@@ -1426,16 +1370,16 @@ function SeoPanel({ userId }: { userId: string }) {
         {dirty && (
           <span className="text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg px-2.5 py-1">Unsaved changes</span>
         )}
-        {pendingRevision && (
-          <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1">
-            Pending revision #{pendingRevision.number} — build & verify to activate
-          </span>
+        {!dirty && settingsId && (
+          <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1">Saved to database</span>
         )}
-        {activeRevision && !pendingRevision && (
-          <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1">
-            Active revision #{activeRevision.number}
-          </span>
-        )}
+      </div>
+
+      <div className="bg-blue-50 rounded-xl border border-blue-100 p-3 mb-4 flex items-start gap-2.5">
+        <CheckCircle2 size={15} className="text-blue-500 flex-shrink-0 mt-0.5" />
+        <div className="text-xs text-blue-700">
+          <span className="font-semibold">Saved = live for visitors navigating the site.</span> Changes take effect immediately for anyone browsing vladenza.com. Search engines see updated metadata in prerendered HTML after the next site rebuild (a git push triggers this automatically).
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
@@ -1520,103 +1464,7 @@ function SeoPanel({ userId }: { userId: string }) {
                   })()}
                 </div>
               )}
-              {activeTab === 'revisions' && (
-                <div className="space-y-5">
-                  {/* Create revision */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">Create New Revision</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Snapshots all draft SEO settings into an immutable revision for deployment.</p>
-                    </div>
-                    <button onClick={handleCreateRevision} disabled={creatingRevision || !!pendingRevision}
-                      className="flex items-center gap-2 bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-40 disabled:cursor-not-allowed">
-                      {creatingRevision ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus size={14} />}
-                      Create Revision
-                    </button>
-                  </div>
-                  {pendingRevision && (
-                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-sm text-amber-800">
-                      <p className="font-semibold mb-1">Revision #{pendingRevision.number} is pending deployment</p>
-                      <p className="text-xs">1. Build the site (the prerender script will use this revision's metadata).</p>
-                      <p className="text-xs">2. Deploy to Netlify.</p>
-                      <p className="text-xs">3. Verify the deployed HTML, then click "Activate" below.</p>
-                      <div className="flex gap-2 mt-3">
-                        <button onClick={() => handleActivate(pendingRevision.id)} className="text-xs font-semibold text-white bg-emerald-600 px-3 py-1.5 rounded-lg hover:bg-emerald-700">Activate</button>
-                        <button onClick={() => handleCancel(pendingRevision.id)} className="text-xs font-semibold text-gray-600 bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50">Cancel</button>
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Revision history */}
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-3">Revision History</p>
-                    {revisions.length === 0 ? (
-                      <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                        <p className="text-sm text-gray-400">No revisions yet. Create one to start the deployment workflow.</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {revisions.map(r => (
-                          <div key={r.id} className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
-                            <div className="flex-shrink-0 w-10 text-center">
-                              <span className="text-lg font-bold text-gray-300">#{r.number}</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                {statusBadge(r.status)}
-                                <span className="text-xs text-gray-400">
-                                  {new Date(r.created_at).toLocaleString()}
-                                </span>
-                              </div>
-                              {r.activated_at && (
-                                <p className="text-xs text-gray-500 mt-0.5">Activated: {new Date(r.activated_at).toLocaleString()}</p>
-                              )}
-                              {r.cancelled_at && (
-                                <p className="text-xs text-gray-400 mt-0.5">Cancelled: {new Date(r.cancelled_at).toLocaleString()}</p>
-                              )}
-                              {r.failure_reason && (
-                                <p className="text-xs text-red-500 mt-0.5">{r.failure_reason}</p>
-                              )}
-                              <p className="text-xs text-gray-400 mt-0.5">
-                                {Object.keys(r.metadata || {}).length} pages
-                              </p>
-                            </div>
-                            <div className="flex gap-1">
-                              {r.status === 'pending' && (
-                                <>
-                                  <button onClick={() => handleActivate(r.id)} className="text-xs font-semibold text-emerald-600 px-2 py-1 rounded hover:bg-emerald-50">Activate</button>
-                                  <button onClick={() => handleCancel(r.id)} className="text-xs font-semibold text-gray-500 px-2 py-1 rounded hover:bg-gray-100">Cancel</button>
-                                </>
-                              )}
-                              {r.status === 'cancelled' && (
-                                <span className="text-xs text-gray-400 px-2 py-1">Cancelled</span>
-                              )}
-                              {r.status === 'failed' && (
-                                <button onClick={() => handleFail(r.id)} className="text-xs text-gray-400 px-2 py-1">View</button>
-                              )}
-                              {r.status === 'superseded' && (
-                                <button onClick={() => handleRollback(r.id)} className="text-xs font-semibold text-amber-600 px-2 py-1 rounded hover:bg-amber-50">Rollback</button>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Deployment info */}
-                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm text-blue-700">
-                    <p className="font-semibold mb-1">How deployment works</p>
-                    <ol className="text-xs space-y-0.5 list-decimal list-inside">
-                      <li>Edit draft SEO settings for each page and locale, then Save Draft.</li>
-                      <li>Click "Create Revision" to snapshot all drafts into an immutable revision.</li>
-                      <li>Trigger a build (git push or Netlify dashboard). The build uses the pending revision's metadata.</li>
-                      <li>After deploy, click "Activate" to mark the revision as live.</li>
-                      <li>To revert, use "Rollback" on a previous revision, then rebuild.</li>
-                    </ol>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>

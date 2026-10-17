@@ -127,70 +127,65 @@ function mergeUkCase(dbCase, uk) {
   };
 }
 
-// Service-role client for fetching pending revisions (not embedded in client code)
-// Falls back to anon client (active-only) if the service role key is not set.
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-const serviceSupabase = serviceRoleKey && supabaseUrl
-  ? createClient(supabaseUrl, serviceRoleKey)
-  : null;
-
-// Optional: pin build to a specific revision ID via env var
-const pinnedRevisionId = process.env.SEO_REVISION_ID || null;
-
-async function getSeoRevision() {
+// Fetch SEO settings directly from the database (publicly readable via anon key)
+async function getSeoSettings() {
   try {
-    // If a specific revision ID is pinned, fetch it with the service-role client
-    if (pinnedRevisionId && serviceSupabase) {
-      const { data: pinned, error } = await serviceSupabase
-        .from('seo_revisions')
-        .select('*')
-        .eq('id', pinnedRevisionId)
-        .maybeSingle();
-      if (error) console.warn('⚠ Pinned revision fetch error:', error.message);
-      if (pinned) {
-        if (pinned.status === 'cancelled') {
-          console.warn(`⚠ Pinned revision #${pinned.number} is cancelled — skipping`);
-          return null;
-        }
-        console.log(`✓ Using pinned SEO revision #${pinned.number} (status: ${pinned.status})`);
-        return pinned;
-      }
-      console.warn(`⚠ Pinned revision ${pinnedRevisionId} not found`);
+    const { data, error } = await supabase
+      .from('seo_settings')
+      .select('page, locale, title, description, og_title, og_description, og_image, robots, canonical, schema_json')
+      .order('page');
+    if (error) {
+      console.warn('⚠ SEO settings fetch error:', error.message);
+      return null;
     }
-
-    // Try to fetch pending revision with service-role client
-    if (serviceSupabase) {
-      const { data: pending } = await serviceSupabase
-        .from('seo_revisions')
-        .select('*')
-        .eq('status', 'pending')
-        .order('number', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (pending) {
-        console.log(`✓ Using pending SEO revision #${pending.number}`);
-        return pending;
-      }
+    if (!data || data.length === 0) {
+      console.log('✓ No SEO settings in database — using hardcoded metadata');
+      return null;
     }
-
-    // Fall back to active revision via anon client (publicly readable)
-    const { data: active } = await supabase
-      .from('seo_revisions')
-      .select('*')
-      .eq('status', 'active')
-      .order('number', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (active) {
-      console.log(`✓ Using active SEO revision #${active.number}`);
-      return active;
+    // Build a manifest keyed by page, with locale-specific entries
+    const settings = {};
+    for (const row of data) {
+      const key = `${row.page}:${row.locale}`;
+      settings[key] = {
+        title: row.title,
+        description: row.description,
+        og_title: row.og_title,
+        og_description: row.og_description,
+        og_image: row.og_image,
+        robots: row.robots,
+        canonical: row.canonical,
+        schema_json: row.schema_json,
+        locale: row.locale,
+      };
     }
+    console.log(`✓ Loaded ${data.length} SEO settings from database`);
+    return settings;
   } catch (err) {
-    console.warn('⚠ SEO revision fetch failed:', err.message);
+    console.warn('⚠ SEO settings fetch failed:', err.message);
+    return null;
   }
-  console.log('✓ No SEO revision found — using hardcoded metadata');
+}
+
+function getSettingsMetaForRoute(settings, contentRoute, locale) {
+  if (!settings) return null;
+  const pageKey = contentRoute === '/' ? 'home' : contentRoute.replace(/^\//, '');
+  const key = `${pageKey}:${locale}`;
+  const entry = settings[key];
+  if (entry && entry.title) return entry;
+  // Fall back to English if the locale-specific entry doesn't exist
+  const enKey = `${pageKey}:en`;
+  const enEntry = settings[enKey];
+  if (enEntry && enEntry.title) return enEntry;
   return null;
+}
+
+function injectSeoManifest(html, settings) {
+  if (!settings) return html;
+  const manifest = JSON.stringify({ metadata: settings });
+  const tag = `<script type="application/json" id="seo-manifest">${manifest}</script>`;
+  // Remove any existing manifest
+  html = html.replace(/<script[^>]*id="seo-manifest"[^>]*><\/script>/g, '');
+  return html.replace('</head>', `  ${tag}\n</head>`);
 }
 
 function getRevisionMetaForRoute(revision, contentRoute, locale) {
@@ -202,28 +197,6 @@ function getRevisionMetaForRoute(revision, contentRoute, locale) {
   // Only use entries matching the locale (or en as fallback for og_title etc.)
   if (entry.locale && entry.locale !== locale) return null;
   return entry;
-}
-
-function injectSeoManifest(html, revision) {
-  if (!revision) return html;
-  const manifest = JSON.stringify({
-    revisionId: revision.id,
-    revisionNumber: revision.number,
-    metadata: revision.metadata,
-  });
-  const tag = `<script type="application/json" id="seo-manifest" data-revision="${revision.number}">${manifest}</script>`;
-  // Remove any existing manifest
-  html = html.replace(/<script[^>]*id="seo-manifest"[^>]*><\/script>/g, '');
-  return html.replace('</head>', `  ${tag}\n</head>`);
-}
-
-function injectBuildManifest(revision) {
-  if (!revision) return null;
-  return {
-    revisionId: revision.id,
-    revisionNumber: revision.number,
-    builtAt: new Date().toISOString(),
-  };
 }
 
 async function getDynamicData() {
@@ -271,7 +244,7 @@ async function main() {
   fs.writeFileSync(path.join(distDir, 'spa-fallback.html'), template);
 
   const { allBlogSlugs, dbPostsBySlug, dbCasesBySlug, nicheEditsCases } = await getDynamicData();
-  const seoRevision = await getSeoRevision();
+  const seoSettings = await getSeoSettings();
 
   // ─── Build route lists ─────────────────────────────────────────
   // EN indexable case/blog routes
@@ -404,17 +377,17 @@ async function main() {
         html = injectMeta(html, meta);
       }
 
-      // Override with SEO revision metadata if available
-      const revMeta = getRevisionMetaForRoute(seoRevision, contentRoute, locale);
-      if (revMeta && revMeta.title) {
-        const revOverride = {
-          title: revMeta.title,
-          description: revMeta.description || '',
-          canonical: revMeta.canonical || (locale === 'uk'
+      // Override with database SEO settings if available
+      const dbMeta = getSettingsMetaForRoute(seoSettings, contentRoute, locale);
+      if (dbMeta && dbMeta.title) {
+        const dbOverride = {
+          title: dbMeta.title,
+          description: dbMeta.description || '',
+          canonical: dbMeta.canonical || (locale === 'uk'
             ? `https://vladenza.com${route === '/uk' ? '/uk/' : route + '/'}`
             : `https://vladenza.com${route === '/' ? '/' : route + '/'}`),
         };
-        html = injectMeta(html, revOverride);
+        html = injectMeta(html, dbOverride);
       }
 
       // Hreflang: only if both EN and UK are indexable
@@ -444,8 +417,8 @@ async function main() {
 
       if (faqSchema) html = injectFaqSchema(html, faqSchema);
 
-      // Inject SEO metadata manifest for SPA navigation consistency
-      html = injectSeoManifest(html, seoRevision);
+      // Inject SEO settings manifest for SPA navigation consistency
+      html = injectSeoManifest(html, seoSettings);
 
       const outPath = route === '/'
         ? path.join(distDir, 'index.html')
@@ -505,15 +478,9 @@ async function main() {
   // Also copy sitemap.xml to public/ so it exists before build
   fs.writeFileSync(path.join(root, 'public', 'sitemap.xml'), sitemapXml);
 
-  // Write build manifest for deployment verification
-  const buildManifest = injectBuildManifest(seoRevision);
-  if (buildManifest) {
-    fs.writeFileSync(path.join(distDir, 'seo-build-manifest.json'), JSON.stringify(buildManifest, null, 2));
-    console.log(`✓ seo-build-manifest.json: revision #${buildManifest.revisionNumber}`);
-  } else {
-    fs.writeFileSync(path.join(distDir, 'seo-build-manifest.json'), JSON.stringify({ revisionId: null, revisionNumber: null, builtAt: new Date().toISOString() }, null, 2));
-    console.log('✓ seo-build-manifest.json: no revision (hardcoded metadata)');
-  }
+  // Write build timestamp for reference
+  fs.writeFileSync(path.join(distDir, 'seo-build-manifest.json'), JSON.stringify({ builtAt: new Date().toISOString(), source: 'seo_settings' }, null, 2));
+  console.log('✓ seo-build-manifest.json written');
 
   console.log(`\n✓ Done: ${successCount}/${allRoutes.length} pages prerendered.`);
   console.log(`✓ sitemap.xml: ${sitemapEntries.length} URLs (${sitemapEnRoutes.length} EN + ${sitemapUkRoutes.length} UK)`);
