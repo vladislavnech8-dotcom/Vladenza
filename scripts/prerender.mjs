@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createClient } from '@supabase/supabase-js';
 import { render, getStaticBlogSlugs, supabase, blogPostsUk, casesUk } from '../dist-ssr/entry-server.js';
 import {
   INDEXABLE_STATIC as EN_INDEXABLE_STATIC,
@@ -126,20 +127,54 @@ function mergeUkCase(dbCase, uk) {
   };
 }
 
+// Service-role client for fetching pending revisions (not embedded in client code)
+// Falls back to anon client (active-only) if the service role key is not set.
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const serviceSupabase = serviceRoleKey && supabaseUrl
+  ? createClient(supabaseUrl, serviceRoleKey)
+  : null;
+
+// Optional: pin build to a specific revision ID via env var
+const pinnedRevisionId = process.env.SEO_REVISION_ID || null;
+
 async function getSeoRevision() {
-  // Prefer pending revision (staged for this build), fall back to active (last deployed)
   try {
-    const { data: pending } = await supabase
-      .from('seo_revisions')
-      .select('*')
-      .eq('status', 'pending')
-      .order('number', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (pending) {
-      console.log(`✓ Using pending SEO revision #${pending.number}`);
-      return pending;
+    // If a specific revision ID is pinned, fetch it with the service-role client
+    if (pinnedRevisionId && serviceSupabase) {
+      const { data: pinned, error } = await serviceSupabase
+        .from('seo_revisions')
+        .select('*')
+        .eq('id', pinnedRevisionId)
+        .maybeSingle();
+      if (error) console.warn('⚠ Pinned revision fetch error:', error.message);
+      if (pinned) {
+        if (pinned.status === 'cancelled') {
+          console.warn(`⚠ Pinned revision #${pinned.number} is cancelled — skipping`);
+          return null;
+        }
+        console.log(`✓ Using pinned SEO revision #${pinned.number} (status: ${pinned.status})`);
+        return pinned;
+      }
+      console.warn(`⚠ Pinned revision ${pinnedRevisionId} not found`);
     }
+
+    // Try to fetch pending revision with service-role client
+    if (serviceSupabase) {
+      const { data: pending } = await serviceSupabase
+        .from('seo_revisions')
+        .select('*')
+        .eq('status', 'pending')
+        .order('number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (pending) {
+        console.log(`✓ Using pending SEO revision #${pending.number}`);
+        return pending;
+      }
+    }
+
+    // Fall back to active revision via anon client (publicly readable)
     const { data: active } = await supabase
       .from('seo_revisions')
       .select('*')

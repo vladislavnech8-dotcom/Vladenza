@@ -1374,6 +1374,7 @@ function SeoPanel({ userId }: { userId: string }) {
       active: 'text-emerald-700 bg-emerald-50 border-emerald-200',
       failed: 'text-red-700 bg-red-50 border-red-200',
       superseded: 'text-gray-500 bg-gray-100 border-gray-200',
+      cancelled: 'text-gray-500 bg-gray-100 border-gray-200',
     };
     return <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${styles[status] ?? styles.superseded}`}>{status}</span>;
   };
@@ -1570,6 +1571,9 @@ function SeoPanel({ userId }: { userId: string }) {
                               {r.activated_at && (
                                 <p className="text-xs text-gray-500 mt-0.5">Activated: {new Date(r.activated_at).toLocaleString()}</p>
                               )}
+                              {r.cancelled_at && (
+                                <p className="text-xs text-gray-400 mt-0.5">Cancelled: {new Date(r.cancelled_at).toLocaleString()}</p>
+                              )}
                               {r.failure_reason && (
                                 <p className="text-xs text-red-500 mt-0.5">{r.failure_reason}</p>
                               )}
@@ -1583,6 +1587,9 @@ function SeoPanel({ userId }: { userId: string }) {
                                   <button onClick={() => handleActivate(r.id)} className="text-xs font-semibold text-emerald-600 px-2 py-1 rounded hover:bg-emerald-50">Activate</button>
                                   <button onClick={() => handleCancel(r.id)} className="text-xs font-semibold text-gray-500 px-2 py-1 rounded hover:bg-gray-100">Cancel</button>
                                 </>
+                              )}
+                              {r.status === 'cancelled' && (
+                                <span className="text-xs text-gray-400 px-2 py-1">Cancelled</span>
                               )}
                               {r.status === 'failed' && (
                                 <button onClick={() => handleFail(r.id)} className="text-xs text-gray-400 px-2 py-1">View</button>

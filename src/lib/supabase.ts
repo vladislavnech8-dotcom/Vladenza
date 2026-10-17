@@ -36,11 +36,12 @@ export type SeoRevision = {
     schema_json: string;
     locale: string;
   }>;
-  status: 'pending' | 'active' | 'failed' | 'superseded';
+  status: 'pending' | 'active' | 'failed' | 'superseded' | 'cancelled';
   created_by: string | null;
   created_at: string;
   activated_at: string | null;
   failed_at: string | null;
+  cancelled_at: string | null;
   failure_reason: string | null;
   html_hash: string | null;
   activated_by: string | null;
